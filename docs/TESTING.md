@@ -57,6 +57,9 @@ Skip cases for the implicit `io(Power(voltage=))` documentation range (CLAUDE.md
   - Waive the overlapping warning-level check (`waive_vcm=test` while testing the ±40 V abs max).
   - Where isolation is impossible, a stricter check shadows a looser one. Record the looser row as `UNCHECKED: covered
     by <check>` instead of registering a check that can never be seen failing alone.
+  - Where only one edge is shadowed (LTC4364 abs_VCC: its -40 V edge sits below op_VCC's 4 V), keep the check: its
+    other edge fails alone. Test the shadowed edge as a combined case and name the edge in a comment beside the
+    checks and in `test/README.md`.
 - The expected text pins the isolated check: an `error` case must match that check's message, not merely any error.
 
 ## Adding a case

@@ -35,7 +35,8 @@ numbers, not the PDF index; table titles survive renumbering. Pages with no prin
 
 ## Component procedure (one Value per directory)
 At the start of a component task, read `docs/COMPONENT_CHECKLIST.md` (sections A-F, cited per step), the four
-`docs/templates/*.template` files and `docs/TESTING.md`. Reference package: `components/TexasInstruments/INA821IDGK/`.
+`docs/templates/*.template` files and `docs/TESTING.md`. Reference packages: `components/TexasInstruments/INA821IDGK/`
+(no ground pin, `_GND`) and `components/AnalogDevices/LTC4364HMS-1/` (ground pin, `_G = GND.voltage`, looped rows).
 GATE = show the evidence and the Decision Log (every default applied: case | default | severity | open item), then
 continue. Wait for me only on a **Stop** condition. My final review of the diff replaces mid-run approvals.
 
@@ -106,7 +107,7 @@ continue. Wait for me only on a **Stop** condition. My final review of the diff 
    `test/README.md` row per case, mirroring the INA821IDGK `test/README.md` header and Case | Overrides | Expect |
    Proves columns. `grep -rn '@@\|^#T' <package dir>` must print nothing (placeholders in comments do not fail a build).
    `test/matrix.sh` must exit 0 on the installed toolchain and on `pcb +<last verified>` (newest version in the
-   reference package's `Verified:` line; if it cannot be fetched, installed version only, open item). Prove each new case
+   reference packages' `Verified:` lines; if it cannot be fetched, installed version only, open item). Prove each new case
    can fail by flipping its expectation once. Skip cases for the implicit `io(Power(voltage=))` range.
 8. **Review and report.** The main session (subagents cannot spawn agents) starts three fresh adversarial Sonnet
    reviewers in parallel, read-only on the repo, each with a scratch dir for builds: software (every `.zen`, template

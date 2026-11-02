@@ -59,7 +59,10 @@ gets skipped silently. Reference package: `components/TexasInstruments/INA821IDG
 - [ ] Multi-unit parts: supply pins are in their own unit or marked shared. The docstring cites the datasheet's
       handling for an unused unit.
 - [ ] Same-name pins merge only if the datasheet says they are one node. 0.4.95 connects every symbol pin that shares
-      a name to one net (tested), so rename separate nodes (VIN1/VIN2, PGND/AGND) in the symbol.
+      a name to one net (tested), so rename separate nodes (VIN1/VIN2, PGND/AGND) in the symbol. Repeated NC pins
+      become NC<pin number> (NC3, NC7), type no_connect.
+- [ ] Active-low names: vendors write the DS overbar as a `*` prefix (`*SHDN`). Drop the `*` in the symbol
+      (`SHDN`) and note "(active low)" in the io comment.
 - [ ] Mode-dependent pins (MODE/SYNC, straps, EN with hysteresis): name by primary function, list every mode with a
       cite, and record the strap sample time and pull value.
 

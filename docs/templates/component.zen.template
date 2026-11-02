@@ -1,8 +1,10 @@
-#T TEMPLATE component.zen (pcb 0.4, build-verified on 0.4.95 and 0.4.96). Save as components/<MfrDir>/<Value>/<Value>.zen.
+#T TEMPLATE component.zen (pcb 0.4, build-verified on 0.4.95, 0.4.96 and 0.4.97). Save as components/<MfrDir>/<Value>/<Value>.zen.
 #T Replace every @@TOKEN@@ from the datasheet; one left in code fails the build, one left in a comment or docstring does
 #T not, so `grep -rn '@@\|^#T' <package dir>` must print nothing. Delete this header block.
 #T Non-op-amp parts: replace the io block, pins{} and the check block per the checklist B category set; keep the
-#T helpers (_ROOT .. _within) verbatim. A part with a ground pin references abs-max rows to that pin, not _GND.
+#T helpers (_ROOT .. _within) verbatim. A part with a ground pin: GND = io(Ground), delete _GND, set
+#T _G = GND.voltage and loop abs-max rows over a (pin, net, limit) list against it; reference package
+#T components/AnalogDevices/LTC4364HMS-1/LTC4364HMS-1.zen.
 #T Numbers and limits live in <value>_limits.zen (limits.zen.template). This file holds io, helpers, checks, Component.
 #T Keep the helper block (_ROOT .. _within) and _limit() verbatim; add helpers only if a new check shape is needed.
 """@@VALUE@@ @@one-line description@@, @@grade@@ grade, @@package@@ (@@package code@@).
@@ -50,6 +52,10 @@ def _limit(name, fn, inputs, severity, waiver=""):
         builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
 
 
+def _r3(x):  # round to 3 decimals for stable messages (no round() or %.3f in this Starlark)
+    return int(x * 1000 + (0.5 if x >= 0 else -0.5)) / 1000.0
+
+
 def _toleranced(_m, v, rail):
     check(v.max == 0 or v.min != v.max, rail + " has no tolerance; worst case not assessed")
 
@@ -58,13 +64,16 @@ def _rel(_m, v, ref, lim, k):  # limit referred to another pin; worst case both 
     lo, hi = v.min - ref.max, v.max - ref.min
     lo_lim = lim.min * k if lim.min < 0 else lim.min
     hi_lim = lim.max * k if lim.max > 0 else lim.max
-    check(lo >= lo_lim and hi <= hi_lim, "%s to %s V outside %s to %s V (derate %s)" % (lo, hi, lo_lim, hi_lim, k))
+    check(
+        lo >= lo_lim and hi <= hi_lim,
+        "%s to %s V outside %s to %s V (derate %s)" % (_r3(lo), _r3(hi), _r3(lo_lim), _r3(hi_lim), k),
+    )
 
 
 def _band(_m, v, lo, hi, off):  # (lo)+off <= v <= (hi)-off, worst case against both rails; off is a float in volts
     check(
         v.min >= lo.max + off and v.max <= hi.min - off,
-        "%s to %s V outside (V-)+%s to (V+)-%s" % (v.min, v.max, off, off),
+        "%s to %s V outside (V-)+%s to (V+)-%s" % (_r3(v.min), _r3(v.max), off, off),
     )
 
 
