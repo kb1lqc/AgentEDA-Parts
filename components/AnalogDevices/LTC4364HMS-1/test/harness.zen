@@ -1,0 +1,39 @@
+# Harness for LTC4364HMS-1 checks. Defaults = nominal passing case. Other cases via --config; "unset" leaves a value off.
+LTC4364HMS_1 = Module("../LTC4364HMS-1.zen")
+
+vcc = config(str, default="12V 5%")
+vout = config(str, default="12V 5%")
+vsense = config(str, default="12V 5%")
+vov = config(str, default="1V 5%")
+vuv = config(str, default="2V 5%")
+vshdn = config(str, default="12V 5%")
+vfb = config(str, default="1V 5%")
+venout = config(str, default="12V 5%")
+vflt = config(str, default="3.3V 5%")
+ta = config(str, default="-40°C to 85°C")  # inside the H grade
+derate = config(float, default=1.0)
+
+
+def _net(name, v):
+    return Net(name) if v == "unset" else Net(name, voltage=v)
+
+
+LTC4364HMS_1(
+    name="U1",
+    VCC=Power("VCC") if vcc == "unset" else Power("VCC", voltage=vcc),
+    GND=Ground("GND"),
+    OUT=_net("OUT", vout),
+    SENSE=_net("SENSE", vsense),
+    OV=_net("OV", vov),
+    UV=_net("UV", vuv),
+    SHDN=_net("SHDN", vshdn),
+    FB=_net("FB", vfb),
+    ENOUT=_net("ENOUT", venout),
+    FLT=_net("FLT", vflt),
+    DGATE=Net("DGATE"),
+    SOURCE=Net("SOURCE"),
+    HGATE=Net("HGATE"),
+    TMR=Net("TMR"),
+    derate=derate,
+    **({} if ta == "unset" else {"ambient": ta}),
+)
