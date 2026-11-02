@@ -1,0 +1,32 @@
+#!/usr/bin/expect -f
+# Drive `pcb new component` without a user TTY (piped stdin fails: "The input device is not a TTY"; `script` fails).
+# Usage, from the repo root: expect scripts/import_component.exp docs/vendor/<Value> <Value> <MfrDir>
+# Writes components/<MfrDir>/<Value>/ relative to the current directory. Exit: 0 ok, 2 usage, 3 timeout, 4 early exit.
+# Tcl note: a braced expect pattern list must span lines; on one line it is read as a single literal pattern.
+set timeout 120
+lassign $argv dir value mfr
+if {$mfr eq ""} {
+    puts stderr "usage: import_component.exp <vendor dir> <Value> <MfrDir>"
+    exit 2
+}
+spawn pcb new component $dir
+expect {
+    "MPN:" {}
+    timeout { exit 3 }
+    eof { exit 4 }
+}
+sleep 0.5 ;# let the prompt enter raw mode before typing
+send "$value\r"
+expect {
+    "anufacturer:" {}
+    timeout { exit 3 }
+    eof { exit 4 }
+}
+sleep 0.5
+send "$mfr\r"
+expect {
+    eof {}
+    timeout { exit 3 }
+}
+catch wait result
+exit [lindex $result 3]

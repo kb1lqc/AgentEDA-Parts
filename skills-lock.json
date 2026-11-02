@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "librarian": {
+      "source": "diodeinc/pcb",
+      "sourceType": "github",
+      "skillPath": "skills/librarian/SKILL.md",
+      "computedHash": "8cf2f63ae5649d12f6f95106da16b20f7be81403f539ea5494afd15a7616a362"
+    },
+    "zener-language": {
+      "source": "diodeinc/pcb",
+      "sourceType": "github",
+      "skillPath": "skills/zener-language/SKILL.md",
+      "computedHash": "476fb8019d5650352ea811aa861c4eb6f30ac550c37728fc517bb6ca3628883a"
+    }
+  }
+}

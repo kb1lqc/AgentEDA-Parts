@@ -1,0 +1,29 @@
+#T TEMPLATE limits.zen (pcb 0.4, build-verified on 0.4.95 and 0.4.96). Save as components/<MfrDir>/<Value>/<basepart lowercase>_limits.zen.
+#T Every @@TOKEN@@ must be replaced from the datasheet; tokens in comments do not fail a build, so grep for '@@'.
+#T Pure data and equations: no io(), no Component(). The component file and modules load() from here.
+"""@@BASEPART@@ datasheet limits and equations, shared by @@VALUE@@.zen and by modules (load() this file).
+DS: @@DS_URL@@, @@DS_REV@@. Raw guaranteed values, never derated here.
+@@SCOPE_NOTE: which temperature/test-condition header the abs-max and rec-op rows apply to, with cite@@"""
+
+load("@stdlib/units.zen", "Resistance", "Temperature", "Voltage")
+
+# Guaranteed min/max only. Never typical, never a curve. Cite: DS p.<printed page>, <table title>, <row>.
+# Reference-unstated rows: write "reference unstated, taken to GND" in the comment and open an item in the report.
+ABS_SPAN = Voltage("@@ABS_SPAN@@")  # DS p.<P>, Absolute Maximum Ratings, @@row@@ (V+ to V-)
+ABS_IN = Voltage("@@ABS_IN@@")  # DS p.<P>, Absolute Maximum Ratings, @@row@@; reference unstated, taken to GND
+OP_SPAN = Voltage("@@OP_SPAN@@")  # DS p.<P>, Recommended Operating Conditions, @@row@@
+TA_GRADE = Temperature("@@TA_GRADE@@")  # DS p.<P>, Recommended Operating Conditions, specified temperature, @@grade@@
+
+# 25°C only (DS p.<P> header: TA = 25°C, @@conditions@@). Warning-level, waivable; list the gap in Open items.
+VCM_HEADROOM = Voltage("@@VCM_HEADROOM@@")  # DS p.<P>, Electrical Characteristics, @@row@@ (V-)+x to (V+)-x
+
+# Full-temp maxima for module error budgets, not checked here. Delete this block if the part has none.
+# VOS_MAX = Voltage("@@VOS_MAX@@")  # DS p.<P>, Electrical Characteristics, @@row@@, @@temperature@@
+
+# Equations: named, cited, return plain floats via .value (see the units note in CLAUDE.md). Delete if none.
+GAIN_K = Resistance("@@GAIN_K@@")  # DS p.<P>, Equation <N>: G = 1 + K / RG
+
+
+def gain(rg):
+    """Gain (float) for an RG (DS p.<P>, Equation <N>)."""
+    return (1 + GAIN_K / rg).value
