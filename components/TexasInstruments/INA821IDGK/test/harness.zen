@@ -1,0 +1,35 @@
+# Harness for INA821IDGK checks. Defaults = nominal passing case. Other cases via --config; "unset" leaves a value off.
+INA821IDGK = Module("../INA821IDGK.zen")
+
+vp = config(str, default="15V 5%")
+vn = config(str, default="-15V 5%")
+vinp = config(str, default="1V 1%")
+vinn = config(str, default="0V")
+vref = config(str, default="0V")
+ta = config(str, default="-40°C to 85°C")
+derate = config(float, default=1.0)
+waive_vcm = config(str, default="")
+waive_ref = config(str, default="")
+
+
+def _net(name, v):
+    return Net(name) if v == "unset" else Net(name, voltage=v)
+
+
+V_POS = Power("V_POS") if vp == "unset" else Power("V_POS", voltage=vp)
+V_NEG = Ground("GND") if vn == "GND" else (Power("V_NEG") if vn == "unset" else Power("V_NEG", voltage=vn))
+INA821IDGK(
+    name="U1",
+    V_POS=V_POS,
+    V_NEG=V_NEG,
+    IN_P=_net("IN_P", vinp),
+    IN_N=_net("IN_N", vinn),
+    RG1=Net("RG1"),
+    RG2=Net("RG2"),
+    REF=_net("REF", vref),
+    OUT=Net("OUT"),
+    derate=derate,
+    waive_vcm=waive_vcm,
+    waive_ref=waive_ref,
+    **({} if ta == "unset" else {"ambient": ta}),
+)

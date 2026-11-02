@@ -1,0 +1,121 @@
+"""INA821IDGK precision instrumentation amplifier, I grade, VSSOP-8 (TI DGK0008A).
+DS: https://www.ti.com/lit/ds/symlink/ina821.pdf, SBOS893D (Aug 2018, rev. June 2020). Limits: ./ina821_limits.zen.
+Gain: G = 1 + 49.4 kΩ / RG between RG1 and RG2 (DS p.20, Equation 1); helpers gain() and rg_for_gain().
+Checks are DC steady-state. Transients, overshoot, hot-plug ringing and load dump are not covered.
+Every instance must give IN_P, IN_N and REF a bounded voltage, or the checks report UNVERIFIED.
+Verified: pcb 0.4.95, 0.4.96 (test/matrix.sh, 45/45 cases)."""
+
+load("@stdlib/units.zen", "Temperature", "Voltage")
+load(
+    "./ina821_limits.zen",
+    "ABS_IN",
+    "ABS_REF",
+    "ABS_SPAN",
+    "OP_SPAN",
+    "TA_GRADE",
+    "VCM_HEADROOM",
+)
+
+# UNCHECKED: OUT (-Vs)-0.5 V to (+Vs)+0.5 V (DS p.5, 7.1); OUT is driven, rarely given a voltage; owner: module.
+# UNCHECKED: output swing (V-)+0.15 V to (V+)-0.15 V (DS p.7, 7.5, 25°C, RL 10 kΩ only); owner: module.
+# UNCHECKED: output short-circuit, continuous to VS/2 (DS p.5, 7.1 note 2); owner: board.
+# UNCHECKED: operating TA -50°C to 150°C (DS p.5, 7.1); covered by temp_grade (-40°C to 125°C, error), stricter.
+# UNCHECKED: TJ 175°C max (DS p.5, 7.1); needs dissipation and RθJA 215.4 °C/W (DS p.5, 7.4); owner: board.
+# UNCHECKED: storage -65°C to 150°C (DS p.5, 7.1); owner: assembly.
+# UNCHECKED: ESD HBM ±1500 V (DS p.5, 7.2, JS-001); owner: assembly.
+# UNCHECKED: ESD CDM ±750 V (DS p.5, 7.2, JESD22-C101); owner: assembly.
+# UNCHECKED: input overvoltage current ~8 mA, typical only, into the supplies via clamps (DS p.23, 8.3.4, Fig 62);
+#   no unpowered-input data in DS; supplies must sink it or have Zener clamps; owner: module.
+# UNCHECKED: full-temp VCM range depends on gain, differential input and REF (DS p.6 note 4, Figures 51-54);
+#   vcm_* only checks the 25°C, VS ±15 V envelope; owner: module.
+# UNCHECKED: input bias return path required (DS p.28, 9.1.2); gain range 1 to 10000 (DS p.6); owner: module.
+
+V_POS = io(Power)  # DS p.4 pin 8, +VS
+V_NEG = io(Net)  # DS p.4 pin 5, -VS: GND or a negative rail, so Net + cast at the pin
+IN_P = io(Net)  # DS p.4 pin 4, +IN (p.4 Pin Functions I/O "O" is a DS error)
+IN_N = io(Net)  # DS p.4 pin 1, -IN
+RG1 = io(Net)  # DS p.4 pin 2, RG (separate node from pin 3)
+RG2 = io(Net)  # DS p.4 pin 3, RG
+REF = io(Net)  # DS p.4 pin 6, REF: drive from a low-impedance source (DS p.26, 9.1.1)
+OUT = io(Net)  # DS p.4 pin 7, OUT
+ambient = config(Temperature, optional=True, help="Board ambient range")
+derate = config(float, default=1.0, help="Project derating factor, applied to abs-max limits only")
+waive_vcm = config(str, default="", help="Rationale for inputs outside the 25°C (V-)+2 V to (V+)-2 V range")
+waive_ref = config(str, default="", help="Rationale for REF outside the 25°C (V-) to (V+) range")
+
+_ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
+_GND = Voltage("0V")  # reference for the GND-referenced abs-max rows
+check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
+
+
+def _limit(name, fn, inputs, severity, waiver=""):
+    # Unset input: UNVERIFIED warning, never a silent pass. Waiver drops a warning to advice.
+    if waiver and severity != "warning":
+        error("only warning-level checks can be waived: " + name)
+    unset = [k for k, v in inputs.items() if v == None]
+    if unset:
+
+        def _unverified(_m):
+            error("UNVERIFIED " + name + ": no value for " + ", ".join(unset))
+
+        builtin.add_electrical_check(name=name, check_fn=_unverified, severity="advice" if _ROOT else "warning")
+    else:
+        builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
+
+
+def _toleranced(_m, v, rail):
+    check(v.max == 0 or v.min != v.max, rail + " has no tolerance; worst case not assessed")
+
+
+def _rel(_m, v, ref, lim, k):  # limit referred to another pin; worst case both ways; k shrinks magnitudes only
+    lo, hi = v.min - ref.max, v.max - ref.min
+    lo_lim = lim.min * k if lim.min < 0 else lim.min
+    hi_lim = lim.max * k if lim.max > 0 else lim.max
+    check(lo >= lo_lim and hi <= hi_lim, "%s to %s V outside %s to %s V (derate %s)" % (lo, hi, lo_lim, hi_lim, k))
+
+
+def _band(_m, v, lo, hi, off):  # (lo)+off <= v <= (hi)-off, worst case against both rails
+    check(
+        v.min >= lo.max + off and v.max <= hi.min - off,
+        "%s to %s V outside (V-)+%s to (V+)-%s" % (v.min, v.max, off, off),
+    )
+
+
+def _within(_m, v, lim):
+    check(v.min >= lim.min and v.max <= lim.max, str(v) + " outside " + str(lim))
+
+
+_VP, _VN = V_POS.voltage, V_NEG.voltage
+_limit("vpos_tol", _toleranced, {"v": _VP, "rail": "V+"}, "warning")
+_limit("vneg_tol", _toleranced, {"v": _VN, "rail": "V-"}, "warning")
+_limit("abs_span", _rel, {"v": _VP, "ref": _VN, "lim": ABS_SPAN, "k": derate}, "error")
+_limit("op_span", _rel, {"v": _VP, "ref": _VN, "lim": OP_SPAN, "k": 1.0}, "error")
+for pin, net in {"IN_P": IN_P, "IN_N": IN_N}.items():
+    _limit("tol_" + pin, _toleranced, {"v": net.voltage, "rail": pin}, "warning")
+    _limit("abs_" + pin, _rel, {"v": net.voltage, "ref": _GND, "lim": ABS_IN, "k": derate}, "error")
+    _limit(
+        "vcm_" + pin, _band, {"v": net.voltage, "lo": _VN, "hi": _VP, "off": VCM_HEADROOM.value}, "warning", waive_vcm
+    )
+_limit("tol_REF", _toleranced, {"v": REF.voltage, "rail": "REF"}, "warning")
+_limit("abs_REF", _rel, {"v": REF.voltage, "ref": _GND, "lim": ABS_REF, "k": derate}, "error")
+_limit("ref_range", _band, {"v": REF.voltage, "lo": _VN, "hi": _VP, "off": 0.0}, "warning", waive_ref)
+_limit("temp_grade", _within, {"v": ambient, "lim": TA_GRADE}, "error")
+
+Component(
+    name="INA821IDGK",
+    symbol=Symbol(library="./INA821IDGK.kicad_sym"),
+    part=Part(
+        mpn="INA821IDGKR", manufacturer="Texas Instruments", datasheet="https://www.ti.com/lit/ds/symlink/ina821.pdf"
+    ),
+    pins={
+        "+VS": V_POS,
+        "-VS": Power(V_NEG, voltage=V_NEG.voltage),
+        "+IN": IN_P,
+        "-IN": IN_N,
+        "RG1": RG1,
+        "RG2": RG2,
+        "REF": REF,
+        "OUT": OUT,
+    },
+    properties={"alternatives": ["INA821IDGKT"]},
+)
