@@ -8,7 +8,7 @@ Every instance must give VCC, OUT, SENSE, OV, UV, SHDN, FB, ENOUT and FLT a boun
 UNVERIFIED. Unused pins (DS p.8-9): FB, OV, FLT, ENOUT to GND; UV to SHDN; SENSE to OUT; SHDN open: declare
 VSHDN_FLOAT (2.3 V to 6.5 V). ENOUT pulls up to OUT only (>= 100 kΩ, DS p.13).
 ENOUT/FLT are checked to 80 V (DS p.9 pin text), tighter than the 100 V abs max row (DS p.2).
-Verified: pcb 0.4.95, 0.4.97 (test/matrix.sh, 127/127 cases)."""
+Verified: pcb 0.4.95, 0.4.97, 0.4.99 (test/matrix.sh, 127/127 cases)."""
 
 load("@stdlib/units.zen", "Temperature")
 load(

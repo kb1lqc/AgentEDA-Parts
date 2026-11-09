@@ -3,7 +3,7 @@ DS: https://www.ti.com/lit/ds/symlink/ina821.pdf, SBOS893D (Aug 2018, rev. June 
 Gain: G = 1 + 49.4 kΩ / RG between RG1 and RG2 (DS p.20, Equation 1); helpers gain() and rg_for_gain().
 Checks are DC steady-state. Transients, overshoot, hot-plug ringing and load dump are not covered.
 Every instance must give IN_P, IN_N and REF a bounded voltage, or the checks report UNVERIFIED.
-Verified: pcb 0.4.95, 0.4.96, 0.4.97 (test/matrix.sh, 45/45 cases)."""
+Verified: pcb 0.4.95, 0.4.96, 0.4.97, 0.4.99 (test/matrix.sh, 45/45 cases)."""
 
 load("@stdlib/units.zen", "Temperature", "Voltage")
 load(
