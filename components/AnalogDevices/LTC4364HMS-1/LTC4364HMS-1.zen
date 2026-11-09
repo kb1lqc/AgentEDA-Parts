@@ -99,10 +99,44 @@ def _within(_m, v, lim):
     check(v.min >= lim.min and v.max <= lim.max, str(v) + " outside " + str(lim))
 
 
-_G = GND.voltage  # DS p.5 Note 2: voltages referenced to GND
+# Checks. Each block states what is checked, the DS row, the worst-case formula, every assumption, the severity and
+# why, and the test/matrix.sh cases that cover it. Values are the ranges the instance declares on each net; a net
+# with no voltage reports UNVERIFIED (unset_* cases). Worst case uses both nets' tolerances against each other.
+# Every pin limit below is measured from the part's own GND pin: DS p.5, Note 2, "All voltages are referenced to GND
+# unless otherwise specified". _G is that pin's declared voltage (0 V for a Ground net).
+_G = GND.voltage
+
+# tol_VCC: VCC was declared as a range (min != max), else the VCC checks only test the nominal value. Rule, not a DS
+#   row (CLAUDE.md, Limit and check rules). Warning, not waivable. Tests: tol_VCC, unset_vcc_tol.
 _limit("tol_VCC", _toleranced, {"v": VCC.voltage, "rail": "VCC"}, "warning")
+
+# abs_VCC: VCC within -40 V to 100 V x derate. DS p.2, Absolute Maximum Ratings, Supply Voltage VCC.
+#   Worst case: VCC.min - GND.max >= -40 V x derate and VCC.max - GND.min <= 100 V x derate.
+#   Error, derated, not waivable. op_VCC (4 V to 80 V) is stricter on both edges at derate 1, so every derate-1
+#   out case also fires op_VCC; derate 0.5 (limit 50 V) isolates the upper edge. The lower edge stays below op_VCC's
+#   4 V at any derate, so it is only ever seen failing with op_VCC (kept: its upper edge fails alone).
+#   Tests: abs_VCC_hi_out, abs_VCC_lo_out, abs_VCC_dr_bound, abs_VCC_dr_out, unset_vcc_abs.
 _limit("abs_VCC", _rel, {"v": VCC.voltage, "ref": _G, "lim": ABS_VCC, "k": derate}, "error")
+
+# op_VCC: VCC within 4 V to 80 V. DS p.3, Electrical Characteristics, VCC Operating Supply Range, full-temperature
+#   (●) row. Worst case as abs_VCC. Not derated (k = 1.0): derate applies to abs max only. Error (rec-op violated).
+#   Assumption: declare VCC as the pin voltage, after any series resistor and clamp Zener (DS p.19), not the raw
+#   input; surge excursions are transients and not covered (docstring).
+#   Tests: op_VCC_lo_bound, op_VCC_lo_out, op_VCC_hi_bound, op_VCC_hi_out, unset_vcc_op.
 _limit("op_VCC", _rel, {"v": VCC.voltage, "ref": _G, "lim": OP_VCC, "k": 1.0}, "error")
+
+# Per pin, two checks: tol_<pin> (declared as a range; exactly 0 V exempt, since the DS ties unused FB, OV, FLT and
+# ENOUT to GND, DS p.8-9; warning) and abs_<pin> (pin within the limit x derate, measured from GND; error, derated,
+# not waivable). Worst case: pin.min - GND.max >= limit min x derate and pin.max - GND.min <= limit max x derate.
+#   OV, UV, SHDN: -40 V to 100 V. DS p.2, Absolute Maximum Ratings, SOURCE, OV, UV, SHDN Voltages. No rec-op range,
+#     so every edge fails alone. SHDN left open floats at 2.3 V to 6.5 V (DS p.4): declare that range.
+#   OUT, SENSE: -20 V to 100 V. DS p.2, OUT, SENSE Voltages. The tests move SENSE with OUT so the pair checks below
+#     stay quiet.
+#   FB: -0.3 V to 5.5 V. DS p.2, FB, TMR Voltages (TMR is part-driven, UNCHECKED above).
+#   ENOUT, FLT: -0.3 V to 80 V. Assumption: DS p.2 says -0.3 V to 100 V, but DS p.9 Pin Functions says each pin
+#     "can withstand up to 80V" and leakage is tested at 80 V (DS p.4); the lower value is used. Open item.
+#     Declare the pull-up rail voltage on these nets (ENOUT pulls up to OUT only, DS p.13).
+#   Tests: tol_<pin>, zero_ok_<pin>, abs_<pin>_hi/lo_bound/out, abs_<pin>_dr*_bound/out, unset_v<pin>_tol/abs.
 for pin, net, lim in [
     ("OV", OV, ABS_CTRL),
     ("UV", UV, ABS_CTRL),
@@ -115,8 +149,25 @@ for pin, net, lim in [
 ]:
     _limit("tol_" + pin, _toleranced, {"v": net.voltage, "rail": pin}, "warning")
     _limit("abs_" + pin, _rel, {"v": net.voltage, "ref": _G, "lim": lim, "k": derate}, "error")
+
+# abs_SENSE_OUT: SENSE - OUT within -30 V to 30 V x derate. DS p.2, Voltage Difference (SENSE to OUT); the sense
+#   resistor sits between them. Sign convention: positive when SENSE is above OUT.
+#   Worst case: SENSE.min - OUT.max >= -30 V x derate and SENSE.max - OUT.min <= 30 V x derate.
+#   Error, derated, not waivable. Every edge fails alone. Tests: pair_SO_*, unset_vout_pairSO, unset_vsense_pair.
 _limit("abs_SENSE_OUT", _rel, {"v": SENSE.voltage, "ref": OUT.voltage, "lim": ABS_SENSE_OUT, "k": derate}, "error")
+
+# abs_OUT_VCC: OUT - VCC within -100 V to 100 V x derate. DS p.2, Voltage Difference (OUT to VCC). Sign convention:
+#   positive when OUT is above VCC (back-feed); negative when the input surges above the output.
+#   Worst case: OUT.min - VCC.max >= -100 V x derate and OUT.max - VCC.min <= 100 V x derate.
+#   Error, derated, not waivable. The upper edge needs VCC.min <= 0 V (op_VCC fires) or OUT above 100 V (abs_OUT
+#   fires), so it is only seen failing with op_VCC (kept: its lower edge fails alone at derate 0.5).
+#   Tests: pair_OV_lo_bound, pair_OV_lo_out, pair_OV_hi_out, pair_OV_dr_lo_bound, pair_OV_dr_lo_out,
+#   unset_vcc_pair, unset_vout_pairOV.
 _limit("abs_OUT_VCC", _rel, {"v": OUT.voltage, "ref": VCC.voltage, "lim": ABS_OUT_VCC, "k": derate}, "error")
+
+# temp_grade: the board ambient range lies inside the H-grade range -40°C to 125°C. DS p.2, Absolute Maximum
+#   Ratings, Operating Ambient Temperature Range, LTC4364H (the DS has no separate rec-op table). Not derated. Error.
+#   Tests: ta_bound, ta_lo_out, ta_hi_out, unset_ta; waiver_on_error proves this error cannot be waived.
 _limit("temp_grade", _within, {"v": ambient, "lim": TA_GRADE}, "error")
 
 Component(

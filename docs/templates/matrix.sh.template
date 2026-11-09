@@ -55,13 +55,19 @@ t() { # name expect text [KEY=VALUE ...]
     verdict "$name" "$expect" "$text" "$(classify $rc "$out")" "$out"
 }
 
+# Every case gets a comment line above it: the scenario, the worst-case arithmetic behind its numbers, and which
+# checks fire ("only X fails", or "X fails; Y also fires, the text pins X"). State the harness defaults here:
+# @@defaults with their ranges, e.g. V+ 15 V 5% (14.25 to 15.75 V)@@.
+
 # Package built alone: no nets attached, so UNVERIFIED drops to advice and the build stays green.
 out=$("${PCB[@]}" build -Wstyle -Dwarnings .. 2>&1)
 verdict package_root pass "" "$(classify $? "$out")" "$out"
 
 t nominal            pass    ""
 # abs_span: V+ - V- <= 40 V x derate. derate 0.8 isolates it from op_span (36 V).
+# span max = 16 - (-16) = 32.0 V = 0.8 x 40 V, exactly on the derated limit (op_span 36 V not reached): passes.
 t span_derate_bound  pass    ""                                     "vp=15.5V to 16V" "vn=-16V to -15.5V" derate=0.8
+# span max = 16.1 - (-16) = 32.1 V, 0.1 V over 32 V and under op_span's 36 V: only abs_span fails.
 t span_derate_out    error   "outside 0.0 to 32.0 V (derate 0.8)"   "vp=15.6V to 16.1V" "vn=-16V to -15.5V" derate=0.8
 t span_abs_out       error   "outside 0.0 to 40.0 V (derate 1.0)"   "vp=20V to 20.1V" "vn=-20V to -19.9V"
 t span_reversed      error   "outside 0.0 to 40.0 V"                "vp=-15V 5%" "vn=15V 5%" vinp=0V

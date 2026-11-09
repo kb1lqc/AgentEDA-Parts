@@ -85,20 +85,86 @@ def _within(_m, v, lim):
     check(v.min >= lim.min and v.max <= lim.max, str(v) + " outside " + str(lim))
 
 
+# Checks. Each block states what is checked, the DS row, the worst-case formula, every assumption, the severity and
+# why, and the test/matrix.sh cases that cover it. Values are the ranges the instance declares on each net; a net
+# with no voltage reports UNVERIFIED (unset_* cases). Worst case uses both nets' tolerances against each other.
 _VP, _VN = V_POS.voltage, V_NEG.voltage
+
+# vpos_tol, vneg_tol: each supply was declared as a range (min != max), else the span checks below only test the
+#   nominal value. Rule, not a DS row (CLAUDE.md, Limit and check rules). Exactly 0 V is exempt, so V- = GND passes.
+#   Warning: an exact value is incomplete, not a violation; not waivable (declare the real tolerance instead).
+#   Tests: tol_vp, tol_vn, gnd_rail_ok, unset_vp, unset_vn.
 _limit("vpos_tol", _toleranced, {"v": _VP, "rail": "V+"}, "warning")
 _limit("vneg_tol", _toleranced, {"v": _VN, "rail": "V-"}, "warning")
+
+# abs_span: supply span V+ - V- within 0 V to 40 V x derate.
+#   DS p.5, 7.1 Absolute Maximum Ratings, Supply voltage -20 V to 20 V; DS p.24, 8.3.5 caution "Supply voltages
+#   higher than 40 V (±20 V) can permanently damage the device".
+#   Assumption: the ±20 V row is read as a 40 V span, not as each rail within ±20 V of GND. Rec-op allows a single
+#   36 V supply with V- at GND (DS p.5, 7.3), which a per-rail reading would reject.
+#   Assumption: the 0 V minimum is not a DS value. Reversed supplies (V+ below V-) are not rated, so not allowed.
+#   Worst case: (V+.min - V-.max) >= 0 V and (V+.max - V-.min) <= 40 V x derate.
+#   Error, derated, not waivable. Tests: span_derate_bound, span_derate_out, span_abs_out, span_reversed.
 _limit("abs_span", _rel, {"v": _VP, "ref": _VN, "lim": ABS_SPAN, "k": derate}, "error")
+
+# op_span: supply span V+ - V- within 4.5 V to 36 V.
+#   DS p.5, 7.3 Recommended Operating Conditions, Supply voltage single 4.5 V to 36 V, dual ±2.25 V to ±18 V; both
+#   rows give the same span, so one span check covers single and dual supplies.
+#   Worst case: (V+.min - V-.max) >= 4.5 V and (V+.max - V-.min) <= 36 V. Not derated (k = 1.0): derate applies to
+#   abs max only. Error (rec-op violated = error).
+#   Tests: op_lo_bound, op_lo_out, op_hi_bound, op_hi_out. abs_span can fire alone only at derate < 0.9, where its
+#   limit drops below 36 V (span_derate_*).
 _limit("op_span", _rel, {"v": _VP, "ref": _VN, "lim": OP_SPAN, "k": 1.0}, "error")
+
+# Per input, three checks, the same for +IN and -IN (each input is rated alone, DS p.23, 8.3.4):
+# tol_IN_P, tol_IN_N: the input was declared as a range; exactly 0 V exempt. Warning, not waivable.
+#   Tests: tol_inp (the default IN_N is 0 V, exempt), unset_in.
+# abs_IN_P, abs_IN_N: input within -40 V to 40 V x derate, measured from 0 V.
+#   DS p.5, 7.1 Absolute Maximum Ratings, Signal input pins Voltage -40 V to 40 V; also DS p.6, 7.5 Input
+#   overvoltage range ±40 V, TA -40°C to 125°C, specified by characterization (note 3).
+#   Assumption: the DS states no reference, so 0 V (system ground) is assumed; the part has no ground pin. Open item.
+#   Assumption: DS p.23, 8.3.4 shows the input current (Figure 63) only with ±15 V supplies applied; driving an
+#   input while the part is unpowered is not rated (UNCHECKED above, owner module).
+#   Worst case: input.min >= -40 V x derate and input.max <= 40 V x derate.
+#   Error, derated, not waivable. Tests: absin_hi_bound, absin_hi_out, absin_lo_bound, absin_lo_out,
+#   absin_derate_out; vcm is waived there so only this check can fire.
+# vcm_IN_P, vcm_IN_N: input within (V-) + 2 V to (V+) - 2 V.
+#   DS p.6, 7.5 VCM Operating input range, (V-)+2 V min, (V+)-2 V max, at TA = 25°C, VS = ±15 V (table header).
+#   The full-temperature row defers to Figures 51-54 (curves, not limits), so only the 25°C row is usable.
+#   Assumption: the 25°C, ±15 V envelope is applied at any supply and temperature (UNCHECKED above, owner module).
+#   Worst case: input.min >= V-.max + 2 V and input.max <= V+.min - 2 V (narrowest window).
+#   Warning (25°C-only limit), waivable with waive_vcm. Tests: vcm_hi_bound, vcm_hi_out, vcm_hi_waived,
+#   vcm_lo_bound, vcm_lo_out.
 for pin, net in {"IN_P": IN_P, "IN_N": IN_N}.items():
     _limit("tol_" + pin, _toleranced, {"v": net.voltage, "rail": pin}, "warning")
     _limit("abs_" + pin, _rel, {"v": net.voltage, "ref": _GND, "lim": ABS_IN, "k": derate}, "error")
     _limit(
         "vcm_" + pin, _band, {"v": net.voltage, "lo": _VN, "hi": _VP, "off": VCM_HEADROOM.value}, "warning", waive_vcm
     )
+
+# tol_REF: REF was declared as a range; exactly 0 V exempt (the default REF = 0 V passes). Warning, not waivable.
+#   Tests: tol_ref, unset_ref.
 _limit("tol_REF", _toleranced, {"v": REF.voltage, "rail": "REF"}, "warning")
+
+# abs_REF: REF within -20 V to 20 V x derate, measured from 0 V.
+#   DS p.5, 7.1 Absolute Maximum Ratings, Signal input pins REF pin -20 V to 20 V.
+#   Assumption: no reference stated, 0 V (system ground) assumed, as for the inputs. Open item.
+#   Worst case: REF.min >= -20 V x derate and REF.max <= 20 V x derate.
+#   Error, derated, not waivable. Tests: absref_hi_bound, absref_hi_out, absref_lo_bound, absref_lo_out;
+#   ref_range is waived there so only this check can fire.
 _limit("abs_REF", _rel, {"v": REF.voltage, "ref": _GND, "lim": ABS_REF, "k": derate}, "error")
+
+# ref_range: REF within (V-) to (V+).
+#   DS p.7, 7.5 REFERENCE INPUT Voltage range, (V-) min, (V+) max, at TA = 25°C, VS = ±15 V (table header); no
+#   full-temperature row. Worst case: REF.min >= V-.max and REF.max <= V+.min.
+#   Warning (25°C-only limit), waivable with waive_ref. Tests: ref_hi_bound, ref_hi_out, ref_hi_waived,
+#   ref_lo_bound, ref_lo_out.
 _limit("ref_range", _band, {"v": REF.voltage, "lo": _VN, "hi": _VP, "off": 0.0}, "warning", waive_ref)
+
+# temp_grade: the board ambient range lies inside the I-grade range -40°C to 125°C.
+#   DS p.5, 7.3 Recommended Operating Conditions, Specified temperature. Stricter than the abs-max operating TA
+#   (-50°C to 150°C, UNCHECKED above as covered by this check). Not derated. Error.
+#   Tests: ta_bound, ta_lo_out, ta_hi_out, ta_unset; waiver_on_error proves this error cannot be waived.
 _limit("temp_grade", _within, {"v": ambient, "lim": TA_GRADE}, "error")
 
 Component(

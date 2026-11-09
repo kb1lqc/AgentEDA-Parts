@@ -65,8 +65,12 @@ Skip cases for the implicit `io(Power(voltage=))` documentation range (CLAUDE.md
 ## Adding a case
 1. Add a `t <name> <pass|error|warning> "<text>" KEY=VALUE ...` line to `matrix.sh` under its check. Quote values with
    spaces: `"vp=15V 5%"`.
-2. Add a row to `test/README.md`.
-3. Run the script. Prove a new case can fail: flip its expectation once and confirm `FAIL` and exit 1.
+2. Put a comment line directly above it: the scenario, the worst-case arithmetic from the values it sets and the
+   harness defaults (`span max = 16.1 - (-16) = 32.1 V, 0.1 V over 32 V`), and which checks fire (`only abs_span
+   fails`, or `abs_VCC fails; op_VCC also fires, the text pins abs_VCC`). Confirm every "also fires" claim from a
+   real build's output, never by reasoning alone.
+3. Add a row to `test/README.md`; its Proves column must agree with the comment.
+4. Run the script. Prove a new case can fail: flip its expectation once and confirm `FAIL` and exit 1.
 
 ## Toolchain updates
 `pcb-version = "0.4"` in the root `pcb.toml` takes the latest 0.4.x, and the `pcb` shim updates itself. After an update,

@@ -99,23 +99,28 @@ continue. Wait for me only on a **Stop** condition. My final review of the diff 
      evidence (TI's DGK0008A model is named MUA08A). Pin-1 orientation in the KiCad 3D viewer stays an open item for me.
 6. **Limits and checks.** Copy `component.zen.template` and `limits.zen.template`. Numbers live in
    `<basepart lowercase>_limits.zen` (INA821 -> `ina821_limits.zen`, checklist F); checks live in `<Value>.zen`.
-   Follow the rules below. Show the limits table, each row mapped to one check or one `UNCHECKED:` line, then write the checks.
+   Follow the rules below. Show the limits table, each row mapped to one check or one `UNCHECKED:` line, then write the
+   checks. Every check gets a comment block (component template): what, cite, each assumption or default applied,
+   worst-case formula, severity and why, which check shadows an edge, and `Tests:` naming its matrix cases.
 7. **Verify.** Copy `harness.zen.template` to `test/harness.zen` and `matrix.sh.template` to `test/matrix.sh`, per
    `docs/TESTING.md`. Harness defaults are the nominal passing case, so `pcb build <package dir>` stays green. For each
    check cover nominal, each boundary, just outside each boundary (it must fail at the intended severity), input unset
    (UNVERIFIED warning) for every input including rails, and with a waiver set (for waivable checks). Add a
    `test/README.md` row per case, mirroring the INA821IDGK `test/README.md` header and Case | Overrides | Expect |
-   Proves columns. `grep -rn '@@\|^#T' <package dir>` must print nothing (placeholders in comments do not fail a build).
+   Proves columns. Comment every harness default (range, why it passes) and every matrix case (scenario, worst-case
+   arithmetic, which checks fire, confirmed from build output; `docs/TESTING.md`, Adding a case).
+   `grep -rn '@@\|^#T' <package dir>` must print nothing (placeholders in comments do not fail a build).
    `test/matrix.sh` must exit 0 on the installed toolchain and on `pcb +<last verified>` (newest version in the
    reference packages' `Verified:` lines; if it cannot be fetched, installed version only, open item). Prove each new case
    can fail by flipping its expectation once. Skip cases for the implicit `io(Power(voltage=))` range.
 8. **Review and report.** The main session (subagents cannot spawn agents) starts three fresh adversarial Sonnet
    reviewers in parallel, read-only on the repo, each with a scratch dir for builds: software (every `.zen`, template
-   conformance, matrix coverage), hardware (limits vs DS, severities, pin types, defaults applied), KiCad (symbol,
-   footprint, STEP, script output). Each prompt names the package path, this file, the checklist and the DS path, and
-   asks for numbered findings: severity | file:line | problem | exact fix. Apply the findings that cite DS or rule text,
-   log the rest as open items. One round; re-review only if a limit or check changed. Re-run step 7, then report
-   everything in Done. Anything missing means the task is not done.
+   conformance, matrix coverage, comments that disagree with the code or miscompute a case), hardware (limits vs DS,
+   severities, pin types, defaults applied), KiCad (symbol, footprint, STEP, script output). Each prompt names the
+   package path, this file, the checklist and the DS path, and asks for numbered findings: severity | file:line |
+   problem | exact fix. Apply the findings that cite DS or rule text, log the rest as open items. One round; re-review
+   only if a limit or check changed. Re-run step 7, then report everything in Done. Anything missing means the task is
+   not done.
 
 ## Defaults instead of questions
 Apply the default, add a Decision Log row, add the open item, continue. A default is void, and you **Stop**, if it would

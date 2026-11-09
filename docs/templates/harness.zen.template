@@ -3,6 +3,8 @@
 #T Convention: EVERY input (rails, signals, ambient) is a config that accepts "unset"; every net is named
 #T (an unnamed Net() is an error); an unset optional config is omitted with **kwargs LAST (None cannot be passed
 #T to a typed config). Add one config per io and per waiver of the component.
+#T Comment every default with its range and why it passes (DS test condition, inside which limit), e.g.
+#T `# 14.25 to 15.75 V: DS test condition VS = ±15 V, span inside 4.5-36 V`.
 @@VALUE@@ = Module("../@@VALUE@@.zen")
 
 vp = config(str, default="@@NOM_VP@@")  # rail with tolerance, e.g. "15V 5%"

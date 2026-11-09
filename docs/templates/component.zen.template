@@ -81,9 +81,19 @@ def _within(_m, v, lim):
     check(v.min >= lim.min and v.max <= lim.max, str(v) + " outside " + str(lim))
 
 
+#T Every check (or loop of identical checks) gets a comment block like abs_span below: what it checks, DS cite,
+#T every assumption (each applied default, quoted where the DS is silent), the worst-case formula, severity and why
+#T (derated? waivable?), isolation (which stricter check shadows an edge), and "Tests:" naming its matrix cases.
+#T Reference: the check blocks in components/TexasInstruments/INA821IDGK/INA821IDGK.zen.
+# Checks. Each block states what is checked, the DS row, the worst-case formula, every assumption, the severity and
+# why, and the test/matrix.sh cases that cover it. A net with no voltage reports UNVERIFIED (unset_* cases).
 _VP, _VN = V_POS.voltage, V_NEG.voltage  # .voltage is None until the instance's net has a voltage
 _limit("vpos_tol", _toleranced, {"v": _VP, "rail": "V+"}, "warning")
 _limit("vneg_tol", _toleranced, {"v": _VN, "rail": "V-"}, "warning")
+# abs_span: supply span V+ - V- within @@ABS_SPAN@@ x derate. DS p.<P>, Absolute Maximum Ratings, <row>.
+#   Assumption: <each default applied, e.g. "a ±20 V row read as a 40 V span; min 0 V not a DS value">.
+#   Worst case: (V+.min - V-.max) >= min and (V+.max - V-.min) <= max x derate.
+#   Error, derated, not waivable. Tests: <case names>.
 _limit("abs_span", _rel, {"v": _VP, "ref": _VN, "lim": ABS_SPAN, "k": derate}, "error")
 _limit("op_span", _rel, {"v": _VP, "ref": _VN, "lim": OP_SPAN, "k": 1.0}, "error")
 for pin, net in {"IN_P": IN_P, "IN_N": IN_N}.items():

@@ -4,7 +4,9 @@ Abs max and rec-op rows apply over the operating free-air range (DS p.5 headers)
 
 load("@stdlib/units.zen", "Current", "Resistance", "Temperature", "Voltage")
 
-ABS_SPAN = Voltage("0V to 40V")  # DS p.5, 7.1 Abs Max, Supply voltage ±20 V; p.24, 8.3.5 ">40 V (±20 V)" damages
+# V+ to V- span (checked as V+ - V-): max 40 V from DS p.5, 7.1 Abs Max, Supply voltage ±20 V, and DS p.24, 8.3.5
+# ">40 V (±20 V)" damages. Min 0 V is not a DS value: reversed supplies are not rated, so treated as not allowed.
+ABS_SPAN = Voltage("0V to 40V")
 ABS_IN = Voltage("-40V to 40V")  # DS p.5, 7.1 Abs Max, Signal input pins Voltage; reference unstated, taken to GND
 ABS_REF = Voltage("-20V to 20V")  # DS p.5, 7.1 Abs Max, Signal input pins REF pin; reference unstated, taken to GND
 OP_SPAN = Voltage("4.5V to 36V")  # DS p.5, 7.3 Rec Op, Supply voltage single 4.5-36 V (dual ±2.25 to ±18 V)
