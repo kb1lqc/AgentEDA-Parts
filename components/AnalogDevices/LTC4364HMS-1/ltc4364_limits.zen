@@ -40,7 +40,6 @@ CHG_MIN = 6.8e-9  # F, HGATE to GND capacitor, "6.8nF or larger" (p.8)
 ICC_MAX = 750e-6  # A, VCC supply current, VCC = SOURCE = SENSE = OUT = 12 V (p.3)
 ITMR_WARN = (3e-6, 7e-6)  # A, TMR warning pull-up magnitude (p.4)
 DVTMR = (0.075, 0.125)  # V, TMR warning window (p.4)
-ENOUT_RPU_MIN = 100e3  # ohm, ENOUT pull-up to OUT (p.13)
 COUT_MIN = 22e-6  # F, OUT bypass, low-ESR electrolytic (p.8, p.18)
 
 
