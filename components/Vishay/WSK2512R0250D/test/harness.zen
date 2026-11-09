@@ -1,0 +1,16 @@
+# Harness for WSK2512R0250D checks. Defaults = nominal passing case. Other cases via --config; "unset" leaves a value off.
+WSK2512R0250D = Module("../WSK2512R0250D.zen")
+
+ta = config(str, default="-40°C to 85°C")  # inside the -65 °C to 170 °C operating range (DS p.2)
+derate = config(float, default=1.0)  # 1.0 = no derating; the component accepts it but derates nothing
+
+# The four terminals get named nets with no voltage: no check reads a net voltage (temp_grade is the only check).
+WSK2512R0250D(
+    name="R1",
+    I1=Net("I1"),
+    I2=Net("I2"),
+    E1=Net("E1"),
+    E2=Net("E2"),
+    derate=derate,
+    **({} if ta == "unset" else {"ambient": ta}),
+)
