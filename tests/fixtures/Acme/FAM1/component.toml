@@ -1,0 +1,97 @@
+[part]
+value = "FAM1"
+manufacturer = "Acme"
+description = "Test LDO"
+category = "ldo_family"
+package = "SOT-23"
+datasheet_url = "https://example.com/fam1.pdf"
+datasheet_rev = "A"
+datasheet_date = "2020-01"
+kicad_symbol = "FAM1.kicad_sym"
+kicad_footprint = "FAM1.kicad_mod"
+step = "none"
+
+[[pin]]
+number = "1"
+name = "IN"
+type = "power_in"
+function = "Input"
+cite = "DS p.3, Pin Functions, IN"
+
+[[pin]]
+number = "2"
+name = "GND"
+type = "power_in"
+function = "Ground"
+cite = "DS p.3, Pin Functions, GND"
+
+[[pin]]
+number = "3"
+name = "OUT"
+type = "power_out"
+function = "Output"
+cite = "DS p.3, Pin Functions, OUT"
+
+[param.vin_abs]
+name = "Input voltage"
+symbol = "VIN"
+kind = "abs_max"
+scope = "na"
+min = -0.3
+max = 40
+unit = "V"
+conditions = ""
+cite = "DS p.4, Absolute Maximum Ratings, VIN"
+check_pins = ["IN"]
+
+[param.vref]
+name = "Reference voltage"
+kind = "electrical"
+scope = "full"
+min = 990
+typ = 1000
+max = 1010
+unit = "mV"
+conditions = "TA = 25 degC | IL = 1 mA"
+cite = "DS p.5, Electrical Characteristics, VREF"
+note = "Characterized"
+
+[param.vref_c]
+name = "Reference voltage, 1 mA"
+kind = "electrical"
+scope = "full"
+typ = 1000
+tol_pct = [-1, 2]
+unit = "mV"
+conditions = ""
+cite = "DS p.5, Electrical Characteristics, VREF"
+
+[param.vhi_only]
+name = "Output high limit"
+kind = "electrical"
+scope = "full"
+max = 5
+unit = "V"
+conditions = "Only the B grade"
+cite = "DS p.5, Electrical Characteristics, VHI"
+variants = ["FAM1-B"]
+
+[param.vovc_thr_16]
+name = "Threshold 16"
+symbol = "VTH_16"
+kind = "electrical"
+scope = "full"
+typ = 1.6
+unit = "V"
+conditions = ""
+cite = "DS p.5, Electrical Characteristics, VTH_16"
+
+[param.vovc_thr_2]
+name = "Threshold 2"
+symbol = "VTH_2"
+kind = "electrical"
+scope = "full"
+typ = 0.2
+unit = "V"
+conditions = ""
+cite = "DS p.5, Electrical Characteristics, VTH_2"

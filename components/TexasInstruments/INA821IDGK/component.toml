@@ -1,0 +1,1059 @@
+# INA821 (VSSOP-8, DGK) data. Raw datasheet values in printed units; no derating, no rounding.
+# DS = Texas Instruments INA821 datasheet, SBOS893D (Rev. D, revised June 2020), printed page numbers.
+# Package addendum cites are "DS PDF p.<n>" (no printed page number).
+# Pin 2 and pin 3 are both printed "RG" in the DS; they are separate nodes, so the symbol names them RG1 and RG2.
+
+[part]
+value           = "INA821IDGK"
+mpn             = "INA821IDGKR"
+alternates      = ["INA821IDGKT"]
+manufacturer    = "Texas Instruments"
+description     = "Precision instrumentation amplifier, 4.5-36 V"
+category        = "instrumentation_amplifier"
+package         = "VSSOP-8 (DGK0008A)"
+datasheet_url   = "https://www.ti.com/lit/ds/symlink/ina821.pdf"
+datasheet_file  = "docs/datasheets/ina821.pdf"
+datasheet_rev   = "SBOS893D"
+datasheet_date  = "2020-06"
+temp_grade      = "-40 to 125 degC"
+kicad_symbol    = "INA821IDGK.kicad_sym"
+kicad_footprint = "INA821IDGK.kicad_mod"
+step            = "embedded"
+
+# Ordering: DS PDF p.35, Package Option Addendum, INA821IDGKR: VSSOP (DGK) 8 pins, 2500 LARGE T&R, Active,
+#   lead finish "NIPDAU | SN", MSL Level-2-260C-1 YEAR, Op temp -40 to 125 C.
+# INA821IDGKT: same package, 250 SMALL T&R, same finish and MSL (listed on the same page, so an alternate).
+# Lead finish "NIPDAU | SN" carries a tin-whisker open item (CLAUDE.md, Defaults). Revision currency, errata, PCN and
+# lifecycle: not checked (no web access). Package addendum lists status Active on the printed date 18-Aug-2026.
+
+# ---------------------------------------------------------------- pins
+# DS p.4, 6 Pin Functions (pin numbers and names). Types match the symbol INA821IDGK.kicad_sym exactly.
+# Pin 4 +IN: the DS I/O column prints "O"; the function text says positive (noninverting) input. The function text
+#   and the pin diagram agree on input, so the symbol type "input" is kept. DS error, open item.
+# Pins 2 and 3 RG: the DS I/O column prints "I"; the symbol type is "passive" (external gain resistor, SPEC rule).
+# No thermal pad on the DGK package: DS p.4, 6 Pin Functions pin diagram (D and DGK packages, 8 pins, no pad) and
+# DS PDF p.41, DGK0008A EXAMPLE BOARD LAYOUT, LAND PATTERN EXAMPLE (8 signal pads, no center pad). The "Thermal pad"
+# row in the DS Pin Functions table is for the DRG package. DS PDF p.40 drawing carries a "PowerPAD is a trademark" line
+# (drawing boilerplate); the DGK figures show no exposed pad.
+
+[[pin]]
+number   = "1"
+name     = "-IN"
+type     = "input"
+function = "Negative (inverting) input"
+cite     = "DS p.4, 6 Pin Functions, -IN (pin 1)"
+
+[[pin]]
+number   = "2"
+name     = "RG1"
+type     = "passive"
+function = "Gain setting pin; gain resistor RG connects between pin 2 and pin 3. Symbol name RG1 (separate node from pin 3)"
+cite     = "DS p.4, 6 Pin Functions, RG (pins 2, 3)"
+
+[[pin]]
+number   = "3"
+name     = "RG2"
+type     = "passive"
+function = "Gain setting pin; gain resistor RG connects between pin 2 and pin 3. Symbol name RG2 (separate node from pin 2)"
+cite     = "DS p.4, 6 Pin Functions, RG (pins 2, 3)"
+
+[[pin]]
+number   = "4"
+name     = "+IN"
+type     = "input"
+function = "Positive (noninverting) input"
+cite     = "DS p.4, 6 Pin Functions, +IN (pin 4)"
+
+[[pin]]
+number   = "5"
+name     = "-VS"
+type     = "power_in"
+function = "Negative supply"
+cite     = "DS p.4, 6 Pin Functions, -VS (pin 5)"
+
+[[pin]]
+number   = "6"
+name     = "REF"
+type     = "input"
+function = "Reference input; must be driven by a low impedance source"
+cite     = "DS p.4, 6 Pin Functions, REF (pin 6)"
+
+[[pin]]
+number   = "7"
+name     = "OUT"
+type     = "output"
+function = "Output"
+cite     = "DS p.4, 6 Pin Functions, OUT (pin 7)"
+
+[[pin]]
+number   = "8"
+name     = "+VS"
+type     = "power_in"
+function = "Positive supply"
+cite     = "DS p.4, 6 Pin Functions, +VS (pin 8)"
+
+# ---------------------------------------------------------------- absolute maximum ratings
+# All rows: over operating free-air temperature range (unless otherwise noted), DS p.5. No reference pin is printed for
+# the supply or the signal input rows; the checks decide the reference (see open items). Scope na (abs max).
+
+[param.vs_abs]
+name       = "Supply voltage"
+kind       = "abs_max"
+scope      = "na"
+min        = -20
+max        = 20
+unit       = "V"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.5, 7.1 Absolute Maximum Ratings, Supply voltage"
+note       = "Printed -20 V to 20 V with no reference pin. Read as a 40 V maximum span between +VS and -VS: DS p.24, 8.3.5, 'Supply voltages higher than 40 V (+/-20 V) can permanently damage the device'. A per-rail reading would reject the 36 V single supply that rec-op allows (DS p.5, 7.3)."
+unchecked  = "printed +/-20 V is a 40 V span (DS p.24, 8.3.5); covered by vs_rec_single (4.5 V to 36 V span, error), which is stricter"
+
+[param.vin_abs]
+name       = "Signal input pins, voltage"
+kind       = "abs_max"
+scope      = "na"
+min        = -40
+max        = 40
+unit       = "V"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.5, 7.1 Absolute Maximum Ratings, Signal input pins, Voltage"
+note       = "Each input is rated alone (DS p.23, 8.3.4: -40 V on one input and +40 V on the other does not cause damage). No reference pin is printed; checked against system 0 V. DS p.23 shows input current only with +/-15 V supplies applied: driving an input while unpowered is not rated (owner: module)."
+check_pins = ["+IN", "-IN"]
+
+[param.vref_abs]
+name       = "Signal input pins, REF pin"
+kind       = "abs_max"
+scope      = "na"
+min        = -20
+max        = 20
+unit       = "V"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.5, 7.1 Absolute Maximum Ratings, Signal input pins, REF pin"
+note       = "Applied as: the REF pin within -20 V to 20 V of the system common, since no reference pin is printed (DS p.5, 7.1)."
+check_pins = ["REF"]
+
+[param.vout_abs]
+name       = "Signal output pins"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.5
+min_ref    = "-VS"
+max        = 0.5
+max_ref    = "+VS"
+unit       = "V"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.5, 7.1 Absolute Maximum Ratings, Signal output pins"
+note       = "Printed as (-Vs) - 0.5 V to (+Vs) + 0.5 V."
+unchecked  = "OUT is driven by the part; owner: module"
+
+[param.ta_abs]
+name       = "Operating temperature"
+symbol     = "TA"
+kind       = "abs_max"
+scope      = "na"
+min        = -50
+max        = 150
+unit       = "degC"
+conditions = ""
+cite       = "DS p.5, 7.1 Absolute Maximum Ratings, Operating Temperature, TA"
+unchecked  = "covered by ta_rec (-40 degC to 125 degC, error), which is stricter"
+
+[param.tj_abs]
+name       = "Junction temperature"
+symbol     = "TJ"
+kind       = "abs_max"
+scope      = "na"
+max        = 175
+unit       = "degC"
+conditions = ""
+cite       = "DS p.5, 7.1 Absolute Maximum Ratings, Junction Temperature, TJ"
+unchecked  = "needs dissipation x rtheta_ja; owner: module"
+
+[param.isc_abs]
+name       = "Output short-circuit"
+kind       = "abs_max"
+scope      = "na"
+text       = "Continuous"
+unit       = ""
+conditions = "short-circuit to VS / 2"
+cite       = "DS p.5, 7.1 Absolute Maximum Ratings, Output short-circuit (2)"
+note       = "Footnote (2) text: Short-circuit to VS / 2. Footnote (1) text: exposure to absolute-maximum-rated conditions for extended periods may affect device reliability. Not numeric: stored as text."
+unchecked  = "text rating (Continuous, to VS/2); owner: board"
+
+[param.tstg_abs]
+name       = "Storage temperature"
+symbol     = "Tstg"
+kind       = "abs_max"
+scope      = "na"
+min        = -65
+max        = 150
+unit       = "degC"
+conditions = ""
+cite       = "DS p.5, 7.1 Absolute Maximum Ratings, Storage Temperature, Tstg"
+
+# ---------------------------------------------------------------- ESD ratings
+# The SPEC kind list has no ESD kind; ESD is stored as abs_max (open item).
+unchecked  = "owner: assembly"
+
+[param.esd_hbm]
+name       = "Electrostatic discharge, human-body model"
+symbol     = "V(ESD)"
+kind       = "abs_max"
+scope      = "na"
+min        = -1500
+max        = 1500
+unit       = "V"
+conditions = "HBM per ANSI/ESDA/JEDEC JS-001"
+cite       = "DS p.5, 7.2 ESD Ratings, Human-body model (HBM)"
+note       = "Printed +/-1500 V. ESD table stored with kind abs_max (no ESD kind in SPEC)."
+unchecked  = "owner: assembly"
+
+[param.esd_cdm]
+name       = "Electrostatic discharge, charged-device model"
+symbol     = "V(ESD)"
+kind       = "abs_max"
+scope      = "na"
+min        = -750
+max        = 750
+unit       = "V"
+conditions = "CDM per JEDEC JESD22-C101"
+cite       = "DS p.5, 7.2 ESD Ratings, Charged-device model (CDM)"
+note       = "Printed +/-750 V. ESD table stored with kind abs_max (no ESD kind in SPEC)."
+
+# ---------------------------------------------------------------- recommended operating conditions
+# Over operating free-air temperature range (unless otherwise noted), DS p.5.
+unchecked  = "owner: assembly"
+
+[param.vs_rec_single]
+name       = "Supply voltage, single-supply"
+symbol     = "VS"
+kind       = "rec_op"
+scope      = "na"
+min        = 4.5
+max        = 36
+unit       = "V"
+conditions = "single-supply; over operating free-air temperature range"
+cite       = "DS p.5, 7.3 Recommended Operating Conditions, Supply voltage VS, Single-supply"
+min_ref    = "-VS"
+max_ref    = "-VS"
+check_pins = ["+VS"]
+
+[param.vs_rec_dual]
+name       = "Supply voltage, dual-supply"
+symbol     = "VS"
+kind       = "rec_op"
+scope      = "na"
+min        = 2.25
+max        = 18
+unit       = "V"
+conditions = "dual-supply; over operating free-air temperature range"
+cite       = "DS p.5, 7.3 Recommended Operating Conditions, Supply voltage VS, Dual-supply"
+note       = "Printed +/-2.25 V (MIN column) and +/-18 V (MAX column). Stored as magnitudes of each supply, without sign."
+unchecked  = "same 4.5 V to 36 V span as vs_rec_single, which is checked"
+
+[param.ta_rec]
+name       = "Specified temperature"
+symbol     = "TA"
+kind       = "rec_op"
+scope      = "na"
+min        = -40
+max        = 125
+unit       = "degC"
+conditions = "specified temperature"
+cite       = "DS p.5, 7.3 Recommended Operating Conditions, Specified temperature, TA"
+
+# ---------------------------------------------------------------- thermal information (DGK column only)
+# Single printed value per row (no min or max). Stored as typ per SPEC rule for typ-only values.
+check_ambient = true
+
+[param.rtheta_ja]
+name       = "Junction-to-ambient thermal resistance"
+symbol     = "RthetaJA"
+kind       = "thermal"
+scope      = "na"
+typ        = 215.4
+unit       = "degC/W"
+conditions = "DGK (VSSOP), 8 pins"
+cite       = "DS p.5, 7.4 Thermal Information, Junction-to-ambient thermal resistance, DGK column"
+note       = "Single printed value (no min or max), stored as typ."
+
+[param.rtheta_jc_top]
+name       = "Junction-to-case (top) thermal resistance"
+symbol     = "RthetaJC(top)"
+kind       = "thermal"
+scope      = "na"
+typ        = 66.3
+unit       = "degC/W"
+conditions = "DGK (VSSOP), 8 pins"
+cite       = "DS p.5, 7.4 Thermal Information, Junction-to-case (top) thermal resistance, DGK column"
+note       = "Single printed value (no min or max), stored as typ."
+
+[param.rtheta_jb]
+name       = "Junction-to-board thermal resistance"
+symbol     = "RthetaJB"
+kind       = "thermal"
+scope      = "na"
+typ        = 97.8
+unit       = "degC/W"
+conditions = "DGK (VSSOP), 8 pins"
+cite       = "DS p.5, 7.4 Thermal Information, Junction-to-board thermal resistance, DGK column"
+note       = "Single printed value (no min or max), stored as typ."
+
+[param.psi_jt]
+name       = "Junction-to-top characterization parameter"
+symbol     = "PsiJT"
+kind       = "thermal"
+scope      = "na"
+typ        = 10.5
+unit       = "degC/W"
+conditions = "DGK (VSSOP), 8 pins"
+cite       = "DS p.5, 7.4 Thermal Information, Junction-to-top characterization parameter, DGK column"
+note       = "Single printed value (no min or max), stored as typ."
+
+[param.psi_jb]
+name       = "Junction-to-board characterization parameter"
+symbol     = "PsiJB"
+kind       = "thermal"
+scope      = "na"
+typ        = 96.1
+unit       = "degC/W"
+conditions = "DGK (VSSOP), 8 pins"
+cite       = "DS p.5, 7.4 Thermal Information, Junction-to-board characterization parameter, DGK column"
+note       = "Single printed value (no min or max), stored as typ."
+
+# RthetaJC(bot) is N/A for the DGK column and is not stored.
+
+# ---------------------------------------------------------------- electrical characteristics
+# Header, DS p.6 and p.7: at TA = 25 degC, VS = +/-15 V, RL = 10 kohm, VREF = 0 V, G = 1 (unless otherwise noted).
+# Rows printed with a TA = -40 degC to +125 degC condition are scope full. Footnote (3) ("specified by characterization")
+# is on the full-temperature rows of VOSI, VOSO and input overvoltage: characterized, not production tested.
+# Footnote (1): VOS(RTI) = VOSI + VOSO/G. Footnote (2): offset drifts uncorrelated. Footnote (5): eN(RTI).
+
+# --- Input stage and output stage offset
+
+[param.vosi_25c]
+name       = "Input stage offset voltage"
+symbol     = "VOSI"
+kind       = "electrical"
+sym        = true
+scope      = "25C"
+typ        = 10
+max        = 40
+unit       = "uV"
+conditions = "TA = 25 degC, VS = +/-15 V, RL = 10 kohm, VREF = 0 V, G = 1; INA821IDGK column"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Input stage offset voltage VOSI, INA821IDGK, 25 degC row"
+note       = "Footnotes (1)(2): VOS(RTI) = VOSI + VOSO/G (see calc.py vos_rti). DGK value is 40 uV; ID/DRG value is 35 uV. DS prints an unsigned magnitude; sym = true (loader uses min = -max)."
+
+[param.vosi_full]
+name       = "Input stage offset voltage, full temperature"
+symbol     = "VOSI"
+kind       = "electrical"
+sym        = true
+scope      = "full"
+max        = 80
+unit       = "uV"
+conditions = "TA = -40 degC to +125 degC; INA821IDGK row"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Input stage offset voltage VOSI, TA = -40 degC to +125 degC, INA821IDGK"
+note       = "Specified by characterization, not production tested (DS note 3). ID/DRG value is 75 uV. DS prints an unsigned magnitude; sym = true (loader uses min = -max)."
+
+[param.vosi_drift_full]
+name       = "Input stage offset voltage drift"
+symbol     = "VOSI"
+kind       = "electrical"
+sym        = true
+scope      = "full"
+typ        = 0.1
+max        = 0.4
+unit       = "uV/degC"
+conditions = "vs temperature, TA = -40 degC to +125 degC"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Input stage offset voltage VOSI, vs temperature"
+note       = "Row printed for all packages (no package split). DS prints an unsigned magnitude; sym = true (loader uses min = -max)."
+
+[param.vos_o_25c]
+name       = "Output stage offset voltage"
+symbol     = "VOSO"
+kind       = "electrical"
+sym        = true
+scope      = "25C"
+typ        = 50
+max        = 350
+unit       = "uV"
+conditions = "TA = 25 degC, VS = +/-15 V, RL = 10 kohm, VREF = 0 V, G = 1; INA821ID, INA821DGK row"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Output stage offset voltage VOSO, INA821ID and INA821DGK"
+note       = "Footnotes (1)(2): VOS(RTI) = VOSI + VOSO/G. INA821DRG value is 400 uV (not this part). DS prints an unsigned magnitude; sym = true (loader uses min = -max)."
+
+[param.vos_o_full]
+name       = "Output stage offset voltage, full temperature"
+symbol     = "VOSO"
+kind       = "electrical"
+sym        = true
+scope      = "full"
+max        = 850
+unit       = "uV"
+conditions = "TA = -40 degC to +125 degC"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Output stage offset voltage VOSO, TA = -40 degC to +125 degC"
+note       = "Specified by characterization, not production tested (DS note 3). Row printed for all packages. DS prints an unsigned magnitude; sym = true (loader uses min = -max)."
+
+[param.vos_o_drift_full]
+name       = "Output stage offset voltage drift"
+symbol     = "VOSO"
+kind       = "electrical"
+sym        = true
+scope      = "full"
+max        = 5
+unit       = "uV/degC"
+conditions = "vs temperature, TA = -40 degC to +125 degC"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Output stage offset voltage VOSO, vs temperature"
+note       = "Only a MAX is printed. DS prints an unsigned magnitude; sym = true (loader uses min = -max)."
+
+# --- Power-supply rejection ratio (RTI), 25 degC
+
+[param.psrr_g1_25c]
+name       = "Power-supply rejection ratio, G = 1"
+kind       = "electrical"
+scope      = "25C"
+min        = 110
+typ        = 120
+unit       = "dB"
+conditions = "G = 1, RTI; TA = 25 degC (table header)"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Power-supply rejection ratio, G = 1, RTI"
+
+[param.psrr_g10_25c]
+name       = "Power-supply rejection ratio, G = 10"
+kind       = "electrical"
+scope      = "25C"
+min        = 114
+typ        = 130
+unit       = "dB"
+conditions = "G = 10, RTI; TA = 25 degC (table header)"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Power-supply rejection ratio, G = 10, RTI"
+
+[param.psrr_g100_25c]
+name       = "Power-supply rejection ratio, G = 100"
+kind       = "electrical"
+scope      = "25C"
+min        = 130
+typ        = 135
+unit       = "dB"
+conditions = "G = 100, RTI; TA = 25 degC (table header)"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Power-supply rejection ratio, G = 100, RTI"
+
+[param.psrr_g1000_25c]
+name       = "Power-supply rejection ratio, G = 1000"
+kind       = "electrical"
+scope      = "25C"
+min        = 136
+typ        = 140
+unit       = "dB"
+conditions = "G = 1000, RTI; TA = 25 degC (table header)"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Power-supply rejection ratio, G = 1000, RTI"
+
+# --- Input impedance (DS p.6, 7.5, Differential impedance zid and Common-mode impedance zic). Both printed in the TYP
+# column as "R || C". Stored as separate R and C params. Note: printed as R || C.
+
+[param.zid_r]
+name       = "Differential input impedance, resistive part"
+symbol     = "zid"
+kind       = "electrical"
+scope      = "25C"
+typ        = 100
+unit       = "Gohm"
+conditions = "TA = 25 degC (table header)"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Differential impedance zid, TYP column"
+note       = "Printed as R || C: 100 GOhm || 1 pF."
+
+[param.zid_c]
+name       = "Differential input impedance, capacitive part"
+symbol     = "zid"
+kind       = "electrical"
+scope      = "25C"
+typ        = 1
+unit       = "pF"
+conditions = "TA = 25 degC (table header)"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Differential impedance zid, TYP column"
+note       = "Printed as R || C: 100 GOhm || 1 pF."
+
+[param.zic_r]
+name       = "Common-mode input impedance, resistive part"
+symbol     = "zic"
+kind       = "electrical"
+scope      = "25C"
+typ        = 100
+unit       = "Gohm"
+conditions = "TA = 25 degC (table header)"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Common-mode impedance zic, TYP column"
+note       = "Printed as R || C: 100 GOhm || 7 pF."
+
+[param.zic_c]
+name       = "Common-mode input impedance, capacitive part"
+symbol     = "zic"
+kind       = "electrical"
+scope      = "25C"
+typ        = 7
+unit       = "pF"
+conditions = "TA = 25 degC (table header)"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Common-mode impedance zic, TYP column"
+note       = "Printed as R || C: 100 GOhm || 7 pF."
+
+[param.rfi_bw_25c]
+name       = "RFI filter, -3 dB frequency"
+kind       = "electrical"
+scope      = "25C"
+typ        = 45
+unit       = "MHz"
+conditions = "TA = 25 degC (table header)"
+cite       = "DS p.6, 7.5 Electrical Characteristics, RFI filter, -3-dB frequency"
+
+# --- Input common-mode range and overvoltage
+
+[param.vcm_range_25c]
+name       = "Operating input range (common-mode)"
+symbol     = "VCM"
+kind       = "electrical"
+scope      = "25C"
+min        = 2
+min_ref    = "-VS"
+max        = -2
+max_ref    = "+VS"
+unit       = "V"
+conditions = "TA = 25 degC, VS = +/-15 V, RL = 10 kohm, VREF = 0 V, G = 1 (table header)"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Operating input range (4), first row"
+note       = "Printed (V-) + 2 V to (V+) - 2 V. Footnote (4): input range depends on common-mode voltage, differential voltage, gain and VREF; see Figures 51-54 (curves). The VS = +/-2.25 V to +/-18 V, TA = -40 degC to +125 degC row prints no numeric limit."
+check_pins = ["+IN", "-IN"]
+
+[param.vin_ovr_full]
+name       = "Input overvoltage range"
+kind       = "electrical"
+scope      = "full"
+min        = -40
+max        = 40
+unit       = "V"
+conditions = "TA = -40 degC to +125 degC"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Input overvoltage range, TA = -40 degC to +125 degC"
+note       = "Printed +/-40 V. Specified by characterization, not production tested (DS note 3)."
+
+# --- Common-mode rejection ratio
+
+[param.cmrr_g1_25c]
+name       = "Common-mode rejection ratio, G = 1"
+kind       = "electrical"
+scope      = "25C"
+min        = 92
+typ        = 105
+unit       = "dB"
+conditions = "DC to 60 Hz, RTI, VCM = (V-) + 2 V to (V+) - 2 V, G = 1"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Common-mode rejection ratio, G = 1"
+
+[param.cmrr_g10_25c]
+name       = "Common-mode rejection ratio, G = 10"
+kind       = "electrical"
+scope      = "25C"
+min        = 112
+typ        = 125
+unit       = "dB"
+conditions = "DC to 60 Hz, RTI, VCM = (V-) + 2 V to (V+) - 2 V, G = 10"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Common-mode rejection ratio, G = 10"
+
+[param.cmrr_g100_25c]
+name       = "Common-mode rejection ratio, G = 100"
+kind       = "electrical"
+scope      = "25C"
+min        = 132
+typ        = 145
+unit       = "dB"
+conditions = "DC to 60 Hz, RTI, VCM = (V-) + 2 V to (V+) - 2 V, G = 100"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Common-mode rejection ratio, G = 100"
+
+[param.cmrr_g1000_25c]
+name       = "Common-mode rejection ratio, G = 1000"
+kind       = "electrical"
+scope      = "25C"
+min        = 140
+typ        = 150
+unit       = "dB"
+conditions = "DC to 60 Hz, RTI, VCM = (V-) + 2 V to (V+) - 2 V, G = 1000"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Common-mode rejection ratio, G = 1000"
+
+# --- Bias and offset current
+
+[param.ib_25c]
+name       = "Input bias current"
+symbol     = "IB"
+kind       = "electrical"
+sym        = true
+scope      = "25C"
+typ        = 0.15
+max        = 0.5
+unit       = "nA"
+conditions = "VCM = VS / 2; TA = 25 degC (table header)"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Input bias current IB, VCM = VS / 2"
+note       = "DS prints an unsigned magnitude; sym = true (loader uses min = -max)."
+
+
+[param.ib_full]
+name       = "Input bias current, full temperature"
+symbol     = "IB"
+kind       = "electrical"
+sym        = true
+scope      = "full"
+max        = 2
+unit       = "nA"
+conditions = "TA = -40 degC to +125 degC"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Input bias current IB, TA = -40 degC to +125 degC"
+note       = "VCM not stated on this row. Not footnoted in the DS (no note 3). DS prints an unsigned magnitude; sym = true (loader uses min = -max)."
+
+[param.ios_25c]
+name       = "Input offset current"
+symbol     = "IOS"
+kind       = "electrical"
+sym        = true
+scope      = "25C"
+typ        = 0.15
+max        = 0.5
+unit       = "nA"
+conditions = "VCM = VS / 2; TA = 25 degC (table header)"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Input offset current IOS, VCM = VS / 2"
+note       = "DS prints an unsigned magnitude; sym = true (loader uses min = -max)."
+
+
+[param.ios_full]
+name       = "Input offset current, full temperature"
+symbol     = "IOS"
+kind       = "electrical"
+sym        = true
+scope      = "full"
+max        = 2
+unit       = "nA"
+conditions = "TA = -40 degC to +125 degC"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Input offset current IOS, TA = -40 degC to +125 degC"
+note       = "VCM not stated on this row. DS prints an unsigned magnitude; sym = true (loader uses min = -max)."
+
+# --- Noise (DS footnote 5: eN(RTI) = sqrt(eNI^2 + (eNO/G)^2)). All rows at TA = 25 degC (table header).
+
+[param.eni_g100_1khz]
+name       = "Input stage voltage noise, f = 1 kHz"
+symbol     = "eNI"
+kind       = "electrical"
+scope      = "25C"
+typ        = 7
+unit       = "nV/rtHz"
+conditions = "f = 1 kHz, G = 100, RS = 0 ohm"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Input stage voltage noise eNI, f = 1 kHz"
+note       = "Footnote (5): total RTI noise eN(RTI) = sqrt(eNI^2 + (eNO/G)^2)."
+
+[param.eni_g100_0p1_10hz]
+name       = "Input stage voltage noise, 0.1 Hz to 10 Hz"
+symbol     = "eNI"
+kind       = "electrical"
+scope      = "25C"
+typ        = 0.14
+unit       = "uVpp"
+conditions = "fB = 0.1 Hz to 10 Hz, G = 100, RS = 0 ohm"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Input stage voltage noise eNI, fB = 0.1 Hz to 10 Hz"
+note       = "Peak-to-peak unit; footnote (5) formula is printed for this row. Unit uVpp is not in the SPEC unit list (open item)."
+
+[param.eno_1khz]
+name       = "Output stage voltage noise, f = 1 kHz"
+symbol     = "eNO"
+kind       = "electrical"
+scope      = "25C"
+typ        = 65
+unit       = "nV/rtHz"
+conditions = "f = 1 kHz, RS = 0 ohm"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Output stage voltage noise eNO, f = 1 kHz"
+note       = "Footnote (5) applies: eN(RTI) = sqrt(eNI^2 + (eNO/G)^2)."
+
+[param.eno_0p1_10hz]
+name       = "Output stage voltage noise, 0.1 Hz to 10 Hz"
+symbol     = "eNO"
+kind       = "electrical"
+scope      = "25C"
+typ        = 2.5
+unit       = "uVpp"
+conditions = "fB = 0.1 Hz to 10 Hz, RS = 0 ohm"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Output stage voltage noise eNO, fB = 0.1 Hz to 10 Hz"
+note       = "Peak-to-peak unit; footnote (5) formula is printed for this row. Unit uVpp is not in the SPEC unit list (open item)."
+
+[param.in_1khz]
+name       = "Input noise current, f = 1 kHz"
+symbol     = "In"
+kind       = "electrical"
+scope      = "25C"
+typ        = 130
+unit       = "fA/rtHz"
+conditions = "f = 1 kHz"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Noise current In, f = 1 kHz"
+note       = "Unit fA/rtHz is not in the SPEC unit list (open item)."
+
+[param.in_0p1_10hz]
+name       = "Input noise current, 0.1 Hz to 10 Hz"
+symbol     = "In"
+kind       = "electrical"
+scope      = "25C"
+typ        = 4.7
+unit       = "pApp"
+conditions = "fB = 0.1 Hz to 10 Hz, G = 100"
+cite       = "DS p.6, 7.5 Electrical Characteristics, Noise current In, fB = 0.1 Hz to 10 Hz, G = 100"
+note       = "Peak-to-peak unit pApp is not in the SPEC unit list (open item)."
+
+# --- Gain
+
+[param.gain_range]
+name       = "Range of gain"
+symbol     = "G"
+kind       = "electrical"
+scope      = "25C"
+min        = 1
+max        = 10000
+unit       = ""
+conditions = "no conditions printed; table header (TA = 25 degC, VS = +/-15 V) applies"
+cite       = "DS p.6, 7.5 Electrical Characteristics, GAIN, Range of gain"
+note       = "Unitless V/V, stored as unit \"\" per SPEC. Gain equation G = 1 + 49.4 kohm / RG (DS p.6 and p.20, Equation 1) is in calc.py."
+
+[param.gain_err_g1_25c]
+name       = "Gain error, G = 1"
+symbol     = "GE"
+kind       = "electrical"
+scope      = "25C"
+min        = -0.025
+typ        = 0.005
+max        = 0.025
+typ_pm     = true
+unit       = "%"
+conditions = "G = 1, VO = +/-10 V; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, Gain error, G = 1, VO = +/-10 V"
+note       = "Printed TYP +/-0.005 % and MAX +/-0.025 %. Typ printed +/- is a spread around zero: stored as X with typ_pm = true (loader keeps X as typ_spread). Printed +/- limit in MAX stored as min = -max, max = +max."
+
+
+[param.gain_err_g10_25c]
+name       = "Gain error, G = 10"
+symbol     = "GE"
+kind       = "electrical"
+scope      = "25C"
+min        = -0.15
+typ        = 0.025
+max        = 0.15
+typ_pm     = true
+unit       = "%"
+conditions = "G = 10, VO = +/-10 V; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, Gain error, G = 10, VO = +/-10 V"
+note       = "Printed TYP +/-0.025 % and MAX +/-0.15 %. Typ printed +/- is a spread around zero: stored as X with typ_pm = true (loader keeps X as typ_spread). Printed +/- limit in MAX stored as min = -max, max = +max."
+
+
+[param.gain_err_g100_25c]
+name       = "Gain error, G = 100"
+symbol     = "GE"
+kind       = "electrical"
+scope      = "25C"
+min        = -0.15
+typ        = 0.025
+max        = 0.15
+typ_pm     = true
+unit       = "%"
+conditions = "G = 100, VO = +/-10 V; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, Gain error, G = 100, VO = +/-10 V"
+note       = "Printed TYP +/-0.025 % and MAX +/-0.15 %. Typ printed +/- is a spread around zero: stored as X with typ_pm = true (loader keeps X as typ_spread). Printed +/- limit in MAX stored as min = -max, max = +max."
+
+
+[param.gain_err_g1000_25c]
+name       = "Gain error, G = 1000"
+symbol     = "GE"
+kind       = "electrical"
+scope      = "25C"
+typ        = 0.05
+typ_pm     = true
+unit       = "%"
+conditions = "G = 1000, VO = +/-10 V; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, Gain error, G = 1000, VO = +/-10 V"
+note       = "Printed TYP +/-0.05 %, no MAX printed. Spread around zero: stored as X with typ_pm = true (loader keeps X as typ_spread). No min or max stored."
+
+
+[param.gain_drift_g1_full]
+name       = "Gain vs temperature, G = 1"
+kind       = "electrical"
+scope      = "full"
+min        = -5
+max        = 5
+unit       = "ppm/degC"
+conditions = "G = 1, TA = -40 degC to +125 degC"
+cite       = "DS p.7, 7.5 Electrical Characteristics, Gain vs temperature (6), G = 1"
+note       = "Printed +/-5 ppm/degC as MAX; stored as min = -max, max = +max."
+
+[param.gain_drift_gt1_full]
+name       = "Gain vs temperature, G > 1"
+kind       = "electrical"
+scope      = "full"
+min        = -35
+max        = 35
+unit       = "ppm/degC"
+conditions = "G > 1, TA = -40 degC to +125 degC"
+cite       = "DS p.7, 7.5 Electrical Characteristics, Gain vs temperature (6), G > 1"
+note       = "Printed +/-35 ppm/degC as MAX; stored as min = -max, max = +max. Footnote (6): values for G > 1 exclude the effect of the external RG."
+
+[param.gain_nonlin_g1to10_25c]
+name       = "Gain nonlinearity, G = 1 to 10"
+kind       = "electrical"
+sym        = true
+scope      = "25C"
+typ        = 1
+max        = 10
+unit       = "ppm"
+conditions = "G = 1 to 10, VO = -10 V to 10 V, RL = 10 kohm; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, Gain nonlinearity, G = 1 to 10"
+note       = "DS prints an unsigned magnitude; sym = true (loader uses min = -max)."
+
+
+[param.gain_nonlin_g100_25c]
+name       = "Gain nonlinearity, G = 100"
+kind       = "electrical"
+sym        = true
+scope      = "25C"
+max        = 15
+unit       = "ppm"
+conditions = "G = 100, VO = -10 V to 10 V, RL = 10 kohm; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, Gain nonlinearity, G = 100"
+note       = "Only a MAX is printed. DS prints an unsigned magnitude; sym = true (loader uses min = -max)."
+
+[param.gain_nonlin_g1000_25c]
+name       = "Gain nonlinearity, G = 1000"
+kind       = "electrical"
+scope      = "25C"
+typ        = 10
+unit       = "ppm"
+conditions = "G = 1000, VO = -10 V to 10 V, RL = 10 kohm; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, Gain nonlinearity, G = 1000"
+
+[param.gain_nonlin_g1to100_rl2k_25c]
+name       = "Gain nonlinearity, G = 1 to 100, RL = 2 kohm"
+kind       = "electrical"
+scope      = "25C"
+typ        = 30
+unit       = "ppm"
+conditions = "G = 1 to 100, VO = -10 V to 10 V, RL = 2 kohm; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, Gain nonlinearity, G = 1 to 100, RL = 2 kohm"
+
+# --- Output
+
+[param.output_swing_25c]
+name       = "Output voltage swing"
+kind       = "electrical"
+scope      = "25C"
+min        = 0.15
+min_ref    = "-VS"
+max        = -0.15
+max_ref    = "+VS"
+unit       = "V"
+conditions = "RL = 10 kohm; TA = 25 degC, VS = +/-15 V (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, OUTPUT, Voltage swing"
+note       = "Printed (V-) + 0.15 V to (V+) - 0.15 V."
+
+[param.cload_25c]
+name       = "Load capacitance stability"
+kind       = "electrical"
+scope      = "25C"
+typ        = 1000
+unit       = "pF"
+conditions = "TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, OUTPUT, Load capacitance stability"
+
+[param.zo_25c]
+name       = "Closed-loop output impedance"
+symbol     = "ZO"
+kind       = "electrical"
+scope      = "25C"
+typ        = 1.3
+unit       = "ohm"
+conditions = "f = 10 kHz; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, OUTPUT, Closed-loop output impedance, f = 10 kHz"
+
+[param.isc_25c]
+name       = "Short-circuit current"
+symbol     = "ISC"
+kind       = "electrical"
+scope      = "25C"
+typ        = 20
+unit       = "mA"
+conditions = "continuous to VS / 2; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, OUTPUT, Short-circuit current"
+note       = "Printed +/-20 mA in the TYP column. Typical only: stored as magnitude typ, not a bound (SPEC: typical values are never a check bound)."
+
+# --- Frequency response
+
+[param.bw_g1_25c]
+name       = "Bandwidth, -3 dB, G = 1"
+kind       = "electrical"
+scope      = "25C"
+typ        = 4.7
+unit       = "MHz"
+conditions = "G = 1; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, FREQUENCY RESPONSE, Bandwidth -3 dB, G = 1"
+
+[param.bw_g10_25c]
+name       = "Bandwidth, -3 dB, G = 10"
+kind       = "electrical"
+scope      = "25C"
+typ        = 970
+unit       = "kHz"
+conditions = "G = 10; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, FREQUENCY RESPONSE, Bandwidth -3 dB, G = 10"
+
+[param.bw_g100_25c]
+name       = "Bandwidth, -3 dB, G = 100"
+kind       = "electrical"
+scope      = "25C"
+typ        = 290
+unit       = "kHz"
+conditions = "G = 100; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, FREQUENCY RESPONSE, Bandwidth -3 dB, G = 100"
+
+[param.bw_g1000_25c]
+name       = "Bandwidth, -3 dB, G = 1000"
+kind       = "electrical"
+scope      = "25C"
+typ        = 30
+unit       = "kHz"
+conditions = "G = 1000; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, FREQUENCY RESPONSE, Bandwidth -3 dB, G = 1000"
+
+[param.slew_rate_25c]
+name       = "Slew rate"
+symbol     = "SR"
+kind       = "electrical"
+scope      = "25C"
+typ        = 2.0
+unit       = "V/us"
+conditions = "G = 1, VO = +/-10 V; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, FREQUENCY RESPONSE, Slew rate"
+
+[param.ts_0p01_g1to100_25c]
+name       = "Settling time to 0.01%, G = 1 to 100"
+symbol     = "tS"
+kind       = "electrical"
+scope      = "25C"
+typ        = 6
+unit       = "us"
+conditions = "0.01%, G = 1 to 100, VSTEP = 10 V; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, FREQUENCY RESPONSE, Settling time, 0.01%, G = 1 to 100"
+
+[param.ts_0p01_g1000_25c]
+name       = "Settling time to 0.01%, G = 1000"
+symbol     = "tS"
+kind       = "electrical"
+scope      = "25C"
+typ        = 40
+unit       = "us"
+conditions = "0.01%, G = 1000, VSTEP = 10 V; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, FREQUENCY RESPONSE, Settling time, 0.01%, G = 1000"
+
+[param.ts_0p001_g1to100_25c]
+name       = "Settling time to 0.001%, G = 1 to 100"
+symbol     = "tS"
+kind       = "electrical"
+scope      = "25C"
+typ        = 10
+unit       = "us"
+conditions = "0.001%, G = 1 to 100, VSTEP = 10 V; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, FREQUENCY RESPONSE, Settling time, 0.001%, G = 1 to 100"
+
+[param.ts_0p001_g1000_25c]
+name       = "Settling time to 0.001%, G = 1000"
+symbol     = "tS"
+kind       = "electrical"
+scope      = "25C"
+typ        = 50
+unit       = "us"
+conditions = "0.001%, G = 1000, VSTEP = 10 V; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, FREQUENCY RESPONSE, Settling time, 0.001%, G = 1000"
+
+# --- Reference input
+
+[param.rin_ref_25c]
+name       = "Reference input impedance"
+symbol     = "RIN"
+kind       = "electrical"
+scope      = "25C"
+typ        = 10
+unit       = "kohm"
+conditions = "TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, REFERENCE INPUT, Input impedance"
+
+[param.vref_range_25c]
+name       = "Reference input voltage range"
+kind       = "electrical"
+scope      = "25C"
+min        = 0
+min_ref    = "-VS"
+max        = 0
+max_ref    = "+VS"
+unit       = "V"
+conditions = "TA = 25 degC, VS = +/-15 V (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, REFERENCE INPUT, Voltage range"
+note       = "Printed (V-) and (V+), stored as offset 0 V from each rail."
+check_pins = ["REF"]
+
+[param.gain_to_output_25c]
+name       = "Reference gain to output"
+kind       = "electrical"
+scope      = "25C"
+typ        = 1
+unit       = ""
+conditions = "TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, REFERENCE INPUT, Gain to output"
+note       = "Unitless V/V, stored as unit \"\" per SPEC."
+
+[param.ref_gain_error_25c]
+name       = "Reference gain error"
+kind       = "electrical"
+scope      = "25C"
+typ        = 0.01
+unit       = "%"
+conditions = "TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, REFERENCE INPUT, Reference gain error"
+
+# --- Power supply
+
+[param.vs_elec_single_25c]
+name       = "Power-supply voltage, single-supply (electrical table)"
+symbol     = "VS"
+kind       = "electrical"
+scope      = "25C"
+min        = 4.5
+max        = 36
+unit       = "V"
+conditions = "single-supply; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, POWER SUPPLY, Power-supply voltage, Single-supply"
+note       = "Same values as the 7.3 rec-op row (DS p.5)."
+
+[param.vs_elec_dual_25c]
+name       = "Power-supply voltage, dual-supply (electrical table)"
+symbol     = "VS"
+kind       = "electrical"
+scope      = "25C"
+min        = 2.25
+max        = 18
+unit       = "V"
+conditions = "dual-supply; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, POWER SUPPLY, Power-supply voltage, Dual-supply"
+note       = "Printed +/-2.25 V (MIN) and +/-18 V (MAX). Stored as magnitudes, without sign. Same values as the 7.3 rec-op row (DS p.5)."
+
+[param.iq_25c]
+name       = "Quiescent current"
+symbol     = "IQ"
+kind       = "electrical"
+scope      = "25C"
+typ        = 600
+max        = 650
+unit       = "uA"
+conditions = "VIN = 0 V; TA = 25 degC (table header)"
+cite       = "DS p.7, 7.5 Electrical Characteristics, POWER SUPPLY, Quiescent current, VIN = 0 V"
+
+[param.iq_full]
+name       = "Quiescent current, full temperature"
+symbol     = "IQ"
+kind       = "electrical"
+scope      = "full"
+max        = 870
+unit       = "uA"
+conditions = "vs temperature, TA = -40 degC to +125 degC"
+cite       = "DS p.7, 7.5 Electrical Characteristics, POWER SUPPLY, Quiescent current, vs temperature"
+note       = "Only a MAX is printed."

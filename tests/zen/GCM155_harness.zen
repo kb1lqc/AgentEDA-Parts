@@ -1,0 +1,17 @@
+# Test harness for the generated Murata GCM155 family wrappers (tests/test_zen.py copies it into the family directory
+# and builds it); `variant` selects which <Variant>.zen is instantiated.
+# Defaults: 12 V +/-5 % across the part (worst case 12.6 V, inside the DC 50 V rating, either polarity);
+# ambient -40 degC to 85 degC, inside the -55 degC to 125 degC operating range.
+variant = config(str, default="GCM155R71H104KE02")
+U = Module("./" + variant + ".zen")
+
+va = config(str, default="12V 5%")  # P1 voltage
+vb = config(str, default="0V")  # P2 voltage
+ta = config(str, default="-40°C to 85°C")
+
+U(
+    name="C1",
+    P1=Net("A") if va == "unset" else Power("A", voltage=va),
+    P2=Power("B", voltage=vb),
+    **({} if ta == "unset" else {"ambient": ta}),
+)

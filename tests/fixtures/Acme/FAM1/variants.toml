@@ -1,0 +1,21 @@
+[variant."FAM1-A"]
+mpn = "FAM1-A#R"
+alternates = ["FAM1-A#T"]
+temp_grade = "0 to 70 degC"
+
+[variant."FAM1-A".param.vref]
+name = "Reference voltage"
+kind = "electrical"
+scope = "full"
+min = 980
+typ = 1000
+max = 1020
+unit = "mV"
+conditions = "TA = 25 degC, A grade"
+cite = "DS p.5, Electrical Characteristics, VREF (A)"
+
+[variant."FAM1-B"]
+mpn = "FAM1-B#R"
+alternates = []
+temp_grade = "-40 to 125 degC"
+step = "none"

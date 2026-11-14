@@ -1,0 +1,30 @@
+# Test harness for the generated INA821IDGK wrapper (tests/test_zen.py copies it next to the wrapper and builds it).
+# Defaults are the nominal passing case: the DS test condition VS = +/-15 V (DS p.6 header) with 5 % tolerance,
+# +IN = 1 V inside the 25 degC VCM window (-12.25 V to 12.25 V worst case), REF = 0 V, industrial ambient.
+U = Module("./INA821IDGK.zen")
+
+vp = config(str, default="15V 5%")
+vn = config(str, default="-15V 5%")
+vinp = config(str, default="1V 1%")
+vref = config(str, default="0V")
+ta = config(str, default="-40°C to 85°C")
+waive = config(str, default="")
+
+
+def _net(name, v):  # "unset" = a net with no voltage, which must report UNVERIFIED
+    return Net(name) if v == "unset" else Net(name, voltage=v)
+
+
+U(
+    name="U1",
+    VS_P=Power("VP", voltage=vp),
+    VS_N=Power("VN", voltage=vn),
+    IN_P=_net("INP", vinp),
+    IN_N=Net("INN", voltage="0V"),
+    RG1=Net("RG1"),
+    RG2=Net("RG2"),
+    REF=_net("REF", vref),
+    OUT=Net("OUT"),
+    waive_vcm_range_25c=waive,
+    **({} if ta == "unset" else {"ambient": ta}),
+)

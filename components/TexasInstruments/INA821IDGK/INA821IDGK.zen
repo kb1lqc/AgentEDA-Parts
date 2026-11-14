@@ -1,50 +1,47 @@
-"""INA821IDGK precision instrumentation amplifier, I grade, VSSOP-8 (TI DGK0008A).
-DS: https://www.ti.com/lit/ds/symlink/ina821.pdf, SBOS893D (Aug 2018, rev. June 2020). Limits: ./ina821_limits.zen.
-Gain: G = 1 + 49.4 kΩ / RG between RG1 and RG2 (DS p.20, Equation 1); helpers gain() and rg_for_gain().
-Checks are DC steady-state. Transients, overshoot, hot-plug ringing and load dump are not covered.
-Every instance must give IN_P, IN_N and REF a bounded voltage, or the checks report UNVERIFIED.
-Verified: pcb 0.4.95, 0.4.96, 0.4.97, 0.4.99 (test/matrix.sh, 45/45 cases)."""
+"""INA821IDGK: Precision instrumentation amplifier, 4.5-36 V.
+GENERATED from component.toml by `python3 -m lib.zen`; do not edit. Source of truth: component.toml and
+calc.py (numbers, cites, equations). DS: https://www.ti.com/lit/ds/symlink/ina821.pdf, SBOS893D (2020-06).
+Checks are DC steady-state on the voltages each instance declares. They do not cover transients, overshoot,
+hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
+Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
 
-load("@stdlib/units.zen", "Temperature", "Voltage")
-load(
-    "./ina821_limits.zen",
-    "ABS_IN",
-    "ABS_REF",
-    "ABS_SPAN",
-    "OP_SPAN",
-    "TA_GRADE",
-    "VCM_HEADROOM",
-)
+load("@stdlib/units.zen", "Temperature")
 
-# UNCHECKED: OUT (-Vs)-0.5 V to (+Vs)+0.5 V (DS p.5, 7.1); OUT is driven, rarely given a voltage; owner: module.
-# UNCHECKED: output swing (V-)+0.15 V to (V+)-0.15 V (DS p.7, 7.5, 25°C, RL 10 kΩ only); owner: module.
-# UNCHECKED: output short-circuit, continuous to VS/2 (DS p.5, 7.1 note 2); owner: board.
-# UNCHECKED: operating TA -50°C to 150°C (DS p.5, 7.1); covered by temp_grade (-40°C to 125°C, error), stricter.
-# UNCHECKED: TJ 175°C max (DS p.5, 7.1); needs dissipation and RθJA 215.4 °C/W (DS p.5, 7.4); owner: board.
-# UNCHECKED: storage -65°C to 150°C (DS p.5, 7.1); owner: assembly.
-# UNCHECKED: ESD HBM ±1500 V (DS p.5, 7.2, JS-001); owner: assembly.
-# UNCHECKED: ESD CDM ±750 V (DS p.5, 7.2, JESD22-C101); owner: assembly.
-# UNCHECKED: input overvoltage current ~8 mA, typical only, into the supplies via clamps (DS p.23, 8.3.4, Fig 62);
-#   no unpowered-input data in DS; supplies must sink it or have Zener clamps; owner: module.
-# UNCHECKED: full-temp VCM range depends on gain, differential input and REF (DS p.6 note 4, Figures 51-54);
-#   vcm_* only checks the 25°C, VS ±15 V envelope; owner: module.
-# UNCHECKED: input bias return path required (DS p.28, 9.1.2); gain range 1 to 10000 (DS p.6); owner: module.
+# UNCHECKED: vs_abs: Supply voltage (DS p.5, 7.1 Absolute Maximum Ratings, Supply voltage); printed +/-20 V is a 40 V span (DS p.24, 8.3.5); covered by vs_rec_single (4.5 V to 36 V span, error), which is stricter
+# UNCHECKED: vout_abs: Signal output pins (DS p.5, 7.1 Absolute Maximum Ratings, Signal output pins); OUT is driven by the part; owner: module
+# UNCHECKED: ta_abs: Operating temperature (DS p.5, 7.1 Absolute Maximum Ratings, Operating Temperature, TA); covered by ta_rec (-40 degC to 125 degC, error), which is stricter
+# UNCHECKED: tj_abs: Junction temperature (DS p.5, 7.1 Absolute Maximum Ratings, Junction Temperature, TJ); needs dissipation x rtheta_ja; owner: module
+# UNCHECKED: isc_abs: Output short-circuit (DS p.5, 7.1 Absolute Maximum Ratings, Output short-circuit (2)); text rating (Continuous, to VS/2); owner: board
+# UNCHECKED: tstg_abs: Storage temperature (DS p.5, 7.1 Absolute Maximum Ratings, Storage Temperature, Tstg); owner: assembly
+# UNCHECKED: esd_hbm: Electrostatic discharge, human-body model (DS p.5, 7.2 ESD Ratings, Human-body model (HBM)); owner: assembly
+# UNCHECKED: esd_cdm: Electrostatic discharge, charged-device model (DS p.5, 7.2 ESD Ratings, Charged-device model (CDM)); owner: assembly
+# UNCHECKED: vs_rec_dual: Supply voltage, dual-supply (DS p.5, 7.3 Recommended Operating Conditions, Supply voltage VS, Dual-supply); same 4.5 V to 36 V span as vs_rec_single, which is checked
 
-V_POS = io(Power)  # DS p.4 pin 8, +VS
-V_NEG = io(Net)  # DS p.4 pin 5, -VS: GND or a negative rail, so Net + cast at the pin
-IN_P = io(Net)  # DS p.4 pin 4, +IN (p.4 Pin Functions I/O "O" is a DS error)
-IN_N = io(Net)  # DS p.4 pin 1, -IN
-RG1 = io(Net)  # DS p.4 pin 2, RG (separate node from pin 3)
-RG2 = io(Net)  # DS p.4 pin 3, RG
-REF = io(Net)  # DS p.4 pin 6, REF: drive from a low-impedance source (DS p.26, 9.1.1)
-OUT = io(Net)  # DS p.4 pin 7, OUT
-ambient = config(Temperature, optional=True, help="Board ambient range")
-derate = config(float, default=1.0, help="Project derating factor, applied to abs-max limits only")
-waive_vcm = config(str, default="", help="Rationale for inputs outside the 25°C (V-)+2 V to (V+)-2 V range")
-waive_ref = config(str, default="", help="Rationale for REF outside the 25°C (V-) to (V+) range")
+# Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
+# GND can drive them; ground-named pins are Ground.
+# pin 1 -IN, input: Negative (inverting) input
+IN_N = io(Net)
+# pin 2 RG1, passive: Gain setting pin; gain resistor RG connects between pin 2 and pin 3. Symbol name RG1 (separate node from pin 3)
+RG1 = io(Net)
+# pin 3 RG2, passive: Gain setting pin; gain resistor RG connects between pin 2 and pin 3. Symbol name RG2 (separate node from pin 2)
+RG2 = io(Net)
+# pin 4 +IN, input: Positive (noninverting) input
+IN_P = io(Net)
+# pin 5 -VS, power_in: Negative supply
+VS_N = io(Net)
+# pin 6 REF, input: Reference input; must be driven by a low impedance source
+REF = io(Net)
+# pin 7 OUT, output: Output
+OUT = io(Net)
+# pin 8 +VS, power_in: Positive supply
+VS_P = io(Net)
+
+ambient = config(Temperature, optional=True, help="Board ambient temperature range")
+derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+waive_vcm_range_25c = config(str, default="", help="Rationale with a cite for violating vcm_range_25c")
+waive_vref_range_25c = config(str, default="", help="Rationale with a cite for violating vref_range_25c")
 
 _ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
-_GND = Voltage("0V")  # reference for the GND-referenced abs-max rows
 check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
 
 
@@ -63,109 +60,144 @@ def _limit(name, fn, inputs, severity, waiver=""):
         builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
 
 
-def _toleranced(_m, v, rail):
-    check(v.max == 0 or v.min != v.max, rail + " has no tolerance; worst case not assessed")
+def _range(_m, v, what, lo=None, hi=None, lo_ref=None, hi_ref=None):
+    # Worst case: v.min >= lo + lo_ref.max and v.max <= hi + hi_ref.min (narrowest window). No ref = absolute.
+    lo_b = None if lo == None else lo + (0.0 if lo_ref == None else lo_ref.max)
+    hi_b = None if hi == None else hi + (0.0 if hi_ref == None else hi_ref.min)
+    ok = (lo_b == None or v.min >= lo_b) and (hi_b == None or v.max <= hi_b)
+    lo_t = "no limit" if lo_b == None else "%s V" % lo_b
+    hi_t = "no limit" if hi_b == None else "%s V" % hi_b
+    check(ok, "%s: %s to %s V outside %s to %s" % (what, v.min, v.max, lo_t, hi_t))
 
 
-def _rel(_m, v, ref, lim, k):  # limit referred to another pin; worst case both ways; k shrinks magnitudes only
-    lo, hi = v.min - ref.max, v.max - ref.min
-    lo_lim = lim.min * k if lim.min < 0 else lim.min
-    hi_lim = lim.max * k if lim.max > 0 else lim.max
-    check(lo >= lo_lim and hi <= hi_lim, "%s to %s V outside %s to %s V (derate %s)" % (lo, hi, lo_lim, hi_lim, k))
+def _temp(_m, v, what, lo, hi):
+    # Temperatures are kelvin floats in Zener; messages in degC.
+    ok = v.min >= lo and v.max <= hi
+    msg = "%s: %s to %s degC outside %s to %s degC"
+    check(ok, msg % (what, v.min - 273.15, v.max - 273.15, lo - 273.15, hi - 273.15))
 
 
-def _band(_m, v, lo, hi, off):  # (lo)+off <= v <= (hi)-off, worst case against both rails
-    check(
-        v.min >= lo.max + off and v.max <= hi.min - off,
-        "%s to %s V outside (V-)+%s to (V+)-%s" % (v.min, v.max, off, off),
-    )
+# vin_abs_IN_P: pin +IN (IN_P) within the limit, x derate
+#   Signal input pins, voltage: min -40 / max 40 V
+#   DS p.5, 7.1 Absolute Maximum Ratings, Signal input pins, Voltage
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: abs_max violated
+_limit(
+    "vin_abs_IN_P",
+    _range,
+    {"v": IN_P.voltage, "what": "vin_abs_IN_P", "lo": -40.0 * derate, "hi": 40.0 * derate},
+    "error",
+)
 
+# vin_abs_IN_N: pin -IN (IN_N) within the limit, x derate
+#   Signal input pins, voltage: min -40 / max 40 V
+#   DS p.5, 7.1 Absolute Maximum Ratings, Signal input pins, Voltage
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: abs_max violated
+_limit(
+    "vin_abs_IN_N",
+    _range,
+    {"v": IN_N.voltage, "what": "vin_abs_IN_N", "lo": -40.0 * derate, "hi": 40.0 * derate},
+    "error",
+)
 
-def _within(_m, v, lim):
-    check(v.min >= lim.min and v.max <= lim.max, str(v) + " outside " + str(lim))
+# vref_abs_REF: pin REF (REF) within the limit, x derate
+#   Signal input pins, REF pin: min -20 / max 20 V
+#   DS p.5, 7.1 Absolute Maximum Ratings, Signal input pins, REF pin
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: abs_max violated
+_limit(
+    "vref_abs_REF",
+    _range,
+    {"v": REF.voltage, "what": "vref_abs_REF", "lo": -20.0 * derate, "hi": 20.0 * derate},
+    "error",
+)
 
+# vs_rec_single_VS_P: pin +VS (VS_P) within the limit
+#   Supply voltage, single-supply: min 4.5 / max 36 V (min_ref rel. -VS) (max_ref rel. -VS)
+#   DS p.5, 7.3 Recommended Operating Conditions, Supply voltage VS, Single-supply
+#   Conditions: single-supply; over operating free-air temperature range
+#   Severity error: rec_op violated
+_limit(
+    "vs_rec_single_VS_P",
+    _range,
+    {
+        "v": VS_P.voltage,
+        "what": "vs_rec_single_VS_P",
+        "lo": 4.5,
+        "lo_ref": VS_N.voltage,
+        "hi": 36.0,
+        "hi_ref": VS_N.voltage,
+    },
+    "error",
+)
 
-# Checks. Each block states what is checked, the DS row, the worst-case formula, every assumption, the severity and
-# why, and the test/matrix.sh cases that cover it. Values are the ranges the instance declares on each net; a net
-# with no voltage reports UNVERIFIED (unset_* cases). Worst case uses both nets' tolerances against each other.
-_VP, _VN = V_POS.voltage, V_NEG.voltage
+# ta_rec_ambient: board ambient range inside this range
+#   Specified temperature: min -40 / max 125 degC
+#   DS p.5, 7.3 Recommended Operating Conditions, Specified temperature, TA
+#   Conditions: specified temperature
+#   Severity error: rec_op violated
+_limit("ta_rec_ambient", _temp, {"v": ambient, "what": "ta_rec_ambient", "lo": 233.15, "hi": 398.15}, "error")
 
-# vpos_tol, vneg_tol: each supply was declared as a range (min != max), else the span checks below only test the
-#   nominal value. Rule, not a DS row (CLAUDE.md, Limit and check rules). Exactly 0 V is exempt, so V- = GND passes.
-#   Warning: an exact value is incomplete, not a violation; not waivable (declare the real tolerance instead).
-#   Tests: tol_vp, tol_vn, gnd_rail_ok, unset_vp, unset_vn.
-_limit("vpos_tol", _toleranced, {"v": _VP, "rail": "V+"}, "warning")
-_limit("vneg_tol", _toleranced, {"v": _VN, "rail": "V-"}, "warning")
+# vcm_range_25c_IN_P: pin +IN (IN_P) within the limit
+#   Operating input range (common-mode): min 2 / max -2 V (min_ref rel. -VS) (max_ref rel. +VS)
+#   DS p.6, 7.5 Electrical Characteristics, Operating input range (4), first row
+#   Conditions: TA = 25 degC, VS = +/-15 V, RL = 10 kohm, VREF = 0 V, G = 1 (table header)
+#   Severity warning: limit holds only at 25C (waivable with waive_<check>)
+_limit(
+    "vcm_range_25c_IN_P",
+    _range,
+    {
+        "v": IN_P.voltage,
+        "what": "vcm_range_25c_IN_P",
+        "lo": 2.0,
+        "lo_ref": VS_N.voltage,
+        "hi": -2.0,
+        "hi_ref": VS_P.voltage,
+    },
+    "warning",
+    waive_vcm_range_25c,
+)
 
-# abs_span: supply span V+ - V- within 0 V to 40 V x derate.
-#   DS p.5, 7.1 Absolute Maximum Ratings, Supply voltage -20 V to 20 V; DS p.24, 8.3.5 caution "Supply voltages
-#   higher than 40 V (±20 V) can permanently damage the device".
-#   Assumption: the ±20 V row is read as a 40 V span, not as each rail within ±20 V of GND. Rec-op allows a single
-#   36 V supply with V- at GND (DS p.5, 7.3), which a per-rail reading would reject.
-#   Assumption: the 0 V minimum is not a DS value. Reversed supplies (V+ below V-) are not rated, so not allowed.
-#   Worst case: (V+.min - V-.max) >= 0 V and (V+.max - V-.min) <= 40 V x derate.
-#   Error, derated, not waivable. Tests: span_derate_bound, span_derate_out, span_abs_out, span_reversed.
-_limit("abs_span", _rel, {"v": _VP, "ref": _VN, "lim": ABS_SPAN, "k": derate}, "error")
+# vcm_range_25c_IN_N: pin -IN (IN_N) within the limit
+#   Operating input range (common-mode): min 2 / max -2 V (min_ref rel. -VS) (max_ref rel. +VS)
+#   DS p.6, 7.5 Electrical Characteristics, Operating input range (4), first row
+#   Conditions: TA = 25 degC, VS = +/-15 V, RL = 10 kohm, VREF = 0 V, G = 1 (table header)
+#   Severity warning: limit holds only at 25C (waivable with waive_<check>)
+_limit(
+    "vcm_range_25c_IN_N",
+    _range,
+    {
+        "v": IN_N.voltage,
+        "what": "vcm_range_25c_IN_N",
+        "lo": 2.0,
+        "lo_ref": VS_N.voltage,
+        "hi": -2.0,
+        "hi_ref": VS_P.voltage,
+    },
+    "warning",
+    waive_vcm_range_25c,
+)
 
-# op_span: supply span V+ - V- within 4.5 V to 36 V.
-#   DS p.5, 7.3 Recommended Operating Conditions, Supply voltage single 4.5 V to 36 V, dual ±2.25 V to ±18 V; both
-#   rows give the same span, so one span check covers single and dual supplies.
-#   Worst case: (V+.min - V-.max) >= 4.5 V and (V+.max - V-.min) <= 36 V. Not derated (k = 1.0): derate applies to
-#   abs max only. Error (rec-op violated = error).
-#   Tests: op_lo_bound, op_lo_out, op_hi_bound, op_hi_out. abs_span can fire alone only at derate < 0.9, where its
-#   limit drops below 36 V (span_derate_*).
-_limit("op_span", _rel, {"v": _VP, "ref": _VN, "lim": OP_SPAN, "k": 1.0}, "error")
-
-# Per input, three checks, the same for +IN and -IN (each input is rated alone, DS p.23, 8.3.4):
-# tol_IN_P, tol_IN_N: the input was declared as a range; exactly 0 V exempt. Warning, not waivable.
-#   Tests: tol_inp (the default IN_N is 0 V, exempt), unset_in.
-# abs_IN_P, abs_IN_N: input within -40 V to 40 V x derate, measured from 0 V.
-#   DS p.5, 7.1 Absolute Maximum Ratings, Signal input pins Voltage -40 V to 40 V; also DS p.6, 7.5 Input
-#   overvoltage range ±40 V, TA -40°C to 125°C, specified by characterization (note 3).
-#   Assumption: the DS states no reference, so 0 V (system ground) is assumed; the part has no ground pin. Open item.
-#   Assumption: DS p.23, 8.3.4 shows the input current (Figure 63) only with ±15 V supplies applied; driving an
-#   input while the part is unpowered is not rated (UNCHECKED above, owner module).
-#   Worst case: input.min >= -40 V x derate and input.max <= 40 V x derate.
-#   Error, derated, not waivable. Tests: absin_hi_bound, absin_hi_out, absin_lo_bound, absin_lo_out,
-#   absin_derate_out; vcm is waived there so only this check can fire.
-# vcm_IN_P, vcm_IN_N: input within (V-) + 2 V to (V+) - 2 V.
-#   DS p.6, 7.5 VCM Operating input range, (V-)+2 V min, (V+)-2 V max, at TA = 25°C, VS = ±15 V (table header).
-#   The full-temperature row defers to Figures 51-54 (curves, not limits), so only the 25°C row is usable.
-#   Assumption: the 25°C, ±15 V envelope is applied at any supply and temperature (UNCHECKED above, owner module).
-#   Worst case: input.min >= V-.max + 2 V and input.max <= V+.min - 2 V (narrowest window).
-#   Warning (25°C-only limit), waivable with waive_vcm. Tests: vcm_hi_bound, vcm_hi_out, vcm_hi_waived,
-#   vcm_lo_bound, vcm_lo_out.
-for pin, net in {"IN_P": IN_P, "IN_N": IN_N}.items():
-    _limit("tol_" + pin, _toleranced, {"v": net.voltage, "rail": pin}, "warning")
-    _limit("abs_" + pin, _rel, {"v": net.voltage, "ref": _GND, "lim": ABS_IN, "k": derate}, "error")
-    _limit(
-        "vcm_" + pin, _band, {"v": net.voltage, "lo": _VN, "hi": _VP, "off": VCM_HEADROOM.value}, "warning", waive_vcm
-    )
-
-# tol_REF: REF was declared as a range; exactly 0 V exempt (the default REF = 0 V passes). Warning, not waivable.
-#   Tests: tol_ref, unset_ref.
-_limit("tol_REF", _toleranced, {"v": REF.voltage, "rail": "REF"}, "warning")
-
-# abs_REF: REF within -20 V to 20 V x derate, measured from 0 V.
-#   DS p.5, 7.1 Absolute Maximum Ratings, Signal input pins REF pin -20 V to 20 V.
-#   Assumption: no reference stated, 0 V (system ground) assumed, as for the inputs. Open item.
-#   Worst case: REF.min >= -20 V x derate and REF.max <= 20 V x derate.
-#   Error, derated, not waivable. Tests: absref_hi_bound, absref_hi_out, absref_lo_bound, absref_lo_out;
-#   ref_range is waived there so only this check can fire.
-_limit("abs_REF", _rel, {"v": REF.voltage, "ref": _GND, "lim": ABS_REF, "k": derate}, "error")
-
-# ref_range: REF within (V-) to (V+).
-#   DS p.7, 7.5 REFERENCE INPUT Voltage range, (V-) min, (V+) max, at TA = 25°C, VS = ±15 V (table header); no
-#   full-temperature row. Worst case: REF.min >= V-.max and REF.max <= V+.min.
-#   Warning (25°C-only limit), waivable with waive_ref. Tests: ref_hi_bound, ref_hi_out, ref_hi_waived,
-#   ref_lo_bound, ref_lo_out.
-_limit("ref_range", _band, {"v": REF.voltage, "lo": _VN, "hi": _VP, "off": 0.0}, "warning", waive_ref)
-
-# temp_grade: the board ambient range lies inside the I-grade range -40°C to 125°C.
-#   DS p.5, 7.3 Recommended Operating Conditions, Specified temperature. Stricter than the abs-max operating TA
-#   (-50°C to 150°C, UNCHECKED above as covered by this check). Not derated. Error.
-#   Tests: ta_bound, ta_lo_out, ta_hi_out, ta_unset; waiver_on_error proves this error cannot be waived.
-_limit("temp_grade", _within, {"v": ambient, "lim": TA_GRADE}, "error")
+# vref_range_25c_REF: pin REF (REF) within the limit
+#   Reference input voltage range: min 0 / max 0 V (min_ref rel. -VS) (max_ref rel. +VS)
+#   DS p.7, 7.5 Electrical Characteristics, REFERENCE INPUT, Voltage range
+#   Conditions: TA = 25 degC, VS = +/-15 V (table header)
+#   Severity warning: limit holds only at 25C (waivable with waive_<check>)
+_limit(
+    "vref_range_25c_REF",
+    _range,
+    {
+        "v": REF.voltage,
+        "what": "vref_range_25c_REF",
+        "lo": 0.0,
+        "lo_ref": VS_N.voltage,
+        "hi": 0.0,
+        "hi_ref": VS_P.voltage,
+    },
+    "warning",
+    waive_vref_range_25c,
+)
 
 Component(
     name="INA821IDGK",
@@ -174,14 +206,14 @@ Component(
         mpn="INA821IDGKR", manufacturer="Texas Instruments", datasheet="https://www.ti.com/lit/ds/symlink/ina821.pdf"
     ),
     pins={
-        "+VS": V_POS,
-        "-VS": Power(V_NEG, voltage=V_NEG.voltage),
-        "+IN": IN_P,
         "-IN": IN_N,
         "RG1": RG1,
         "RG2": RG2,
+        "+IN": IN_P,
+        "-VS": Power(VS_N, voltage=VS_N.voltage),
         "REF": REF,
         "OUT": OUT,
+        "+VS": Power(VS_P, voltage=VS_P.voltage),
     },
     properties={"alternatives": ["INA821IDGKT"]},
 )

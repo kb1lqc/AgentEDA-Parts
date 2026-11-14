@@ -1,0 +1,3551 @@
+# VNF1248F: high-side switch controller with intelligent fuse protection (eFuse), 6-60 V (70 V transient), AEC-Q100,
+# QFN32L 5x5 mm with Epad. Raw datasheet values in printed units (docs/SPEC.md).
+# Source: docs/datasheets/DS_vnf1248f.pdf, DS14109 Rev 8 (09-Jul-2026). Printed page numbers are cited (PDF page = printed page).
+# Only the order code VNF1248FTR (tape and reel, DS p.74 Table 67) is covered: no other package or option is printed.
+# General test condition (DS p.6, 2.3): 6 V < VS < 60 V; -40 degC < TJ < 150 degC unless otherwise specified; typical values
+# at VS = 48 V, TJ = 25 degC. Electrical rows without a stated temperature are scope "full" (over TJ -40 to 150 degC);
+# rows with TJ = 25 degC in their conditions are scope "25C". The DS prints no ambient (TA) range: all temperature scopes
+# are junction temperature (TJ). Percent offsets printed in the Min/Max columns around a typ are stored as tol_pct = [lo, hi] (%) on that typ row.
+# Programmable (SPI-selectable) thresholds: one key per printed setting, typ only (the DS prints no min/max per setting).
+# Abs-max voltages are stored as printed (no reference pin is stated; read as voltage to GND, see notes).
+# The DS gives no reference pin for the abs-max table, so min_ref/max_ref are only used where the DS prints a formula.
+# Revision currency, errata, PCN and lifecycle: not checked (no web access).
+
+[part]
+value           = "VNF1248F"
+mpn             = "VNF1248FTR"
+alternates      = []                          # none: VNF1248FTR is the only order code (DS p.74 Table 67, tape and reel)
+manufacturer    = "STMicroelectronics"
+description     = "High-side switch controller with intelligent fuse protection, 6-60 V (70 V transient), AEC-Q100, QFN32L 5x5 mm"
+category        = "high_side_controller"
+package         = "QFN32L 5x5 mm Epad, wettable flanks (DS p.69 Figure 22, DS p.70 Table 65)"
+datasheet_url   = "https://www.st.com/resource/en/datasheet/vnf1248f.pdf"   # DS prints only www.st.com (DS p.1); fallback URL, not web-verified
+datasheet_file  = "docs/datasheets/DS_vnf1248f.pdf"
+datasheet_rev   = "Rev 8"                     # DS14109 - Rev 8 (DS p.1 footer, p.76 Revision history)
+datasheet_date  = "2026-07"                   # DS p.76 Table 68: revision 8, 09-Jul-2026
+temp_grade      = "TJ -40 to 150 degC"        # DS p.5 Table 2 (TJ) and p.6 2.3 general condition; no TA range printed; AEC-Q100 grade not printed
+kicad_symbol    = "VNF1248F.kicad_sym"
+kicad_footprint = "VNF1248F.kicad_mod"
+step            = "VNF1248F.step"
+# OPEN ITEM: the STEP model is the vendor file. Its bounding box is 5.156 x 5.156 x 1.654 mm vs DS 5.00 BSC x 1.00 max
+# (DS p.70 Table 65). Not DS-dimensioned: do not use it for height or clearance checks.
+
+
+# Pins: DS p.4 Table 1 (pin 1 to 31 plus the TAB row) and DS p.3 Figure 2 (top view). Figure 2 and Table 1 agree on every
+# pin number and name. Names are the DS names; N.C. pins are named "N.C" as Table 1 prints them, type no_connect. The exposed pad (TAB) is a pin named GND per the library rule for an exposed pad
+# that must connect to ground.
+
+[[pin]]
+number   = "1"
+name     = "VSPI"
+type     = "power_in"
+function = "DS: DC supply input for the SPI interface. 3.3 V and 5 V are compatible."
+cite     = "DS p.4, Table 1. Pin functions, VSPI"
+
+[[pin]]
+number   = "2"
+name     = "CSN"
+type     = "input"
+function = "Chip select (active low) for SPI communication. CMOS compatible input."
+cite     = "DS p.4, Table 1. Pin functions, CSN"
+
+[[pin]]
+number   = "3"
+name     = "SDI"
+type     = "input"
+function = "Serial data input for SPI communication, sampled on SCK rising edge (connected to MOSI)."
+cite     = "DS p.4, Table 1. Pin functions, SDI"
+
+[[pin]]
+number   = "4"
+name     = "SDO"
+type     = "tri_state"
+function = "Serial data output for SPI communication, shifted out on SCK falling edge (connected to MISO). DS Table 7: SDO tristate after CSN rising edge."
+cite     = "DS p.4, Table 1. Pin functions, SDO; DS p.8, Table 7, tCSNQT"
+
+[[pin]]
+number   = "5"
+name     = "SCK"
+type     = "input"
+function = "DS: Serial clock for SPI communication. CMOS compatible input."
+cite     = "DS p.4, Table 1. Pin functions, SCK"
+
+[[pin]]
+number   = "6"
+name     = "DIAG"
+type     = "open_collector"
+function = "DS: Diagnostic feedback pin: open drain logic output (active low)."
+cite     = "DS p.4, Table 1. Pin functions, DIAG; DS p.10, Table 11"
+
+[[pin]]
+number   = "7"
+name     = "TEST1"
+type     = "passive"
+function = "DS: Test mode pin 1. It must be connected to the ground through 1 kohm resistor."
+cite     = "DS p.4, Table 1. Pin functions, TEST1"
+
+[[pin]]
+number   = "8"
+name     = "TEST2"
+type     = "passive"
+function = "DS: Test mode pin 2. It must be connected to the ground through 1 kohm resistor."
+cite     = "DS p.4, Table 1. Pin functions, TEST2"
+
+[[pin]]
+number   = "9"
+name     = "DIN"
+type     = "input"
+function = "DS: Direct input to wake-up device from Standby and to control directly gate turn-on/turn-off. If not used, must be connected to the ground through 1 kohm resistor."
+cite     = "DS p.4, Table 1. Pin functions, DIN"
+
+[[pin]]
+number   = "10"
+name     = "HWLO"
+type     = "input"
+function = "DS: Active high input compatible with 3.3 V and 5 V CMOS. If not used, must be connected to the ground through 1 kohm resistor."
+cite     = "DS p.4, Table 1. Pin functions, HWLO"
+
+[[pin]]
+number   = "11"
+name     = "N.C"
+type     = "no_connect"
+function = "DS: N.C, \"Not connected.\" (name in DS Table 1 is N.C)"
+cite     = "DS p.4, Table 1. Pin functions, N.C"
+
+[[pin]]
+number   = "12"
+name     = "V3V3"
+type     = "power_out"
+function = "DS: Output of the 3.3 V internal LDO voltage regulator (logic and I/O supply). Connect a low ESR capacitor (1 uF) close to this pin."
+cite     = "DS p.4, Table 1. Pin functions, V3V3"
+
+[[pin]]
+number   = "13"
+name     = "GND"
+type     = "power_in"
+function = "DS: Ground connection."
+cite     = "DS p.4, Table 1. Pin functions, GND"
+
+[[pin]]
+number   = "14"
+name     = "EXT_LDO"
+type     = "power_in"
+function = "DS: External V3V3 supply. If not used, must be connected to the ground through 1 kohm resistor."
+cite     = "DS p.4, Table 1. Pin functions, EXT_LDO"
+
+[[pin]]
+number   = "15"
+name     = "OUTST"
+type     = "open_collector"
+function = "Gate status monitor. Reports HS_GATE status (OUTST = H when HS_GATE is high). Connect to ground by a 8.2 kohm resistor. Open drain, active high (DS Table 10 note 1)."
+cite     = "DS p.4, Table 1. Pin functions, OUTST; DS p.10, Table 10"
+
+[[pin]]
+number   = "16"
+name     = "N.C"
+type     = "no_connect"
+function = "DS: N.C, \"Not connected.\" (name in DS Table 1 is N.C)"
+cite     = "DS p.4, Table 1. Pin functions, N.C"
+
+[[pin]]
+number   = "17"
+name     = "N.C"
+type     = "no_connect"
+function = "DS: N.C, \"Not connected.\" (name in DS Table 1 is N.C)"
+cite     = "DS p.4, Table 1. Pin functions, N.C"
+
+[[pin]]
+number   = "18"
+name     = "NTC_M"
+type     = "passive"
+function = "Negative input pin for external NTC resistor."
+cite     = "DS p.4, Table 1. Pin functions, NTC_M"
+
+[[pin]]
+number   = "19"
+name     = "NTC"
+type     = "passive"
+function = "DS: Positive input pin for external NTC resistor."
+cite     = "DS p.4, Table 1. Pin functions, NTC"
+
+[[pin]]
+number   = "20"
+name     = "ISNS_N"
+type     = "input"
+function = "DS: Current sense amplifier negative input."
+cite     = "DS p.4, Table 1. Pin functions, ISNS_N"
+
+[[pin]]
+number   = "21"
+name     = "ISNS_P"
+type     = "input"
+function = "DS: Current sense amplifier positive input."
+cite     = "DS p.4, Table 1. Pin functions, ISNS_P"
+
+[[pin]]
+number   = "22"
+name     = "N.C"
+type     = "no_connect"
+function = "DS: N.C, \"Not connected.\" (name in DS Table 1 is N.C)"
+cite     = "DS p.4, Table 1. Pin functions, N.C"
+
+[[pin]]
+number   = "23"
+name     = "OUT"
+type     = "passive"
+function = "DS: External MOSFET source connection."
+cite     = "DS p.4, Table 1. Pin functions, OUT"
+
+[[pin]]
+number   = "24"
+name     = "HS_GATE"
+type     = "output"
+function = "DS: External MOSFET gate connection (gate drive output)."
+cite     = "DS p.4, Table 1. Pin functions, HS_GATE"
+
+[[pin]]
+number   = "25"
+name     = "VS"
+type     = "power_in"
+function = "DS: Supply pin. Connect to the 12 V, 24 V, 48 V battery voltage by a Schottky diode."
+cite     = "DS p.4, Table 1. Pin functions, VS"
+
+[[pin]]
+number   = "26"
+name     = "N.C"
+type     = "no_connect"
+function = "DS: N.C, \"Not connected.\" (name in DS Table 1 is N.C)"
+cite     = "DS p.4, Table 1. Pin functions, N.C"
+
+[[pin]]
+number   = "27"
+name     = "CP"
+type     = "power_out"
+function = "DS: Charge pump output."
+cite     = "DS p.4, Table 1. Pin functions, CP"
+
+[[pin]]
+number   = "28"
+name     = "CP2P"
+type     = "passive"
+function = "DS: Charge pump, positive terminal of the flying capacitor CP2."
+cite     = "DS p.4, Table 1. Pin functions, CP2P"
+
+[[pin]]
+number   = "29"
+name     = "CP2M"
+type     = "passive"
+function = "DS: Charge pump, negative terminal of the flying capacitor CP2."
+cite     = "DS p.4, Table 1. Pin functions, CP2M"
+
+[[pin]]
+number   = "30"
+name     = "CP1P"
+type     = "passive"
+function = "DS: Charge pump, positive terminal of the flying capacitor CP1."
+cite     = "DS p.4, Table 1. Pin functions, CP1P"
+
+[[pin]]
+number   = "31"
+name     = "CP1M"
+type     = "passive"
+function = "DS: Charge pump, negative terminal of the flying capacitor CP1."
+cite     = "DS p.4, Table 1. Pin functions, CP1M"
+
+[[pin]]
+number   = "32"
+name     = "N.C"
+type     = "no_connect"
+function = "DS: N.C, \"Not connected.\" (name in DS Table 1 is N.C)"
+cite     = "DS p.4, Table 1. Pin functions, N.C"
+
+[[pin]]
+number   = "33"
+name     = "GND"
+type     = "power_in"
+function = "DS: TAB (footprint pad 33), the exposed pad (corner leads electrically connected to TAB, DS p.3). DS note: \"TAB connection must be to the ground. TAB is not intended as the device reference ground (a dedicated pin shall be used).\""
+cite     = "DS p.4, Table 1. Pin functions, TAB (GND); DS p.3, Figure 2 note"
+
+# --------------------------------------------------------------------------------------------------------------
+# Parameters. Keys are unique; kind abs_max / rec_op rows carry check_pins, check_ambient or unchecked (SPEC).
+# --------------------------------------------------------------------------------------------------------------
+
+[param.abs_vs]
+name       = "VS pin DC voltage"
+symbol     = "VS"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+max        = 70
+unit       = "V"
+conditions = ""
+unchecked  = "covered by vs_op"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VS"
+note       = "DS states no reference pin. Read as voltage to the part's GND pin (DS p.3 note: TAB is not the reference ground, a dedicated pin shall be used). Covered by vs_op (60 V) on the same pin."
+
+[param.abs_ignd]
+name       = "GND pin reverse DC current"
+symbol     = "-IGND"
+kind       = "abs_max"
+scope      = "na"
+max        = 200
+unit       = "mA"
+conditions = ""
+unchecked  = "current rating, not a voltage; owner: module"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, -IGND"
+note       = "Single printed value 200 mA (reverse current magnitude), stored as max."
+
+[param.abs_vspi]
+name       = "VSPI pin DC voltage"
+symbol     = "VSPI"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+max        = 6.5
+unit       = "V"
+conditions = ""
+unchecked  = "covered by vspi_op"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VSPI"
+note       = "No reference pin stated (see abs_vs note). The 6.5 V limit is looser than the checked rec_op row vspi_op (3.0 to 6.0 V)."
+
+[param.abs_v3v3]
+name       = "V3V3 pin DC voltage"
+symbol     = "V3V3"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+max        = 4.6
+unit       = "V"
+conditions = ""
+unchecked  = "part-driven: output of the internal 3.3 V LDO (Table 1, pin 12); owner: module"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, V3V3"
+
+[param.abs_ext_ldo]
+name       = "EXT_LDO pin DC voltage"
+symbol     = "VEXT_LDO"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+max        = 4.6
+unit       = "V"
+conditions = ""
+check_pins = ["EXT_LDO"]
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VEXT_LDO"
+note       = "No reference pin stated (see abs_vs note). Circuit sets it: ground through 1 kohm when unused, or external 3.3 V supply (Table 1, pin 14)."
+
+[param.abs_spi_in]
+name       = "SPI input pins DC voltage (CSN, SDI, SCK)"
+symbol     = "VCSN, VSDI, VSCK"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+max        = 6.5
+unit       = "V"
+conditions = ""
+check_pins = ["CSN", "SDI", "SCK"]
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VCSN, VSDI, VSCK"
+note       = "No reference pin stated (see abs_vs note)."
+
+[param.abs_sdo]
+name       = "SDO pin DC voltage"
+symbol     = "VSDO"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+max        = 6.5
+unit       = "V"
+conditions = ""
+unchecked  = "SDO is driven by the part; owner: module"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VSDO"
+note       = "Printed -0.3 to VSPI + 0.3, < 6.5 V (DS p.5 Table 2). Absolute limit kept here; the VSPI + 0.3 limit is abs_sdo_vspi. SDO is driven by the part."
+
+[param.abs_sdo_vspi]
+name       = "SDO pin DC voltage relative to VSPI"
+symbol     = "VSDO"
+kind       = "abs_max"
+scope      = "na"
+max        = 0.3
+max_ref    = "VSPI"
+unit       = "V"
+conditions = ""
+unchecked  = "SDO is driven by the part; owner: module"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VSDO (VSPI + 0.3 V)"
+note       = "Printed -0.3 to VSPI + 0.3, < 6.5 V (DS p.5 Table 2). min -0.3 absolute (see abs_sdo); max relative to VSPI (max_ref = VSPI)."
+
+[param.abs_hwlo]
+name       = "HWLO pin DC voltage"
+symbol     = "VHWLO"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+max        = 70
+unit       = "V"
+conditions = ""
+check_pins = ["HWLO"]
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VHWLO"
+note       = "No reference pin stated (see abs_vs note)."
+
+[param.abs_diag]
+name       = "DIAG pin DC voltage"
+symbol     = "VDIAG"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+max        = 4.6
+unit       = "V"
+conditions = ""
+check_pins = ["DIAG"]
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VDIAG"
+note       = "Printed -0.3 to V3V3 + 0.3, < 4.6 V (DS p.5 Table 2). Absolute limit kept here; the V3V3 + 0.3 limit is abs_diag_v3v3. Open-drain pin: the high level comes from the external pull-up, so the circuit sets it."
+
+[param.abs_diag_v3v3]
+name       = "VDIAG pin DC voltage relative to V3V3"
+symbol     = "VDIAG"
+kind       = "abs_max"
+scope      = "na"
+max        = 0.3
+max_ref    = "V3V3"
+unit       = "V"
+conditions = ""
+check_pins = ["DIAG"]
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VDIAG (V3V3 + 0.3 V)"
+note       = "Printed -0.3 to V3V3 + 0.3, < 4.6 V (DS p.5 Table 2). min -0.3 absolute (see abs_diag); max relative to V3V3 (max_ref = V3V3)."
+
+[param.abs_idiag]
+name       = "DIAG pin DC current"
+symbol     = "IDIAG"
+kind       = "abs_max"
+scope      = "na"
+text       = "Internally limited"
+unit       = "mA"
+conditions = ""
+unchecked  = "current rating, internally limited; part-driven pin; owner: module"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, IDIAG"
+
+[param.abs_isns]
+name       = "ISNS_P and ISNS_N pins voltage"
+symbol     = "VISNS_P, VISNS_N"
+kind       = "abs_max"
+scope      = "na"
+min        = -15
+max        = 70
+unit       = "V"
+conditions = ""
+check_pins = ["ISNS_P", "ISNS_N"]
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VISNS_P, VISNS_N"
+note       = "No reference pin stated (see abs_vs note). Circuit sets them through the shunt."
+
+[param.abs_dvisns]
+name       = "Differential DC input voltage (VSENSE = VISNS_P - VISNS_N)"
+symbol     = "dVISNS"
+kind       = "abs_max"
+scope      = "na"
+unit       = "V"
+conditions = ""
+max        = 3.3
+max_ref    = "ISNS_N"
+check_pins = ["ISNS_P"]
+cite       = "DS p.5, Table 2. Absolute maximum ratings, Differential DC input voltage (VSENSE = VISNS_P - VISNS_N)"
+note       = "Printed '< 3.3' (DS p.5 Table 2, Differential DC input voltage VSENSE = VISNS_P - VISNS_N). No minimum is printed on p.5. Stored as max 3.3 V relative to ISNS_N (max_ref = ISNS_N), checked on ISNS_P."
+
+[param.abs_hs_gate]
+name       = "HS_GATE pin DC voltage"
+symbol     = "VHS_GATE"
+kind       = "abs_max"
+scope      = "na"
+min        = -15
+max        = 20
+unit       = "V"
+conditions = ""
+max_ref    = "OUT"
+unchecked  = "part-driven: gate drive output; owner: module"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VHS_GATE"
+note       = "Printed -15 to Vout + 20 V. max is relative to OUT (max_ref = OUT, the printed reference). min -15 V is absolute."
+
+[param.abs_out]
+name       = "OUT pin DC voltage"
+symbol     = "VOUT"
+kind       = "abs_max"
+scope      = "na"
+min        = -15
+max        = 3
+unit       = "V"
+conditions = ""
+max_ref    = "VS"
+unchecked  = "OUT is the external MOSFET source, set by external parts; owner: module"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VOUT"
+note       = "Printed -15 to VS + 3 V. max is relative to VS (max_ref = VS, the printed reference). min -15 V is absolute. Circuit sets OUT through the load and external MOSFET."
+
+[param.abs_ntc]
+name       = "NTC, NTC_M pins DC voltage"
+symbol     = "VNTC, VNTC_M"
+kind       = "abs_max"
+scope      = "na"
+min        = -15
+max        = 0.3
+unit       = "V"
+conditions = ""
+max_ref    = "ISNS_P"
+unchecked  = "NTC bridge nodes: voltage set by the external NTC network and the internal bridge (DS p.17 Figure 4); owner: module"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VNTC, VNTC_M"
+note       = "Printed -15 to VISNS_P + 0.3 V. max is relative to ISNS_P (max_ref = ISNS_P, the printed reference)."
+
+[param.abs_vcp]
+name       = "CP pin DC voltage"
+symbol     = "VCP"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+max        = 20
+unit       = "V"
+conditions = ""
+min_ref    = "VS"
+max_ref    = "VS"
+unchecked  = "part-driven: charge pump output; owner: module"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VCP"
+note       = "Printed VS - 0.3 to VS + 20 V (both relative to VS, the printed reference)."
+
+[param.abs_vcp1p_cp2p]
+name       = "CP1P, CP2P pins DC voltage"
+symbol     = "VCP1P, VCP2P"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+max        = 20
+unit       = "V"
+conditions = ""
+min_ref    = "VS"
+max_ref    = "VS"
+unchecked  = "part-driven: charge pump flying-capacitor nodes; owner: module"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VCP1P, VCP2P"
+note       = "Printed VS - 0.3 to VS + 20 V (relative to VS)."
+
+[param.abs_vcp1m_cp2m]
+name       = "CP1M, CP2M pins DC voltage"
+symbol     = "VCP1M, VCP2M"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+max        = 0.3
+unit       = "V"
+conditions = ""
+max_ref    = "VS"
+unchecked  = "part-driven: charge pump flying-capacitor nodes; owner: module"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VCP1M, VCP2M"
+note       = "Printed -0.3 to VS + 0.3 V: min absolute, max relative to VS."
+
+[param.abs_vdin]
+name       = "DIN pin DC voltage"
+symbol     = "VDIN"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+max        = 70
+unit       = "V"
+conditions = ""
+check_pins = ["DIN"]
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VDIN"
+note       = "No reference pin stated (see abs_vs note)."
+
+[param.abs_outst]
+name       = "OUTST pin DC voltage"
+symbol     = "VOUTST"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+max        = 4.6
+unit       = "V"
+conditions = ""
+check_pins = ["OUTST"]
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VOUTST"
+note       = "Printed -0.3 to V3V3 + 0.3, < 4.6 V (DS p.5 Table 2). Absolute limit kept here; the V3V3 + 0.3 limit is abs_outst_v3v3. Open-drain pin: the high level comes from the external pull-up, so the circuit sets it."
+
+[param.abs_outst_v3v3]
+name       = "VOUTST pin DC voltage relative to V3V3"
+symbol     = "VOUTST"
+kind       = "abs_max"
+scope      = "na"
+max        = 0.3
+max_ref    = "V3V3"
+unit       = "V"
+conditions = ""
+check_pins = ["OUTST"]
+cite       = "DS p.5, Table 2. Absolute maximum ratings, VOUTST (V3V3 + 0.3 V)"
+note       = "Printed -0.3 to V3V3 + 0.3, < 4.6 V (DS p.5 Table 2). min -0.3 absolute (see abs_outst); max relative to V3V3 (max_ref = V3V3)."
+
+[param.esd_hbm_2000]
+name       = "ESD, JEDEC 22A-114F (HBM), general pins"
+symbol     = "VESD"
+kind       = "abs_max"
+scope      = "na"
+max        = 2000
+unit       = "V"
+conditions = "JEDEC 22A-114F"
+unchecked  = "owner: assembly"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, Electrostatic discharge (JEDEC 22A-114F), 2000"
+note       = "Printed as a single value with no sign: stored as max. No footnote on this row, so it applies to all pins."
+
+[param.esd_hbm_4000]
+name       = "ESD, JEDEC 22A-114F (HBM), VS, OUT, DIN only"
+symbol     = "VESD"
+kind       = "abs_max"
+scope      = "na"
+max        = 4000
+unit       = "V"
+conditions = "JEDEC 22A-114F"
+unchecked  = "owner: assembly"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, Electrostatic discharge (JEDEC 22A-114F), 4000 (1)"
+note       = "DS footnote 1: only for pins VS, OUT, DIN."
+
+[param.esd_cdm_500]
+name       = "ESD, CDM-AEC-Q100-011, all pins except corners"
+symbol     = "VESD"
+kind       = "abs_max"
+scope      = "na"
+min        = -500
+max        = 500
+unit       = "V"
+conditions = "CDM-AEC-Q100-011"
+unchecked  = "owner: assembly"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, Charge device model (CDM-AEC-Q100-011), +/-500 (2)"
+note       = "Printed +/-500 V: min = -500, max = 500 (symmetric). DS footnote 2: all pins except corners."
+
+[param.esd_cdm_750]
+name       = "ESD, CDM-AEC-Q100-011, corner pins"
+symbol     = "VESD"
+kind       = "abs_max"
+scope      = "na"
+min        = -750
+max        = 750
+unit       = "V"
+conditions = "CDM-AEC-Q100-011"
+unchecked  = "owner: assembly"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, Charge device model (CDM-AEC-Q100-011), +/-750 (3)"
+note       = "Printed +/-750 V: min = -750, max = 750. DS footnote 3: corner pins."
+
+[param.tj_abs]
+name       = "Junction operating temperature"
+symbol     = "TJ"
+kind       = "abs_max"
+scope      = "na"
+min        = -40
+max        = 150
+unit       = "degC"
+conditions = ""
+unchecked  = "TJ rating; needs dissipation; owner: module"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, Junction operating temperature (TJ)"
+note       = "Junction temperature only; no ambient rating is printed, so no check_ambient."
+
+[param.tstg]
+name       = "Storage temperature"
+symbol     = "Tstg"
+kind       = "abs_max"
+scope      = "na"
+min        = -55
+max        = 150
+unit       = "degC"
+conditions = ""
+unchecked  = "owner: assembly"
+cite       = "DS p.5, Table 2. Absolute maximum ratings, Storage temperature"
+
+[param.nftp]
+name       = "Maximum number of FTP NVM programming cycles"
+symbol     = "NFTP"
+kind       = "abs_max"
+scope      = "na"
+max        = 1000
+unit       = ""
+conditions = ""
+unchecked  = "NVM programming endurance count, not a voltage or temperature; owner: module"
+cite       = "DS p.6, Table 2. Absolute maximum ratings (continued), NFTP"
+
+[param.rth_ja_2s0p]
+name       = "Thermal resistance, junction-to-ambient, JEDEC JESD 51-2 (-7), two-layer PCB"
+symbol     = "RthJA"
+kind       = "thermal"
+scope      = "na"
+typ        = 56
+unit       = "degC/W"
+conditions = "JEDEC JESD 51-2 (-7); device on two-layer 2s0p PCB with 2 cm2 heatsink copper trace (DS note 1)"
+cite       = "DS p.6, Table 3. Thermal data, RthJA (JESD 51-2, -7)"
+note       = "Printed as Typ. value only; stored as typ, not a bound. Board: FR4, 1.6 mm, 129x60 mm, footprint 3.5x3.5 mm (DS p.6 note)."
+
+[param.rth_ja_2s2p]
+name       = "Thermal resistance, junction-to-ambient, JEDEC JESD 51-2 (-5), four-layer PCB"
+symbol     = "RthJA"
+kind       = "thermal"
+scope      = "na"
+typ        = 26
+unit       = "degC/W"
+conditions = "JEDEC JESD 51-2 (-5); device on four-layer 2s2p PCB (DS note 2)"
+cite       = "DS p.6, Table 3. Thermal data, RthJA (JESD 51-2, -5)"
+note       = "Printed as Typ. value only; stored as typ, not a bound."
+
+[param.vs_op]
+name       = "Operating supply voltage"
+symbol     = "VS"
+kind       = "rec_op"
+scope      = "full"
+min        = 6
+typ        = 48
+max        = 60
+unit       = "V"
+conditions = "6 V < VS < 60 V; -40 degC < TJ < 150 degC (general condition, DS p.6 2.3); typ at VS = 48 V, TJ = 25 degC"
+check_pins = ["VS"]
+cite       = "DS p.6, Table 4. Supply specification, VS"
+
+[param.vs_ext]
+name       = "Extended operating supply voltage"
+symbol     = "VS_EXT"
+kind       = "rec_op"
+scope      = "full"
+min        = 6
+max        = 70
+unit       = "V"
+conditions = "100 ms max. duration"
+unchecked  = "100 ms transient limit; a DC check cannot model duration; owner: module"
+cite       = "DS p.6, Table 4. Supply specification, VS_EXT"
+note       = "The 70 V limit is abs_vs (not checked, covered by vs_op). A 100 ms duration cannot be modelled by a DC check."
+
+[param.vspi_op]
+name       = "SPI pin operating range"
+symbol     = "VSPI"
+kind       = "rec_op"
+scope      = "full"
+min        = 3.0
+max        = 6.0
+unit       = "V"
+conditions = ""
+check_pins = ["VSPI"]
+cite       = "DS p.7, Table 4. Supply specification, VSPI"
+
+[param.vext_ldo_l]
+name       = "Low level voltage EXT_LDO"
+symbol     = "VEXT_LDO_L"
+kind       = "electrical"
+scope      = "full"
+min        = 2.6
+typ        = 2.8
+max        = 3
+unit       = "V"
+conditions = ""
+cite       = "DS p.6, Table 4. Supply specification, VEXT_LDO_L"
+
+[param.vext_ldo_h]
+name       = "High level voltage EXT_LDO"
+symbol     = "VEXT_LDO_H"
+kind       = "electrical"
+scope      = "full"
+min        = 2.8
+typ        = 3
+max        = 3.2
+unit       = "V"
+conditions = ""
+cite       = "DS p.6, Table 4. Supply specification, VEXT_LDO_H"
+
+[param.iext_ldo_h]
+name       = "Current consumption from EXT_LDO when externally supplied"
+symbol     = "IEXT_LDO_H"
+kind       = "electrical"
+scope      = "full"
+min        = 3.5
+typ        = 5
+max        = 6
+unit       = "mA"
+conditions = "VEXT_LDO > VEXT_LDO_H"
+cite       = "DS p.6, Table 4. Supply specification, IEXT_LDO_H"
+
+[param.iext_ldo_l]
+name       = "Current consumption from EXT_LDO"
+symbol     = "IEXT_LDO_L"
+kind       = "electrical"
+scope      = "full"
+min        = 6
+typ        = 10
+max        = 16
+unit       = "uA"
+conditions = "VEXT_LDO < VEXT_LDO_L"
+cite       = "DS p.6, Table 4. Supply specification, IEXT_LDO_L"
+
+[param.vs_usd1]
+name       = "Undervoltage shutdown (VS)"
+symbol     = "VS_USD1"
+kind       = "electrical"
+scope      = "full"
+min        = 3.8
+typ        = 4
+max        = 4.2
+unit       = "V"
+conditions = "Field UV_THR = 00b or 01b in CR#3"
+cite       = "DS p.6, Table 4. Supply specification, VS_USD1"
+
+[param.vs_usd2]
+name       = "Undervoltage shutdown (VS)"
+symbol     = "VS_USD2"
+kind       = "electrical"
+scope      = "full"
+min        = 12
+typ        = 13
+max        = 14
+unit       = "V"
+conditions = "Field UV_THR = 10b in CR#3"
+cite       = "DS p.6, Table 4. Supply specification, VS_USD2"
+
+[param.vs_usd3]
+name       = "Undervoltage shutdown (VS)"
+symbol     = "VS_USD3"
+kind       = "electrical"
+scope      = "full"
+min        = 22
+typ        = 24
+max        = 25
+unit       = "V"
+conditions = "Field UV_THR = 11b in CR#3"
+cite       = "DS p.6, Table 4. Supply specification, VS_USD3"
+
+[param.vs_usd_res1]
+name       = "Undervoltage shutdown reset (VS)"
+symbol     = "VS_USD_RES1"
+kind       = "electrical"
+scope      = "full"
+min        = 4.3
+typ        = 4.5
+max        = 4.8
+unit       = "V"
+conditions = "Field UV_THR = 00b or 01b in CR#3"
+cite       = "DS p.6, Table 4. Supply specification, VS_USD_RES1"
+
+[param.vs_usd_res2]
+name       = "Undervoltage shutdown reset (VS)"
+symbol     = "VS_USD_RES2"
+kind       = "electrical"
+scope      = "full"
+min        = 13
+typ        = 14
+max        = 15
+unit       = "V"
+conditions = "Field UV_THR = 10b in CR#3"
+cite       = "DS p.6, Table 4. Supply specification, VS_USD_RES2"
+
+[param.vs_usd_res3]
+name       = "Undervoltage shutdown reset (VS)"
+symbol     = "VS_USD_RES3"
+kind       = "electrical"
+scope      = "full"
+min        = 24
+typ        = 27
+max        = 29
+unit       = "V"
+conditions = "Field UV_THR = 11b in CR#3"
+cite       = "DS p.6, Table 4. Supply specification, VS_USD_RES3"
+
+[param.vs_usd_hys1]
+name       = "Undervoltage shutdown hysteresis (VS)"
+symbol     = "VS_USD_HYS1"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.5
+unit       = "V"
+conditions = "Field UV_THR = 00b or 01b in CR#3"
+cite       = "DS p.6, Table 4. Supply specification, VS_USD_HYS1"
+
+[param.vs_usd_hys2]
+name       = "Undervoltage shutdown hysteresis (VS)"
+symbol     = "VS_USD_HYS2"
+kind       = "electrical"
+scope      = "full"
+typ        = 1
+unit       = "V"
+conditions = "Field UV_THR = 10b in CR#3"
+cite       = "DS p.6, Table 4. Supply specification, VS_USD_HYS2"
+
+[param.vs_usd_hys3]
+name       = "Undervoltage shutdown hysteresis (VS)"
+symbol     = "VS_USD_HYS3"
+kind       = "electrical"
+scope      = "full"
+typ        = 3
+unit       = "V"
+conditions = "Field UV_THR = 11b in CR#3"
+cite       = "DS p.6, Table 4. Supply specification, VS_USD_HYS3"
+
+[param.t_vs_usd]
+name       = "Undervoltage shutdown filtering time"
+symbol     = "tVS_USD"
+kind       = "electrical"
+scope      = "full"
+typ        = 33
+unit       = "us"
+conditions = ""
+cite       = "DS p.6, Table 4. Supply specification, tVS_USD"
+
+[param.vspi_uv]
+name       = "Undervoltage shutdown on VSPI"
+symbol     = "VSPI_UV"
+kind       = "electrical"
+scope      = "full"
+min        = 1.5
+typ        = 1.6
+max        = 1.8
+unit       = "V"
+conditions = ""
+cite       = "DS p.7, Table 4. Supply specification, VSPI_UV"
+
+[param.vspi_uv_reset]
+name       = "Undervoltage shutdown reset on VSPI"
+symbol     = "VSPI_UV_RESET"
+kind       = "electrical"
+scope      = "full"
+min        = 2
+typ        = 2.1
+max        = 2.2
+unit       = "V"
+conditions = ""
+cite       = "DS p.7, Table 4. Supply specification, VSPI_UV_RESET"
+
+[param.ispi]
+name       = "SPI supply current during frame communication"
+symbol     = "ISPI"
+kind       = "electrical"
+scope      = "full"
+max        = 3
+unit       = "mA"
+conditions = ""
+cite       = "DS p.7, Table 4. Supply specification, ISPI"
+
+[param.ispi_stby]
+name       = "SPI supply current in Standby state"
+symbol     = "ISPI_STBY"
+kind       = "electrical"
+scope      = "full"
+max        = 5
+unit       = "uA"
+conditions = ""
+cite       = "DS p.7, Table 4. Supply specification, ISPI_STBY"
+
+[param.is_on_13v_ext_lo]
+name       = "Supply current on VS pin (includes logic), VS = 13 V"
+symbol     = "IS(ON)"
+kind       = "electrical"
+scope      = "full"
+typ        = 8.6
+unit       = "mA"
+conditions = "VEXT_LDO < VEXT_LDO_L (internal LDO active); OUT = VS; HS_GATE on, RGB = 47 kohm; VS = 13 V"
+cite       = "DS p.7, Table 4. Supply specification, IS(ON) row 1"
+
+[param.is_on_48v_ext_lo]
+name       = "Supply current on VS pin (includes logic), VS = 48 V"
+symbol     = "IS(ON)"
+kind       = "electrical"
+scope      = "full"
+typ        = 7.9
+unit       = "mA"
+conditions = "VEXT_LDO < VEXT_LDO_L (internal LDO active); OUT = VS; HS_GATE on, RGB = 47 kohm; VS = 48 V"
+cite       = "DS p.7, Table 4. Supply specification, IS(ON) row 2"
+
+[param.is_on_48v_ext_lo_cpoff]
+name       = "Supply current on VS pin (includes logic), VS = 48 V, charge pump off"
+symbol     = "IS(ON)"
+kind       = "electrical"
+scope      = "full"
+min        = 4.5
+typ        = 7.2
+max        = 8.5
+unit       = "mA"
+conditions = "VEXT_LDO < VEXT_LDO_L (internal LDO active); OUT = VS; VS = 48 V; measured in test mode with the charge pump off (DS note 2)"
+cite       = "DS p.7, Table 4. Supply specification, IS(ON) row 3"
+
+[param.is_on_13v_ext_hi]
+name       = "Supply current on VS pin (includes logic), external LDO, VS = 13 V"
+symbol     = "IS(ON)"
+kind       = "electrical"
+scope      = "full"
+typ        = 4
+unit       = "mA"
+conditions = "VEXT_LDO > VEXT_LDO_H (external LDO, internal LDO disabled); OUT = VS; HS_GATE on, RGB = 47 kohm; VS = 13 V"
+cite       = "DS p.7, Table 4. Supply specification, IS(ON) row 4"
+
+[param.is_on_48v_ext_hi]
+name       = "Supply current on VS pin (includes logic), external LDO, VS = 48 V"
+symbol     = "IS(ON)"
+kind       = "electrical"
+scope      = "full"
+typ        = 3.1
+unit       = "mA"
+conditions = "VEXT_LDO > VEXT_LDO_H (external LDO, internal LDO disabled); OUT = VS; HS_GATE on, RGB = 47 kohm; VS = 48 V"
+cite       = "DS p.7, Table 4. Supply specification, IS(ON) row 5"
+
+[param.iout_stdby_13v]
+name       = "Output current Standby mode, VS = 13 V"
+symbol     = "IOUT_STDBY"
+kind       = "electrical"
+scope      = "full"
+min        = 1.5
+typ        = 3
+max        = 5
+unit       = "uA"
+conditions = "VS = 13 V, Standby mode, OUT = GND"
+cite       = "DS p.7, Table 4. Supply specification, IOUT_STDBY row 1"
+
+[param.iout_stdby_48v]
+name       = "Output current Standby mode, VS = 48 V"
+symbol     = "IOUT_STDBY"
+kind       = "electrical"
+scope      = "full"
+min        = 1
+typ        = 3
+max        = 5
+unit       = "uA"
+conditions = "VS = 48 V, Standby mode, OUT = GND"
+cite       = "DS p.7, Table 4. Supply specification, IOUT_STDBY row 2"
+
+[param.iout_on_13v]
+name       = "Output current Unlocked mode, VS = 13 V"
+symbol     = "IOUT_ON"
+kind       = "electrical"
+scope      = "full"
+min        = 140
+typ        = 185
+max        = 230
+unit       = "uA"
+conditions = "VS = 13 V, Unlocked mode, OUT = GND"
+cite       = "DS p.7, Table 4. Supply specification, IOUT_ON row 1"
+
+[param.iout_on_48v]
+name       = "Output current Unlocked mode, VS = 48 V"
+symbol     = "IOUT_ON"
+kind       = "electrical"
+scope      = "full"
+min        = 210
+typ        = 250
+max        = 320
+unit       = "uA"
+conditions = "VS = 48 V, Unlocked mode, OUT = GND"
+cite       = "DS p.7, Table 4. Supply specification, IOUT_ON row 2"
+
+[param.is_q_48v_out_vs]
+name       = "VS pin quiescent current (includes logic), independent of P-channel bypass"
+symbol     = "IS_Q"
+kind       = "electrical"
+scope      = "25C"
+min        = 45
+typ        = 60
+max        = 70
+unit       = "uA"
+conditions = "VS = 48 V, TJ = 25 degC, OUT = VS"
+cite       = "DS p.7, Table 4. Supply specification, IS_Q row 1"
+note       = "Unmarked TJ = 25 degC row in the test conditions: scope 25C."
+
+[param.is_q_48v_out_gnd]
+name       = "VS pin quiescent current (includes logic), independent of P-channel bypass"
+symbol     = "IS_Q"
+kind       = "electrical"
+scope      = "25C"
+min        = 50
+typ        = 60
+max        = 75
+unit       = "uA"
+conditions = "VS = 48 V, TJ = 25 degC, OUT = GND"
+cite       = "DS p.7, Table 4. Supply specification, IS_Q row 2"
+note       = "TJ = 25 degC: scope 25C."
+
+[param.is_q_13v_out_vs]
+name       = "VS pin quiescent current (includes logic), independent of P-channel bypass"
+symbol     = "IS_Q"
+kind       = "electrical"
+scope      = "25C"
+min        = 30
+typ        = 48
+max        = 57
+unit       = "uA"
+conditions = "VS = 13 V, TJ = 25 degC, OUT = VS"
+cite       = "DS p.7, Table 4. Supply specification, IS_Q row 3"
+note       = "TJ = 25 degC: scope 25C."
+
+[param.vs_por_on]
+name       = "Power-on reset threshold (device leaves reset mode)"
+symbol     = "VS_POR_ON"
+kind       = "electrical"
+scope      = "full"
+min        = 2.4
+typ        = 2.5
+max        = 2.65
+unit       = "V"
+conditions = ""
+cite       = "DS p.7, Table 4. Supply specification, VS_POR_ON"
+
+[param.vs_por_off]
+name       = "Power-on shutdown threshold (device enters reset mode)"
+symbol     = "VS_POR_OFF"
+kind       = "electrical"
+scope      = "full"
+min        = 2.2
+typ        = 2.3
+max        = 2.45
+unit       = "V"
+conditions = ""
+cite       = "DS p.7, Table 4. Supply specification, VS_POR_OFF"
+
+[param.vs_por_hyst]
+name       = "Power-on reset hysteresis"
+symbol     = "VS_POR_HYST"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.2
+unit       = "V"
+conditions = ""
+cite       = "DS p.7, Table 4. Supply specification, VS_POR_HYST"
+
+[param.tpwon]
+name       = "Time from power-on to Standby"
+symbol     = "tPWON"
+kind       = "electrical"
+scope      = "full"
+max        = 500
+unit       = "us"
+conditions = "VS > VS_POR_ON, V3V3 external capacitor 1 uF"
+cite       = "DS p.7, Table 4. Supply specification, tPWON"
+
+[param.iil_sck_sdi]
+name       = "Low level input current (SCK and SDI)"
+symbol     = "IIL"
+kind       = "electrical"
+scope      = "full"
+min        = 1.7
+max        = 4
+unit       = "uA"
+conditions = "VIL = 1.5 V"
+cite       = "DS p.8, Table 5. SPI logic inputs (CSN, SCK, and SDI) specification, IIL (SCK and SDI)"
+
+[param.iil_csn]
+name       = "Low level input current (CSN)"
+symbol     = "IIL"
+kind       = "electrical"
+scope      = "full"
+min        = -2.9
+max        = -2
+unit       = "uA"
+conditions = "VIL = 1.5 V"
+cite       = "DS p.8, Table 5. SPI logic inputs (CSN, SCK, and SDI) specification, IIL (CSN)"
+
+[param.iih_sck_sdi]
+name       = "High level input current (SCK and SDI)"
+symbol     = "IIH"
+kind       = "electrical"
+scope      = "full"
+min        = -13
+max        = -3
+unit       = "uA"
+conditions = "VIH = 2.1 V"
+cite       = "DS p.8, Table 5. SPI logic inputs (CSN, SCK, and SDI) specification, IIH (SCK and SDI)"
+
+[param.iih_csn]
+name       = "High level input current (CSN)"
+symbol     = "IIH"
+kind       = "electrical"
+scope      = "full"
+min        = -18
+max        = -10
+unit       = "uA"
+conditions = "VIH = 2.1 V"
+cite       = "DS p.8, Table 5. SPI logic inputs (CSN, SCK, and SDI) specification, IIH (CSN)"
+
+[param.vil_spi]
+name       = "Low level input voltage (CSN, SCK, SDI)"
+symbol     = "VIL"
+kind       = "electrical"
+scope      = "full"
+max        = 1.5
+unit       = "V"
+conditions = ""
+cite       = "DS p.8, Table 5. SPI logic inputs (CSN, SCK, and SDI) specification, VIL"
+
+[param.vih_spi]
+name       = "High level input voltage (CSN, SCK, SDI)"
+symbol     = "VIH"
+kind       = "electrical"
+scope      = "full"
+min        = 2.1
+unit       = "V"
+conditions = ""
+cite       = "DS p.8, Table 5. SPI logic inputs (CSN, SCK, and SDI) specification, VIH"
+
+[param.vi_hyst_spi]
+name       = "Input hysteresis voltage (CSN, SCK, SDI)"
+symbol     = "VI_HYST"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.4
+unit       = "V"
+conditions = ""
+cite       = "DS p.8, Table 5. SPI logic inputs (CSN, SCK, and SDI) specification, VI_HYST"
+
+[param.vol_sdo]
+name       = "Low level output voltage (SDO)"
+symbol     = "VOL"
+kind       = "electrical"
+scope      = "full"
+text       = "0.3 * VSPI"
+unit       = "V"
+conditions = ""
+cite       = "DS p.8, Table 6. SPI logic output (SDO) specification, VOL"
+note       = "Printed max 0.3 * VSPI: a formula, stored as text."
+
+[param.voh_sdo]
+name       = "High level output voltage (SDO)"
+symbol     = "VOH"
+kind       = "electrical"
+scope      = "full"
+text       = "0.7 * VSPI"
+unit       = "V"
+conditions = ""
+cite       = "DS p.8, Table 6. SPI logic output (SDO) specification, VOH"
+note       = "Printed min 0.7 * VSPI: a formula, stored as text."
+
+[param.isdo_low]
+name       = "Low level output current (SDO)"
+symbol     = "ISDO_Ilow"
+kind       = "electrical"
+scope      = "full"
+min        = 45
+max        = 96
+unit       = "mA"
+conditions = "VSDO = 1 V, VSPI = 5 V"
+cite       = "DS p.8, Table 6. SPI logic output (SDO) specification, ISDO_Ilow"
+
+[param.isdo_high]
+name       = "High level output current (SDO)"
+symbol     = "ISDO_Ihigh"
+kind       = "electrical"
+scope      = "full"
+min        = 15
+max        = 32
+unit       = "mA"
+conditions = "VSDO = 4 V, VSPI = 5 V"
+cite       = "DS p.8, Table 6. SPI logic output (SDO) specification, ISDO_Ihigh"
+
+[param.ilo_sdo]
+name       = "Output leakage current (SDO)"
+symbol     = "ILO"
+kind       = "electrical"
+scope      = "full"
+min        = -1
+max        = 1
+unit       = "uA"
+conditions = ""
+cite       = "DS p.8, Table 6. SPI logic output (SDO) specification, ILO"
+note       = "Printed as a limit without TYP: stored min -1, max 1 (symmetric)."
+
+[param.f_sck]
+name       = "SPI clock frequency"
+symbol     = "fSCK"
+kind       = "electrical"
+scope      = "full"
+max        = 8
+unit       = "MHz"
+conditions = ""
+cite       = "DS p.8, Table 7. SPI timing specification, fSCK"
+
+[param.t_hsck]
+name       = "SCK high time"
+symbol     = "tHSCK"
+kind       = "electrical"
+scope      = "full"
+min        = 55
+unit       = "ns"
+conditions = ""
+cite       = "DS p.8, Table 7. SPI timing specification, tHSCK"
+
+[param.t_lsck]
+name       = "SCK low time"
+symbol     = "tLSCK"
+kind       = "electrical"
+scope      = "full"
+min        = 55
+unit       = "ns"
+conditions = ""
+cite       = "DS p.8, Table 7. SPI timing specification, tLSCK"
+
+[param.t_hcsn]
+name       = "CSN high time"
+symbol     = "tHCSN"
+kind       = "electrical"
+scope      = "full"
+min        = 1
+unit       = "us"
+conditions = ""
+cite       = "DS p.8, Table 7. SPI timing specification, tHCSN"
+
+[param.t_scsn]
+name       = "CSN setup time: CSN low before SCK rising edge"
+symbol     = "tSCSN"
+kind       = "electrical"
+scope      = "full"
+min        = 100
+unit       = "ns"
+conditions = ""
+cite       = "DS p.8, Table 7. SPI timing specification, tSCSN"
+
+[param.t_ssck]
+name       = "SCK setup time: SCK low before CSN rising edge"
+symbol     = "tSSCK"
+kind       = "electrical"
+scope      = "full"
+min        = 100
+unit       = "ns"
+conditions = ""
+cite       = "DS p.8, Table 7. SPI timing specification, tSSCK"
+
+[param.t_ssdi]
+name       = "SDI setup time before SCK rising edge"
+symbol     = "tSSDI"
+kind       = "electrical"
+scope      = "full"
+min        = 25
+unit       = "ns"
+conditions = ""
+cite       = "DS p.8, Table 7. SPI timing specification, tSSDI"
+
+[param.t_hsdi]
+name       = "SDI hold time"
+symbol     = "tHSDI"
+kind       = "electrical"
+scope      = "full"
+min        = 20
+unit       = "ns"
+conditions = ""
+cite       = "DS p.8, Table 7. SPI timing specification, tHSDI"
+
+[param.t_csnqv]
+name       = "CSN falling edge until SDO valid"
+symbol     = "tCSNQV"
+kind       = "electrical"
+scope      = "full"
+max        = 70
+unit       = "ns"
+conditions = ""
+cite       = "DS p.8, Table 7. SPI timing specification, tCSNQV"
+
+[param.t_csnqt]
+name       = "CSN rising edge until SDO tristate"
+symbol     = "tCSNQT"
+kind       = "electrical"
+scope      = "full"
+typ        = 220
+unit       = "ns"
+conditions = ""
+cite       = "DS p.8, Table 7. SPI timing specification, tCSNQT"
+
+[param.t_sckqv]
+name       = "SCK falling edge until SDO valid"
+symbol     = "tSCKQV"
+kind       = "electrical"
+scope      = "full"
+max        = 50
+unit       = "ns"
+conditions = ""
+cite       = "DS p.8, Table 7. SPI timing specification, tSCKQV"
+
+[param.t_rsdo]
+name       = "SDO rise time"
+symbol     = "tRSDO"
+kind       = "electrical"
+scope      = "full"
+max        = 25
+unit       = "ns"
+conditions = ""
+cite       = "DS p.8, Table 7. SPI timing specification, tRSDO"
+
+[param.t_fsdo]
+name       = "SDO fall time"
+symbol     = "tFSDO"
+kind       = "electrical"
+scope      = "full"
+max        = 25
+unit       = "ns"
+conditions = ""
+cite       = "DS p.8, Table 7. SPI timing specification, tFSDO"
+
+[param.t_whch]
+name       = "CSN low timeout (MCU maximum time to send an SPI frame)"
+symbol     = "tWHCH"
+kind       = "electrical"
+scope      = "full"
+typ        = 50
+unit       = "ms"
+tol_pct   = [-10, 10]
+conditions = ""
+cite       = "DS p.8, Table 7. SPI timing specification, tWHCH"
+note       = "Min -10 % and Max +10 % printed as offsets from typ: stored as tol_pct. DS note 1: if violated, DIAG error."
+
+[param.t_wdtb_00]
+name       = "Watchdog toggle bit timeout"
+symbol     = "tWDTB"
+kind       = "electrical"
+scope      = "full"
+typ        = 50
+unit       = "ms"
+tol_pct   = [-10, 10]
+conditions = "WD_TIME = 00b (see CR#3)"
+cite       = "DS p.8, Table 7. SPI timing specification, tWDTB, WD_TIME setting 00b"
+note       = "Typ column lists the four WD_TIME settings; the Min/Max -10 % / +10 % columns are offsets: stored as tol_pct."
+
+[param.t_wdtb_01]
+name       = "Watchdog toggle bit timeout"
+symbol     = "tWDTB"
+kind       = "electrical"
+scope      = "full"
+typ        = 100
+unit       = "ms"
+tol_pct   = [-10, 10]
+conditions = "WD_TIME = 01b (see CR#3)"
+cite       = "DS p.8, Table 7. SPI timing specification, tWDTB, WD_TIME setting 01b"
+note       = "Typ column lists the four WD_TIME settings; the Min/Max -10 % / +10 % columns are offsets: stored as tol_pct."
+
+[param.t_wdtb_10]
+name       = "Watchdog toggle bit timeout"
+symbol     = "tWDTB"
+kind       = "electrical"
+scope      = "full"
+typ        = 150
+unit       = "ms"
+tol_pct   = [-10, 10]
+conditions = "WD_TIME = 10b (see CR#3)"
+cite       = "DS p.8, Table 7. SPI timing specification, tWDTB, WD_TIME setting 10b"
+note       = "Typ column lists the four WD_TIME settings; the Min/Max -10 % / +10 % columns are offsets: stored as tol_pct."
+
+[param.t_wdtb_11]
+name       = "Watchdog toggle bit timeout"
+symbol     = "tWDTB"
+kind       = "electrical"
+scope      = "full"
+typ        = 200
+unit       = "ms"
+tol_pct   = [-10, 10]
+conditions = "WD_TIME = 11b (see CR#3)"
+cite       = "DS p.8, Table 7. SPI timing specification, tWDTB, WD_TIME setting 11b"
+note       = "Typ column lists the four WD_TIME settings; the Min/Max -10 % / +10 % columns are offsets: stored as tol_pct."
+
+[param.t_stby_out]
+name       = "Minimum CSN low time to wake the device from Standby"
+symbol     = "tSTBY_OUT"
+kind       = "electrical"
+scope      = "full"
+min        = 2
+typ        = 4
+max        = 6
+unit       = "us"
+conditions = "Device in Standby state"
+cite       = "DS p.8, Table 7. SPI timing specification, tSTBY_OUT"
+
+[param.iil_hwlo]
+name       = "Low level input current (HWLO)"
+symbol     = "IIL"
+kind       = "electrical"
+scope      = "full"
+min        = 0.5
+max        = 2.5
+unit       = "uA"
+conditions = "VIL = 1.5 V"
+cite       = "DS p.9, Table 8. HWLO logic input pin specification, IIL"
+
+[param.iih_hwlo]
+name       = "High level input current (HWLO)"
+symbol     = "IIH"
+kind       = "electrical"
+scope      = "full"
+min        = 1.6
+max        = 3.5
+unit       = "uA"
+conditions = "VIH = 2.1 V"
+cite       = "DS p.9, Table 8. HWLO logic input pin specification, IIH"
+
+[param.vil_hwlo]
+name       = "Low level input voltage (HWLO)"
+symbol     = "VIL"
+kind       = "electrical"
+scope      = "full"
+max        = 1.5
+unit       = "V"
+conditions = ""
+cite       = "DS p.9, Table 8. HWLO logic input pin specification, VIL"
+
+[param.vih_hwlo]
+name       = "High level input voltage (HWLO)"
+symbol     = "VIH"
+kind       = "electrical"
+scope      = "full"
+min        = 2.1
+unit       = "V"
+conditions = ""
+cite       = "DS p.9, Table 8. HWLO logic input pin specification, VIH"
+
+[param.vi_hyst_hwlo]
+name       = "Input hysteresis voltage (HWLO)"
+symbol     = "VI_HYST"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.4
+unit       = "V"
+conditions = ""
+cite       = "DS p.9, Table 8. HWLO logic input pin specification, VI_HYST"
+
+[param.t_hwlo]
+name       = "HWLO filtering time"
+symbol     = "tHWLO"
+kind       = "electrical"
+scope      = "full"
+typ        = 33
+unit       = "us"
+tol_pct   = [-10, 10]
+conditions = ""
+cite       = "DS p.9, Table 8. HWLO logic input pin specification, tHWLO"
+note       = "Min -10 % and Max +10 % printed as offsets: stored as tol_pct."
+
+[param.iil_din]
+name       = "Low level input current (DIN)"
+symbol     = "IIL"
+kind       = "electrical"
+scope      = "full"
+min        = 1.5
+max        = 5
+unit       = "uA"
+conditions = "VIL = 1.5 (unit not printed; V)"
+cite       = "DS p.9, Table 9. DIN logic input pin specification, IIL"
+
+[param.iih_din]
+name       = "High level input current (DIN)"
+symbol     = "IIH"
+kind       = "electrical"
+scope      = "full"
+min        = -12
+max        = -2
+unit       = "uA"
+conditions = "VIH = 2.1 (unit not printed; V)"
+cite       = "DS p.9, Table 9. DIN logic input pin specification, IIH"
+
+[param.vil_din]
+name       = "Low level input voltage (DIN)"
+symbol     = "VIL"
+kind       = "electrical"
+scope      = "full"
+min        = 1.48
+typ        = 1.59
+max        = 1.73
+unit       = "V"
+conditions = ""
+cite       = "DS p.9, Table 9. DIN logic input pin specification, VIL"
+
+[param.vih_din]
+name       = "High level input voltage (DIN)"
+symbol     = "VIH"
+kind       = "electrical"
+scope      = "full"
+min        = 2.01
+typ        = 2.05
+max        = 2.1
+unit       = "V"
+conditions = ""
+cite       = "DS p.10, Table 9. DIN logic input pin specification, VIH"
+
+[param.vi_hyst_din]
+name       = "Input hysteresis voltage (DIN)"
+symbol     = "VI_HYST"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.4
+unit       = "V"
+conditions = ""
+cite       = "DS p.10, Table 9. DIN logic input pin specification, VI_HYST"
+
+[param.t_din_wakeup]
+name       = "Filtering time on DIN rise edge for device wakeup"
+symbol     = "tDIN_WAKEUP"
+kind       = "electrical"
+scope      = "full"
+typ        = 4
+unit       = "us"
+conditions = ""
+cite       = "DS p.10, Table 9. DIN logic input pin specification, tDIN_WAKEUP"
+
+[param.t_din_deglitch]
+name       = "De-glitch filtering time on DIN rise and fall edges"
+symbol     = "tDIN_DEGLITCH"
+kind       = "electrical"
+scope      = "full"
+typ        = 1.2
+unit       = "us"
+tol_pct   = [-10, 10]
+conditions = ""
+cite       = "DS p.10, Table 9. DIN logic input pin specification, tDIN_DEGLITCH"
+note       = "Min -10 % / Max +10 % printed as offsets: stored as tol_pct."
+
+[param.t_din_rise_filter]
+name       = "Filtering time on DIN rise edge for direct control of external MOSFET in Fail-safe state"
+symbol     = "tDIN_RISE_FILTER"
+kind       = "electrical"
+scope      = "full"
+typ        = 10
+unit       = "us"
+tol_pct   = [-15, 10]
+conditions = ""
+cite       = "DS p.10, Table 9. DIN logic input pin specification, tDIN_RISE_FILTER"
+note       = "Min -15 % / Max +10 % printed as offsets: stored as tol_pct."
+
+[param.t_din_toggle_tout]
+name       = "DIN toggling timeout"
+symbol     = "tDIN_TOGGLE_TOUT"
+kind       = "electrical"
+scope      = "full"
+typ        = 20
+unit       = "us"
+tol_pct   = [-10, 10]
+conditions = ""
+cite       = "DS p.10, Table 9. DIN logic input pin specification, tDIN_TOGGLE_TOUT"
+note       = "Min -10 % / Max +10 % printed as offsets: stored as tol_pct."
+
+[param.voutst_pu]
+name       = "OUTST pin open-drain high level (pull-up) voltage"
+symbol     = "VOUTST_PU"
+kind       = "electrical"
+scope      = "full"
+min        = 3.15
+unit       = "V"
+conditions = "HS_GATE = on; IOUTST_PU = 1 mA"
+cite       = "DS p.10, Table 10. OUTST logic output pin specification, VOUTST_PU"
+note       = "DS note 1: OUTST is an active high open drain pin."
+
+[param.ioutst_pu]
+name       = "OUTST pin open-drain output current"
+symbol     = "IOUTST_PU"
+kind       = "electrical"
+scope      = "full"
+max        = 1
+unit       = "mA"
+conditions = ""
+cite       = "DS p.10, Table 10. OUTST logic output pin specification, IOUTST_PU"
+
+[param.ioutst_lkg]
+name       = "OUTST pin leakage current"
+symbol     = "IOUTST_LKG"
+kind       = "electrical"
+scope      = "full"
+min        = 0
+max        = 16
+unit       = "uA"
+conditions = "HS_GATE = on"
+cite       = "DS p.10, Table 10. OUTST logic output pin specification, IOUTST_LKG"
+note       = "The Parameter cell of this row is blank in the DS; the name is taken from the symbol."
+
+[param.vdiag_pd]
+name       = "DIAG pin open-drain pull-down voltage"
+symbol     = "VDIAG_PD"
+kind       = "electrical"
+scope      = "full"
+max        = 0.2
+unit       = "V"
+conditions = "IDIAG_PD = 1 mA"
+cite       = "DS p.10, Table 11. DIAG logic output pin specification, VDIAG_PD"
+note       = "DS note 1: DIAG is an active low open drain pin."
+
+[param.idiag_pd]
+name       = "DIAG pin open-drain input current"
+symbol     = "IDIAG_PD"
+kind       = "electrical"
+scope      = "full"
+max        = 1
+unit       = "mA"
+conditions = "VDIAG = VDIAG_PD"
+cite       = "DS p.10, Table 11. DIAG logic output pin specification, IDIAG_PD"
+
+[param.idiag_lkg]
+name       = "DIAG pin open-drain leakage current"
+symbol     = "IDIAG_LKG"
+kind       = "electrical"
+scope      = "full"
+min        = 0
+max        = 1
+unit       = "uA"
+conditions = "VDIAG = V3V3 = 4.6 V"
+cite       = "DS p.10, Table 11. DIAG logic output pin specification, IDIAG_LKG"
+
+[param.vcp_6v]
+name       = "Charge pump output voltage, VS = 6 V"
+symbol     = "VCP_6V"
+kind       = "electrical"
+scope      = "full"
+min        = 7
+typ        = 11
+typ_ref    = "VS"
+unit       = "V"
+conditions = "VS = 6 V"
+min_ref    = "VS"
+cite       = "DS p.10, Table 12. Charge pump specification, VCP_6V"
+note       = "DS p.10 Table 12 prints typ VS + 11 V (typ_ref = VS); min and max are also relative to VS (min_ref / max_ref = VS)."
+
+[param.vcp_10v]
+name       = "Charge pump output voltage, VS > 10 V"
+symbol     = "VCP_10V"
+kind       = "electrical"
+scope      = "full"
+min        = 13.5
+typ        = 14.5
+typ_ref    = "VS"
+max        = 15.5
+unit       = "V"
+conditions = "VS > 10 V"
+min_ref    = "VS"
+max_ref    = "VS"
+cite       = "DS p.10, Table 12. Charge pump specification, VCP_10V"
+note       = "DS p.10 Table 12 prints typ VS + 14.5 V (typ_ref = VS); min and max are also relative to VS (min_ref / max_ref = VS)."
+
+[param.vcp_low_h]
+name       = "Charge pump output undervoltage high threshold (ramp up on VCP)"
+symbol     = "VCP_LOW_H"
+kind       = "electrical"
+scope      = "full"
+min        = 5.5
+typ        = 6
+typ_ref    = "VS"
+max        = 6.5
+unit       = "V"
+conditions = "Ramp up on VCP"
+min_ref    = "VS"
+max_ref    = "VS"
+cite       = "DS p.10, Table 12. Charge pump specification, VCP_LOW_H"
+note       = "DS p.10 Table 12 prints typ VS + 6 V (typ_ref = VS); min and max are also relative to VS (min_ref / max_ref = VS)."
+
+[param.vcp_low_l]
+name       = "Charge pump output undervoltage low threshold (ramp down on VCP)"
+symbol     = "VCP_LOW_L"
+kind       = "electrical"
+scope      = "full"
+min        = 5.1
+typ        = 5.6
+typ_ref    = "VS"
+max        = 6.2
+unit       = "V"
+conditions = "Ramp down on VCP"
+min_ref    = "VS"
+max_ref    = "VS"
+cite       = "DS p.10, Table 12. Charge pump specification, VCP_LOW_L"
+note       = "DS p.10 Table 12 prints typ VS + 5.6 V (typ_ref = VS); min and max are also relative to VS (min_ref / max_ref = VS)."
+
+[param.vcp_low_hyst]
+name       = "Charge pump output undervoltage hysteresis"
+symbol     = "VCP_LOW_hyst"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.4
+unit       = "V"
+conditions = ""
+cite       = "DS p.10, Table 12. Charge pump specification, VCP_LOW_hyst"
+
+[param.fcp]
+name       = "Charge pump frequency"
+symbol     = "fCP"
+kind       = "electrical"
+scope      = "full"
+typ        = 400
+unit       = "kHz"
+tol_pct   = [-5, 5]
+conditions = ""
+cite       = "DS p.10, Table 12. Charge pump specification, fCP"
+note       = "Min -5 % / Max +5 % printed as offsets: stored as tol_pct."
+
+[param.t_cp_rise]
+name       = "Charge pump low (CP_LOW diagnostic) rising edge filtering time"
+symbol     = "tCP_RISE"
+kind       = "electrical"
+scope      = "full"
+typ        = 60
+unit       = "us"
+tol_pct   = [-5, 5]
+conditions = ""
+cite       = "DS p.10, Table 12. Charge pump specification, tCP_RISE"
+note       = "Min -5 % / Max +5 % printed as offsets: stored as tol_pct. Refers to SR#1."
+
+[param.t_cp_fall]
+name       = "Charge pump low (CP_LOW diagnostic) falling edge filtering time"
+symbol     = "tCP_FALL"
+kind       = "electrical"
+scope      = "full"
+typ        = 2.3
+unit       = "us"
+tol_pct   = [-10, 10]
+conditions = ""
+cite       = "DS p.10, Table 12. Charge pump specification, tCP_FALL"
+note       = "Min -10 % / Max +10 % printed as offsets: stored as tol_pct. Refers to SR#1."
+
+[param.vgson_6v]
+name       = "HS_GATE pin on voltage, VS = 6 V"
+symbol     = "VGSON_6V"
+kind       = "electrical"
+scope      = "full"
+min        = 6
+unit       = "V"
+conditions = "VS = 6 V, IG = 50 uA"
+cite       = "DS p.11, Table 13. Gate driver specification, VGSON_6V"
+
+[param.vgson_10v]
+name       = "HS_GATE pin on voltage, VS > 10 V"
+symbol     = "VGSON_10V"
+kind       = "electrical"
+scope      = "full"
+min        = 11.5
+max        = 15
+unit       = "V"
+conditions = "VS > 10 V, IG = 50 uA"
+cite       = "DS p.11, Table 13. Gate driver specification, VGSON_10V"
+
+[param.vgsoff]
+name       = "HS_GATE pin off voltage"
+symbol     = "VGSOFF"
+kind       = "electrical"
+scope      = "full"
+max        = 0.5
+unit       = "V"
+conditions = ""
+cite       = "DS p.11, Table 13. Gate driver specification, VGSOFF"
+
+[param.vgsmax]
+name       = "Maximum HS_GATE pin voltage (internally limited)"
+symbol     = "VGSMAX"
+kind       = "electrical"
+scope      = "full"
+max        = 20
+unit       = "V"
+conditions = ""
+cite       = "DS p.11, Table 13. Gate driver specification, VGSMAX"
+
+[param.t_gate_on]
+name       = "HS_GATE pin turn-on time"
+symbol     = "tON"
+kind       = "electrical"
+scope      = "full"
+max        = 3
+unit       = "us"
+conditions = "VGS = 0.5 V to VGS = 10 V, CGATE = 80 nF"
+cite       = "DS p.11, Table 13. Gate driver specification, tON"
+
+[param.t_gate_off]
+name       = "HS_GATE pin turn-off time"
+symbol     = "tOFF"
+kind       = "electrical"
+scope      = "full"
+max        = 10
+unit       = "us"
+conditions = "Full VGS to VGS < 0.5 V, CGATE = 80 nF"
+cite       = "DS p.11, Table 13. Gate driver specification, tOFF"
+
+[param.vgs_uvlo_6v]
+name       = "HS_GATE pin undervoltage lockout, VS = 6 V"
+symbol     = "VGS_UVLO_6V"
+kind       = "electrical"
+scope      = "full"
+min        = 3.5
+unit       = "V"
+conditions = "VS = 6 V"
+cite       = "DS p.11, Table 13. Gate driver specification, VGS_UVLO_6V"
+
+[param.vgs_uvlo_10v]
+name       = "HS_GATE pin undervoltage lockout, VS > 10 V"
+symbol     = "VGS_UVLO_10V"
+kind       = "electrical"
+scope      = "full"
+min        = 7
+unit       = "V"
+conditions = "VS > 10 V, CGATE_max = 30 nF"
+cite       = "DS p.11, Table 13. Gate driver specification, VGS_UVLO_10V"
+
+[param.vg_uvlo_blk]
+name       = "HS_GATE pin undervoltage lockout blanking time"
+symbol     = "VG_UVLO_BLK"
+kind       = "electrical"
+scope      = "full"
+typ        = 100
+unit       = "us"
+tol_pct   = [-5, 5]
+conditions = "Enable at charge pump startup if external MOSFET turn-on is required, and applied after CP_LOW expiration (falling edge)"
+cite       = "DS p.11, Table 13. Gate driver specification, VG_UVLO_BLK"
+note       = "Min -5 % / Max +5 % printed as offsets: stored as tol_pct."
+
+[param.vg_uvlo_deglitch]
+name       = "HS_GATE pin undervoltage lockout de-glitch filtering time"
+symbol     = "VG_UVLO_DEGLITCH"
+kind       = "electrical"
+scope      = "full"
+typ        = 8
+unit       = "us"
+tol_pct   = [-15, 15]
+conditions = ""
+cite       = "DS p.11, Table 13. Gate driver specification, VG_UVLO_DEGLITCH"
+note       = "Min -15 % / Max +15 % printed as offsets: stored as tol_pct."
+
+[param.ttsd]
+name       = "Junction temperature thermal shutdown threshold"
+symbol     = "TTSD"
+kind       = "electrical"
+scope      = "full"
+min        = 160
+typ        = 175
+max        = 190
+unit       = "degC"
+conditions = ""
+cite       = "DS p.11, Table 14. Device thermal protection with integrated 10-bits ADC, TTSD"
+
+[param.ttsd_hys]
+name       = "Junction temperature thermal shutdown hysteresis"
+symbol     = "TTSD_HYS"
+kind       = "electrical"
+scope      = "full"
+typ        = 15
+unit       = "degC"
+conditions = ""
+cite       = "DS p.11, Table 14. Device thermal protection with integrated 10-bits ADC, TTSD_HYS"
+
+[param.tj_adc_conv]
+name       = "Junction temperature ADC full-scale range resolution (code)"
+symbol     = "TJ_ADC_CONV"
+kind       = "electrical"
+scope      = "full"
+min        = 0
+max        = 1023
+unit       = ""
+conditions = ""
+cite       = "DS p.11, Table 14. Device thermal protection with integrated 10-bits ADC, TJ_ADC_CONV (1)"
+note       = "Code 0 to 1023 (10 bits). DS note 1: TJ[degC] = TJ_ADC[22:13]/3 - 72 (calc.tj_from_adc_code)."
+
+[param.tj_adc_rate]
+name       = "Junction temperature ADC sample rate"
+symbol     = "TJ_ADC_RATE"
+kind       = "electrical"
+scope      = "full"
+typ        = 10
+unit       = "kHz"
+conditions = ""
+cite       = "DS p.11, Table 14. Device thermal protection with integrated 10-bits ADC, TJ_ADC_RATE"
+note       = "Printed kSample/s; 1 sample/s = 1 Hz, so stored as kHz."
+
+[param.vsense_cm]
+name       = "Common-mode input voltage range (VSENSE = VISNS_P - VISNS_N)"
+symbol     = "VSENSE_CM"
+kind       = "electrical"
+scope      = "full"
+max        = 0
+unit       = "V"
+conditions = ""
+max_ref    = "VS"
+cite       = "DS p.11, Table 15. Integrated current sense amplifier (CSA) for ILOAD measure based on VSENSE, VSENSE_CM"
+note       = "Printed min CS_UV (the Table 33 entering threshold, DS p.41, 2.78 to 3 V; a parameter reference, not a number here) and max VS. max = 0 relative to VS (max_ref = VS)."
+
+[param.vsense_fsr]
+name       = "Differential input voltage full-scale range"
+symbol     = "VSENSE_FSR"
+kind       = "electrical"
+scope      = "full"
+min        = 0
+max        = 160
+unit       = "mV"
+conditions = ""
+cite       = "DS p.11, Table 15. Integrated current sense amplifier (CSA) for ILOAD measure based on VSENSE, VSENSE_FSR"
+
+[param.isns_p]
+name       = "CSA positive input current"
+symbol     = "IISNS_P"
+kind       = "electrical"
+scope      = "full"
+min        = 1.1
+typ        = 1.3
+max        = 1.5
+unit       = "mA"
+conditions = "VS = 12 V"
+cite       = "DS p.11, Table 15. Integrated current sense amplifier (CSA) for ILOAD measure based on VSENSE, IISNS_P"
+
+[param.isns_n]
+name       = "CSA negative input current"
+symbol     = "IISNS_N"
+kind       = "electrical"
+scope      = "full"
+min        = 100
+typ        = 200
+max        = 300
+unit       = "uA"
+conditions = "VISNS_P = 12 V, VISNS_N = 11.9 V, HS_GATE = on"
+cite       = "DS p.11, Table 15. Integrated current sense amplifier (CSA) for ILOAD measure based on VSENSE, IISNS_N"
+
+[param.vds_thr_range]
+name       = "External MOSFET VDS monitor threshold range (31 steps, VDS_THR field in CR#2)"
+symbol     = "VDS_THR_RANGE"
+kind       = "electrical"
+scope      = "full"
+min        = 300
+max        = 1800
+unit       = "mV"
+conditions = ""
+cite       = "DS p.11, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_RANGE"
+note       = "Settings VDS_THR_0 to VDS_THR_30 (decimal; 0x00 to 0x1E) are keyed vds_thr_0 to vds_thr_30. The 0x1F setting has no value printed (blank in DS p.12). DS p.52: 0x1F is reserved."
+
+[param.vds_thr_step]
+name       = "VDS monitor threshold step"
+symbol     = "VDS_THR_STEP"
+kind       = "electrical"
+scope      = "full"
+typ        = 50
+unit       = "mV"
+conditions = ""
+cite       = "DS p.11, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_STEP"
+
+[param.vds_thr_0]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_0"
+kind       = "electrical"
+scope      = "full"
+typ        = 300
+unit       = "mV"
+conditions = "VDS_THR = 0x00"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_0"
+
+[param.vds_thr_1]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_1"
+kind       = "electrical"
+scope      = "full"
+typ        = 350
+unit       = "mV"
+conditions = "VDS_THR = 0x01"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_1"
+
+[param.vds_thr_2]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_2"
+kind       = "electrical"
+scope      = "full"
+typ        = 400
+unit       = "mV"
+conditions = "VDS_THR = 0x02"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_2"
+
+[param.vds_thr_3]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_3"
+kind       = "electrical"
+scope      = "full"
+typ        = 450
+unit       = "mV"
+conditions = "VDS_THR = 0x03"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_3"
+
+[param.vds_thr_4]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_4"
+kind       = "electrical"
+scope      = "full"
+typ        = 500
+unit       = "mV"
+conditions = "VDS_THR = 0x04"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_4"
+
+[param.vds_thr_5]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_5"
+kind       = "electrical"
+scope      = "full"
+typ        = 550
+unit       = "mV"
+conditions = "VDS_THR = 0x05"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_5"
+
+[param.vds_thr_6]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_6"
+kind       = "electrical"
+scope      = "full"
+typ        = 600
+unit       = "mV"
+conditions = "VDS_THR = 0x06"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_6"
+
+[param.vds_thr_7]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_7"
+kind       = "electrical"
+scope      = "full"
+typ        = 650
+unit       = "mV"
+conditions = "VDS_THR = 0x07"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_7"
+
+[param.vds_thr_8]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_8"
+kind       = "electrical"
+scope      = "full"
+typ        = 700
+unit       = "mV"
+conditions = "VDS_THR = 0x08"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_8"
+
+[param.vds_thr_9]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_9"
+kind       = "electrical"
+scope      = "full"
+typ        = 750
+unit       = "mV"
+conditions = "VDS_THR = 0x09"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_9"
+
+[param.vds_thr_10]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_10"
+kind       = "electrical"
+scope      = "full"
+typ        = 800
+unit       = "mV"
+conditions = "VDS_THR = 0x0A"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_10"
+
+[param.vds_thr_11]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_11"
+kind       = "electrical"
+scope      = "full"
+typ        = 850
+unit       = "mV"
+conditions = "VDS_THR = 0x0B"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_11"
+
+[param.vds_thr_12]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_12"
+kind       = "electrical"
+scope      = "full"
+typ        = 900
+unit       = "mV"
+conditions = "VDS_THR = 0x0C"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_12"
+
+[param.vds_thr_13]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_13"
+kind       = "electrical"
+scope      = "full"
+typ        = 950
+unit       = "mV"
+conditions = "VDS_THR = 0x0D"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_13"
+
+[param.vds_thr_14]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_14"
+kind       = "electrical"
+scope      = "full"
+typ        = 1000
+unit       = "mV"
+conditions = "VDS_THR = 0x0E"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_14"
+
+[param.vds_thr_15]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_15"
+kind       = "electrical"
+scope      = "full"
+typ        = 1050
+unit       = "mV"
+conditions = "VDS_THR = 0x0F"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_15"
+
+[param.vds_thr_16]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_16"
+kind       = "electrical"
+scope      = "full"
+typ        = 1100
+unit       = "mV"
+conditions = "VDS_THR = 0x10"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_16"
+
+[param.vds_thr_17]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_17"
+kind       = "electrical"
+scope      = "full"
+typ        = 1150
+unit       = "mV"
+conditions = "VDS_THR = 0x11"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_17"
+
+[param.vds_thr_18]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_18"
+kind       = "electrical"
+scope      = "full"
+typ        = 1200
+unit       = "mV"
+conditions = "VDS_THR = 0x12"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_18"
+
+[param.vds_thr_19]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_19"
+kind       = "electrical"
+scope      = "full"
+typ        = 1250
+unit       = "mV"
+conditions = "VDS_THR = 0x13"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_19"
+
+[param.vds_thr_20]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_20"
+kind       = "electrical"
+scope      = "full"
+typ        = 1300
+unit       = "mV"
+conditions = "VDS_THR = 0x14"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_20"
+
+[param.vds_thr_21]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_21"
+kind       = "electrical"
+scope      = "full"
+typ        = 1350
+unit       = "mV"
+conditions = "VDS_THR = 0x15"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_21"
+
+[param.vds_thr_22]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_22"
+kind       = "electrical"
+scope      = "full"
+typ        = 1400
+unit       = "mV"
+conditions = "VDS_THR = 0x16"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_22"
+
+[param.vds_thr_23]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_23"
+kind       = "electrical"
+scope      = "full"
+typ        = 1450
+unit       = "mV"
+conditions = "VDS_THR = 0x17"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_23"
+
+[param.vds_thr_24]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_24"
+kind       = "electrical"
+scope      = "full"
+typ        = 1500
+unit       = "mV"
+conditions = "VDS_THR = 0x18"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_24"
+
+[param.vds_thr_25]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_25"
+kind       = "electrical"
+scope      = "full"
+typ        = 1550
+unit       = "mV"
+conditions = "VDS_THR = 0x19"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_25"
+
+[param.vds_thr_26]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_26"
+kind       = "electrical"
+scope      = "full"
+typ        = 1600
+unit       = "mV"
+conditions = "VDS_THR = 0x1A"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_26"
+
+[param.vds_thr_27]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_27"
+kind       = "electrical"
+scope      = "full"
+typ        = 1650
+unit       = "mV"
+conditions = "VDS_THR = 0x1B"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_27"
+
+[param.vds_thr_28]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_28"
+kind       = "electrical"
+scope      = "full"
+typ        = 1700
+unit       = "mV"
+conditions = "VDS_THR = 0x1C"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_28"
+
+[param.vds_thr_29]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_29"
+kind       = "electrical"
+scope      = "full"
+typ        = 1750
+unit       = "mV"
+conditions = "VDS_THR = 0x1D"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_29"
+
+[param.vds_thr_30]
+name       = "VDS monitor threshold"
+symbol     = "VDS_THR_30"
+kind       = "electrical"
+scope      = "full"
+typ        = 1800
+unit       = "mV"
+conditions = "VDS_THR = 0x1E"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_30"
+
+[param.vds_thr_acc]
+name       = "VDS monitor threshold accuracy"
+symbol     = "VDS_THR_ACC"
+kind       = "electrical"
+scope      = "full"
+min        = -5
+max        = 5
+unit       = "%"
+conditions = ""
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_THR_ACC"
+
+[param.vds_deglitch]
+name       = "VDS monitor shut-off deglitch time"
+symbol     = "VDS_DEGLITCH"
+kind       = "electrical"
+scope      = "full"
+typ        = 5
+unit       = "us"
+tol_pct   = [-20, 20]
+conditions = ""
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_DEGLITCH"
+note       = "Min -20 % / Max +20 % printed as offsets: stored as tol_pct."
+
+[param.vds_delay]
+name       = "VDS monitor shut-off delay time"
+symbol     = "VDS_DELAY"
+kind       = "electrical"
+scope      = "na"
+max        = 5
+unit       = "us"
+conditions = "CGATE = 30 nF, T = 105 degC (single stated temperature)"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_DELAY"
+
+[param.vds_blk]
+name       = "VDS monitor shut-off blanking time"
+symbol     = "VDS_BLK"
+kind       = "electrical"
+scope      = "full"
+typ        = 960
+unit       = "us"
+tol_pct   = [-10, 10]
+conditions = "At external MOSFET startup"
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_BLK (1)"
+note       = "DS note 1 (DS p.13): the internal counter stops if HS_GATE is forced low. Min -10 % / Max +10 % printed as offsets: stored as tol_pct."
+
+[param.vds_adc_code]
+name       = "VDS monitor ADC full-scale range resolution (code)"
+symbol     = "VDS_ADC_CONV_RES"
+kind       = "electrical"
+scope      = "full"
+min        = 0
+max        = 1023
+unit       = ""
+conditions = ""
+cite       = "DS p.12, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_ADC_CONV_RES (2)"
+note       = "DS note 2 (DS p.13): VDS[V] = VDS_ADC[22:13] * 2.4 / 1280 - 0.05 (calc.vds_from_adc_code)."
+
+[param.vds_adc_fs]
+name       = "VDS monitor ADC full-scale voltage range"
+symbol     = "VDS_ADC_CONV"
+kind       = "electrical"
+scope      = "full"
+min        = -0.05
+max        = 1.87
+unit       = "V"
+conditions = ""
+cite       = "DS p.13, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_ADC_CONV"
+
+[param.vds_adc_rate]
+name       = "VDS monitor ADC sample rate"
+symbol     = "VDS_ADC_RATE"
+kind       = "electrical"
+scope      = "full"
+typ        = 900
+unit       = "kHz"
+conditions = ""
+cite       = "DS p.13, Table 16. External MOSFET VDS protection with integrated fast 10-bits ADC, VDS_ADC_RATE"
+note       = "Printed kSample/s; stored as kHz."
+
+[param.vsense_adc_code]
+name       = "Current sense ADC full-scale range resolution (code)"
+symbol     = "VSENSE_ADC_CONV"
+kind       = "electrical"
+scope      = "full"
+min        = 0
+max        = 8191
+unit       = ""
+conditions = "VSENSE_ADC[14:2] = min((VSENSE/160 * 8192), 8191)"
+cite       = "DS p.13, Table 17. Integrated 13-bit ADC for ILOAD measure based on VSENSE (= VISNS_P - VISNS_N), VSENSE_ADC_CONV (1)(2)"
+note       = "DS conflict: footnote 1 prints code * 160 / 1024 mV, a misprint (13-bit field [14:2], 8191 clamp and VSENSE_FSR 160 mV all require / 8192). calc.vsense_from_csa_code uses this test condition: VSENSE = code * 160 / 8192 mV."
+
+[param.vsense_refresh]
+name       = "Current sense ADC sample rate"
+symbol     = "VSENSE_REFRESH"
+kind       = "electrical"
+scope      = "full"
+typ        = 2.4
+unit       = "kHz"
+conditions = ""
+cite       = "DS p.13, Table 17. Integrated 13-bit ADC for ILOAD measure based on VSENSE (= VISNS_P - VISNS_N), VSENSE_REFRESH"
+note       = "Printed kSample/s; stored as kHz."
+
+[param.vsense_acc_6mv]
+name       = "Digital current sense accuracy"
+symbol     = "VSENSE_ACC_6mV"
+kind       = "electrical"
+scope      = "full"
+min        = -10
+max        = 10
+unit       = "%"
+conditions = "6 mV < VSENSE < 10 mV"
+cite       = "DS p.13, Table 17. Integrated 13-bit ADC for ILOAD measure based on VSENSE (= VISNS_P - VISNS_N), VSENSE_ACC_6mV"
+
+[param.vsense_acc_10mv]
+name       = "Digital current sense accuracy"
+symbol     = "VSENSE_ACC_10mV"
+kind       = "electrical"
+scope      = "full"
+min        = -5
+max        = 5
+unit       = "%"
+conditions = "10 mV < VSENSE < 20 mV"
+cite       = "DS p.13, Table 17. Integrated 13-bit ADC for ILOAD measure based on VSENSE (= VISNS_P - VISNS_N), VSENSE_ACC_10mV"
+
+[param.vsense_acc_20mv]
+name       = "Digital current sense accuracy"
+symbol     = "VSENSE_ACC_20mV"
+kind       = "electrical"
+scope      = "full"
+min        = -3
+max        = 3
+unit       = "%"
+conditions = "VSENSE > 20 mV"
+cite       = "DS p.13, Table 17. Integrated 13-bit ADC for ILOAD measure based on VSENSE (= VISNS_P - VISNS_N), VSENSE_ACC_20mV"
+
+[param.vsense_acc_3mv]
+name       = "Digital current sense accuracy"
+symbol     = "VSENSE_ACC_3mV"
+kind       = "electrical"
+scope      = "full"
+min        = -17
+max        = 17
+unit       = "%"
+conditions = "3 mV < VSENSE < 6 mV"
+cite       = "DS p.13, Table 17. Integrated 13-bit ADC for ILOAD measure based on VSENSE (= VISNS_P - VISNS_N), VSENSE_ACC_3mV"
+
+[param.vsense_acc_1p8mv]
+name       = "Digital current sense accuracy"
+symbol     = "VSENSE_ACC_1.8mV"
+kind       = "electrical"
+scope      = "full"
+min        = -0.5
+max        = 0.5
+unit       = "mV"
+conditions = "1.8 mV < VSENSE < 3 mV"
+cite       = "DS p.13, Table 17. Integrated 13-bit ADC for ILOAD measure based on VSENSE (= VISNS_P - VISNS_N), VSENSE_ACC_1.8mV"
+
+[param.vhsc_thr_range]
+name       = "Hard short circuit protection threshold range (16 steps, HSC_THR field in CR#2)"
+symbol     = "VHSC_THR_RANGE"
+kind       = "electrical"
+scope      = "full"
+min        = 20
+max        = 160
+unit       = "mV"
+conditions = ""
+cite       = "DS p.13, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_THR_RANGE"
+
+[param.vhsc_thr_0]
+name       = "Hard short circuit protection threshold"
+symbol     = "VHSC_THR_0"
+kind       = "electrical"
+scope      = "full"
+typ        = 20
+unit       = "mV"
+conditions = "HSC_THR = 0x0"
+cite       = "DS p.13, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_THR_0"
+
+[param.vhsc_thr_1]
+name       = "Hard short circuit protection threshold"
+symbol     = "VHSC_THR_1"
+kind       = "electrical"
+scope      = "full"
+typ        = 23
+unit       = "mV"
+conditions = "HSC_THR = 0x1"
+cite       = "DS p.13, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_THR_1"
+
+[param.vhsc_thr_2]
+name       = "Hard short circuit protection threshold"
+symbol     = "VHSC_THR_2"
+kind       = "electrical"
+scope      = "full"
+typ        = 26.4
+unit       = "mV"
+conditions = "HSC_THR = 0x2"
+cite       = "DS p.13, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_THR_2"
+
+[param.vhsc_thr_3]
+name       = "Hard short circuit protection threshold"
+symbol     = "VHSC_THR_3"
+kind       = "electrical"
+scope      = "full"
+typ        = 30.3
+unit       = "mV"
+conditions = "HSC_THR = 0x3"
+cite       = "DS p.13, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_THR_3"
+
+[param.vhsc_thr_4]
+name       = "Hard short circuit protection threshold"
+symbol     = "VHSC_THR_4"
+kind       = "electrical"
+scope      = "full"
+typ        = 34.8
+unit       = "mV"
+conditions = "HSC_THR = 0x4"
+cite       = "DS p.13, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_THR_4"
+
+[param.vhsc_thr_5]
+name       = "Hard short circuit protection threshold"
+symbol     = "VHSC_THR_5"
+kind       = "electrical"
+scope      = "full"
+typ        = 40
+unit       = "mV"
+conditions = "HSC_THR = 0x5"
+cite       = "DS p.13, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_THR_5"
+
+[param.vhsc_thr_6]
+name       = "Hard short circuit protection threshold"
+symbol     = "VHSC_THR_6"
+kind       = "electrical"
+scope      = "full"
+typ        = 45.9
+unit       = "mV"
+conditions = "HSC_THR = 0x6"
+cite       = "DS p.13, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_THR_6"
+
+[param.vhsc_thr_7]
+name       = "Hard short circuit protection threshold"
+symbol     = "VHSC_THR_7"
+kind       = "electrical"
+scope      = "full"
+typ        = 52.8
+unit       = "mV"
+conditions = "HSC_THR = 0x7"
+cite       = "DS p.13, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_THR_7"
+
+[param.vhsc_thr_8]
+name       = "Hard short circuit protection threshold"
+symbol     = "VHSC_THR_8"
+kind       = "electrical"
+scope      = "full"
+typ        = 60.6
+unit       = "mV"
+conditions = "HSC_THR = 0x8"
+cite       = "DS p.13, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_THR_8"
+
+[param.vhsc_thr_9]
+name       = "Hard short circuit protection threshold"
+symbol     = "VHSC_THR_9"
+kind       = "electrical"
+scope      = "full"
+typ        = 69.6
+unit       = "mV"
+conditions = "HSC_THR = 0x9"
+cite       = "DS p.13, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_THR_9"
+
+[param.vhsc_thr_10]
+name       = "Hard short circuit protection threshold"
+symbol     = "VHSC_THR_10"
+kind       = "electrical"
+scope      = "full"
+typ        = 80
+unit       = "mV"
+conditions = "HSC_THR = 0xA"
+cite       = "DS p.13, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_THR_10"
+
+[param.vhsc_thr_11]
+name       = "Hard short circuit protection threshold"
+symbol     = "VHSC_THR_11"
+kind       = "electrical"
+scope      = "full"
+typ        = 91.9
+unit       = "mV"
+conditions = "HSC_THR = 0xB"
+cite       = "DS p.13, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_THR_11"
+
+[param.vhsc_thr_12]
+name       = "Hard short circuit protection threshold"
+symbol     = "VHSC_THR_12"
+kind       = "electrical"
+scope      = "full"
+typ        = 105.6
+unit       = "mV"
+conditions = "HSC_THR = 0xC"
+cite       = "DS p.13, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_THR_12"
+
+[param.vhsc_thr_13]
+name       = "Hard short circuit protection threshold"
+symbol     = "VHSC_THR_13"
+kind       = "electrical"
+scope      = "full"
+typ        = 121.3
+unit       = "mV"
+conditions = "HSC_THR = 0xD"
+cite       = "DS p.13, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_THR_13"
+
+[param.vhsc_thr_14]
+name       = "Hard short circuit protection threshold"
+symbol     = "VHSC_THR_14"
+kind       = "electrical"
+scope      = "full"
+typ        = 139.3
+unit       = "mV"
+conditions = "HSC_THR = 0xE"
+cite       = "DS p.14, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_THR_14"
+
+[param.vhsc_thr_15]
+name       = "Hard short circuit protection threshold"
+symbol     = "VHSC_THR_15"
+kind       = "electrical"
+scope      = "full"
+typ        = 160
+unit       = "mV"
+conditions = "HSC_THR = 0xF"
+cite       = "DS p.14, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_THR_15"
+
+[param.vhsc_thr_acc]
+name       = "Hard short circuit protection threshold accuracy"
+symbol     = "VHSC_THR_ACC"
+kind       = "electrical"
+scope      = "full"
+min        = -5
+max        = 5
+unit       = "%"
+conditions = ""
+cite       = "DS p.14, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_THR_ACC"
+
+[param.vhsc_delay]
+name       = "Hard short circuit protection delay time"
+symbol     = "VHSC_DELAY"
+kind       = "electrical"
+scope      = "na"
+max        = 5
+unit       = "us"
+conditions = "CGATE = 30 nF, T = 105 degC (single stated temperature)"
+cite       = "DS p.14, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_DELAY"
+
+[param.vhsc_adc_code]
+name       = "Hard short circuit protection ADC full range resolution (code)"
+symbol     = "VHSC_ADC_CONV"
+kind       = "electrical"
+scope      = "full"
+min        = 0
+max        = 1023
+unit       = ""
+conditions = ""
+cite       = "DS p.14, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_ADC_CONV (1)(2)"
+note       = "DS note 1: VSENSE[mV] = VHSC_ADC[9:0] * 160 / 1024 (calc.vsense_from_hsc_code). DS note 2: IOUT[A] = VSENSE[mV] / RSENSE[mohm]."
+
+[param.vhsc_adc_rate]
+name       = "Hard short circuit ADC sample rate"
+symbol     = "VHSC_ADC_RATE"
+kind       = "electrical"
+scope      = "full"
+typ        = 900
+unit       = "kHz"
+conditions = ""
+cite       = "DS p.14, Table 18. Load hard short circuit (HSC) protection with integrated 10-bit ADC, VHSC_ADC_RATE"
+note       = "Printed kSample/s; stored as kHz."
+
+[param.vovc_thr_range]
+name       = "Overcurrent protection threshold range (32 steps, OVC_THR field in CR#2)"
+symbol     = "VOVC_THR_RANGE"
+kind       = "electrical"
+scope      = "full"
+min        = 6
+max        = 90
+unit       = "mV"
+conditions = ""
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_RANGE"
+
+[param.vovc_thr_0]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_0"
+kind       = "electrical"
+scope      = "full"
+typ        = 6
+unit       = "mV"
+conditions = "OVC_THR = 0x00"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_0"
+
+[param.vovc_thr_1]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_1"
+kind       = "electrical"
+scope      = "full"
+typ        = 7.2
+unit       = "mV"
+conditions = "OVC_THR = 0x01"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_1"
+
+[param.vovc_thr_2]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_2"
+kind       = "electrical"
+scope      = "full"
+typ        = 8.7
+unit       = "mV"
+conditions = "OVC_THR = 0x02"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_2"
+
+[param.vovc_thr_3]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_3"
+kind       = "electrical"
+scope      = "full"
+typ        = 10.4
+unit       = "mV"
+conditions = "OVC_THR = 0x03"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_3"
+
+[param.vovc_thr_4]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_4"
+kind       = "electrical"
+scope      = "full"
+typ        = 11.8
+unit       = "mV"
+conditions = "OVC_THR = 0x04"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_4"
+
+[param.vovc_thr_5]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_5"
+kind       = "electrical"
+scope      = "full"
+typ        = 13
+unit       = "mV"
+conditions = "OVC_THR = 0x05"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_5"
+
+[param.vovc_thr_6]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_6"
+kind       = "electrical"
+scope      = "full"
+typ        = 13.8
+unit       = "mV"
+conditions = "OVC_THR = 0x06"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_6"
+
+[param.vovc_thr_7]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_7"
+kind       = "electrical"
+scope      = "full"
+typ        = 14.8
+unit       = "mV"
+conditions = "OVC_THR = 0x07"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_7"
+
+[param.vovc_thr_8]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_8"
+kind       = "electrical"
+scope      = "full"
+typ        = 15.8
+unit       = "mV"
+conditions = "OVC_THR = 0x08"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_8"
+
+[param.vovc_thr_9]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_9"
+kind       = "electrical"
+scope      = "full"
+typ        = 16.8
+unit       = "mV"
+conditions = "OVC_THR = 0x09"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_9"
+
+[param.vovc_thr_10]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_10"
+kind       = "electrical"
+scope      = "full"
+typ        = 17.9
+unit       = "mV"
+conditions = "OVC_THR = 0x0A"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_10"
+
+[param.vovc_thr_11]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_11"
+kind       = "electrical"
+scope      = "full"
+typ        = 19.1
+unit       = "mV"
+conditions = "OVC_THR = 0x0B"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_11"
+
+[param.vovc_thr_12]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_12"
+kind       = "electrical"
+scope      = "full"
+typ        = 20.4
+unit       = "mV"
+conditions = "OVC_THR = 0x0C"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_12"
+
+[param.vovc_thr_13]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_13"
+kind       = "electrical"
+scope      = "full"
+typ        = 21.8
+unit       = "mV"
+conditions = "OVC_THR = 0x0D"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_13"
+
+[param.vovc_thr_14]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_14"
+kind       = "electrical"
+scope      = "full"
+typ        = 23.3
+unit       = "mV"
+conditions = "OVC_THR = 0x0E"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_14"
+
+[param.vovc_thr_15]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_15"
+kind       = "electrical"
+scope      = "full"
+typ        = 24.8
+unit       = "mV"
+conditions = "OVC_THR = 0x0F"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_15"
+
+[param.vovc_thr_16]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_16"
+kind       = "electrical"
+scope      = "full"
+typ        = 26.5
+unit       = "mV"
+conditions = "OVC_THR = 0x10"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_16"
+
+[param.vovc_thr_17]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_17"
+kind       = "electrical"
+scope      = "full"
+typ        = 28.2
+unit       = "mV"
+conditions = "OVC_THR = 0x11"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_17"
+
+[param.vovc_thr_18]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_18"
+kind       = "electrical"
+scope      = "full"
+typ        = 30.1
+unit       = "mV"
+conditions = "OVC_THR = 0x12"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_18"
+
+[param.vovc_thr_19]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_19"
+kind       = "electrical"
+scope      = "full"
+typ        = 32.2
+unit       = "mV"
+conditions = "OVC_THR = 0x13"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_19"
+
+[param.vovc_thr_20]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_20"
+kind       = "electrical"
+scope      = "full"
+typ        = 34.3
+unit       = "mV"
+conditions = "OVC_THR = 0x14"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_20"
+
+[param.vovc_thr_21]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_21"
+kind       = "electrical"
+scope      = "full"
+typ        = 36.6
+unit       = "mV"
+conditions = "OVC_THR = 0x15"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_21"
+
+[param.vovc_thr_22]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_22"
+kind       = "electrical"
+scope      = "full"
+typ        = 39.1
+unit       = "mV"
+conditions = "OVC_THR = 0x16"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_22"
+
+[param.vovc_thr_23]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_23"
+kind       = "electrical"
+scope      = "full"
+typ        = 41.7
+unit       = "mV"
+conditions = "OVC_THR = 0x17"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_23"
+
+[param.vovc_thr_24]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_24"
+kind       = "electrical"
+scope      = "full"
+typ        = 44.5
+unit       = "mV"
+conditions = "OVC_THR = 0x18"
+cite       = "DS p.15, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_24"
+
+[param.vovc_thr_25]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_25"
+kind       = "electrical"
+scope      = "full"
+typ        = 47.5
+unit       = "mV"
+conditions = "OVC_THR = 0x19"
+cite       = "DS p.15, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_25"
+
+[param.vovc_thr_26]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_26"
+kind       = "electrical"
+scope      = "full"
+typ        = 50.6
+unit       = "mV"
+conditions = "OVC_THR = 0x1A"
+cite       = "DS p.15, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_26"
+
+[param.vovc_thr_27]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_27"
+kind       = "electrical"
+scope      = "full"
+typ        = 54
+unit       = "mV"
+conditions = "OVC_THR = 0x1B"
+cite       = "DS p.15, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_27"
+
+[param.vovc_thr_28]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_28"
+kind       = "electrical"
+scope      = "full"
+typ        = 61.3
+unit       = "mV"
+conditions = "OVC_THR = 0x1C"
+cite       = "DS p.15, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_28"
+
+[param.vovc_thr_29]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_29"
+kind       = "electrical"
+scope      = "full"
+typ        = 69.5
+unit       = "mV"
+conditions = "OVC_THR = 0x1D"
+cite       = "DS p.15, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_29"
+
+[param.vovc_thr_30]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_30"
+kind       = "electrical"
+scope      = "full"
+typ        = 78.8
+unit       = "mV"
+conditions = "OVC_THR = 0x1E"
+cite       = "DS p.15, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_30"
+
+[param.vovc_thr_31]
+name       = "Overcurrent protection threshold"
+symbol     = "VOVC_THR_31"
+kind       = "electrical"
+scope      = "full"
+typ        = 89.3
+unit       = "mV"
+conditions = "OVC_THR = 0x1F"
+cite       = "DS p.15, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, VOVC_THR_31"
+
+[param.vovc_acc_0_2]
+name       = "Overcurrent protection threshold accuracy, settings 0x00 to 0x02"
+symbol     = "VOVC_THR_ACC"
+kind       = "electrical"
+scope      = "full"
+min        = -12
+max        = 12
+unit       = "%"
+conditions = "OVC_THR = 0x00 to 0x02 (merged cell)"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, accuracy (merged rows 0x00 to 0x02)"
+
+[param.vovc_acc_3_12]
+name       = "Overcurrent protection threshold accuracy, settings 0x03 to 0x0C"
+symbol     = "VOVC_THR_ACC"
+kind       = "electrical"
+scope      = "full"
+min        = -7
+max        = 7
+unit       = "%"
+conditions = "OVC_THR = 0x03 to 0x0C (merged cell)"
+cite       = "DS p.14, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, accuracy (merged rows 0x03 to 0x0C)"
+
+[param.vovc_acc_13_31]
+name       = "Overcurrent protection threshold accuracy, settings 0x0D to 0x1F"
+symbol     = "VOVC_THR_ACC"
+kind       = "electrical"
+scope      = "full"
+min        = -5
+max        = 5
+unit       = "%"
+conditions = "OVC_THR = 0x0D to 0x1F (merged cells)"
+cite       = "DS p.14, Table 19 (rows 0x0D to 0x17) and DS p.15, Table 19 (rows 0x18 to 0x1F). Load overcurrent (OVC) protection with integrated 10-bits ADC, accuracy"
+
+[param.i_time_tol_t]
+name       = "I-t tolerance on time step (y axis)"
+symbol     = "i-time_tol_t"
+kind       = "electrical"
+scope      = "full"
+text       = "(t-10%) - 32 (min) ; (t+10%) + 32 (max), t in us"
+unit       = "us"
+conditions = ""
+cite       = "DS p.15, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, i-time_tol_t"
+note       = "Printed as formulas in words (the tolerance depends on the time step t): stored as text."
+
+[param.ti_sampling]
+name       = "I2t algorithm sampling time"
+symbol     = "tI_SAMPLING"
+kind       = "electrical"
+scope      = "full"
+typ        = 61
+unit       = "us"
+tol_pct   = [-10, 10]
+conditions = ""
+cite       = "DS p.15, Table 19. Load overcurrent (OVC) protection with integrated 10-bits ADC, tI_SAMPLING"
+note       = "Min -10 % / Max +10 % printed as offsets: stored as tol_pct."
+
+[param.vout_adc_code]
+name       = "VOUT ADC full range resolution (code)"
+symbol     = "VOUT_ADC_CONV"
+kind       = "electrical"
+scope      = "full"
+min        = 0
+max        = 1023
+unit       = ""
+conditions = ""
+cite       = "DS p.15, Table 20. Output voltage (VOUT) sensing with integrated 10-bits ADC, VOUT_ADC_CONV (1)"
+note       = "DS note 1: VOUT[mV] = VOUT_ADC[11:2] * 1.2 * 51 / 1024 (printed mV; the numbers give volts, see calc.vout_from_adc_code)."
+
+[param.vout_adc_rate]
+name       = "VOUT ADC sample rate"
+symbol     = "VOUT_ADC_RATE"
+kind       = "electrical"
+scope      = "full"
+typ        = 4.9
+unit       = "kHz"
+conditions = ""
+cite       = "DS p.15, Table 20. Output voltage (VOUT) sensing with integrated 10-bits ADC, VOUT_ADC_RATE"
+note       = "Printed kSample/s; stored as kHz."
+
+[param.vout_acc_1v]
+name       = "Output voltage accuracy"
+symbol     = "VOUT_ACC_1V"
+kind       = "electrical"
+scope      = "full"
+min        = -18
+max        = 18
+unit       = "%"
+conditions = "1 V < VOUT <= 2 V"
+cite       = "DS p.15, Table 20. Output voltage (VOUT) sensing with integrated 10-bits ADC, VOUT_ACC_1V"
+
+[param.vout_acc_2v]
+name       = "Output voltage accuracy"
+symbol     = "VOUT_ACC_2V"
+kind       = "electrical"
+scope      = "full"
+min        = -9
+max        = 9
+unit       = "%"
+conditions = "2 V < VOUT <= 3 V"
+cite       = "DS p.15, Table 20. Output voltage (VOUT) sensing with integrated 10-bits ADC, VOUT_ACC_2V"
+
+[param.vout_acc_3v]
+name       = "Output voltage accuracy"
+symbol     = "VOUT_ACC_3V"
+kind       = "electrical"
+scope      = "full"
+min        = -6
+max        = 6
+unit       = "%"
+conditions = "3 V < VOUT <= 12 V"
+cite       = "DS p.15, Table 20. Output voltage (VOUT) sensing with integrated 10-bits ADC, VOUT_ACC_3V"
+
+[param.vout_acc_12v]
+name       = "Output voltage accuracy"
+symbol     = "VOUT_ACC_12V"
+kind       = "electrical"
+scope      = "full"
+min        = -3
+max        = 3
+unit       = "%"
+conditions = "12 V < VOUT <= 60 V"
+cite       = "DS p.15, Table 20. Output voltage (VOUT) sensing with integrated 10-bits ADC, VOUT_ACC_12V"
+
+[param.vntc_fsr]
+name       = "NTC input voltage full-scale range"
+symbol     = "VNTC_FSR"
+kind       = "electrical"
+scope      = "full"
+min        = -1.2
+max        = 0
+unit       = "V"
+conditions = ""
+min_ref    = "ISNS_N"
+max_ref    = "ISNS_N"
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_FSR"
+note       = "Printed min VISNS_N - 1.2 V and max VISNS_N: both relative to ISNS_N (min_ref / max_ref = ISNS_N)."
+
+[param.vntc_m_out]
+name       = "NTC_M output voltage"
+symbol     = "VNTC_M"
+kind       = "electrical"
+scope      = "full"
+text       = "VISNS_N - 1.2"
+unit       = "V"
+conditions = ""
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_M"
+note       = "Printed typ VISNS_N - 1.2 V: a formula, stored as text."
+
+[param.vntc_acc]
+name       = "NTC input voltage threshold accuracy"
+symbol     = "VNTC_ACC"
+kind       = "electrical"
+scope      = "full"
+min        = -5
+max        = 5
+unit       = "mV"
+conditions = ""
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_ACC"
+
+[param.vntc_thr_0]
+name       = "NTC input voltage threshold (external MOSFET thermal shutdown)"
+symbol     = "VNTC_THR_0"
+kind       = "electrical"
+scope      = "full"
+typ        = 110.92
+unit       = "mV"
+conditions = "NTC_THR = 0x0"
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_THR_0"
+
+[param.vntc_thr_1]
+name       = "NTC input voltage threshold (external MOSFET thermal shutdown)"
+symbol     = "VNTC_THR_1"
+kind       = "electrical"
+scope      = "full"
+typ        = 98.76
+unit       = "mV"
+conditions = "NTC_THR = 0x1"
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_THR_1"
+
+[param.vntc_thr_2]
+name       = "NTC input voltage threshold (external MOSFET thermal shutdown)"
+symbol     = "VNTC_THR_2"
+kind       = "electrical"
+scope      = "full"
+typ        = 88.07
+unit       = "mV"
+conditions = "NTC_THR = 0x2"
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_THR_2"
+
+[param.vntc_thr_3]
+name       = "NTC input voltage threshold (external MOSFET thermal shutdown)"
+symbol     = "VNTC_THR_3"
+kind       = "electrical"
+scope      = "full"
+typ        = 78.66
+unit       = "mV"
+conditions = "NTC_THR = 0x3"
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_THR_3"
+
+[param.vntc_thr_4]
+name       = "NTC input voltage threshold (external MOSFET thermal shutdown)"
+symbol     = "VNTC_THR_4"
+kind       = "electrical"
+scope      = "full"
+typ        = 70.38
+unit       = "mV"
+conditions = "NTC_THR = 0x4"
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_THR_4"
+
+[param.vntc_thr_5]
+name       = "NTC input voltage threshold (external MOSFET thermal shutdown)"
+symbol     = "VNTC_THR_5"
+kind       = "electrical"
+scope      = "full"
+typ        = 63.08
+unit       = "mV"
+conditions = "NTC_THR = 0x5"
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_THR_5"
+
+[param.vntc_thr_6]
+name       = "NTC input voltage threshold (external MOSFET thermal shutdown)"
+symbol     = "VNTC_THR_6"
+kind       = "electrical"
+scope      = "full"
+typ        = 56.64
+unit       = "mV"
+conditions = "NTC_THR = 0x6"
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_THR_6"
+
+[param.vntc_thr_7]
+name       = "NTC input voltage threshold (external MOSFET thermal shutdown)"
+symbol     = "VNTC_THR_7"
+kind       = "electrical"
+scope      = "full"
+typ        = 50.95
+unit       = "mV"
+conditions = "NTC_THR = 0x7"
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_THR_7"
+
+[param.vntc_thr_8]
+name       = "NTC input voltage threshold (external MOSFET thermal shutdown)"
+symbol     = "VNTC_THR_8"
+kind       = "electrical"
+scope      = "full"
+typ        = 45.92
+unit       = "mV"
+conditions = "NTC_THR = 0x8"
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_THR_8"
+
+[param.vntc_thr_9]
+name       = "NTC input voltage threshold (external MOSFET thermal shutdown)"
+symbol     = "VNTC_THR_9"
+kind       = "electrical"
+scope      = "full"
+typ        = 41.46
+unit       = "mV"
+conditions = "NTC_THR = 0x9"
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_THR_9"
+
+[param.vntc_thr_10]
+name       = "NTC input voltage threshold (external MOSFET thermal shutdown)"
+symbol     = "VNTC_THR_10"
+kind       = "electrical"
+scope      = "full"
+typ        = 37.5
+unit       = "mV"
+conditions = "NTC_THR = 0xA"
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_THR_10"
+
+[param.vntc_thr_11]
+name       = "NTC input voltage threshold (external MOSFET thermal shutdown)"
+symbol     = "VNTC_THR_11"
+kind       = "electrical"
+scope      = "full"
+typ        = 37.5
+unit       = "mV"
+conditions = "NTC_THR = 0xB"
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_THR_11"
+
+[param.vntc_thr_12]
+name       = "NTC input voltage threshold (external MOSFET thermal shutdown)"
+symbol     = "VNTC_THR_12"
+kind       = "electrical"
+scope      = "full"
+typ        = 37.5
+unit       = "mV"
+conditions = "NTC_THR = 0xC"
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_THR_12"
+
+[param.vntc_thr_13]
+name       = "NTC input voltage threshold (external MOSFET thermal shutdown)"
+symbol     = "VNTC_THR_13"
+kind       = "electrical"
+scope      = "full"
+typ        = 37.5
+unit       = "mV"
+conditions = "NTC_THR = 0xD"
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_THR_13"
+
+[param.vntc_thr_14]
+name       = "NTC input voltage threshold (external MOSFET thermal shutdown)"
+symbol     = "VNTC_THR_14"
+kind       = "electrical"
+scope      = "full"
+typ        = 37.5
+unit       = "mV"
+conditions = "NTC_THR = 0xE"
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_THR_14"
+
+[param.vntc_thr_15]
+name       = "NTC input voltage threshold (external MOSFET thermal shutdown)"
+symbol     = "VNTC_THR_15"
+kind       = "electrical"
+scope      = "full"
+typ        = 37.5
+unit       = "mV"
+conditions = "NTC_THR = 0xF"
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_THR_15"
+
+[param.vntc_deglitch]
+name       = "External MOSFET thermal shutdown deglitch time"
+symbol     = "VNTC_DEGLITCH"
+kind       = "electrical"
+scope      = "full"
+min        = 10
+max        = 500
+unit       = "us"
+conditions = ""
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_DEGLITCH"
+
+[param.vntc_adc_code]
+name       = "External MOSFET thermal shutdown ADC full range resolution (code)"
+symbol     = "VNTC_ADC_CONV"
+kind       = "electrical"
+scope      = "full"
+min        = 0
+max        = 1023
+unit       = ""
+conditions = ""
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_ADC_CONV (1)"
+note       = "DS note 1: VNTC[V] = VNTC_ADC[11:2] * 1.2 / 1024 (calc.vntc_from_adc_code). RNTC[ohm] = VNTC * RT_REF / (VBG - VNTC) (calc.r_ntc)."
+
+[param.vntc_adc_rate]
+name       = "External MOSFET thermal shutdown ADC sample rate"
+symbol     = "VNTC_ADC_RATE"
+kind       = "electrical"
+scope      = "full"
+typ        = 4.9
+unit       = "kHz"
+conditions = ""
+cite       = "DS p.16, Table 21. External MOSFET thermal shutdown via NTC input, VNTC_ADC_RATE"
+note       = "Printed kSample/s; stored as kHz."
+
+[param.vbg]
+name       = "NTC bridge reference voltage VBG"
+symbol     = "VBG"
+kind       = "electrical"
+scope      = "na"
+typ        = 1.2
+unit       = "V"
+conditions = ""
+cite       = "DS p.17, Figure 4. NTC bridge, note VBG = 1.2 V (also DS p.39: VBG = VISNS_N - VNTC_M, typ. 1.2 V)"
+note       = "Typical only (no MIN or MAX printed). Used by calc.r_ntc via INPUTS vbg.typ."
+
+[param.rt_ref_nom]
+name       = "NTC bridge reference resistor RT_REF (recommended)"
+symbol     = "RT_REF"
+kind       = "electrical"
+scope      = "na"
+typ        = 12
+unit       = "kohm"
+tol_pct   = [-1, 1]
+conditions = "recommended value, Figure 4 note and Table 64"
+cite       = "DS p.17, Figure 4. NTC bridge, note RT_REF = 12 kohm +/-1 %; DS p.68, Table 64. Components value, RT_REF"
+note       = "Recommended external value, not a device parameter. Its +/-1 % is stored as tol_pct."
+
+[param.vds_bypass_sat]
+name       = "Bypass switch VDS saturation protection threshold"
+symbol     = "VDS_BYPASS_SAT"
+kind       = "electrical"
+scope      = "full"
+min        = 1
+max        = 2
+unit       = "V"
+conditions = ""
+cite       = "DS p.17, Table 22. P-channel bypass, VDS_BYPASS_SAT"
+
+[param.ibypass_sat]
+name       = "Bypass switch saturation current"
+symbol     = "IBYPASS_SAT"
+kind       = "electrical"
+scope      = "full"
+min        = 297
+typ        = 572
+max        = 900
+unit       = "mA"
+conditions = "VS - VOUT = VDS_BYPASS_SAT"
+cite       = "DS p.17, Table 22. P-channel bypass, IBYPASS_SAT"
+
+[param.rds_on_bypass]
+name       = "Bypass switch on state resistance"
+symbol     = "RDS(ON)_BYPASS"
+kind       = "electrical"
+scope      = "full"
+min        = 1
+typ        = 2
+max        = 4.5
+unit       = "ohm"
+conditions = ""
+cite       = "DS p.17, Table 22. P-channel bypass, RDS(ON)_BYPASS"
+
+[param.ton_bypoff]
+name       = "HS_GATE turn-on time on bypass-shutting off"
+symbol     = "tON_BYPOFF"
+kind       = "electrical"
+scope      = "full"
+max        = 100
+unit       = "us"
+conditions = ""
+cite       = "DS p.17, Table 22. P-channel bypass, tON_BYPOFF"
+
+[param.t_bypass_sat_deglitch]
+name       = "Bypass switch saturation diagnostic de-glitch filtering time"
+symbol     = "tBYPASS_SAT_DEGLITCH"
+kind       = "electrical"
+scope      = "full"
+typ        = 5
+unit       = "us"
+tol_pct   = [-20, 20]
+conditions = "Standby state"
+cite       = "DS p.17, Table 22. P-channel bypass, tBYPASS_SAT_DEGLITCH"
+note       = "Min -20 % / Max +20 % printed as offsets: stored as tol_pct."
+
+[param.ts_t_active]
+name       = "Self-test execution time"
+symbol     = "tS_T_ACTIVE"
+kind       = "electrical"
+scope      = "full"
+typ        = 5
+unit       = "us"
+tol_pct   = [-10, 10]
+conditions = ""
+cite       = "DS p.17, Table 23. Self-test timing, tS_T_ACTIVE"
+note       = "Min -10 % / Max +10 % printed as offsets: stored as tol_pct."
+
+[param.ts_t_wait]
+name       = "Self-test wait time"
+symbol     = "tS_T_WAIT"
+kind       = "electrical"
+scope      = "full"
+typ        = 5
+unit       = "us"
+tol_pct   = [-10, 10]
+conditions = ""
+cite       = "DS p.17, Table 23. Self-test timing, tS_T_WAIT"
+note       = "Min -10 % / Max +10 % printed as offsets: stored as tol_pct."
+
+[param.cs_uv_enter]
+name       = "Entering threshold of current sense undervoltage (CS_UV = 0b to 1b in SR#1)"
+symbol     = "CS_UV"
+kind       = "electrical"
+scope      = "full"
+min        = 2.78
+typ        = 2.87
+max        = 3
+unit       = "V"
+conditions = "VISNS_P decreasing"
+cite       = "DS p.41, Table 33. Current sense undervoltage thresholds, CS_UV (entering)"
+
+[param.cs_uv_exit]
+name       = "Exiting threshold of current sense undervoltage (CS_UV = 1b to 0b in SR#1)"
+symbol     = "CS_UV"
+kind       = "electrical"
+scope      = "full"
+min        = 2.98
+typ        = 3.08
+max        = 3.18
+unit       = "V"
+conditions = "VISNS_P increasing"
+cite       = "DS p.41, Table 33. Current sense undervoltage thresholds, CS_UV (exiting)"
+
+[param.t_cs_uv_deglitch]
+name       = "Current sense fault deglitch filtering"
+symbol     = "tCS_UV_DEGLITCH"
+kind       = "electrical"
+scope      = "full"
+typ        = 10
+unit       = "us"
+tol_pct   = [-10, 10]
+conditions = "HS_GATE = on"
+cite       = "DS p.41, Table 33. Current sense undervoltage thresholds, tCS_UV_DEGLITCH"
+note       = "Min -10 % / Max +10 % printed as offsets: stored as tol_pct."
+
+[param.t_cs_uv_retry_00]
+name       = "Current sense fault clear autoretry time"
+symbol     = "tCS_UV_RETRY_TIME"
+kind       = "electrical"
+scope      = "full"
+typ        = 100
+unit       = "us"
+tol_pct   = [-5, 5]
+conditions = "CS_UV_RETRY_T = 00b"
+cite       = "DS p.41, Table 33. Current sense undervoltage thresholds, tCS_UV_RETRY_TIME, CS_UV_RETRY_T = 00b"
+note       = "Min -5 % / Max +5 % printed as offsets: stored as tol_pct."
+
+[param.t_cs_uv_retry_01]
+name       = "Current sense fault clear autoretry time"
+symbol     = "tCS_UV_RETRY_TIME"
+kind       = "electrical"
+scope      = "full"
+typ        = 250
+unit       = "us"
+tol_pct   = [-5, 5]
+conditions = "CS_UV_RETRY_T = 01b"
+cite       = "DS p.41, Table 33. Current sense undervoltage thresholds, tCS_UV_RETRY_TIME, CS_UV_RETRY_T = 01b"
+note       = "Min -5 % / Max +5 % printed as offsets: stored as tol_pct."
+
+[param.t_cs_uv_retry_10]
+name       = "Current sense fault clear autoretry time"
+symbol     = "tCS_UV_RETRY_TIME"
+kind       = "electrical"
+scope      = "full"
+typ        = 500
+unit       = "us"
+tol_pct   = [-5, 5]
+conditions = "CS_UV_RETRY_T = 10b"
+cite       = "DS p.41, Table 33. Current sense undervoltage thresholds, tCS_UV_RETRY_TIME, CS_UV_RETRY_T = 10b"
+note       = "Min -5 % / Max +5 % printed as offsets: stored as tol_pct."
+
+[param.t_cs_uv_retry_11]
+name       = "Current sense fault clear autoretry time"
+symbol     = "tCS_UV_RETRY_TIME"
+kind       = "electrical"
+scope      = "full"
+typ        = 1000
+unit       = "us"
+tol_pct   = [-5, 5]
+conditions = "CS_UV_RETRY_T = 11b"
+cite       = "DS p.41, Table 33. Current sense undervoltage thresholds, tCS_UV_RETRY_TIME, CS_UV_RETRY_T = 11b"
+note       = "Min -5 % / Max +5 % printed as offsets: stored as tol_pct."
