@@ -1,0 +1,36 @@
+# Test harness for the generated INA229AIDGS wrapper (tests/test_zen.py copies it next to the wrapper and builds it).
+# Defaults are a nominal passing 48 V high-side monitor:
+#   VS 3.3 V 5 % (3.135-3.465 V, inside rec-op 2.7-5.5 V), GND = Ground (0 V).
+#   IN+, IN- and VBUS on a 48 V 5 % bus (45.6-50.4 V, inside -0.3-85 V); IN+ - IN- worst case 4.8 V, inside +/-40 V.
+#   MOSI, SCLK, ALERT 0-3.3 V: inside GND-0.3 V to VS(min)+0.3 V = 3.435 V. ALERT is declared 0-3.3 V, not "3.3V 5%":
+#   each net's range is independent, so a pull-up declared with the same tolerance as VS would fail VS + 0.3 V even
+#   when tied to VS (correlated rails are not modelled).
+#   Ambient -40 degC to 85 degC, inside the -40 degC to 125 degC specified range.
+U = Module("./INA229AIDGS.zen")
+
+vs = config(str, default="3.3V 5%")
+vinp = config(str, default="48V 5%")
+vinn = config(str, default="48V 5%")
+vbus = config(str, default="48V 5%")
+vmosi = config(str, default="0V to 3.3V")
+ta = config(str, default="-40°C to 85°C")
+
+
+def _net(name, v):  # "unset" = a net with no voltage, which must report UNVERIFIED
+    return Net(name) if v == "unset" else Net(name, voltage=v)
+
+
+U(
+    name="U1",
+    VS=Power("VS", voltage=vs),
+    GND=Ground("GND"),
+    IN_P=_net("INP", vinp),
+    IN_N=_net("INN", vinn),
+    VBUS=_net("VBUS", vbus),
+    CS=Net("CS", voltage="0V to 3.3V"),
+    MOSI=_net("MOSI", vmosi),
+    SCLK=Net("SCLK", voltage="0V to 3.3V"),
+    MISO=Net("MISO"),
+    ALERT=Net("ALERT", voltage="0V to 3.3V"),
+    **({} if ta == "unset" else {"ambient": ta}),
+)

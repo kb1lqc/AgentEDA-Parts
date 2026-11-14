@@ -1,0 +1,66 @@
+# LTC4364 MS-package orderables (DS p.2 Order Information, MS rows; verified on the rendered page). #TRPBF = MPN
+# (tape and reel), #PBF = alternate (tube). DE and S packages and the automotive #W parts are not in this family.
+# Grade ranges: DS p.2 Absolute Maximum Ratings, Operating Ambient Temperature Range (C 0 to 70 degC, I -40 to 85 degC,
+# H -40 to 125 degC). Option: -1 latches off after a fault (DS p.11, p.15); -2 auto-retries after the cool-down.
+
+[variant."LTC4364CMS-1"]
+mpn         = "LTC4364CMS-1#TRPBF"
+alternates  = ["LTC4364CMS-1#PBF"]
+temp_grade  = "0 to 70 degC"
+description = "Surge stopper with ideal diode, MSOP-16 (MS), C grade 0 to 70 degC, -1 latch-off after fault"
+
+[variant."LTC4364CMS-1".param.dvsns_0c125c]
+name       = "Overcurrent fault threshold (VSENSE - VOUT), 0 to 125 degC row"
+symbol     = "dVSNS"
+kind       = "electrical"
+scope      = "full"
+min        = 45
+typ        = 50
+max        = 55
+unit       = "mV"
+conditions = "VCC = 4V to 80V, OUT = 2.5V to VCC, 0degC to 125degC"
+cite       = "DS p.3, Electrical Characteristics, dVSNS (row 1)"
+note       = "C grade: scope full. The 0 to 125 degC row contains the whole C range (0 to 70 degC), so for this variant it is full-range data (SPEC scope full). Not used by calc INPUTS, which use dvsns_full (valid for every grade)."
+
+[variant."LTC4364IMS-1"]
+mpn         = "LTC4364IMS-1#TRPBF"
+alternates  = ["LTC4364IMS-1#PBF"]
+temp_grade  = "-40 to 85 degC"
+description = "Surge stopper with ideal diode, MSOP-16 (MS), I grade -40 to 85 degC, -1 latch-off after fault"
+
+[variant."LTC4364HMS-1"]
+mpn         = "LTC4364HMS-1#TRPBF"
+alternates  = ["LTC4364HMS-1#PBF"]
+temp_grade  = "-40 to 125 degC"
+description = "Surge stopper with ideal diode, MSOP-16 (MS), H grade -40 to 125 degC, -1 latch-off after fault"
+
+[variant."LTC4364CMS-2"]
+mpn         = "LTC4364CMS-2#TRPBF"
+alternates  = ["LTC4364CMS-2#PBF"]
+temp_grade  = "0 to 70 degC"
+description = "Surge stopper with ideal diode, MSOP-16 (MS), C grade 0 to 70 degC, -2 auto-retry after cool-down"
+
+[variant."LTC4364CMS-2".param.dvsns_0c125c]
+name       = "Overcurrent fault threshold (VSENSE - VOUT), 0 to 125 degC row"
+symbol     = "dVSNS"
+kind       = "electrical"
+scope      = "full"
+min        = 45
+typ        = 50
+max        = 55
+unit       = "mV"
+conditions = "VCC = 4V to 80V, OUT = 2.5V to VCC, 0degC to 125degC"
+cite       = "DS p.3, Electrical Characteristics, dVSNS (row 1)"
+note       = "C grade: scope full. The 0 to 125 degC row contains the whole C range (0 to 70 degC), so for this variant it is full-range data (SPEC scope full). Not used by calc INPUTS, which use dvsns_full (valid for every grade)."
+
+[variant."LTC4364IMS-2"]
+mpn         = "LTC4364IMS-2#TRPBF"
+alternates  = ["LTC4364IMS-2#PBF"]
+temp_grade  = "-40 to 85 degC"
+description = "Surge stopper with ideal diode, MSOP-16 (MS), I grade -40 to 85 degC, -2 auto-retry after cool-down"
+
+[variant."LTC4364HMS-2"]
+mpn         = "LTC4364HMS-2#TRPBF"
+alternates  = ["LTC4364HMS-2#PBF"]
+temp_grade  = "-40 to 125 degC"
+description = "Surge stopper with ideal diode, MSOP-16 (MS), H grade -40 to 125 degC, -2 auto-retry after cool-down"

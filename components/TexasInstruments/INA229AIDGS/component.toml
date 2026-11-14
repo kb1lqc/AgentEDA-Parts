@@ -1,0 +1,1045 @@
+# INA229 (VSSOP-10, DGS) data. Raw datasheet values in printed units; no derating, no rounding.
+# DS = Texas Instruments INA229 datasheet, SLYS023A (Rev. A, revised May 2022), printed page numbers.
+# Package addendum cites are "DS PDF p.<n>" (no printed page number).
+# Table rows with no own test condition take the EC table header (TA = 25 degC, VS = 3.3 V, VSENSE = 0 V,
+# VCM = VIN- = 48 V) and are scope "25C". Judgement calls and DS ambiguities are in each row's note and in the report.
+
+[part]
+value           = "INA229AIDGS"
+mpn             = "INA229AIDGSR"
+alternates      = []
+manufacturer    = "Texas Instruments"
+description     = "85 V, 20-bit power/energy/charge monitor with SPI interface"
+category        = "power_monitor"
+package         = "VSSOP-10 (DGS0010A)"
+datasheet_url   = "https://www.ti.com/lit/ds/symlink/ina229.pdf"
+datasheet_file  = "docs/datasheets/ina229.pdf"
+datasheet_rev   = "SLYS023A"
+datasheet_date  = "2022-05"
+temp_grade      = "-40 to 125 degC"
+kicad_symbol    = "INA229AIDGS.kicad_sym"
+kicad_footprint = "INA229AIDGS.kicad_mod"
+step            = "INA229AIDGS.step"
+
+# Ordering: DS PDF p.40, Package Option Addendum (dated 7-Apr-2026): INA229AIDGSR, VSSOP (DGS) 10 pins, 2500 LARGE T&R,
+#   Active, Production, RoHS Yes, lead finish/ball material "SN", MSL "Level-2-260C-1 YEAR", Op temp -40 to 125 C,
+#   part marking 229I.
+# INA229AIDGSR.A is listed on the same page with the same packaging (2500 LARGE T&R): same part, so not an alternate.
+# Status "Active" is as printed on the addendum; revision currency, errata, PCN and lifecycle: not checked (no web access).
+# Lead finish SN (tin): tin-whisker open item (CLAUDE.md Defaults).
+
+# ---------------------------------------------------------------- pins
+# DS p.3, 5 Pin Configuration and Functions, Table 5-1 Pin Functions (ten pins, 1-10; Figure 5-1 agrees).
+# Pin types from the DS function text: "Digital input" -> input, "Digital output" -> output, "Open-drain" -> open_collector,
+#   "Analog input" -> input, "Power supply" and "Ground" -> power_in (as the reference parts).
+# Names: the DS prints IN- and IN+ with a typographic minus; ASCII "-" written as IN- (SPEC: printed minus or en dash is written ASCII "-").
+# No NC pins and no exposed pad: DS p.3 Table 5-1 lists ten signal/supply/ground pins only and no thermal pad row;
+#   DS Figure 5-1 shows ten pins.
+# Pin 1 marker: DS p.3 Figure 5-1 shows a dot at pin 1 (top-left).
+
+[[pin]]
+number   = "1"
+name     = "CS"
+type     = "input"
+function = "SPI chip select (Active Low)"
+cite     = "DS p.3, 5 Pin Configuration and Functions, Table 5-1 Pin Functions, CS (pin 1)"
+
+[[pin]]
+number   = "2"
+name     = "MOSI"
+type     = "input"
+function = "SPI digital data input"
+cite     = "DS p.3, 5 Pin Configuration and Functions, Table 5-1 Pin Functions, MOSI (pin 2)"
+
+[[pin]]
+number   = "3"
+name     = "ALERT"
+type     = "open_collector"
+function = "Open-drain alert output, default state is active low"
+cite     = "DS p.3, 5 Pin Configuration and Functions, Table 5-1 Pin Functions, ALERT (pin 3)"
+
+[[pin]]
+number   = "4"
+name     = "MISO"
+type     = "output"
+function = "SPI digital data output (push-pull)"
+cite     = "DS p.3, 5 Pin Configuration and Functions, Table 5-1 Pin Functions, MISO (pin 4)"
+
+[[pin]]
+number   = "5"
+name     = "SCLK"
+type     = "input"
+function = "SPI clock input"
+cite     = "DS p.3, 5 Pin Configuration and Functions, Table 5-1 Pin Functions, SCLK (pin 5)"
+
+[[pin]]
+number   = "6"
+name     = "VS"
+type     = "power_in"
+function = "Power supply, 2.7 V to 5.5 V"
+cite     = "DS p.3, 5 Pin Configuration and Functions, Table 5-1 Pin Functions, VS (pin 6)"
+
+[[pin]]
+number   = "7"
+name     = "GND"
+type     = "power_in"
+function = "Ground"
+cite     = "DS p.3, 5 Pin Configuration and Functions, Table 5-1 Pin Functions, GND (pin 7)"
+
+[[pin]]
+number   = "8"
+name     = "VBUS"
+type     = "input"
+function = "Bus voltage input"
+cite     = "DS p.3, 5 Pin Configuration and Functions, Table 5-1 Pin Functions, VBUS (pin 8)"
+
+[[pin]]
+number   = "9"
+name     = "IN-"
+type     = "input"
+function = "Negative input to the device. High-side: connect to load side of sense resistor. Low-side: connect to ground side of sense resistor"
+cite     = "DS p.3, 5 Pin Configuration and Functions, Table 5-1 Pin Functions, IN- (pin 9)"
+
+[[pin]]
+number   = "10"
+name     = "IN+"
+type     = "input"
+function = "Positive input to the device. High-side: connect to power supply side of sense resistor. Low-side: connect to load side of sense resistor"
+cite     = "DS p.3, 5 Pin Configuration and Functions, Table 5-1 Pin Functions, IN+ (pin 10)"
+
+# ---------------------------------------------------------------- absolute maximum ratings
+# DS p.3, 6.1 Absolute Maximum Ratings: "over operating free-air temperature range (unless otherwise noted)". Footnote (1)
+# is the usual stress statement. The DS states no pin reference for the supply, VIN and VBUS rows; the only reference
+# statements are the GND and VS references printed on the VIO row (and the VIL/VOL/VOH rows in 6.5).
+
+[param.vs_abs]
+name       = "Supply voltage"
+symbol     = "VS"
+kind       = "abs_max"
+scope      = "na"
+max        = 6
+unit       = "V"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.3, 6.1 Absolute Maximum Ratings, Supply voltage VS"
+note       = "Only a MAX is printed (MIN column blank). No reference pin printed; checked against system 0 V (a floating GND is not modelled)."
+unchecked  = "covered by vs_rec (2.7 V to 5.5 V, error), which is stricter"
+
+[param.vin_diff_abs]
+name       = "Differential input voltage, (VIN+) - (VIN-)"
+symbol     = "VIN+, VIN-"
+kind       = "abs_max"
+scope      = "na"
+min        = -40
+max        = 40
+min_ref    = "IN-"
+max_ref    = "IN-"
+unit       = "V"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.3, 6.1 Absolute Maximum Ratings, VIN+, VIN- Differential (VIN+) - (VIN-)"
+note       = "Pin-pair row: the value is V(IN+), the reference is IN- (second pin as reference). Footnote (2) on the same table: VIN+ and VIN- are the voltages at the IN+ and IN- pins. check_pins IN+ with IN- as reference."
+check_pins = ["IN+"]
+
+[param.vcm_abs]
+name       = "Common-mode input voltage, VIN+ and VIN-"
+symbol     = "VIN+, VIN-"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+max        = 85
+unit       = "V"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.3, 6.1 Absolute Maximum Ratings, VIN+, VIN- Common-mode"
+note       = "Same limits as vcm_rec (DS p.4, 6.3). No reference pin printed (DS p.12, 7.3.1 gives -0.3 V to +85 V at the input pins with no reference); checked against system 0 V (a floating GND is not modelled)."
+check_pins = ["IN+", "IN-"]
+
+[param.vbus_abs]
+name       = "Bus voltage input, VBUS"
+symbol     = "VBUS"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+max        = 85
+unit       = "V"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.3, 6.1 Absolute Maximum Ratings, VBUS"
+note       = "No reference pin printed; checked against system 0 V (a floating GND is not modelled)."
+check_pins = ["VBUS"]
+
+[param.vio_abs]
+name       = "Digital input/output voltage, MOSI, MISO, SCLK, ALERT"
+symbol     = "VIO"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+min_ref    = "GND"
+max        = 0.3
+max_ref    = "VS"
+unit       = "V"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.3, 6.1 Absolute Maximum Ratings, VIO, MOSI, MISO, SCLK, ALERT"
+note       = "Printed GND - 0.3 V (MIN) and VS + 0.3 V (MAX): min_ref = GND, max_ref = VS. CS is not in this row (DS omission, open item): CS is not checked."
+check_pins = ["MOSI", "SCLK", "ALERT"]
+unchecked  = "MISO not checked: push-pull output driven by the part; owner: module. CS: not listed in the DS VIO row (DS omission); no rating stored, open item"
+
+[param.iin_abs]
+name       = "Input current into any pin"
+symbol     = "IIN"
+kind       = "abs_max"
+scope      = "na"
+max        = 5
+unit       = "mA"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.3, 6.1 Absolute Maximum Ratings, IIN, Input current into any pin"
+note       = "MAX column only (MIN blank), stored as max."
+unchecked  = "current rating, not a voltage (the wrapper checks voltages only); owner: board"
+
+[param.iout_abs]
+name       = "Digital output current"
+symbol     = "IOUT"
+kind       = "abs_max"
+scope      = "na"
+max        = 10
+unit       = "mA"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.3, 6.1 Absolute Maximum Ratings, IOUT, Digital output current"
+note       = "MAX column only (MIN blank), stored as max."
+unchecked  = "current rating, not a voltage (the wrapper checks voltages only); owner: module"
+
+[param.tj_abs]
+name       = "Junction temperature"
+symbol     = "TJ"
+kind       = "abs_max"
+scope      = "na"
+max        = 150
+unit       = "degC"
+conditions = ""
+cite       = "DS p.3, 6.1 Absolute Maximum Ratings, TJ, Junction temperature"
+unchecked  = "needs dissipation x RthetaJA; owner: module"
+
+[param.tstg_abs]
+name       = "Storage temperature"
+symbol     = "Tstg"
+kind       = "abs_max"
+scope      = "na"
+min        = -65
+max        = 150
+unit       = "degC"
+conditions = ""
+cite       = "DS p.3, 6.1 Absolute Maximum Ratings, Tstg, Storage temperature"
+unchecked  = "owner: assembly"
+
+# ---------------------------------------------------------------- ESD ratings
+# DS p.4, 6.2 ESD Ratings. Printed +/-2000 V and +/-1000 V in the VALUE column: min = -X, max = X. ESD stored with kind
+# abs_max (no ESD kind in SPEC; same as the reference parts).
+
+[param.esd_hbm]
+name       = "Electrostatic discharge, human body model"
+symbol     = "V(ESD)"
+kind       = "abs_max"
+scope      = "na"
+min        = -2000
+max        = 2000
+unit       = "V"
+conditions = "HBM per ANSI/ESDA/JEDEC JS-001, all pins"
+cite       = "DS p.4, 6.2 ESD Ratings, Human body model (HBM), V(ESD)"
+note       = "Printed +/-2000 V. DS footnote (1): JEDEC JEP155 500 V HBM allows safe manufacturing."
+unchecked  = "owner: assembly"
+
+[param.esd_cdm]
+name       = "Electrostatic discharge, charged device model"
+symbol     = "V(ESD)"
+kind       = "abs_max"
+scope      = "na"
+min        = -1000
+max        = 1000
+unit       = "V"
+conditions = "CDM per JEDEC JESD22-C101, all pins"
+cite       = "DS p.4, 6.2 ESD Ratings, Charged device model (CDM), V(ESD)"
+note       = "Printed +/-1000 V. DS footnote (2): JEDEC JEP157 250 V CDM allows safe manufacturing."
+unchecked  = "owner: assembly"
+
+# ---------------------------------------------------------------- recommended operating conditions
+# DS p.4, 6.3 Recommended Operating Conditions: "over operating free-air temperature range (unless otherwise noted)".
+# The NOM column is blank for all three rows: no nominal stored.
+
+[param.vcm_rec]
+name       = "Common-mode input range"
+symbol     = "VCM"
+kind       = "rec_op"
+scope      = "na"
+min        = -0.3
+max        = 85
+unit       = "V"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.4, 6.3 Recommended Operating Conditions, VCM, Common-mode input range"
+note       = "No reference pin printed; checked against system 0 V (a floating GND is not modelled)."
+check_pins = ["IN+", "IN-"]
+
+[param.vs_rec]
+name       = "Operating supply range"
+symbol     = "VS"
+kind       = "rec_op"
+scope      = "na"
+min        = 2.7
+max        = 5.5
+unit       = "V"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.4, 6.3 Recommended Operating Conditions, VS, Operating supply range"
+note       = "No reference pin printed; checked against system 0 V (a floating GND is not modelled)."
+check_pins = ["VS"]
+
+[param.ta_rec]
+name       = "Ambient temperature"
+symbol     = "TA"
+kind       = "rec_op"
+scope      = "na"
+min        = -40
+max        = 125
+unit       = "degC"
+conditions = ""
+cite       = "DS p.4, 6.3 Recommended Operating Conditions, TA, Ambient temperature"
+check_ambient = true
+
+# ---------------------------------------------------------------- thermal information (DGS column only)
+# DS p.4, 6.4 Thermal Information, column "DGS (VSSOP) 10 PINS". Single printed value per row: stored as typ, never a bound.
+# RthetaJC(bot) is N/A for the DGS column and is not stored.
+
+[param.rtheta_ja]
+name       = "Junction-to-ambient thermal resistance"
+symbol     = "RthetaJA"
+kind       = "thermal"
+scope      = "na"
+typ        = 177.6
+unit       = "degC/W"
+conditions = "DGS (VSSOP), 10 pins"
+cite       = "DS p.4, 6.4 Thermal Information, RthetaJA, DGS (VSSOP) 10 PINS"
+note       = "Single printed value (no min or max), stored as typ."
+
+[param.rtheta_jc_top]
+name       = "Junction-to-case (top) thermal resistance"
+symbol     = "RthetaJC(top)"
+kind       = "thermal"
+scope      = "na"
+typ        = 66.4
+unit       = "degC/W"
+conditions = "DGS (VSSOP), 10 pins"
+cite       = "DS p.4, 6.4 Thermal Information, RthetaJC(top), DGS (VSSOP) 10 PINS"
+note       = "Single printed value (no min or max), stored as typ."
+
+[param.rtheta_jb]
+name       = "Junction-to-board thermal resistance"
+symbol     = "RthetaJB"
+kind       = "thermal"
+scope      = "na"
+typ        = 99.5
+unit       = "degC/W"
+conditions = "DGS (VSSOP), 10 pins"
+cite       = "DS p.4, 6.4 Thermal Information, RthetaJB, DGS (VSSOP) 10 PINS"
+note       = "Single printed value (no min or max), stored as typ."
+
+[param.psi_jt]
+name       = "Junction-to-top characterization parameter"
+symbol     = "PsiJT"
+kind       = "thermal"
+scope      = "na"
+typ        = 9.7
+unit       = "degC/W"
+conditions = "DGS (VSSOP), 10 pins"
+cite       = "DS p.4, 6.4 Thermal Information, PsiJT, DGS (VSSOP) 10 PINS"
+note       = "Single printed value (no min or max), stored as typ."
+
+[param.yjb]
+name       = "Junction-to-board characterization parameter"
+symbol     = "YJB"
+kind       = "thermal"
+scope      = "na"
+typ        = 97.6
+unit       = "degC/W"
+conditions = "DGS (VSSOP), 10 pins"
+cite       = "DS p.4, 6.4 Thermal Information, YJB, DGS (VSSOP) 10 PINS"
+note       = "Single printed value (no min or max), stored as typ. The DS prints YJB (not PsiJB) for this row."
+
+# ---------------------------------------------------------------- electrical characteristics
+# DS p.5 and p.6, 6.5 Electrical Characteristics. Table header: "at TA = 25 degC, VS = 3.3 V, VSENSE = VIN+ - VIN- = 0 V,
+# VCM = VIN- = 48 V (unless otherwise noted)". A row with no own test condition takes that header and is scope "25C".
+# Rows printed with TA = -40 degC to +125 degC are scope "full". Conditions are written as printed (ASCII).
+# Unit conversions to units the loader accepts (exact, digits kept): uV/V and mV/V -> ppm (1 uV/V = 1 ppm; 1 mV/V = 1000
+# ppm); m% -> % (2 m% = 0.002 %); m degC -> degC (7.8125 m degC = 0.0078125 degC); Bits and LSB -> "" (unitless count).
+# Footnote (3) (characterized, not production tested) is not printed on these rows in this DS.
+
+# --- input
+[param.vcm_full]
+name       = "Common-mode input range"
+symbol     = "VCM"
+kind       = "electrical"
+scope      = "full"
+min        = -0.3
+max        = 85
+unit       = "V"
+conditions = "TA = -40 degC to +125 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Common-mode input range VCM"
+
+[param.vbus_range_25c]
+name       = "Bus voltage input range"
+symbol     = "VVBUS"
+kind       = "electrical"
+scope      = "25C"
+min        = 0
+max        = 85
+unit       = "V"
+conditions = "no row condition; table header: TA = 25 degC, VS = 3.3 V, VSENSE = 0 V, VCM = 48 V"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Bus voltage input range VBUS"
+note       = "No own test condition: header applies (25 degC). Not in the rec-op table (DS p.4 has no VBUS row)."
+
+[param.cmrr_full]
+name       = "Common-mode rejection"
+symbol     = "CMRR"
+kind       = "electrical"
+scope      = "full"
+min        = 154
+typ        = 170
+unit       = "dB"
+conditions = "-0.3 V < VCM < 85 V, TA = -40 degC to +125 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Common-mode rejection CMRR"
+
+[param.vdiff_adcr0_full]
+name       = "Shunt voltage input range, ADCRANGE = 0"
+symbol     = "VDIFF"
+kind       = "electrical"
+scope      = "full"
+min        = -163.84
+max        = 163.84
+unit       = "mV"
+conditions = "TA = -40 degC to +125 degC, ADCRANGE = 0"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Shunt voltage input range VDIFF, ADCRANGE = 0"
+note       = "MIN -163.84 and MAX 163.84 printed with signs: stored as printed."
+
+[param.vdiff_adcr1_full]
+name       = "Shunt voltage input range, ADCRANGE = 1"
+symbol     = "VDIFF"
+kind       = "electrical"
+scope      = "full"
+min        = -40.96
+max        = 40.96
+unit       = "mV"
+conditions = "TA = -40 degC to +125 degC, ADCRANGE = 1"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Shunt voltage input range VDIFF, ADCRANGE = 1"
+note       = "MIN -40.96 and MAX 40.96 printed with signs: stored as printed."
+
+[param.vos_vcm48_25c]
+name       = "Shunt offset voltage, VCM = 48 V"
+symbol     = "Vos"
+kind       = "electrical"
+scope      = "25C"
+typ        = 0.3
+typ_pm     = true
+min        = -1
+max        = 1
+unit       = "uV"
+conditions = "VCM = 48 V, TCT > 280 us; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Shunt offset voltage Vos, VCM = 48 V"
+note       = "TYP printed +/-0.3 uV (spread around zero: typ_pm). MAX printed +/-1 uV: min = -1, max = 1. No temperature condition: header 25 degC. The full-temperature offset comes from vos_drift_full (SPEC recipe step 2)."
+
+[param.vos_vcm0_25c]
+name       = "Shunt offset voltage, VCM = 0 V"
+symbol     = "Vos"
+kind       = "electrical"
+scope      = "25C"
+typ        = 0.3
+typ_pm     = true
+min        = -1
+max        = 1
+unit       = "uV"
+conditions = "VCM = 0 V, TCT > 280 us; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Shunt offset voltage Vos, VCM = 0 V"
+note       = "TYP printed +/-0.3 uV (typ_pm). MAX printed +/-1 uV: min = -1, max = 1. No temperature condition: header 25 degC."
+
+[param.vos_drift_full]
+name       = "Shunt offset voltage drift"
+symbol     = "dVos/dT"
+kind       = "electrical"
+scope      = "full"
+typ        = 2
+typ_pm     = true
+min        = -10
+max        = 10
+unit       = "nV/degC"
+conditions = "TA = -40 degC to +125 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Shunt offset voltage drift dVos/dT"
+note       = "TYP printed +/-2 nV/degC (typ_pm); MAX printed +/-10 nV/degC: min = -10, max = 10."
+
+[param.vos_psrr_full]
+name       = "Shunt offset voltage vs power supply"
+symbol     = "PSRR"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.05
+typ_pm     = true
+min        = -0.5
+max        = 0.5
+unit       = "uV/V"
+conditions = "VS = 2.7 V to 5.5 V, TA = -40 degC to +125 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Shunt offset voltage vs power supply PSRR"
+note       = "Printed uV/V; stored as printed. TYP +/-0.05 (typ_pm), MAX +/-0.5: min = -0.5, max = 0.5."
+
+[param.vos_bus_25c]
+name       = "VBUS offset voltage"
+symbol     = "Vos_bus"
+kind       = "electrical"
+scope      = "25C"
+typ        = 1
+typ_pm     = true
+min        = -2.5
+max        = 2.5
+unit       = "mV"
+conditions = "VBUS = 20 mV; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, VBUS offset voltage Vos_bus"
+note       = "TYP printed +/-1 mV (typ_pm); MAX printed +/-2.5 mV: min = -2.5, max = 2.5. No temperature condition: header 25 degC."
+
+[param.vos_bus_drift_full]
+name       = "VBUS offset voltage drift"
+symbol     = "dVos/dT"
+kind       = "electrical"
+scope      = "full"
+typ        = 4
+typ_pm     = true
+min        = -20
+max        = 20
+unit       = "uV/degC"
+conditions = "TA = -40 degC to +125 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, VBUS offset voltage drift dVos/dT"
+note       = "TYP printed +/-4 uV/degC (typ_pm); MAX printed +/-20 uV/degC: min = -20, max = 20."
+
+[param.vos_bus_psrr_25c]
+name       = "VBUS offset voltage vs power supply"
+symbol     = "PSRR"
+kind       = "electrical"
+scope      = "25C"
+typ        = 0.25
+typ_pm     = true
+unit       = "mV/V"
+conditions = "VS = 2.7 V to 5.5 V; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, VBUS offset voltage vs power supply PSRR"
+note       = "Printed +/-0.25 mV/V in TYP (MAX blank); stored as printed (typ_pm). No temperature condition: header 25 degC."
+
+[param.ib_25c]
+name       = "Input bias current"
+symbol     = "IB"
+kind       = "electrical"
+scope      = "25C"
+sym        = true
+typ        = 0.1
+max        = 2.5
+unit       = "nA"
+conditions = "Either input, IN+ or IN-, VCM = 85 V; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Input bias current IB"
+note       = "DS prints an unsigned magnitude for a quantity that can be either sign: sym = true (min = -max), printed TYP kept as typ_spread. Single value at 25 degC."
+
+[param.zvbus_25c]
+name       = "VBUS pin input impedance"
+symbol     = "ZVBUS"
+kind       = "electrical"
+scope      = "25C"
+min        = 0.8
+typ        = 1
+max        = 1.2
+unit       = "Mohm"
+conditions = "Active mode; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, VBUS pin input impedance ZVBUS"
+
+[param.ivbus_leak_25c]
+name       = "VBUS pin leakage current"
+symbol     = "IVBUS"
+kind       = "electrical"
+scope      = "25C"
+typ        = 10
+unit       = "nA"
+conditions = "Shutdown mode, VBUS = 85 V; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, VBUS pin leakage current IVBUS"
+note       = "TYP only, no MIN or MAX printed."
+
+[param.rdiff_25c]
+name       = "Input differential impedance"
+symbol     = "RDIFF"
+kind       = "electrical"
+scope      = "25C"
+typ        = 92
+unit       = "kohm"
+conditions = "Active mode, VIN+ - VIN- < 164 mV; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Input differential impedance RDIFF"
+note       = "TYP only, no MIN or MAX printed."
+
+# --- DC accuracy
+[param.gserr_25c]
+name       = "Shunt voltage gain error"
+symbol     = "GSERR"
+kind       = "electrical"
+scope      = "25C"
+typ        = 0.01
+typ_pm     = true
+min        = -0.05
+max        = 0.05
+unit       = "%"
+conditions = "VCM = 24 V; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, Shunt voltage gain error GSERR"
+note       = "TYP printed +/-0.01 % (typ_pm). MAX printed +/-0.05 %: min = -0.05, max = 0.05 (loader gives fractions). No full-temperature row: drift from gs_drift_25c (SPEC recipe step 2)."
+
+[param.gs_drift_25c]
+name       = "Shunt voltage gain error drift"
+symbol     = "GS_DRFT"
+kind       = "electrical"
+scope      = "25C"
+min        = -20
+max        = 20
+unit       = "ppm/degC"
+conditions = "no row condition; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, Shunt voltage gain error drift GS_DRFT"
+note       = "MAX printed +/-20 ppm/degC (no TYP). Test conditions column blank, so the header (25 degC) applies literally, although a drift is normally specified over temperature. Used as the drift term of the SPEC recipe X(T) = X25 + drift x (T - 25). DS ambiguity, open item."
+
+[param.gberr_25c]
+name       = "VBUS voltage gain error"
+symbol     = "GBERR"
+kind       = "electrical"
+scope      = "25C"
+typ        = 0.01
+typ_pm     = true
+min        = -0.05
+max        = 0.05
+unit       = "%"
+conditions = "table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, VBUS voltage gain error GBERR"
+note       = "TYP printed +/-0.01 % (typ_pm). MAX printed +/-0.05 %: min = -0.05, max = 0.05. No own condition: header 25 degC."
+
+[param.gb_drift_25c]
+name       = "VBUS voltage gain error drift"
+symbol     = "GB_DRFT"
+kind       = "electrical"
+scope      = "25C"
+min        = -20
+max        = 20
+unit       = "ppm/degC"
+conditions = "no row condition; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, VBUS voltage gain error drift GB_DRFT"
+note       = "MAX printed +/-20 ppm/degC (no TYP). Blank condition: header applies literally (same ambiguity as gs_drift_25c)."
+
+[param.ptme_full]
+name       = "Power total measurement error (TME)"
+symbol     = "PTME"
+kind       = "electrical"
+scope      = "full"
+min        = -0.5
+max        = 0.5
+unit       = "%"
+conditions = "TA = -40 degC to +125 degC, at full scale"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, Power total measurement error (TME) PTME"
+note       = "MAX printed +/-0.5 % (no TYP)."
+
+[param.etme_25c]
+name       = "Energy and charge total measurement error (TME)"
+symbol     = "ETME"
+kind       = "electrical"
+scope      = "25C"
+min        = -1
+max        = 1
+unit       = "%"
+conditions = "at full scale power; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, Energy and charge TME ETME"
+note       = "MAX printed +/-1 % (no TYP). No temperature condition: header 25 degC."
+
+[param.adc_resolution_25c]
+name       = "ADC resolution"
+kind       = "electrical"
+scope      = "25C"
+typ        = 20
+unit       = "bits"
+conditions = "table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, ADC resolution"
+note       = "Printed unit 'Bits'."
+
+# 1 LSB step sizes (DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, 1 LSB step size). The register descriptions
+# repeat them: VSHUNT Table 7-9 (p.23), VBUS Table 7-10 (p.23), DIETEMP Table 7-11 (p.24). The LSB is a conversion
+# constant, so it is stored once here; calc.py takes it as an argument.
+[param.lsb_vshunt_adcr0_25c]
+name       = "Shunt voltage 1 LSB step size, ADCRANGE = 0"
+kind       = "electrical"
+scope      = "25C"
+typ        = 312.5
+unit       = "nV"
+conditions = "Shunt voltage, ADCRANGE = 0; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, 1 LSB step size, Shunt voltage ADCRANGE = 0"
+note       = "Same value in Table 7-9 (DS p.23) and Section 8.1.1 (DS p.29)."
+
+[param.lsb_vshunt_adcr1_25c]
+name       = "Shunt voltage 1 LSB step size, ADCRANGE = 1"
+kind       = "electrical"
+scope      = "25C"
+typ        = 78.125
+unit       = "nV"
+conditions = "Shunt voltage, ADCRANGE = 1; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, 1 LSB step size, Shunt voltage ADCRANGE = 1"
+note       = "Same value in Table 7-9 (DS p.23) and Section 8.1.1 (DS p.29)."
+
+[param.lsb_vbus_25c]
+name       = "Bus voltage 1 LSB step size"
+kind       = "electrical"
+scope      = "25C"
+typ        = 195.3125
+unit       = "uV"
+conditions = "Bus voltage; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, 1 LSB step size, Bus voltage"
+note       = "Same value in Table 7-10 (DS p.23) and Section 8.1.1 (DS p.29)."
+
+[param.lsb_temp_25c]
+name       = "Temperature 1 LSB step size"
+kind       = "electrical"
+scope      = "25C"
+typ        = 7.8125
+unit       = "mdegC"
+conditions = "Temperature; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, 1 LSB step size, Temperature"
+note       = "Printed 7.8125 m degC/LSB (DS p.5, p.24 Table 7-11); stored as printed."
+
+[param.tct_0h_25c]
+name       = "ADC conversion time, field = 0h"
+symbol     = "TCT"
+kind       = "electrical"
+scope      = "25C"
+typ        = 50
+unit       = "us"
+conditions = "Conversion time field = 0h; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, ADC conversion-time TCT, field = 0h"
+note       = "DS footnote (1) on the TCT row (DS p.6): subject to oscillator accuracy and drift. TYP only."
+
+[param.tct_1h_25c]
+name       = "ADC conversion time, field = 1h"
+symbol     = "TCT"
+kind       = "electrical"
+scope      = "25C"
+typ        = 84
+unit       = "us"
+conditions = "Conversion time field = 1h; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, ADC conversion-time TCT, field = 1h"
+note       = "DS footnote (1) (p.6): subject to oscillator accuracy and drift. TYP only."
+
+[param.tct_2h_25c]
+name       = "ADC conversion time, field = 2h"
+symbol     = "TCT"
+kind       = "electrical"
+scope      = "25C"
+typ        = 150
+unit       = "us"
+conditions = "Conversion time field = 2h; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, ADC conversion-time TCT, field = 2h"
+note       = "DS footnote (1) (p.6): subject to oscillator accuracy and drift. TYP only."
+
+[param.tct_3h_25c]
+name       = "ADC conversion time, field = 3h"
+symbol     = "TCT"
+kind       = "electrical"
+scope      = "25C"
+typ        = 280
+unit       = "us"
+conditions = "Conversion time field = 3h; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, ADC conversion-time TCT, field = 3h"
+note       = "DS footnote (1) (p.6): subject to oscillator accuracy and drift. TYP only."
+
+[param.tct_4h_25c]
+name       = "ADC conversion time, field = 4h"
+symbol     = "TCT"
+kind       = "electrical"
+scope      = "25C"
+typ        = 540
+unit       = "us"
+conditions = "Conversion time field = 4h; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, ADC conversion-time TCT, field = 4h"
+note       = "DS footnote (1) (p.6): subject to oscillator accuracy and drift. TYP only."
+
+[param.tct_5h_25c]
+name       = "ADC conversion time, field = 5h"
+symbol     = "TCT"
+kind       = "electrical"
+scope      = "25C"
+typ        = 1052
+unit       = "us"
+conditions = "Conversion time field = 5h; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, ADC conversion-time TCT, field = 5h"
+note       = "DS footnote (1) (p.6): subject to oscillator accuracy and drift. TYP only."
+
+[param.tct_6h_25c]
+name       = "ADC conversion time, field = 6h"
+symbol     = "TCT"
+kind       = "electrical"
+scope      = "25C"
+typ        = 2074
+unit       = "us"
+conditions = "Conversion time field = 6h; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, ADC conversion-time TCT, field = 6h"
+note       = "DS footnote (1) (p.6): subject to oscillator accuracy and drift. TYP only."
+
+[param.tct_7h_25c]
+name       = "ADC conversion time, field = 7h"
+symbol     = "TCT"
+kind       = "electrical"
+scope      = "25C"
+typ        = 4120
+unit       = "us"
+conditions = "Conversion time field = 7h; table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, ADC conversion-time TCT, field = 7h"
+note       = "DS footnote (1) (p.6): subject to oscillator accuracy and drift. TYP only."
+
+[param.inl_25c]
+name       = "Integral non-linearity"
+symbol     = "INL"
+kind       = "electrical"
+scope      = "25C"
+typ        = 2
+typ_pm     = true
+unit       = "m%"
+conditions = "table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, Integral Non-Linearity INL"
+note       = "TYP printed +/-2 m% (typ_pm); stored as printed."
+
+[param.dnl_25c]
+name       = "Differential non-linearity"
+symbol     = "DNL"
+kind       = "electrical"
+scope      = "25C"
+typ        = 0.2
+unit       = "LSB"
+conditions = "table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, Differential Non-Linearity DNL"
+note       = "Printed unit 'LSB'. TYP only."
+
+# --- clock source
+[param.fosc_25c]
+name       = "Internal oscillator frequency"
+symbol     = "FOSC"
+kind       = "electrical"
+scope      = "25C"
+typ        = 1
+unit       = "MHz"
+conditions = "table header TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, CLOCK SOURCE, Internal oscillator frequency FOSC"
+note       = "TYP only."
+
+[param.fosc_tol_25c]
+name       = "Internal oscillator frequency tolerance, TA = 25 degC"
+symbol     = "FOSC_TOL"
+kind       = "electrical"
+scope      = "25C"
+min        = -0.5
+max        = 0.5
+unit       = "%"
+conditions = "TA = 25 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, CLOCK SOURCE, Internal oscillator frequency tolerance FOSC_TOL, TA = 25 degC"
+note       = "MAX printed +/-0.5 % (no TYP)."
+
+[param.fosc_tol_full]
+name       = "Internal oscillator frequency tolerance, full temperature"
+symbol     = "FOSC_TOL"
+kind       = "electrical"
+scope      = "full"
+min        = -1
+max        = 1
+unit       = "%"
+conditions = "TA = -40 degC to +125 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, CLOCK SOURCE, Internal oscillator frequency tolerance FOSC_TOL, TA = -40 degC to +125 degC"
+note       = "MAX printed +/-1 % (no TYP)."
+
+# --- temperature sensor (DS p.6)
+[param.temp_range_25c]
+name       = "Temperature measurement range"
+kind       = "electrical"
+scope      = "25C"
+min        = -40
+max        = 125
+unit       = "degC"
+conditions = "no row condition; table header TA = 25 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, TEMPERATURE SENSOR, Measurement range"
+note       = "Range row with no condition: header applies literally. The range itself is the temperature grade (DS p.4, TA)."
+
+[param.temp_acc_25c]
+name       = "Temperature accuracy, TA = 25 degC"
+kind       = "electrical"
+scope      = "25C"
+typ        = 0.15
+typ_pm     = true
+min        = -1
+max        = 1
+unit       = "degC"
+conditions = "TA = 25 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, TEMPERATURE SENSOR, Temperature accuracy, TA = 25 degC"
+note       = "TYP printed +/-0.15 degC (typ_pm). MAX printed +/-1 degC: min = -1, max = 1."
+
+[param.temp_acc_full]
+name       = "Temperature accuracy, full temperature"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.2
+typ_pm     = true
+min        = -2
+max        = 2
+unit       = "degC"
+conditions = "TA = -40 degC to +125 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, TEMPERATURE SENSOR, Temperature accuracy, TA = -40 degC to +125 degC"
+note       = "TYP printed +/-0.2 degC (typ_pm). MAX printed +/-2 degC: min = -2, max = 2."
+
+# --- power supply (DS p.6)
+[param.vs_ec_25c]
+name       = "Supply voltage"
+symbol     = "VS"
+kind       = "electrical"
+scope      = "25C"
+min        = 2.7
+max        = 5.5
+unit       = "V"
+conditions = "no row condition; table header TA = 25 degC, VS = 3.3 V"
+cite       = "DS p.6, 6.5 Electrical Characteristics, POWER SUPPLY, Supply voltage VS"
+note       = "Same numbers as vs_rec (DS p.4, 6.3). No own condition: header applies literally."
+
+[param.iq_25c]
+name       = "Quiescent current"
+symbol     = "IQ"
+kind       = "electrical"
+scope      = "25C"
+typ        = 640
+max        = 750
+unit       = "uA"
+conditions = "VSENSE = 0 V; table header TA = 25 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, POWER SUPPLY, Quiescent current IQ, VSENSE = 0 V"
+note       = "TYP 640 uA, MAX 750 uA as printed (MIN blank)."
+
+[param.iq_full]
+name       = "Quiescent current, full temperature"
+symbol     = "IQ"
+kind       = "electrical"
+scope      = "full"
+max        = 1.1
+unit       = "mA"
+conditions = "VSENSE = 0 V, TA = -40 degC to +125 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, POWER SUPPLY, Quiescent current IQ, VSENSE = 0 V, TA = -40 degC to +125 degC"
+note       = "MAX only (1.1 mA) printed for this row."
+
+[param.iqsd_25c]
+name       = "Quiescent current, shutdown"
+symbol     = "IQSD"
+kind       = "electrical"
+scope      = "25C"
+typ        = 2.8
+max        = 5
+unit       = "uA"
+conditions = "Shutdown mode; table header TA = 25 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, POWER SUPPLY, Quiescent current, shutdown IQSD"
+note       = "TYP 2.8 uA, MAX 5 uA as printed."
+
+[param.tpor_powerup_25c]
+name       = "Device start-up time, power-up (NPOR)"
+symbol     = "TPOR"
+kind       = "electrical"
+scope      = "25C"
+typ        = 300
+unit       = "us"
+conditions = "Power-up (NPOR); table header TA = 25 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, POWER SUPPLY, Device start-up time TPOR, Power-up (NPOR)"
+note       = "TYP only."
+
+[param.tpor_shutdown_25c]
+name       = "Device start-up time, from shutdown mode"
+symbol     = "TPOR"
+kind       = "electrical"
+scope      = "25C"
+typ        = 60
+unit       = "us"
+conditions = "From shutdown mode; table header TA = 25 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, POWER SUPPLY, Device start-up time TPOR, From shutdown mode"
+note       = "TYP only."
+
+# --- digital input / output (DS p.6)
+[param.vih_25c]
+name       = "Logic input level, high"
+symbol     = "VIH"
+kind       = "electrical"
+scope      = "25C"
+min        = 1.2
+max        = 0
+max_ref    = "VS"
+unit       = "V"
+conditions = "no row condition; table header TA = 25 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, DIGITAL INPUT / OUTPUT, Logic input level, high VIH"
+note       = "Printed MIN 1.2 V and MAX VS: MAX stored as the offset 0 from pin VS (max_ref = VS); users call part.resolve()."
+
+[param.vil_25c]
+name       = "Logic input level, low"
+symbol     = "VIL"
+kind       = "electrical"
+scope      = "25C"
+min        = 0
+min_ref    = "GND"
+max        = 0.4
+unit       = "V"
+conditions = "no row condition; table header TA = 25 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, DIGITAL INPUT / OUTPUT, Logic input level, low VIL"
+note       = "Printed MIN GND and MAX 0.4 V: MIN stored as offset 0 from pin GND (min_ref = GND)."
+
+[param.vol_25c]
+name       = "Logic output level, low"
+symbol     = "VOL"
+kind       = "electrical"
+scope      = "25C"
+min        = 0
+min_ref    = "GND"
+max        = 0.4
+unit       = "V"
+conditions = "IOL = 1 mA; table header TA = 25 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, DIGITAL INPUT / OUTPUT, Logic output level, low VOL, IOL = 1 mA"
+note       = "Printed MIN GND (offset 0 from pin GND) and MAX 0.4 V."
+
+[param.voh_25c]
+name       = "Logic output level, high"
+symbol     = "VOH"
+kind       = "electrical"
+scope      = "25C"
+min        = -0.4
+min_ref    = "VS"
+max        = 0
+max_ref    = "VS"
+unit       = "V"
+conditions = "IOL = 1 mA; table header TA = 25 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, DIGITAL INPUT / OUTPUT, Logic output level, high VOH, IOL = 1 mA"
+note       = "Printed MIN VS - 0.4 V and MAX VS: stored as offsets from pin VS. The row's condition prints IOL = 1 mA (not IOH); stored as printed. DS ambiguity, open item."
+
+[param.io_leak_25c]
+name       = "Digital leakage input current"
+symbol     = "IIO_LEAK"
+kind       = "electrical"
+scope      = "25C"
+min        = -1
+max        = 1
+unit       = "uA"
+conditions = "0 <= VIN <= VS; table header TA = 25 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, DIGITAL INPUT / OUTPUT, Digital leakage input current IIO_LEAK"
+note       = "Printed -1 uA (MIN) and 1 uA (MAX), stored as printed."
+
+# ---------------------------------------------------------------- register conversion constants (not EC rows)
+[param.shunt_tempco_lsb]
+name       = "Shunt temperature coefficient register resolution"
+symbol     = "TEMPCO"
+kind       = "electrical"
+scope      = "na"
+typ        = 1
+unit       = "ppm/degC"
+conditions = ""
+cite       = "DS p.23, 7.6.1.4 Shunt Temperature Coefficient (SHUNT_TEMPCO) Register, Table 7-8, TEMPCO"
+note       = "The register provides a resolution of 1 ppm/degC/LSB (Table 7-8). Register description, not an EC row."
+
+[param.shunt_tempco_fs]
+name       = "Shunt temperature coefficient register range"
+symbol     = "TEMPCO"
+kind       = "electrical"
+scope      = "na"
+min        = 0
+max        = 16383
+unit       = "ppm/degC"
+conditions = ""
+cite       = "DS p.23, 7.6.1.4 Shunt Temperature Coefficient (SHUNT_TEMPCO) Register, Table 7-8, TEMPCO (3FFFh = 16383 ppm/degC)"
+note       = "Register range 0h = 0 ppm/degC to 16383 ppm/degC (Table 7-8). Section 7.3.5 (DS p.16) says the full scale is 16384 ppm/degC. The DS contradicts itself (16383 vs 16384); the register table value is stored. DS ambiguity, open item."

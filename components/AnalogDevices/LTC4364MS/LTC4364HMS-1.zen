@@ -1,0 +1,327 @@
+"""LTC4364HMS-1: Surge stopper with ideal diode, MSOP-16 (MS), H grade -40 to 125 degC, -1 latch-off after fault.
+GENERATED from component.toml by `python3 -m lib.zen`; do not edit. Source of truth: component.toml and
+calc.py (numbers, cites, equations). DS: https://www.analog.com/media/en/technical-documentation/data-sheets/ltc4364-1-4364-2.pdf, Rev. B (2023-01).
+Checks are DC steady-state on the voltages each instance declares. They do not cover transients, overshoot,
+hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
+Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
+
+load("@stdlib/units.zen", "Temperature")
+
+# UNCHECKED: abs_dgate_hgate: DGATE, HGATE voltages (relative to SOURCE) (DS p.2, Absolute Maximum Ratings, DGATE, HGATE Voltages (Note 3) SOURCE - 0.3 V to SOURCE + 10 V); DGATE and HGATE are driven by the part (internally clamped); owner: module
+# UNCHECKED: abs_sense_source: Voltage difference SENSE to SOURCE (DS p.2, Absolute Maximum Ratings, Voltage Difference (SENSE to SOURCE)); SOURCE is set by the external MOSFETs and rarely declared; owner: module (MOSFET VDS rating)
+# UNCHECKED: tstg: Storage temperature range (DS p.2, Absolute Maximum Ratings, Storage Temperature Range); owner: assembly
+# UNCHECKED: t_lead: Lead temperature, soldering 10 s, MS and SO packages (DS p.2, Absolute Maximum Ratings, Lead Temperature (Soldering, 10 sec), MS, SO Packages); owner: assembly
+
+# Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
+# GND can drive them; ground-named pins are Ground.
+# pin 1 OUT, input: Output voltage sense input; drain of the external pass MOSFET M1
+OUT = io(Net)
+# pin 2 SENSE, input: Current sense input; sense resistor from SENSE to OUT
+SENSE = io(Net)
+# pin 4 DGATE, output: Diode controller gate drive output for the ideal diode MOSFET M2
+DGATE = io(Net)
+# pin 5 SOURCE, input: Common source input and gate drive return; connect to the sources of M1 and M2
+SOURCE = io(Net)
+# pin 6 HGATE, output: Surge stopper gate drive output for pass MOSFET M1
+HGATE = io(Net)
+# pin 8 VCC, power_in: Positive supply voltage input, 4 V to 80 V normal, -40 V reverse
+VCC = io(Net)
+# pin 9 SHDN, input: Shutdown control input, active low; open is clamped internally to about 4 V
+SHDN = io(Net)
+# pin 10 UV, input: Undervoltage comparator input, 1.25 V threshold; connect to SHDN if unused
+UV = io(Net)
+# pin 11 OV, input: Overvoltage comparator input, 1.25 V threshold; connect to GND if unused
+OV = io(Net)
+# pin 12 GND, power_in: Device ground
+GND = io(Ground)
+# pin 13 FLT, open_collector: Fault output, open drain, low on fault warning or overcurrent; can sink 2 mA, withstands 80 V
+FLT = io(Net)
+# pin 14 ENOUT, open_collector: Enable output, open drain, high impedance when OUT is within 0.7 V of VCC; needs pull-up to OUT
+ENOUT = io(Net)
+# pin 15 TMR, passive: Fault timer input; capacitor to GND sets warning, fault and cool-down times
+TMR = io(Net)
+# pin 16 FB, input: Voltage regulator feedback input; resistive divider from OUT; GND disables the clamp
+FB = io(Net)
+# No-connect pins omitted (auto NotConnected): 3 NC3, 7 NC7.
+
+ambient = config(Temperature, optional=True, help="Board ambient temperature range")
+derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+
+_ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
+check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
+
+
+def _limit(name, fn, inputs, severity, waiver=""):
+    # Unset input: UNVERIFIED warning, never a silent pass. Waiver drops a warning to advice.
+    if waiver and severity != "warning":
+        error("only warning-level checks can be waived: " + name)
+    unset = [k for k, v in inputs.items() if v == None]
+    if unset:
+
+        def _unverified(_m):
+            error("UNVERIFIED " + name + ": no value for " + ", ".join(unset))
+
+        builtin.add_electrical_check(name=name, check_fn=_unverified, severity="advice" if _ROOT else "warning")
+    else:
+        builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
+
+
+def _range(_m, v, what, lo=None, hi=None, lo_ref=None, hi_ref=None):
+    # Worst case: v.min >= lo + lo_ref.max and v.max <= hi + hi_ref.min (narrowest window). No ref = absolute.
+    lo_b = None if lo == None else lo + (0.0 if lo_ref == None else lo_ref.max)
+    hi_b = None if hi == None else hi + (0.0 if hi_ref == None else hi_ref.min)
+    ok = (lo_b == None or v.min >= lo_b) and (hi_b == None or v.max <= hi_b)
+    lo_t = "no limit" if lo_b == None else "%s V" % lo_b
+    hi_t = "no limit" if hi_b == None else "%s V" % hi_b
+    check(ok, "%s: %s to %s V outside %s to %s" % (what, v.min, v.max, lo_t, hi_t))
+
+
+def _temp(_m, v, what, lo, hi):
+    # Temperatures are kelvin floats in Zener; messages in degC.
+    ok = v.min >= lo and v.max <= hi
+    msg = "%s: %s to %s degC outside %s to %s degC"
+    check(ok, msg % (what, v.min - 273.15, v.max - 273.15, lo - 273.15, hi - 273.15))
+
+
+# abs_vcc_VCC: pin VCC (VCC) within the limit, x derate
+#   Supply voltage VCC: min -40 / max 100 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.2, Absolute Maximum Ratings, Supply Voltage VCC
+#   Severity error: abs_max violated
+_limit(
+    "abs_vcc_VCC",
+    _range,
+    {
+        "v": VCC.voltage,
+        "what": "abs_vcc_VCC",
+        "lo": -40.0 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 100.0 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# abs_source_ov_uv_shdn_OV: pin OV (OV) within the limit, x derate
+#   SOURCE, OV, UV, SHDN voltages: min -40 / max 100 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.2, Absolute Maximum Ratings, SOURCE, OV, UV, SHDN Voltages
+#   Severity error: abs_max violated
+_limit(
+    "abs_source_ov_uv_shdn_OV",
+    _range,
+    {
+        "v": OV.voltage,
+        "what": "abs_source_ov_uv_shdn_OV",
+        "lo": -40.0 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 100.0 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# abs_source_ov_uv_shdn_UV: pin UV (UV) within the limit, x derate
+#   SOURCE, OV, UV, SHDN voltages: min -40 / max 100 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.2, Absolute Maximum Ratings, SOURCE, OV, UV, SHDN Voltages
+#   Severity error: abs_max violated
+_limit(
+    "abs_source_ov_uv_shdn_UV",
+    _range,
+    {
+        "v": UV.voltage,
+        "what": "abs_source_ov_uv_shdn_UV",
+        "lo": -40.0 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 100.0 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# abs_source_ov_uv_shdn_SHDN: pin SHDN (SHDN) within the limit, x derate
+#   SOURCE, OV, UV, SHDN voltages: min -40 / max 100 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.2, Absolute Maximum Ratings, SOURCE, OV, UV, SHDN Voltages
+#   Severity error: abs_max violated
+_limit(
+    "abs_source_ov_uv_shdn_SHDN",
+    _range,
+    {
+        "v": SHDN.voltage,
+        "what": "abs_source_ov_uv_shdn_SHDN",
+        "lo": -40.0 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 100.0 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# abs_enout_flt_ENOUT: pin ENOUT (ENOUT) within the limit, x derate
+#   ENOUT, FLT voltages: min -0.3 / max 100 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.2, Absolute Maximum Ratings, ENOUT, FLT Voltages
+#   Severity error: abs_max violated
+_limit(
+    "abs_enout_flt_ENOUT",
+    _range,
+    {
+        "v": ENOUT.voltage,
+        "what": "abs_enout_flt_ENOUT",
+        "lo": -0.3 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 100.0 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# abs_enout_flt_FLT: pin FLT (FLT) within the limit, x derate
+#   ENOUT, FLT voltages: min -0.3 / max 100 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.2, Absolute Maximum Ratings, ENOUT, FLT Voltages
+#   Severity error: abs_max violated
+_limit(
+    "abs_enout_flt_FLT",
+    _range,
+    {
+        "v": FLT.voltage,
+        "what": "abs_enout_flt_FLT",
+        "lo": -0.3 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 100.0 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# abs_out_sense_OUT: pin OUT (OUT) within the limit, x derate
+#   OUT, SENSE voltages: min -20 / max 100 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.2, Absolute Maximum Ratings, OUT, SENSE Voltages
+#   Severity error: abs_max violated
+_limit(
+    "abs_out_sense_OUT",
+    _range,
+    {
+        "v": OUT.voltage,
+        "what": "abs_out_sense_OUT",
+        "lo": -20.0 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 100.0 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# abs_out_sense_SENSE: pin SENSE (SENSE) within the limit, x derate
+#   OUT, SENSE voltages: min -20 / max 100 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.2, Absolute Maximum Ratings, OUT, SENSE Voltages
+#   Severity error: abs_max violated
+_limit(
+    "abs_out_sense_SENSE",
+    _range,
+    {
+        "v": SENSE.voltage,
+        "what": "abs_out_sense_SENSE",
+        "lo": -20.0 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 100.0 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# abs_sense_out_SENSE: pin SENSE (SENSE) within the limit, x derate
+#   Voltage difference SENSE to OUT: min -30 / max 30 V (min_ref rel. OUT) (max_ref rel. OUT)
+#   DS p.2, Absolute Maximum Ratings, Voltage Difference (SENSE to OUT)
+#   Severity error: abs_max violated
+_limit(
+    "abs_sense_out_SENSE",
+    _range,
+    {
+        "v": SENSE.voltage,
+        "what": "abs_sense_out_SENSE",
+        "lo": -30.0 * derate,
+        "lo_ref": OUT.voltage,
+        "hi": 30.0 * derate,
+        "hi_ref": OUT.voltage,
+    },
+    "error",
+)
+
+# abs_out_vcc_OUT: pin OUT (OUT) within the limit, x derate
+#   Voltage difference OUT to VCC: min -100 / max 100 V (min_ref rel. VCC) (max_ref rel. VCC)
+#   DS p.2, Absolute Maximum Ratings, Voltage Difference (OUT to VCC)
+#   Severity error: abs_max violated
+_limit(
+    "abs_out_vcc_OUT",
+    _range,
+    {
+        "v": OUT.voltage,
+        "what": "abs_out_vcc_OUT",
+        "lo": -100.0 * derate,
+        "lo_ref": VCC.voltage,
+        "hi": 100.0 * derate,
+        "hi_ref": VCC.voltage,
+    },
+    "error",
+)
+
+# abs_fb_tmr_FB: pin FB (FB) within the limit, x derate
+#   FB, TMR voltages: min -0.3 / max 5.5 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.2, Absolute Maximum Ratings, FB, TMR Voltages
+#   Severity error: abs_max violated
+_limit(
+    "abs_fb_tmr_FB",
+    _range,
+    {
+        "v": FB.voltage,
+        "what": "abs_fb_tmr_FB",
+        "lo": -0.3 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 5.5 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# ta_h_ambient: board ambient range inside this range
+#   Operating ambient temperature range, LTC4364H: min -40 / max 125 degC
+#   DS p.2, Absolute Maximum Ratings, Operating Ambient Temperature Range, LTC4364H
+#   Conditions: LTC4364H grade, -40 degC to 125 degC (variants LTC4364HMS-1, LTC4364HMS-2)
+#   Severity error: abs_max violated
+_limit("ta_h_ambient", _temp, {"v": ambient, "what": "ta_h_ambient", "lo": 233.15, "hi": 398.15}, "error")
+
+# vcc_op_VCC: pin VCC (VCC) within the limit
+#   Operating supply range: min 4 / max 80 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.3, Electrical Characteristics, VCC Operating Supply Range
+#   Severity error: electrical violated
+_limit(
+    "vcc_op_VCC",
+    _range,
+    {"v": VCC.voltage, "what": "vcc_op_VCC", "lo": 4.0, "lo_ref": GND.voltage, "hi": 80.0, "hi_ref": GND.voltage},
+    "error",
+)
+
+Component(
+    name="LTC4364HMS-1",
+    symbol=Symbol(library="./LTC4364MS.kicad_sym"),
+    part=Part(
+        mpn="LTC4364HMS-1#TRPBF",
+        manufacturer="Analog Devices",
+        datasheet="https://www.analog.com/media/en/technical-documentation/data-sheets/ltc4364-1-4364-2.pdf",
+    ),
+    pins={
+        "OUT": OUT,
+        "SENSE": SENSE,
+        "DGATE": DGATE,
+        "SOURCE": SOURCE,
+        "HGATE": HGATE,
+        "VCC": Power(VCC, voltage=VCC.voltage),
+        "SHDN": SHDN,
+        "UV": UV,
+        "OV": OV,
+        "GND": GND,
+        "FLT": FLT,
+        "ENOUT": ENOUT,
+        "TMR": TMR,
+        "FB": FB,
+    },
+    properties={"alternatives": ["LTC4364HMS-1#PBF"]},
+)

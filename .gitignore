@@ -1,5 +1,18 @@
+# OS / tooling
 .DS_Store
+__pycache__/
 .pcb/
+*.zip
+.claude/settings.local.json
+
+# Copyrighted or third-party downloads: kept locally, never uploaded (cites point to their pages)
 docs/datasheets/
 docs/vendor/
-*.zip
+*_unused/
+
+# Drop folder for new parts before import
+temporary/
+
+# Generated outputs (rebuilt by running the scripts)
+examples/out/
+_harness.zen

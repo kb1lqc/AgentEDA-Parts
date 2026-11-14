@@ -1,0 +1,56 @@
+[part]
+value = "BAD1"
+mpn = "BAD1R"
+manufacturer = "Acme"
+description = "Test LDO"
+category = "ldo"
+package = "SOT-23"
+datasheet_url = "https://example.com/ldo1.pdf"
+datasheet_rev = "A"
+datasheet_date = "2020-01"
+kicad_symbol = "BAD1.kicad_sym"
+kicad_footprint = "BAD1.kicad_mod"
+step = "none"
+
+[[pin]]
+number = "1"
+name = "IN"
+type = "power_in"
+function = "Input"
+cite = "DS p.3, Pin Functions, IN"
+
+[[pin]]
+number = "2"
+name = "GND"
+type = "input"
+function = "Ground"
+cite = "DS p.3, Pin Functions, GND"
+
+[[pin]]
+number = "3"
+name = "VOUT"
+type = "power_out"
+function = "Output"
+cite = "DS p.3, Pin Functions, OUT"
+
+[param.vin_abs]
+name = "Input voltage"
+symbol = "VIN"
+kind = "abs_max"
+scope = "na"
+min = 50
+max = 40
+unit = "V"
+conditions = ""
+cite = "DS p.4, Absolute Maximum Ratings, VIN"
+
+[param.vref]
+name = "Reference voltage"
+kind = "electrical"
+scope = "full"
+min = 990
+typ = 1000
+max = 1010
+unit = "mV"
+conditions = "TA = 25 degC | IL = 1 mA"
+note = "Characterized"

@@ -1,0 +1,143 @@
+"""Worked example: low-side current sense, 0-5 A, WSK2512 25 mohm shunt + INA821 at G ~ 20.
+
+Run from the repo root:   python3 -m examples.current_sense
+Writes examples/out/current_sense.md and two PNG plots.
+
+Every number below comes from a component.toml (with its datasheet cite) or is a DESIGN CHOICE marked as such.
+Worst case = every input at every min/max corner (lib.wca); nominal = every input at its typ.
+"""
+
+from pathlib import Path
+
+from lib import Param, load, plot_band, table, wca
+
+ina = load("TexasInstruments/INA821IDGK")
+shunt = load("Vishay/WSK2512R0250D")
+OUT = Path(__file__).parent / "out"
+
+# ---- Design choices (not datasheet values) ----
+I_FS = 5.0  # A, full-scale load current
+VS = 15.0  # V, INA821 supplies +/-15 V
+VREF = 0.0  # V, INA821 REF pin tied to ground
+TA = Param(min=-40.0, typ=25.0, max=85.0, unit="degC")  # ambient range of the product
+RG_NOM = 2.61e3  # ohm, E96 value nearest to ina.calc.rg_for_gain(20) = 2.6 kohm
+RG_TOL = Param(min=-0.001, typ=0.0, max=0.001, unit="1")  # 0.1 % thin-film resistor
+RG_TCR = Param(min=-25e-6, typ=0.0, max=25e-6, unit="1/degC")  # 25 ppm/degC thin-film resistor
+
+# ---- Datasheet values, via the INPUTS maps in each calc.py ----
+R_NOM = shunt.param("r_nom").typ  # 25 mohm
+# Bound-only params get typ = 0 for the NOMINAL column: "the nominal part sits at the centre of its spec".
+r_tol = shunt.param("tol").with_typ(0.0)
+r_tcr = shunt.param("tcr").with_typ(0.0)
+gain_err = ina.param("gain_err_g10_25c")  # G = 20 lies between the G = 10 and G = 100 rows; both are +/-0.15 %
+gain_drift = ina.param("gain_drift_gt1_full").with_typ(0.0)
+vosi = ina.param("vosi_full").with_typ(0.0)  # full-temperature rows: no separate drift term needed
+voso = ina.param("vos_o_full").with_typ(0.0)
+
+G_NOM = ina.calc.gain(RG_NOM)
+
+
+def vout(i, t, r_tol, r_tcr, rg_tol, rg_tcr, gain_err, gain_drift, vosi, voso):
+    """INA821 output for load current i (A) at ambient t (degC). Every error term is an argument."""
+    r = shunt.calc.resistance_worst(R_NOM, r_tol, r_tcr, t, 25.0)
+    rg = RG_NOM * (1 + rg_tol) * (1 + rg_tcr * (t - 25.0))
+    g = ina.calc.gain_actual(rg, gain_err, gain_drift, t)
+    v_in = i * r + ina.calc.vos_rti(vosi, voso, g)
+    return ina.calc.vout(g, v_in, 0.0, VREF)
+
+
+def shunt_power(i, t, r_tol, r_tcr):
+    """Shunt dissipation (W) at load current i, with the shunt resistance at its worst-case value."""
+    return shunt.calc.dissipation(i, shunt.calc.resistance_worst(R_NOM, r_tol, r_tcr, t, 25.0))
+
+
+def shunt_voltage(i, t, r_tol, r_tcr):
+    """Voltage across the shunt (V) = INA821 input common-mode voltage for a low-side shunt (other end at ground)."""
+    return shunt.calc.sense_voltage(i, shunt.calc.resistance_worst(R_NOM, r_tol, r_tcr, t, 25.0))
+
+
+def current_error(i, **errors):
+    """Measured minus true current (A), when firmware assumes the nominal gain and shunt."""
+    return vout(i, **errors) / (G_NOM * R_NOM) - i
+
+
+ERRORS = dict(t=TA, r_tol=r_tol, r_tcr=r_tcr, rg_tol=RG_TOL, rg_tcr=RG_TCR,
+              gain_err=gain_err, gain_drift=gain_drift, vosi=vosi, voso=voso)
+
+
+def main():
+    OUT.mkdir(exist_ok=True)
+    rows = []
+    for i in (0.0, 0.5 * I_FS, I_FS):
+        rows.append((f"Vout at {i:g} A", wca(vout, unit="V", i=i, **ERRORS), ""))
+        rows.append((f"Current error at {i:g} A", wca(current_error, unit="A", i=i, **ERRORS), "measured - true"))
+
+    # ---- Rating checks ----
+    p_shunt = wca(shunt_power, unit="W", i=I_FS, t=TA, r_tol=r_tol, r_tcr=r_tcr)
+    v_cm = wca(shunt_voltage, unit="V", i=I_FS, t=TA, r_tol=r_tol, r_tcr=r_tcr)
+    p_rated_85 = shunt.calc.rated_power(TA.max, shunt.param("p70").max,
+                                        shunt.param("derate_knee").typ, shunt.param("derate_zero").typ)
+    vcm = ina.resolve("vcm_range_25c", {"-VS": -VS, "+VS": VS})
+    swing = ina.resolve("output_swing_25c", {"-VS": -VS, "+VS": VS})
+    v_full = rows[4][1]
+    checks = [
+        ("Shunt dissipation at 5 A", p_shunt, f"rating at {TA.max:g} degC = {p_rated_85:.3g} W (derating curve estimate)"),
+        ("INA821 input common-mode range", vcm, f"low-side shunt: inputs at 0 to {v_cm.max:.4f} V (25 degC row)"),
+        ("INA821 output swing", swing, f"needs {v_full.min:.3f} to {v_full.max:.3f} V (25 degC row)"),
+    ]
+    ok = [p_shunt.max <= p_rated_85, vcm.min <= 0.0 and v_cm.max <= vcm.max,
+          swing.min <= rows[0][1].min and v_full.max <= swing.max]
+
+    plot_band(vout, "i", [I_FS * k / 20 for k in range(21)], OUT / "current_sense_vout.png",
+              xlabel="Load current (A)", ylabel="Vout (V)", title="INA821 output vs load current",
+              **ERRORS)
+    plot_band(current_error, "i", [I_FS * k / 20 for k in range(21)], OUT / "current_sense_error.png",
+              xlabel="Load current (A)", ylabel="Measured - true current (A)", title="Current error, worst case",
+              **ERRORS)
+
+    md = [
+        "# Current sense example: WSK2512R0250D + INA821IDGK",
+        "",
+        "GENERATED by `python3 -m examples.current_sense`; do not edit.",
+        "",
+        f"Low-side shunt, 0-{I_FS:g} A, INA821 at G = {G_NOM:.4g} (RG = {RG_NOM:g} ohm), VS = +/-{VS:g} V, "
+        f"VREF = 0 V, TA = {TA.min:g} to {TA.max:g} degC.",
+        "",
+        "## Inputs",
+        "",
+        table([("Shunt tolerance", r_tol, shunt.param("tol").cite),
+               ("Shunt TCR", r_tcr, shunt.param("tcr").cite),
+               ("RG tolerance (design choice)", RG_TOL, "0.1 % thin film"),
+               ("RG TCR (design choice)", RG_TCR, "25 ppm/degC thin film"),
+               ("INA821 gain error", gain_err, gain_err.cite),
+               ("INA821 gain drift", gain_drift, gain_drift.cite),
+               ("INA821 VOSI (full temp)", vosi, vosi.cite),
+               ("INA821 VOSO (full temp)", voso, voso.cite)]),
+        "",
+        "Nominal (typ) column: bound-only specs are taken at the centre of their range (typ = 0), stated in code "
+        "with `Param.with_typ(0.0)`.",
+        "",
+        "## Results (worst case over all corners)",
+        "",
+        table(rows),
+        "",
+        "## Rating checks",
+        "",
+        table(checks),
+        "",
+        "Pass/fail: " + ", ".join(f"{name}: {'PASS' if good else 'FAIL'}" for (name, _, _), good in zip(checks, ok)),
+        "",
+        "![Vout](current_sense_vout.png)",
+        "",
+        "![Error](current_sense_error.png)",
+        "",
+        "Limits of this analysis: DC steady state only; the input common-mode and output swing rows are 25 degC "
+        "values; the shunt rating above 70 degC comes from a curve read off the derating graph.",
+        "",
+    ]
+    (OUT / "current_sense.md").write_text("\n".join(md))
+    print("\n".join(md))
+
+
+if __name__ == "__main__":
+    main()

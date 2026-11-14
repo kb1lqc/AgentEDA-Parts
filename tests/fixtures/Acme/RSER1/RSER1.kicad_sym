@@ -1,0 +1,11 @@
+(kicad_symbol_lib (version 20241209) (generator "test")
+	(symbol "RSER1"
+		(property "Reference" "R" (at 0 0 0))
+		(property "Value" "RSER1" (at 0 0 0))
+		(property "Footprint" "RSER1" (at 0 0 0))
+		(symbol "RSER1_1_1"
+			(pin passive line (at -5.08 0 0) (length 2.54) (name "1" (effects (font (size 1.27 1.27)))) (number "1" (effects (font (size 1.27 1.27)))))
+			(pin passive line (at 5.08 0 180) (length 2.54) (name "2" (effects (font (size 1.27 1.27)))) (number "2" (effects (font (size 1.27 1.27)))))
+		)
+	)
+)

@@ -1,0 +1,86 @@
+"""GCM188R71H104KA57: Chip multilayer ceramic capacitor, X7R (R7), 1608M (0603), 0.1 uF, DC 50 V, +/-10 %, AEC-Q200.
+GENERATED from component.toml by `python3 -m lib.zen`; do not edit. Source of truth: component.toml and
+calc.py (numbers, cites, equations). DS: , 01A (2026-04).
+Checks are DC steady-state on the voltages each instance declares. They do not cover transients, overshoot,
+hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
+Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
+
+load("@stdlib/units.zen", "Temperature")
+
+# UNCHECKED: self_heating: Self-heating of the capacitor body (AC or pulse load) (DS p.13, Rating 4. Type of Applied Voltage and Self-heating Temperature); depends on AC/pulse current, not a DC net voltage; owner: module
+# UNCHECKED: ac_peak: AC or pulse voltage: peak-to-peak (and zero-to-peak with DC) within the rated DC voltage (DS p.12, Rating 3. Applied Voltage, 1-1 (1)); AC/pulse waveform is not modelled by the DC net-voltage check; owner: module
+
+# Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
+# GND can drive them; ground-named pins are Ground.
+# pin 1 1, passive: Capacitor terminal (non-polarized)
+P1 = io(Net)
+# pin 2 2, passive: Capacitor terminal (non-polarized)
+P2 = io(Net)
+
+ambient = config(Temperature, optional=True, help="Board ambient temperature range")
+derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+
+_ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
+check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
+
+
+def _limit(name, fn, inputs, severity, waiver=""):
+    # Unset input: UNVERIFIED warning, never a silent pass. Waiver drops a warning to advice.
+    if waiver and severity != "warning":
+        error("only warning-level checks can be waived: " + name)
+    unset = [k for k, v in inputs.items() if v == None]
+    if unset:
+
+        def _unverified(_m):
+            error("UNVERIFIED " + name + ": no value for " + ", ".join(unset))
+
+        builtin.add_electrical_check(name=name, check_fn=_unverified, severity="advice" if _ROOT else "warning")
+    else:
+        builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
+
+
+def _range(_m, v, what, lo=None, hi=None, lo_ref=None, hi_ref=None):
+    # Worst case: v.min >= lo + lo_ref.max and v.max <= hi + hi_ref.min (narrowest window). No ref = absolute.
+    lo_b = None if lo == None else lo + (0.0 if lo_ref == None else lo_ref.max)
+    hi_b = None if hi == None else hi + (0.0 if hi_ref == None else hi_ref.min)
+    ok = (lo_b == None or v.min >= lo_b) and (hi_b == None or v.max <= hi_b)
+    lo_t = "no limit" if lo_b == None else "%s V" % lo_b
+    hi_t = "no limit" if hi_b == None else "%s V" % hi_b
+    check(ok, "%s: %s to %s V outside %s to %s" % (what, v.min, v.max, lo_t, hi_t))
+
+
+def _temp(_m, v, what, lo, hi):
+    # Temperatures are kelvin floats in Zener; messages in degC.
+    ok = v.min >= lo and v.max <= hi
+    msg = "%s: %s to %s degC outside %s to %s degC"
+    check(ok, msg % (what, v.min - 273.15, v.max - 273.15, lo - 273.15, hi - 273.15))
+
+
+# rated_v_P1: pin 1 (P1) within the limit
+#   Rated voltage (DC): min -50 / max 50 V (min_ref rel. 2) (max_ref rel. 2)
+#   DS p.2, Rated Value, Rated Voltage (DC 50V)
+#   Conditions: Voltage between pin 1 and pin 2 (non-polarized; either polarity)
+#   Severity error: rec_op violated
+_limit(
+    "rated_v_P1",
+    _range,
+    {"v": P1.voltage, "what": "rated_v_P1", "lo": -50.0, "lo_ref": P2.voltage, "hi": 50.0, "hi_ref": P2.voltage},
+    "error",
+)
+
+# op_temp_ambient: board ambient range inside this range
+#   Operating temperature range: min -55 / max 125 degC
+#   DS p.2, Rated Value, Operating Temp. Range (-55 to 125 degC)
+#   Severity error: rec_op violated
+_limit("op_temp_ambient", _temp, {"v": ambient, "what": "op_temp_ambient", "lo": 218.15, "hi": 398.15}, "error")
+
+Component(
+    name="GCM188R71H104KA57",
+    symbol=Symbol(library="./GCM188.kicad_sym"),
+    part=Part(mpn="GCM188R71H104KA57D", manufacturer="Murata"),
+    pins={
+        "1": P1,
+        "2": P2,
+    },
+    properties={"alternatives": ["GCM188R71H104KA57W", "GCM188R71H104KA57J", "GCM188R71H104KA57V"]},
+)

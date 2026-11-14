@@ -1,0 +1,55 @@
+# Test harness for the generated VNF1248F wrapper (tests/test_zen.py copies it next to the wrapper and builds it).
+# Defaults are a nominal passing 48 V high-side switch:
+#   VS 48 V 5 % (45.6-50.4 V, inside operating 6-60 V); VSPI 3.3 V 5 % (inside 3.0-6.0 V); GND = Ground.
+#   V3V3 (internal LDO output, declared by the module) 3.3 V 3 % (3.201-3.399 V).
+#   ISNS_P / ISNS_N 48 V 1 % each (inside -15-70 V). Each net's range is independent, so the shunt drop is worst case
+#   48.48 - 47.52 = 0.96 V, inside the 3.3 V differential limit; at 5 % each the worst case (4.8 V) would fail
+#   although both sit on one bus (correlated nets are not modelled).
+#   CSN, SDI, SCK 0-3.3 V (inside -0.3-6.5 V); DIAG, OUTST pulled up to V3V3, declared 0-3.3 V (inside -0.3 V to
+#   min(4.6 V, V3V3(min) + 0.3 V = 3.501 V)); DIN 0-5 V and HWLO 0 V (inside -0.3-70 V); EXT_LDO 0 V (unused, 1 kohm
+#   to ground per DS p.4).
+#   No ambient input: the DS specifies junction temperature only (TJ -40 to 150 degC), so the wrapper has no ambient check.
+U = Module("./VNF1248F.zen")
+
+vs = config(str, default="48V 5%")
+vspi = config(str, default="3.3V 5%")
+vv3v3 = config(str, default="3.3V 3%")
+vsck = config(str, default="0V to 3.3V")
+vdiag = config(str, default="0V to 3.3V")
+visnsp = config(str, default="48V 1%")
+visnsn = config(str, default="48V 1%")
+
+
+def _net(name, v):  # "unset" = a net with no voltage, which must report UNVERIFIED
+    return Net(name) if v == "unset" else Net(name, voltage=v)
+
+
+U(
+    name="U1",
+    VS=Power("VS", voltage=vs),
+    VSPI=Power("VSPI", voltage=vspi),
+    V3V3=Power("V3V3") if vv3v3 == "unset" else Power("V3V3", voltage=vv3v3),
+    GND=Ground("GND"),
+    CSN=Net("CSN", voltage="0V to 3.3V"),
+    SDI=Net("SDI", voltage="0V to 3.3V"),
+    SCK=_net("SCK", vsck),
+    SDO=Net("SDO"),
+    DIAG=_net("DIAG", vdiag),
+    OUTST=Net("OUTST", voltage="0V to 3.3V"),
+    DIN=Net("DIN", voltage="0V to 5V"),
+    HWLO=Net("HWLO", voltage="0V"),
+    EXT_LDO=Net("EXT_LDO", voltage="0V"),
+    TEST1=Net("TEST1"),
+    TEST2=Net("TEST2"),
+    NTC=Net("NTC"),
+    NTC_M=Net("NTC_M"),
+    ISNS_P=_net("ISNS_P", visnsp),
+    ISNS_N=_net("ISNS_N", visnsn),
+    OUT=Net("OUT"),
+    HS_GATE=Net("HS_GATE"),
+    CP=Power("CP"),
+    CP1P=Net("CP1P"),
+    CP1M=Net("CP1M"),
+    CP2P=Net("CP2P"),
+    CP2M=Net("CP2M"),
+)

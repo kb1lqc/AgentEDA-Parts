@@ -1,0 +1,115 @@
+[part]
+value = "LDO1"
+mpn = "LDO1R"
+manufacturer = "Acme"
+description = "Test LDO"
+category = "ldo"
+package = "SOT-23"
+datasheet_url = "https://example.com/ldo1.pdf"
+datasheet_rev = "A"
+datasheet_date = "2020-01"
+kicad_symbol = "LDO1.kicad_sym"
+kicad_footprint = "LDO1.kicad_mod"
+step = "none"
+
+[[pin]]
+number = "1"
+name = "IN"
+type = "power_in"
+function = "Input"
+cite = "DS p.3, Pin Functions, IN"
+
+[[pin]]
+number = "2"
+name = "GND"
+type = "power_in"
+function = "Ground"
+cite = "DS p.3, Pin Functions, GND"
+
+[[pin]]
+number = "3"
+name = "OUT"
+type = "power_out"
+function = "Output"
+cite = "DS p.3, Pin Functions, OUT"
+
+[param.vin_abs]
+name = "Input voltage"
+symbol = "VIN"
+kind = "abs_max"
+scope = "na"
+min = -0.3
+max = 40
+unit = "V"
+conditions = ""
+cite = "DS p.4, Absolute Maximum Ratings, VIN"
+check_pins = ["IN"]
+
+[param.vref]
+name = "Reference voltage"
+kind = "electrical"
+scope = "full"
+min = 990
+typ = 1000
+max = 1010
+unit = "mV"
+conditions = "TA = 25 degC | IL = 1 mA"
+cite = "DS p.5, Electrical Characteristics, VREF"
+note = "Characterized"
+
+[param.vos]
+name = "Output offset"
+symbol = "VOS"
+kind = "electrical"
+scope = "full"
+typ = 10
+max = 40
+sym = true
+unit = "uV"
+conditions = ""
+cite = "DS p.5, Electrical Characteristics, VOS"
+note = "DS prints an unsigned 40 uV bound; read as +/-40 uV"
+
+[param.gain_err]
+name = "Gain error"
+kind = "electrical"
+scope = "25C"
+typ = 0.025
+typ_pm = true
+max = 0.1
+min = -0.1
+unit = "%"
+conditions = "G = 1"
+cite = "DS p.5, Electrical Characteristics, Gain error"
+
+[param.io_cont]
+name = "Output current rating"
+kind = "abs_max"
+scope = "partial"
+text = "Continuous"
+unit = "A"
+conditions = "TA <= 70 degC"
+cite = "DS p.4, Absolute Maximum Ratings, IOUT"
+unchecked = "text rating; owner: module"
+
+[param.vcm]
+name = "Common-mode range"
+kind = "rec_op"
+scope = "full"
+min = 2
+min_ref = "GND"
+max = -2
+max_ref = "IN"
+unit = "V"
+conditions = ""
+cite = "DS p.4, Recommended Operating Conditions, VCM"
+check_pins = ["OUT"]
+
+[param.tc]
+name = "Reference drift"
+kind = "electrical"
+scope = "full"
+max = 50
+unit = "ppm/degC"
+conditions = ""
+cite = "DS p.5, Electrical Characteristics, TC"

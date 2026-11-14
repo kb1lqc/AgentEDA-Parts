@@ -1,0 +1,1134 @@
+# LTC4364 surge stopper with ideal diode, MSOP-16 (MS) family: six orderables (C/I/H grade x -1 latch-off / -2 auto-retry),
+# listed in variants.toml. Raw datasheet values in printed units (see docs/SPEC.md). Sources: docs/datasheets/ltc4364.pdf,
+# LTC4364-1/LTC4364-2 Rev. B (1/23). Rows marked with the DS bullet apply over the full operating temperature range
+# (scope "full"); unmarked rows are at TA = 25 degC (scope "25C"). Rows restricted with `variants` are grade or option
+# specific (their notes say which). Negative-sign rows: the DS prints them in magnitude order; they are stored in numeric
+# order (min <= max), and each row's note records the printed columns.
+
+[part]
+value           = "LTC4364MS"                 # family: the MS-package variants are in variants.toml
+manufacturer    = "Analog Devices"
+description     = "Surge stopper with ideal diode, 4-80 V, MSOP-16 (MS); -1 latch-off or -2 auto-retry, C/I/H grade"
+category        = "surge_stopper"
+package         = "MSOP-16 (MS), LTC DWG 05-08-1669 Rev A"
+datasheet_url   = "https://www.analog.com/media/en/technical-documentation/data-sheets/ltc4364-1-4364-2.pdf"
+datasheet_file  = "docs/datasheets/ltc4364.pdf"
+datasheet_rev   = "Rev. B"
+datasheet_date  = "2023-01"                   # DS p.28, Revision History, B 1/23
+kicad_symbol    = "LTC4364MS.kicad_sym"
+kicad_footprint = "LTC4364MS.kicad_mod"
+step            = "embedded"                  # kicad-embed://LTC4364HMS-1.step in the footprint (embedded name kept from the first import; same MS model for every variant)
+
+# Pins: MS package, DS p.2 Pin Configuration and p.8-9 Pin Functions (MS column). Names and types match the
+# symbol LTC4364MS.kicad_sym exactly. No exposed pad in the MS package (DS p.9: pin 15 EP is DE package only).
+
+[[pin]]
+number   = "1"
+name     = "OUT"
+type     = "input"
+function = "Output voltage sense input; drain of the external pass MOSFET M1"
+cite     = "DS p.8, Pin Functions, OUT (Pin 1 MS)"
+
+[[pin]]
+number   = "2"
+name     = "SENSE"
+type     = "input"
+function = "Current sense input; sense resistor from SENSE to OUT"
+cite     = "DS p.8, Pin Functions, SENSE (Pin 2 MS)"
+
+[[pin]]
+number   = "3"
+name     = "NC3"
+type     = "no_connect"
+function = "No connection, not internally connected; may be tied to GND or any voltage, open increases clearance"
+cite     = "DS p.9, Pin Functions, NC (Pins 3 and 7, MS and S packages)"
+
+[[pin]]
+number   = "4"
+name     = "DGATE"
+type     = "output"
+function = "Diode controller gate drive output for the ideal diode MOSFET M2"
+cite     = "DS p.8, Pin Functions, DGATE (Pin 4 MS)"
+
+[[pin]]
+number   = "5"
+name     = "SOURCE"
+type     = "input"
+function = "Common source input and gate drive return; connect to the sources of M1 and M2"
+cite     = "DS p.8, Pin Functions, SOURCE (Pin 5 MS)"
+
+[[pin]]
+number   = "6"
+name     = "HGATE"
+type     = "output"
+function = "Surge stopper gate drive output for pass MOSFET M1"
+cite     = "DS p.8, Pin Functions, HGATE (Pin 6 MS)"
+
+[[pin]]
+number   = "7"
+name     = "NC7"
+type     = "no_connect"
+function = "No connection, not internally connected; may be tied to GND or any voltage, open increases clearance"
+cite     = "DS p.9, Pin Functions, NC (Pins 3 and 7, MS and S packages)"
+
+[[pin]]
+number   = "8"
+name     = "VCC"
+type     = "power_in"
+function = "Positive supply voltage input, 4 V to 80 V normal, -40 V reverse"
+cite     = "DS p.9, Pin Functions, VCC (Pin 8 MS)"
+
+[[pin]]
+number   = "9"
+name     = "SHDN"
+type     = "input"
+function = "Shutdown control input, active low; open is clamped internally to about 4 V"
+cite     = "DS p.9, Pin Functions, SHDN (Pin 9 MS)"
+
+[[pin]]
+number   = "10"
+name     = "UV"
+type     = "input"
+function = "Undervoltage comparator input, 1.25 V threshold; connect to SHDN if unused"
+cite     = "DS p.8, Pin Functions, UV (Pin 10 MS)"
+
+[[pin]]
+number   = "11"
+name     = "OV"
+type     = "input"
+function = "Overvoltage comparator input, 1.25 V threshold; connect to GND if unused"
+cite     = "DS p.8, Pin Functions, OV (Pin 11 MS)"
+
+[[pin]]
+number   = "12"
+name     = "GND"
+type     = "power_in"
+function = "Device ground"
+cite     = "DS p.9, Pin Functions, GND (Pin 12 MS)"
+
+[[pin]]
+number   = "13"
+name     = "FLT"
+type     = "open_collector"
+function = "Fault output, open drain, low on fault warning or overcurrent; can sink 2 mA, withstands 80 V"
+cite     = "DS p.9, Pin Functions, FLT (Pin 13 MS)"
+
+[[pin]]
+number   = "14"
+name     = "ENOUT"
+type     = "open_collector"
+function = "Enable output, open drain, high impedance when OUT is within 0.7 V of VCC; needs pull-up to OUT"
+cite     = "DS p.9, Pin Functions, ENOUT (Pin 14 MS)"
+
+[[pin]]
+number   = "15"
+name     = "TMR"
+type     = "passive"
+function = "Fault timer input; capacitor to GND sets warning, fault and cool-down times"
+cite     = "DS p.9, Pin Functions, TMR (Pin 15 MS)"
+
+[[pin]]
+number   = "16"
+name     = "FB"
+type     = "input"
+function = "Voltage regulator feedback input; resistive divider from OUT; GND disables the clamp"
+cite     = "DS p.9, Pin Functions, FB (Pin 16 MS)"
+
+# ---------------------------------------------------------------------------------------------------------------
+# Absolute Maximum Ratings: DS p.2 (header "ABSOLUTE MAXIMUM RATINGS (Notes 1, 2)", no temperature qualifier).
+# ---------------------------------------------------------------------------------------------------------------
+
+[param.abs_vcc]
+name       = "Supply voltage VCC"
+symbol     = "VCC"
+kind       = "abs_max"
+scope      = "na"
+min        = -40
+max        = 100
+min_ref    = "GND"
+max_ref    = "GND"
+unit       = "V"
+conditions = ""
+cite       = "DS p.2, Absolute Maximum Ratings, Supply Voltage VCC"
+note       = "Reference: DS p.2 header (Notes 1, 2) and DS p.5, Note 2 ('All voltages are referenced to GND unless otherwise specified'). min_ref/max_ref = GND."
+check_pins = ["VCC"]
+
+[param.abs_source_ov_uv_shdn]
+name       = "SOURCE, OV, UV, SHDN voltages"
+kind       = "abs_max"
+scope      = "na"
+min        = -40
+max        = 100
+min_ref    = "GND"
+max_ref    = "GND"
+unit       = "V"
+conditions = ""
+cite       = "DS p.2, Absolute Maximum Ratings, SOURCE, OV, UV, SHDN Voltages"
+note       = "Reference: DS p.2 header (Notes 1, 2) and DS p.5, Note 2 ('All voltages are referenced to GND unless otherwise specified'). min_ref/max_ref = GND."
+check_pins = ["OV", "UV", "SHDN"]
+unchecked  = "SOURCE not checked: its voltage is set by the external MOSFETs and rarely declared; owner: module"
+
+[param.abs_dgate_hgate]
+name       = "DGATE, HGATE voltages (relative to SOURCE)"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+min_ref    = "SOURCE"
+max        = 10
+max_ref    = "SOURCE"
+unit       = "V"
+conditions = ""
+cite       = "DS p.2, Absolute Maximum Ratings, DGATE, HGATE Voltages (Note 3) SOURCE - 0.3 V to SOURCE + 10 V"
+note       = "Note 3 (DS p.5): internal clamps limit DGATE and HGATE to a minimum of 10 V above SOURCE; driving beyond the clamp may damage the device."
+unchecked  = "DGATE and HGATE are driven by the part (internally clamped); owner: module"
+
+[param.abs_enout_flt]
+name       = "ENOUT, FLT voltages"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+max        = 100
+min_ref    = "GND"
+max_ref    = "GND"
+unit       = "V"
+conditions = ""
+cite       = "DS p.2, Absolute Maximum Ratings, ENOUT, FLT Voltages"
+note       = "Conflict inside the DS: abs max row gives 100 V (p.2); pin text DS p.9 says each pin 'can withstand up to 80V', and ILEAK is tested at 80 V (DS p.4). Both stored as printed; the 80 V statement is not an abs max row. Reference: DS p.2 header (Notes 1, 2) and DS p.5, Note 2 ('All voltages are referenced to GND unless otherwise specified'). min_ref/max_ref = GND."
+check_pins = ["ENOUT", "FLT"]
+
+[param.abs_out_sense]
+name       = "OUT, SENSE voltages"
+kind       = "abs_max"
+scope      = "na"
+min        = -20
+max        = 100
+min_ref    = "GND"
+max_ref    = "GND"
+unit       = "V"
+conditions = ""
+cite       = "DS p.2, Absolute Maximum Ratings, OUT, SENSE Voltages"
+note       = "Reference: DS p.2 header (Notes 1, 2) and DS p.5, Note 2 ('All voltages are referenced to GND unless otherwise specified'). min_ref/max_ref = GND."
+check_pins = ["OUT", "SENSE"]
+
+[param.abs_sense_out]
+name       = "Voltage difference SENSE to OUT"
+kind       = "abs_max"
+scope      = "na"
+min        = -30
+max        = 30
+min_ref    = "OUT"
+max_ref    = "OUT"
+unit       = "V"
+conditions = ""
+cite       = "DS p.2, Absolute Maximum Ratings, Voltage Difference (SENSE to OUT)"
+note       = "Difference V(SENSE) - V(OUT): the value is SENSE, the reference pin is OUT (DS p.2 row 'Voltage Difference (SENSE to OUT)'); the row names no reference pin beyond the difference. Cite: DS p.2 header (Notes 1, 2)."
+check_pins = ["SENSE"]
+
+[param.abs_out_vcc]
+name       = "Voltage difference OUT to VCC"
+kind       = "abs_max"
+scope      = "na"
+min        = -100
+max        = 100
+min_ref    = "VCC"
+max_ref    = "VCC"
+unit       = "V"
+conditions = ""
+cite       = "DS p.2, Absolute Maximum Ratings, Voltage Difference (OUT to VCC)"
+note       = "Difference V(OUT) - V(VCC): the value is OUT, the reference pin is VCC (DS p.2 row 'Voltage Difference (OUT to VCC)'). Cite: DS p.2 header (Notes 1, 2)."
+check_pins = ["OUT"]
+
+[param.abs_sense_source]
+name       = "Voltage difference SENSE to SOURCE"
+kind       = "abs_max"
+scope      = "na"
+min        = -100
+max        = 100
+min_ref    = "SOURCE"
+max_ref    = "SOURCE"
+unit       = "V"
+conditions = ""
+cite       = "DS p.2, Absolute Maximum Ratings, Voltage Difference (SENSE to SOURCE)"
+note       = "Difference V(SENSE) - V(SOURCE): the value is SENSE, the reference pin is SOURCE (DS p.2 row 'Voltage Difference (SENSE to SOURCE)'). Cite: DS p.2 header (Notes 1, 2)."
+unchecked  = "SOURCE is set by the external MOSFETs and rarely declared; owner: module (MOSFET VDS rating)"
+
+[param.abs_fb_tmr]
+name       = "FB, TMR voltages"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+max        = 5.5
+min_ref    = "GND"
+max_ref    = "GND"
+unit       = "V"
+conditions = ""
+cite       = "DS p.2, Absolute Maximum Ratings, FB, TMR Voltages"
+note       = "Reference: DS p.2 header (Notes 1, 2) and DS p.5, Note 2 ('All voltages are referenced to GND unless otherwise specified'). min_ref/max_ref = GND."
+check_pins = ["FB"]
+unchecked  = "TMR not checked: timer capacitor node driven by the part; owner: module"
+
+[param.ta_h]
+name       = "Operating ambient temperature range, LTC4364H"
+kind       = "abs_max"
+scope      = "na"
+min        = -40
+max        = 125
+unit       = "degC"
+conditions = "LTC4364H grade, -40 degC to 125 degC (variants LTC4364HMS-1, LTC4364HMS-2)"
+cite       = "DS p.2, Absolute Maximum Ratings, Operating Ambient Temperature Range, LTC4364H"
+check_ambient = true
+variants   = ["LTC4364HMS-1", "LTC4364HMS-2"]
+
+[param.ta_c]
+name       = "Operating ambient temperature range, LTC4364C"
+kind       = "abs_max"
+scope      = "na"
+min        = 0
+max        = 70
+unit       = "degC"
+conditions = "LTC4364C grade, 0 degC to 70 degC (variants LTC4364CMS-1, LTC4364CMS-2)"
+cite       = "DS p.2, Absolute Maximum Ratings, Operating Ambient Temperature Range, LTC4364C"
+variants   = ["LTC4364CMS-1", "LTC4364CMS-2"]
+check_ambient = true
+
+[param.ta_i]
+name       = "Operating ambient temperature range, LTC4364I"
+kind       = "abs_max"
+scope      = "na"
+min        = -40
+max        = 85
+unit       = "degC"
+conditions = "LTC4364I grade, -40 degC to 85 degC (variants LTC4364IMS-1, LTC4364IMS-2)"
+cite       = "DS p.2, Absolute Maximum Ratings, Operating Ambient Temperature Range, LTC4364I"
+variants   = ["LTC4364IMS-1", "LTC4364IMS-2"]
+check_ambient = true
+
+[param.tstg]
+name       = "Storage temperature range"
+kind       = "abs_max"
+scope      = "na"
+min        = -65
+max        = 150
+unit       = "degC"
+conditions = ""
+cite       = "DS p.2, Absolute Maximum Ratings, Storage Temperature Range"
+unchecked  = "owner: assembly"
+
+[param.t_lead]
+name       = "Lead temperature, soldering 10 s, MS and SO packages"
+kind       = "abs_max"
+scope      = "na"
+max        = 300
+unit       = "degC"
+conditions = "Soldering, 10 sec, MS and SO packages"
+cite       = "DS p.2, Absolute Maximum Ratings, Lead Temperature (Soldering, 10 sec), MS, SO Packages"
+
+# ---------------------------------------------------------------------------------------------------------------
+# Thermal: DS p.2, Pin Configuration, MS package (drawing note text, no MIN/TYP/MAX label).
+# ---------------------------------------------------------------------------------------------------------------
+unchecked  = "owner: assembly"
+
+[param.theta_ja_ms]
+name       = "Thermal resistance, junction to ambient, MS package"
+symbol     = "thetaJA"
+kind       = "thermal"
+scope      = "na"
+typ        = 120
+unit       = "degC/W"
+conditions = "Board and test method not stated in the DS"
+cite       = "DS p.2, Pin Configuration, MS package, theta JA"
+note       = "Printed as a plain value with no MIN/TYP/MAX label; stored as typ. Not a guaranteed bound. Board condition not stated. Unit degC/W is not in the SPEC units list; loader must add it."
+
+[param.tj_max]
+name       = "Maximum junction temperature, MS package"
+symbol     = "TJMAX"
+kind       = "thermal"
+scope      = "na"
+max        = 150
+unit       = "degC"
+conditions = ""
+cite       = "DS p.2, Pin Configuration, MS package, TJMAX"
+
+# ---------------------------------------------------------------------------------------------------------------
+# Electrical Characteristics: DS p.3-5. Scope "full" = bullet row (applies over the H-grade range -40 to 125 degC,
+# DS p.3 legend); "25C" = unmarked row.
+# ---------------------------------------------------------------------------------------------------------------
+
+[param.vcc_op]
+name       = "Operating supply range"
+symbol     = "VCC"
+kind       = "electrical"
+scope      = "full"
+min        = 4
+max        = 80
+unit       = "V"
+conditions = ""
+cite       = "DS p.3, Electrical Characteristics, VCC Operating Supply Range"
+min_ref    = "GND"
+max_ref    = "GND"
+note       = "Referenced to GND: DS p.5, Note 2, 'All voltages are referenced to GND unless otherwise specified'."
+check_pins = ["VCC"]
+
+[param.icc]
+name       = "Supply current, no fault"
+symbol     = "ICC"
+kind       = "electrical"
+scope      = "full"
+typ        = 370
+max        = 750
+unit       = "uA"
+conditions = "VCC = SOURCE = SENSE = OUT = 12V, no fault"
+cite       = "DS p.3, Electrical Characteristics, ICC"
+
+[param.icc_shdn]
+name       = "Supply current in shutdown"
+symbol     = "ICC(SHDN)"
+kind       = "electrical"
+scope      = "full"
+typ        = 10
+max        = 50
+unit       = "uA"
+conditions = "Shutdown"
+cite       = "DS p.3, Electrical Characteristics, ICC(SHDN)"
+
+[param.icc_rev]
+name       = "Reverse input current"
+symbol     = "ICC(REV)"
+kind       = "electrical"
+scope      = "full"
+min        = -10
+typ        = 0
+unit       = "uA"
+conditions = "VCC = -30V"
+cite       = "DS p.3, Electrical Characteristics, ICC(REV)"
+note       = "DS prints this negative quantity in magnitude order (MAX column -10); stored in numeric order: printed MAX -> min, printed MIN -> max."
+
+[param.dvhgate_4v]
+name       = "HGATE gate drive, VHGATE - VSOURCE, VCC = 4 V"
+symbol     = "dVHGATE"
+kind       = "electrical"
+scope      = "full"
+min        = 5
+typ        = 7
+max        = 9
+unit       = "V"
+conditions = "VCC = 4V, DGATE Low, IHGATE = 0uA, -1uA"
+cite       = "DS p.3, Electrical Characteristics, dVHGATE (row 1)"
+
+[param.dvhgate_8v]
+name       = "HGATE gate drive, VHGATE - VSOURCE, VCC = 8 V to 80 V"
+symbol     = "dVHGATE"
+kind       = "electrical"
+scope      = "full"
+min        = 10
+typ        = 12
+max        = 16
+unit       = "V"
+conditions = "VCC = 8V to 80V, DGATE Low, IHGATE = 0uA, -1uA"
+cite       = "DS p.3, Electrical Characteristics, dVHGATE (row 2)"
+
+[param.ihgate_up]
+name       = "HGATE pull-up current"
+symbol     = "IHGATE(UP)"
+kind       = "electrical"
+scope      = "full"
+min        = -30
+typ        = -20
+max        = -10
+unit       = "uA"
+conditions = "VCC = HGATE = DGATE = SOURCE = 12V"
+cite       = "DS p.3, Electrical Characteristics, IHGATE(UP)"
+note       = "DS prints this negative quantity in magnitude order (MIN column -10, MAX column -30); stored in numeric order: printed MAX -> min, printed MIN -> max."
+
+[param.ihgate_dn_ov]
+name       = "HGATE pull-down current, overvoltage"
+symbol     = "IHGATE(DN)"
+kind       = "electrical"
+scope      = "full"
+min        = 60
+typ        = 130
+unit       = "mA"
+conditions = "Overvoltage: FB = 1.5V, dVHGATE = 5V"
+cite       = "DS p.3, Electrical Characteristics, IHGATE(DN), Overvoltage"
+
+[param.ihgate_dn_oc]
+name       = "HGATE pull-down current, overcurrent"
+symbol     = "IHGATE(DN)"
+kind       = "electrical"
+scope      = "full"
+min        = 60
+typ        = 130
+unit       = "mA"
+conditions = "Overcurrent: dVSNS = 100mV, dVHGATE = 5V"
+cite       = "DS p.3, Electrical Characteristics, IHGATE(DN), Overcurrent"
+
+[param.ihgate_dn_off]
+name       = "HGATE pull-down current, shutdown or fault turn-off"
+symbol     = "IHGATE(DN)"
+kind       = "electrical"
+scope      = "full"
+min        = 0.4
+typ        = 1
+unit       = "mA"
+conditions = "Shutdown/Fault Turn-Off: dVHGATE = 5V"
+cite       = "DS p.3, Electrical Characteristics, IHGATE(DN), Shutdown/Fault Turn-Off"
+
+[param.isrc_on]
+name       = "SOURCE input current, normal"
+symbol     = "ISRC"
+kind       = "electrical"
+scope      = "full"
+typ        = 18
+max        = 40
+unit       = "uA"
+conditions = "VCC = SOURCE = SENSE = OUT = 12V"
+cite       = "DS p.3, Electrical Characteristics, ISRC (row 1)"
+
+[param.isrc_shdn]
+name       = "SOURCE input current, shutdown"
+symbol     = "ISRC"
+kind       = "electrical"
+scope      = "full"
+typ        = 32
+max        = 90
+unit       = "uA"
+conditions = "VCC = SOURCE = 12V, Shutdown"
+cite       = "DS p.3, Electrical Characteristics, ISRC (row 2)"
+
+[param.isrc_neg30]
+name       = "SOURCE input current, reverse"
+symbol     = "ISRC"
+kind       = "electrical"
+scope      = "full"
+min        = -3.5
+typ        = -2.0
+unit       = "mA"
+conditions = "VSOURCE = -30V"
+cite       = "DS p.3, Electrical Characteristics, ISRC (row 3)"
+note       = "DS prints this negative quantity in magnitude order (MAX column -3.5); stored in numeric order: printed MAX -> min, printed MIN -> max."
+
+[param.vfb]
+name       = "FB servo voltage"
+symbol     = "VFB"
+kind       = "electrical"
+scope      = "full"
+min        = 1.22
+typ        = 1.25
+max        = 1.28
+unit       = "V"
+conditions = "VCC = 12V to 80V"
+cite       = "DS p.3, Electrical Characteristics, VFB"
+
+[param.ifb]
+name       = "FB input current"
+symbol     = "IFB"
+kind       = "electrical"
+scope      = "full"
+min        = -1
+typ        = 0
+max        = 1
+unit       = "uA"
+conditions = "FB = 1.25V"
+cite       = "DS p.3, Electrical Characteristics, IFB"
+note       = "Printed as 0 TYP and +/-1 in the MAX column; stored as symmetric min -1 / max 1."
+
+[param.dvsns_0c125c]
+name       = "Overcurrent fault threshold (VSENSE - VOUT), 0 to 125 degC row"
+symbol     = "dVSNS"
+kind       = "electrical"
+scope      = "partial"
+min        = 45
+typ        = 50
+max        = 55
+unit       = "mV"
+conditions = "VCC = 4V to 80V, OUT = 2.5V to VCC, 0degC to 125degC (partial range, not -40degC)"
+cite       = "DS p.3, Electrical Characteristics, dVSNS (row 1)"
+note       = "Partial range for the I and H variants: covers 0 to 125 degC only, not -40 degC; use dvsns_full. The C variants override this row to scope full in variants.toml (0 to 125 degC contains the whole C range, 0 to 70 degC)."
+
+[param.dvsns_full]
+name       = "Overcurrent fault threshold (VSENSE - VOUT), -40 to 125 degC"
+symbol     = "dVSNS"
+kind       = "electrical"
+scope      = "full"
+min        = 43
+typ        = 50
+max        = 57
+unit       = "mV"
+conditions = "VCC = 4V to 80V, OUT = 2.5V to VCC, -40degC to 125degC"
+cite       = "DS p.3, Electrical Characteristics, dVSNS (row 2)"
+
+[param.dvsns_lo]
+name       = "Overcurrent fault threshold (VSENSE - VOUT), OUT low (foldback)"
+symbol     = "dVSNS"
+kind       = "electrical"
+scope      = "full"
+min        = 18
+typ        = 25
+max        = 32
+unit       = "mV"
+conditions = "VCC = 4V to 80V, OUT = 0V to 1.5V"
+cite       = "DS p.3, Electrical Characteristics, dVSNS (row 3)"
+note       = "The row prints no temperature qualifier; the bullet marks it as full range (DS p.3 legend). OUT 1.5 V to 2.5 V is not specified."
+
+[param.isns_on]
+name       = "SENSE input current, normal"
+symbol     = "ISNS"
+kind       = "electrical"
+scope      = "full"
+typ        = 55
+max        = 110
+unit       = "uA"
+conditions = "SENSE = VCC = SOURCE = OUT = 12V"
+cite       = "DS p.4, Electrical Characteristics, ISNS (row 1)"
+
+[param.isns_neg15]
+name       = "SENSE input current, SENSE = -15 V"
+symbol     = "ISNS"
+kind       = "electrical"
+scope      = "full"
+min        = -4
+typ        = -2
+unit       = "mA"
+conditions = "SENSE = -15V"
+cite       = "DS p.4, Electrical Characteristics, ISNS (row 2)"
+note       = "DS prints this negative quantity in magnitude order (MAX column -4); stored in numeric order: printed MAX -> min, printed MIN -> max."
+
+[param.itmr_up_ov_lo]
+name       = "TMR pull-up current, overvoltage, VCC - OUT = 0.5 V"
+symbol     = "ITMR(UP)"
+kind       = "electrical"
+scope      = "full"
+min        = -3
+typ        = -2.2
+max        = -1.3
+unit       = "uA"
+conditions = "TMR = 1V, FB = 1.5V, VCC - OUT = 0.5V"
+cite       = "DS p.4, Electrical Characteristics, ITMR(UP) Overvoltage (row 1)"
+note       = "DS prints this negative quantity in magnitude order (MIN column -1.3, MAX column -3); stored in numeric order: printed MAX -> min, printed MIN -> max."
+
+[param.itmr_up_ov_hi]
+name       = "TMR pull-up current, overvoltage, VCC - OUT = 75 V"
+symbol     = "ITMR(UP)"
+kind       = "electrical"
+scope      = "full"
+min        = -60
+typ        = -50
+max        = -40
+unit       = "uA"
+conditions = "TMR = 1V, FB = 1.5V, VCC - OUT = 75V"
+cite       = "DS p.4, Electrical Characteristics, ITMR(UP) Overvoltage (row 2)"
+note       = "DS prints this negative quantity in magnitude order (MIN column -40, MAX column -60); stored in numeric order: printed MAX -> min, printed MIN -> max."
+
+[param.itmr_up_oc_lo]
+name       = "TMR pull-up current, overcurrent, VCC - OUT = 0.5 V"
+symbol     = "ITMR(UP)"
+kind       = "electrical"
+scope      = "full"
+min        = -14
+typ        = -10
+max        = -6
+unit       = "uA"
+conditions = "TMR = 1V, dVSNS = 60mV, VCC - OUT = 0.5V"
+cite       = "DS p.4, Electrical Characteristics, ITMR(UP) Overcurrent (row 1)"
+note       = "DS prints this negative quantity in magnitude order (MIN column -6, MAX column -14); stored in numeric order: printed MAX -> min, printed MIN -> max."
+
+[param.itmr_up_oc_hi]
+name       = "TMR pull-up current, overcurrent, VCC - OUT = 75 V"
+symbol     = "ITMR(UP)"
+kind       = "electrical"
+scope      = "full"
+min        = -310
+typ        = -260
+max        = -210
+unit       = "uA"
+conditions = "TMR = 1V, dVSNS = 60mV, VCC - OUT = 75V"
+cite       = "DS p.4, Electrical Characteristics, ITMR(UP) Overcurrent (row 2)"
+note       = "DS prints this negative quantity in magnitude order (MIN column -210, MAX column -310); stored in numeric order: printed MAX -> min, printed MIN -> max."
+
+[param.itmr_up_warn]
+name       = "TMR pull-up current, warning"
+symbol     = "ITMR(UP)"
+kind       = "electrical"
+scope      = "full"
+min        = -7
+typ        = -5
+max        = -3
+unit       = "uA"
+conditions = "TMR = 1.3V, FB = 1.5V, VCC - OUT = 0.5V"
+cite       = "DS p.4, Electrical Characteristics, ITMR(UP) Warning"
+note       = "DS prints this negative quantity in magnitude order (MIN column -3, MAX column -7); stored in numeric order: printed MAX -> min, printed MIN -> max."
+
+[param.itmr_up_retry]
+name       = "TMR pull-up current, retry and cool-down"
+symbol     = "ITMR(UP)"
+kind       = "electrical"
+scope      = "full"
+min        = -3
+typ        = -2
+max        = -1.3
+unit       = "uA"
+conditions = "TMR = 1V, FB = 1.5V"
+cite       = "DS p.4, Electrical Characteristics, ITMR(UP) Retry"
+note       = "OPEN ITEM: DS Figure 4 caption says 'LTC4364-2 Only' but the p.15 text says the -1 also generates these cool-down TMR pulses; the text is followed. DS prints this negative quantity in magnitude order (MIN column -1.3, MAX column -3); stored in numeric order: printed MAX -> min, printed MIN -> max. Shared by all six variants: the -1 cool-down pulses (DS p.15, Figure 4) use the same charge current; the -2 restart uses it too."
+
+[param.itmr_dn_retry]
+name       = "TMR pull-down current, retry and cool-down"
+symbol     = "ITMR(DN)"
+kind       = "electrical"
+scope      = "full"
+min        = 1.1
+typ        = 2
+max        = 2.7
+unit       = "uA"
+conditions = "TMR = 1V, FB = 1.5V, Retry"
+cite       = "DS p.4, Electrical Characteristics, ITMR(DN) Retry"
+note       = "OPEN ITEM: DS Figure 4 caption says 'LTC4364-2 Only' but the p.15 text says the -1 also generates these cool-down TMR pulses; the text is followed. Shared by all six variants: DS p.15, the -1 generates the same cool-down TMR pulses (Figure 4) and then latches, so this current is used for -1 as well. Used by calc.t_cool (i_cycle)."
+
+[param.itmr_dn_shdn]
+name       = "TMR pull-down current, shutdown"
+symbol     = "ITMR(DN)"
+kind       = "electrical"
+scope      = "full"
+min        = 0.3
+typ        = 0.75
+max        = 1.5
+unit       = "mA"
+conditions = "Shutdown"
+cite       = "DS p.4, Electrical Characteristics, ITMR(DN) Shutdown"
+
+[param.vtmr_f]
+name       = "TMR fault threshold (FLT falls)"
+symbol     = "VTMR(F)"
+kind       = "electrical"
+scope      = "full"
+min        = 1.22
+typ        = 1.25
+max        = 1.28
+unit       = "V"
+conditions = "FLT falling, VCC = 4V to 80V"
+cite       = "DS p.4, Electrical Characteristics, VTMR(F)"
+
+[param.vtmr_g]
+name       = "TMR gate-off threshold (HGATE falls)"
+symbol     = "VTMR(G)"
+kind       = "electrical"
+scope      = "full"
+min        = 1.32
+typ        = 1.35
+max        = 1.38
+unit       = "V"
+conditions = "HGATE falling, VCC = 4V to 80V"
+cite       = "DS p.4, Electrical Characteristics, VTMR(G)"
+
+[param.vtmr_r]
+name       = "TMR retry threshold, 32nd crossing (0.15 V; HGATE rises only for -2)"
+symbol     = "VTMR(R)"
+kind       = "electrical"
+scope      = "full"
+min        = 0.125
+typ        = 0.15
+max        = 0.175
+unit       = "V"
+conditions = "HGATE rising (after 32 cycles), VCC = 4V to 80V"
+cite       = "DS p.4, Electrical Characteristics, VTMR(R)"
+note       = "OPEN ITEM: DS Figure 4 caption says 'LTC4364-2 Only' but the p.15 text says the -1 also generates these cool-down TMR pulses; the text is followed. Shared by all six variants. Restart by HGATE rising at this crossing is the -2 function (DS p.14, p.15). The -1 also runs the 32 cool-down cycles that reach 0.15 V (DS p.15, Figure 4), so the threshold applies to -1 too. Used by calc.t_cool (dv_cycle = VTMR(G) - VTMR(R))."
+
+[param.dvtmr]
+name       = "Early warning timer window"
+symbol     = "dVTMR"
+kind       = "electrical"
+scope      = "full"
+min        = 75
+typ        = 100
+max        = 125
+unit       = "mV"
+conditions = "VTMR(G) - VTMR(F), VCC = 4V to 80V"
+cite       = "DS p.4, Electrical Characteristics, Early Warning Timer Window"
+
+[param.vuv]
+name       = "UV input threshold (falling)"
+symbol     = "VUV"
+kind       = "electrical"
+scope      = "full"
+min        = 1.22
+typ        = 1.25
+max        = 1.28
+unit       = "V"
+conditions = "UV falling, VCC = 4V to 80V"
+cite       = "DS p.4, Electrical Characteristics, VUV"
+
+[param.vuv_hyst]
+name       = "UV input hysteresis"
+symbol     = "VUV(HYST)"
+kind       = "electrical"
+scope      = "full"
+min        = 25
+typ        = 50
+max        = 80
+unit       = "mV"
+conditions = ""
+cite       = "DS p.4, Electrical Characteristics, VUV(HYST)"
+
+[param.vuv_rst]
+name       = "UV reset threshold (LTC4364-1 only)"
+symbol     = "VUV(RST)"
+kind       = "electrical"
+scope      = "full"
+min        = 0.5
+typ        = 0.6
+max        = 0.7
+unit       = "V"
+conditions = "UV falling, VCC = 4V to 80V, LTC4364-1 only"
+cite       = "DS p.4, Electrical Characteristics, VUV(RST)"
+note       = "Restricted to the -1 variants (DS p.4, 'LTC4364-1 Only'). Pulling UV below 0.6 V resets the latch (DS p.9, p.11)."
+variants   = ["LTC4364CMS-1", "LTC4364IMS-1", "LTC4364HMS-1"]
+
+[param.vov]
+name       = "OV input threshold (rising)"
+symbol     = "VOV"
+kind       = "electrical"
+scope      = "full"
+min        = 1.22
+typ        = 1.25
+max        = 1.28
+unit       = "V"
+conditions = "OV rising, VCC = 4V to 80V"
+cite       = "DS p.4, Electrical Characteristics, VOV"
+
+[param.vov_hyst]
+name       = "OV input hysteresis"
+symbol     = "VOV(HYST)"
+kind       = "electrical"
+scope      = "25C"
+typ        = 12
+unit       = "mV"
+conditions = ""
+cite       = "DS p.4, Electrical Characteristics, VOV(HYST)"
+note       = "Unmarked row (25 degC). Typical only; no MIN or MAX printed."
+
+[param.iin_uvov_pos]
+name       = "UV, OV input current at threshold"
+symbol     = "IIN"
+kind       = "electrical"
+scope      = "full"
+min        = -1
+typ        = 0
+max        = 1
+unit       = "uA"
+conditions = "UV, OV = 1.25V"
+cite       = "DS p.4, Electrical Characteristics, IIN (row 1)"
+note       = "Printed 0 TYP and +/-1 in the MAX column; stored as symmetric min -1 / max 1."
+
+[param.iin_uvov_neg]
+name       = "UV, OV input current at -30 V"
+symbol     = "IIN"
+kind       = "electrical"
+scope      = "full"
+min        = -0.6
+typ        = -0.3
+unit       = "mA"
+conditions = "UV, OV = -30V"
+cite       = "DS p.4, Electrical Characteristics, IIN (row 2)"
+note       = "DS prints this negative quantity in magnitude order (MAX column -0.6); stored in numeric order: printed MAX -> min, printed MIN -> max."
+
+[param.vol_025ma]
+name       = "ENOUT, FLT output low at 0.25 mA"
+symbol     = "VOL"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.1
+max        = 0.3
+unit       = "V"
+conditions = "ISINK = 0.25mA"
+cite       = "DS p.4, Electrical Characteristics, VOL (row 1)"
+
+[param.vol_2ma]
+name       = "ENOUT, FLT output low at 2 mA"
+symbol     = "VOL"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.5
+max        = 1.3
+unit       = "V"
+conditions = "ISINK = 2mA"
+cite       = "DS p.4, Electrical Characteristics, VOL (row 2)"
+
+[param.ileak]
+name       = "ENOUT, FLT leakage current"
+symbol     = "ILEAK"
+kind       = "electrical"
+scope      = "full"
+min        = -2.5
+typ        = 0
+max        = 2.5
+unit       = "uA"
+conditions = "ENOUT, FLT = 80V"
+cite       = "DS p.4, Electrical Characteristics, ILEAK"
+note       = "Printed 0 TYP and +/-2.5 in the MAX column; stored as symmetric min -2.5 / max 2.5."
+
+[param.dvout_th]
+name       = "OUT high threshold, VCC - VOUT (ENOUT goes high impedance)"
+symbol     = "dVOUT(TH)"
+kind       = "electrical"
+scope      = "full"
+min        = 0.4
+typ        = 0.7
+max        = 1
+unit       = "V"
+conditions = "ENOUT from Low to High"
+cite       = "DS p.4, Electrical Characteristics, dVOUT(TH)"
+
+[param.vout_rst]
+name       = "OUT reset threshold (ENOUT latch resets)"
+symbol     = "VOUT(RST)"
+kind       = "electrical"
+scope      = "full"
+min        = 1.4
+typ        = 2.2
+max        = 3
+unit       = "V"
+conditions = "ENOUT from High to Low"
+cite       = "DS p.4, Electrical Characteristics, VOUT(RST)"
+
+[param.iout_on]
+name       = "OUT input current, normal"
+symbol     = "IOUT"
+kind       = "electrical"
+scope      = "full"
+typ        = 40
+max        = 80
+unit       = "uA"
+conditions = "VCC = OUT = 12V, SHDN open"
+cite       = "DS p.4, Electrical Characteristics, IOUT (row 1)"
+
+[param.iout_neg15]
+name       = "OUT input current, OUT = -15 V"
+symbol     = "IOUT"
+kind       = "electrical"
+scope      = "full"
+min        = -8
+typ        = -4
+unit       = "mA"
+conditions = "OUT = -15V"
+cite       = "DS p.4, Electrical Characteristics, IOUT (row 2)"
+note       = "DS prints this negative quantity in magnitude order (MAX column -8); stored in numeric order: printed MAX -> min, printed MIN -> max."
+
+[param.iout_shdn]
+name       = "Output current in shutdown, ISNS + IOUT"
+kind       = "electrical"
+scope      = "full"
+typ        = 12
+max        = 40
+unit       = "uA"
+conditions = "VCC = SOURCE = SENSE = OUT = 12V, Shutdown"
+cite       = "DS p.4, Electrical Characteristics, Output Current in Shutdown, ISNS + IOUT"
+
+[param.vshdn]
+name       = "SHDN input threshold"
+symbol     = "VSHDN"
+kind       = "electrical"
+scope      = "full"
+min        = 0.5
+typ        = 1.6
+max        = 2.2
+unit       = "V"
+conditions = "VCC = 4V to 80V"
+cite       = "DS p.4, Electrical Characteristics, VSHDN"
+
+[param.vshdn_flt]
+name       = "SHDN pin float voltage"
+symbol     = "VSHDN(FLT)"
+kind       = "electrical"
+scope      = "full"
+min        = 2.3
+typ        = 4
+max        = 6.5
+unit       = "V"
+conditions = "VCC = 12V to 80V"
+cite       = "DS p.4, Electrical Characteristics, VSHDN(FLT)"
+
+[param.ishdn_on]
+name       = "SHDN input current, SHDN = 0.5 V"
+symbol     = "ISHDN"
+kind       = "electrical"
+scope      = "full"
+typ        = -3.3
+max        = -1
+unit       = "uA"
+conditions = "SHDN = 0.5V"
+cite       = "DS p.4, Electrical Characteristics, ISHDN (row 1)"
+note       = "DS prints this negative quantity in magnitude order (MIN column -1); stored in numeric order: printed MAX -> min, printed MIN -> max."
+
+[param.ishdn_leak]
+name       = "SHDN maximum allowable leakage, VCC = 4 V"
+symbol     = "ISHDN"
+kind       = "electrical"
+scope      = "25C"
+typ        = -1.5
+unit       = "uA"
+conditions = "Maximum Allowable Leakage, VCC = 4V"
+cite       = "DS p.4, Electrical Characteristics, ISHDN (row 2)"
+note       = "Unmarked row (25 degC). Printed in the TYP column but labelled 'Maximum Allowable Leakage': this is a limit on EXTERNAL leakage on SHDN, not a typical device value. Supporting text: DS p.9, SHDN pin function, leakage current to ground at the pin should be limited to no more than 1 uA if no pull-up device is used. The table value (1.5 uA, DS p.4) and the p.9 text (1 uA) differ: open item. Not used as a device bound."
+
+[param.ishdn_neg30]
+name       = "SHDN input current, SHDN = -30 V"
+symbol     = "ISHDN"
+kind       = "electrical"
+scope      = "full"
+min        = -300
+typ        = -120
+unit       = "uA"
+conditions = "SHDN = -30V"
+cite       = "DS p.4, Electrical Characteristics, ISHDN (row 3)"
+note       = "DS prints this negative quantity in magnitude order (MAX column -300); stored in numeric order: printed MAX -> min, printed MIN -> max."
+
+[param.duty_ov_retry]
+name       = "Retry duty cycle, overvoltage (LTC4364-2 function)"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.125
+max        = 0.2
+unit       = "%"
+conditions = "FB = 1.5V, VCC = 80V, OUT = 16V"
+cite       = "DS p.4, Electrical Characteristics, D, Retry Duty Cycle, Overvoltage"
+note       = "Auto-retry duty cycle, overvoltage. Restricted to the -2 variants: the -1 latches and does not retry (DS p.15; feature 0.1 % retry duty cycle, DS p.1, LTC4364-2)."
+variants   = ["LTC4364CMS-2", "LTC4364IMS-2", "LTC4364HMS-2"]
+
+[param.duty_short_retry]
+name       = "Retry duty cycle, output short (LTC4364-2 function)"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.075
+max        = 0.12
+unit       = "%"
+conditions = "dVSNS = 60mV, VCC - OUT = 12V"
+cite       = "DS p.4, Electrical Characteristics, D, Retry Duty Cycle, Output Short"
+note       = "Auto-retry duty cycle, output short. Restricted to the -2 variants: the -1 latches and does not retry (DS p.15; DS p.1, LTC4364-2)."
+variants   = ["LTC4364CMS-2", "LTC4364IMS-2", "LTC4364HMS-2"]
+
+[param.t_off_uv]
+name       = "Undervoltage to HGATE low propagation delay"
+symbol     = "tOFF,HGATE(UV)"
+kind       = "electrical"
+scope      = "full"
+typ        = 1.3
+max        = 4
+unit       = "us"
+conditions = "UV steps from 1.5V to 1V"
+cite       = "DS p.4, Electrical Characteristics, tOFF,HGATE(UV)"
+
+[param.t_off_ov]
+name       = "Overvoltage to HGATE low propagation delay"
+symbol     = "tOFF,HGATE(OV)"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.25
+max        = 1
+unit       = "us"
+conditions = "FB steps from 1V to 1.5V"
+cite       = "DS p.4, Electrical Characteristics, tOFF,HGATE(OV)"
+
+[param.t_off_oc]
+name       = "Overcurrent to HGATE low propagation delay"
+symbol     = "tOFF,HGATE(OC)"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.5
+max        = 2
+unit       = "us"
+conditions = "dVSNS steps from 0mV to 150mV, OUT = 0V"
+cite       = "DS p.4, Electrical Characteristics, tOFF,HGATE(OC)"
+
+[param.dvdgate_4v]
+name       = "DGATE gate drive, VDGATE - VSOURCE, VCC = 4 V"
+symbol     = "dVDGATE"
+kind       = "electrical"
+scope      = "full"
+min        = 5
+typ        = 8.5
+max        = 12
+unit       = "V"
+conditions = "VCC = 4V, IDGATE = 0uA, -1uA, Fully On"
+cite       = "DS p.5, Electrical Characteristics, Ideal Diode, dVDGATE (row 1)"
+
+[param.dvdgate_8v]
+name       = "DGATE gate drive, VDGATE - VSOURCE, VCC = 8 V to 80 V"
+symbol     = "dVDGATE"
+kind       = "electrical"
+scope      = "full"
+min        = 10
+typ        = 12
+max        = 16
+unit       = "V"
+conditions = "VCC = 8V to 80V, IDGATE = 0uA, -1uA, Fully On"
+cite       = "DS p.5, Electrical Characteristics, Ideal Diode, dVDGATE (row 2)"
+
+[param.idgate_up]
+name       = "DGATE pin pull-up current"
+symbol     = "IDGATE(UP)"
+kind       = "electrical"
+scope      = "full"
+min        = -15
+typ        = -10
+max        = -5
+unit       = "uA"
+conditions = "DGATE = SOURCE = VCC = 12V, dVSD = 0.1V"
+cite       = "DS p.5, Electrical Characteristics, Ideal Diode, IDGATE(UP)"
+note       = "DS prints this negative quantity in magnitude order (MIN column -5, MAX column -15); stored in numeric order: printed MAX -> min, printed MIN -> max."
+
+[param.idgate_dn_on]
+name       = "DGATE pin pull-down current, reverse current"
+symbol     = "IDGATE(DN)"
+kind       = "electrical"
+scope      = "full"
+min        = 60
+typ        = 130
+unit       = "mA"
+conditions = "dVDGATE = 5V, dVSD = -0.2V"
+cite       = "DS p.5, Electrical Characteristics, Ideal Diode, IDGATE(DN) (row 1)"
+
+[param.idgate_dn_off]
+name       = "DGATE pin pull-down current, shutdown or fault turn-off"
+symbol     = "IDGATE(DN)"
+kind       = "electrical"
+scope      = "full"
+min        = 0.4
+typ        = 1
+unit       = "mA"
+conditions = "dVDGATE = 5V, Shutdown/Fault Turn-Off"
+cite       = "DS p.5, Electrical Characteristics, Ideal Diode, IDGATE(DN) (row 2)"
+
+[param.dvsd_12v]
+name       = "Ideal diode regulation voltage, VCC = SOURCE = 12 V"
+symbol     = "dVSD"
+kind       = "electrical"
+scope      = "full"
+min        = 10
+typ        = 30
+max        = 45
+unit       = "mV"
+conditions = "dVDGATE = 2.5V, VCC = SOURCE = 12V"
+cite       = "DS p.5, Electrical Characteristics, Ideal Diode, dVSD (row 1)"
+
+[param.dvsd_4v]
+name       = "Ideal diode regulation voltage, VCC = SOURCE = 4 V"
+symbol     = "dVSD"
+kind       = "electrical"
+scope      = "full"
+min        = 24
+typ        = 48
+max        = 72
+unit       = "mV"
+conditions = "dVDGATE = 2.5V, VCC = SOURCE = 4V"
+cite       = "DS p.5, Electrical Characteristics, Ideal Diode, dVSD (row 2)"
+
+[param.t_off_dgate]
+name       = "DGATE turn-off propagation delay"
+symbol     = "tOFF(DGATE)"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.35
+max        = 1.5
+unit       = "us"
+conditions = "dVSD steps from 0.1V to -1V"
+cite       = "DS p.5, Electrical Characteristics, Ideal Diode, tOFF(DGATE)"

@@ -1,0 +1,88 @@
+# Murata GCM155 family: 1005M (0402) X7R (R7) MLCC. One directory per size (the footprint is per size); one variant per
+# reference sheet (variants.toml). Shared rows here are the size and series rows the reference sheet gives for every
+# value in the 1005M size; everything that is stated per value (capacitance, rated voltage, tolerance, thickness T,
+# e, g and every test limit) is in variants.toml.
+# Source: docs/datasheets/GCM155R71H104KE02-01A-EN.pdf (Murata reference sheet, "product specifications as of Apr.6,2026").
+# Lifecycle, revision currency, errata and PCN: not checked (no web access).
+#
+# Open items (DS gives no numbers, so nothing is stored):
+#   - DC voltage characteristic (X7R capacitance loss under DC bias): the DS figure is an example for another sample
+#     (R(R1)); no number is printed, so nothing is stored as a bound (see the dc_bias row). capacitance_worst excludes it.
+#   - AC voltage characteristic: text only. Self-heating (< 20 degC) and the AC peak rule are stored (self_heating, ac_peak).
+#   - Aging (capacitance decrease with time): DS p.15, section 6, figure "Example of Change Over Time" only; no rate printed.
+#   - Operating temperature range is a single row (-55 to 125 degC); no derating curve is printed.
+# Product URL: the reference sheet prints no product page address; the only URL printed in the PDF is
+# No datasheet URL is printed (only a contact form); datasheet_url says so and datasheet_file is the source (open item).
+
+[part]
+value           = "GCM155"                    # family: the 1005M variants are in variants.toml
+manufacturer    = "Murata"
+description     = "Chip multilayer ceramic capacitor, X7R (R7), 1005M (0402), AEC-Q200 reference sheet"
+category        = "capacitor_mlcc"
+package         = "1005M (0402)"
+kicad_symbol    = "GCM155.kicad_sym"
+kicad_footprint = "GCM155.kicad_mod"
+step            = "GCM155.step"
+datasheet_url   = ""  # open item: the reference sheet prints no datasheet URL (only a contact form); use datasheet_file
+datasheet_rev   = "01A"                              # family default; a variant may override
+datasheet_date  = "2026-04"                           # DS p.2 "product specifications are as of Apr.6,2026"
+
+# Pins: DS p.2 Type & Dimension figure. Non-polarized two-terminal chip capacitor; pin names are the terminal numbers.
+
+[[pin]]
+number   = "1"
+name     = "1"
+type     = "passive"
+function = "Capacitor terminal (non-polarized)"
+cite     = "DS p.2, Type & Dimension, image:Dimension"
+
+[[pin]]
+number   = "2"
+name     = "2"
+type     = "passive"
+function = "Capacitor terminal (non-polarized)"
+cite     = "DS p.2, Type & Dimension, image:Dimension"
+
+# Shared rows: size and series generic (apply to every variant in this family).
+
+# Land pattern (footprint, reflow). Size-generic for the 1005M size. DS p.28 "2. Land Dimensions", Table 2 (Reflow),
+# row "1.0x0.5 (within +/-0.10)", chip code 15 (1005M). The DS labels the dimensions only by letter (figure on p.28):
+# neutral names. Inferred meaning, not printed: a = land-to-land gap, b = land length, c = land width (figure: a is the
+# gap between lands, b the outer land extent, c the land height across the chip width). Ranges as printed (min/max only).
+# Flow soldering (Table 1) does not cover 1.0x0.5, so it is not stored.
+
+[param.land_a]
+name       = "Land pattern dimension a (reflow)"
+symbol     = "a"
+kind       = "mechanical"
+scope      = "na"
+min        = 0.3
+max        = 0.5
+unit       = "mm"
+conditions = "Reflow soldering, chip 1.0x0.5 (within +/-0.10), chip code 15"
+cite       = "DS p.28, 2. Land Dimensions, Table 2 Reflow Soldering Method, 1.0x0.5 (within +/-0.10), a"
+note       = "Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed)."
+
+[param.land_b]
+name       = "Land pattern dimension b (reflow)"
+symbol     = "b"
+kind       = "mechanical"
+scope      = "na"
+min        = 0.35
+max        = 0.45
+unit       = "mm"
+conditions = "Reflow soldering, chip 1.0x0.5 (within +/-0.10), chip code 15"
+cite       = "DS p.28, 2. Land Dimensions, Table 2 Reflow Soldering Method, 1.0x0.5 (within +/-0.10), b"
+note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed)."
+
+[param.land_c]
+name       = "Land pattern dimension c (reflow)"
+symbol     = "c"
+kind       = "mechanical"
+scope      = "na"
+min        = 0.4
+max        = 0.6
+unit       = "mm"
+conditions = "Reflow soldering, chip 1.0x0.5 (within +/-0.10), chip code 15"
+cite       = "DS p.28, 2. Land Dimensions, Table 2 Reflow Soldering Method, 1.0x0.5 (within +/-0.10), c"
+note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed)."

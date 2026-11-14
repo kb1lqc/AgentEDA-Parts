@@ -1,0 +1,237 @@
+"""INA229AIDGS: 85 V, 20-bit power/energy/charge monitor with SPI interface.
+GENERATED from component.toml by `python3 -m lib.zen`; do not edit. Source of truth: component.toml and
+calc.py (numbers, cites, equations). DS: https://www.ti.com/lit/ds/symlink/ina229.pdf, SLYS023A (2022-05).
+Checks are DC steady-state on the voltages each instance declares. They do not cover transients, overshoot,
+hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
+Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
+
+load("@stdlib/units.zen", "Temperature")
+
+# UNCHECKED: vs_abs: Supply voltage (DS p.3, 6.1 Absolute Maximum Ratings, Supply voltage VS); covered by vs_rec (2.7 V to 5.5 V, error), which is stricter
+# UNCHECKED: iin_abs: Input current into any pin (DS p.3, 6.1 Absolute Maximum Ratings, IIN, Input current into any pin); current rating, not a voltage (the wrapper checks voltages only); owner: board
+# UNCHECKED: iout_abs: Digital output current (DS p.3, 6.1 Absolute Maximum Ratings, IOUT, Digital output current); current rating, not a voltage (the wrapper checks voltages only); owner: module
+# UNCHECKED: tj_abs: Junction temperature (DS p.3, 6.1 Absolute Maximum Ratings, TJ, Junction temperature); needs dissipation x RthetaJA; owner: module
+# UNCHECKED: tstg_abs: Storage temperature (DS p.3, 6.1 Absolute Maximum Ratings, Tstg, Storage temperature); owner: assembly
+# UNCHECKED: esd_hbm: Electrostatic discharge, human body model (DS p.4, 6.2 ESD Ratings, Human body model (HBM), V(ESD)); owner: assembly
+# UNCHECKED: esd_cdm: Electrostatic discharge, charged device model (DS p.4, 6.2 ESD Ratings, Charged device model (CDM), V(ESD)); owner: assembly
+
+# Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
+# GND can drive them; ground-named pins are Ground.
+# pin 1 CS, input: SPI chip select (Active Low)
+CS = io(Net)
+# pin 2 MOSI, input: SPI digital data input
+MOSI = io(Net)
+# pin 3 ALERT, open_collector: Open-drain alert output, default state is active low
+ALERT = io(Net)
+# pin 4 MISO, output: SPI digital data output (push-pull)
+MISO = io(Net)
+# pin 5 SCLK, input: SPI clock input
+SCLK = io(Net)
+# pin 6 VS, power_in: Power supply, 2.7 V to 5.5 V
+VS = io(Net)
+# pin 7 GND, power_in: Ground
+GND = io(Ground)
+# pin 8 VBUS, input: Bus voltage input
+VBUS = io(Net)
+# pin 9 IN-, input: Negative input to the device. High-side: connect to load side of sense resistor. Low-side: connect to ground side of sense resistor
+IN_N = io(Net)
+# pin 10 IN+, input: Positive input to the device. High-side: connect to power supply side of sense resistor. Low-side: connect to load side of sense resistor
+IN_P = io(Net)
+
+ambient = config(Temperature, optional=True, help="Board ambient temperature range")
+derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+
+_ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
+check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
+
+
+def _limit(name, fn, inputs, severity, waiver=""):
+    # Unset input: UNVERIFIED warning, never a silent pass. Waiver drops a warning to advice.
+    if waiver and severity != "warning":
+        error("only warning-level checks can be waived: " + name)
+    unset = [k for k, v in inputs.items() if v == None]
+    if unset:
+
+        def _unverified(_m):
+            error("UNVERIFIED " + name + ": no value for " + ", ".join(unset))
+
+        builtin.add_electrical_check(name=name, check_fn=_unverified, severity="advice" if _ROOT else "warning")
+    else:
+        builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
+
+
+def _range(_m, v, what, lo=None, hi=None, lo_ref=None, hi_ref=None):
+    # Worst case: v.min >= lo + lo_ref.max and v.max <= hi + hi_ref.min (narrowest window). No ref = absolute.
+    lo_b = None if lo == None else lo + (0.0 if lo_ref == None else lo_ref.max)
+    hi_b = None if hi == None else hi + (0.0 if hi_ref == None else hi_ref.min)
+    ok = (lo_b == None or v.min >= lo_b) and (hi_b == None or v.max <= hi_b)
+    lo_t = "no limit" if lo_b == None else "%s V" % lo_b
+    hi_t = "no limit" if hi_b == None else "%s V" % hi_b
+    check(ok, "%s: %s to %s V outside %s to %s" % (what, v.min, v.max, lo_t, hi_t))
+
+
+def _temp(_m, v, what, lo, hi):
+    # Temperatures are kelvin floats in Zener; messages in degC.
+    ok = v.min >= lo and v.max <= hi
+    msg = "%s: %s to %s degC outside %s to %s degC"
+    check(ok, msg % (what, v.min - 273.15, v.max - 273.15, lo - 273.15, hi - 273.15))
+
+
+# vin_diff_abs_IN_P: pin IN+ (IN_P) within the limit, x derate
+#   Differential input voltage, (VIN+) - (VIN-): min -40 / max 40 V (min_ref rel. IN-) (max_ref rel. IN-)
+#   DS p.3, 6.1 Absolute Maximum Ratings, VIN+, VIN- Differential (VIN+) - (VIN-)
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: abs_max violated
+_limit(
+    "vin_diff_abs_IN_P",
+    _range,
+    {
+        "v": IN_P.voltage,
+        "what": "vin_diff_abs_IN_P",
+        "lo": -40.0 * derate,
+        "lo_ref": IN_N.voltage,
+        "hi": 40.0 * derate,
+        "hi_ref": IN_N.voltage,
+    },
+    "error",
+)
+
+# vcm_abs_IN_P: pin IN+ (IN_P) within the limit, x derate
+#   Common-mode input voltage, VIN+ and VIN-: min -0.3 / max 85 V
+#   DS p.3, 6.1 Absolute Maximum Ratings, VIN+, VIN- Common-mode
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: abs_max violated
+_limit(
+    "vcm_abs_IN_P",
+    _range,
+    {"v": IN_P.voltage, "what": "vcm_abs_IN_P", "lo": -0.3 * derate, "hi": 85.0 * derate},
+    "error",
+)
+
+# vcm_abs_IN_N: pin IN- (IN_N) within the limit, x derate
+#   Common-mode input voltage, VIN+ and VIN-: min -0.3 / max 85 V
+#   DS p.3, 6.1 Absolute Maximum Ratings, VIN+, VIN- Common-mode
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: abs_max violated
+_limit(
+    "vcm_abs_IN_N",
+    _range,
+    {"v": IN_N.voltage, "what": "vcm_abs_IN_N", "lo": -0.3 * derate, "hi": 85.0 * derate},
+    "error",
+)
+
+# vbus_abs_VBUS: pin VBUS (VBUS) within the limit, x derate
+#   Bus voltage input, VBUS: min -0.3 / max 85 V
+#   DS p.3, 6.1 Absolute Maximum Ratings, VBUS
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: abs_max violated
+_limit(
+    "vbus_abs_VBUS",
+    _range,
+    {"v": VBUS.voltage, "what": "vbus_abs_VBUS", "lo": -0.3 * derate, "hi": 85.0 * derate},
+    "error",
+)
+
+# vio_abs_MOSI: pin MOSI (MOSI) within the limit, x derate
+#   Digital input/output voltage, MOSI, MISO, SCLK, ALERT: min -0.3 / max 0.3 V (min_ref rel. GND) (max_ref rel. VS)
+#   DS p.3, 6.1 Absolute Maximum Ratings, VIO, MOSI, MISO, SCLK, ALERT
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: abs_max violated
+_limit(
+    "vio_abs_MOSI",
+    _range,
+    {
+        "v": MOSI.voltage,
+        "what": "vio_abs_MOSI",
+        "lo": -0.3 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 0.3 * derate,
+        "hi_ref": VS.voltage,
+    },
+    "error",
+)
+
+# vio_abs_SCLK: pin SCLK (SCLK) within the limit, x derate
+#   Digital input/output voltage, MOSI, MISO, SCLK, ALERT: min -0.3 / max 0.3 V (min_ref rel. GND) (max_ref rel. VS)
+#   DS p.3, 6.1 Absolute Maximum Ratings, VIO, MOSI, MISO, SCLK, ALERT
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: abs_max violated
+_limit(
+    "vio_abs_SCLK",
+    _range,
+    {
+        "v": SCLK.voltage,
+        "what": "vio_abs_SCLK",
+        "lo": -0.3 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 0.3 * derate,
+        "hi_ref": VS.voltage,
+    },
+    "error",
+)
+
+# vio_abs_ALERT: pin ALERT (ALERT) within the limit, x derate
+#   Digital input/output voltage, MOSI, MISO, SCLK, ALERT: min -0.3 / max 0.3 V (min_ref rel. GND) (max_ref rel. VS)
+#   DS p.3, 6.1 Absolute Maximum Ratings, VIO, MOSI, MISO, SCLK, ALERT
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: abs_max violated
+_limit(
+    "vio_abs_ALERT",
+    _range,
+    {
+        "v": ALERT.voltage,
+        "what": "vio_abs_ALERT",
+        "lo": -0.3 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 0.3 * derate,
+        "hi_ref": VS.voltage,
+    },
+    "error",
+)
+
+# vcm_rec_IN_P: pin IN+ (IN_P) within the limit
+#   Common-mode input range: min -0.3 / max 85 V
+#   DS p.4, 6.3 Recommended Operating Conditions, VCM, Common-mode input range
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: rec_op violated
+_limit("vcm_rec_IN_P", _range, {"v": IN_P.voltage, "what": "vcm_rec_IN_P", "lo": -0.3, "hi": 85.0}, "error")
+
+# vcm_rec_IN_N: pin IN- (IN_N) within the limit
+#   Common-mode input range: min -0.3 / max 85 V
+#   DS p.4, 6.3 Recommended Operating Conditions, VCM, Common-mode input range
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: rec_op violated
+_limit("vcm_rec_IN_N", _range, {"v": IN_N.voltage, "what": "vcm_rec_IN_N", "lo": -0.3, "hi": 85.0}, "error")
+
+# vs_rec_VS: pin VS (VS) within the limit
+#   Operating supply range: min 2.7 / max 5.5 V
+#   DS p.4, 6.3 Recommended Operating Conditions, VS, Operating supply range
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: rec_op violated
+_limit("vs_rec_VS", _range, {"v": VS.voltage, "what": "vs_rec_VS", "lo": 2.7, "hi": 5.5}, "error")
+
+# ta_rec_ambient: board ambient range inside this range
+#   Ambient temperature: min -40 / max 125 degC
+#   DS p.4, 6.3 Recommended Operating Conditions, TA, Ambient temperature
+#   Severity error: rec_op violated
+_limit("ta_rec_ambient", _temp, {"v": ambient, "what": "ta_rec_ambient", "lo": 233.15, "hi": 398.15}, "error")
+
+Component(
+    name="INA229AIDGS",
+    symbol=Symbol(library="./INA229AIDGS.kicad_sym"),
+    part=Part(
+        mpn="INA229AIDGSR", manufacturer="Texas Instruments", datasheet="https://www.ti.com/lit/ds/symlink/ina229.pdf"
+    ),
+    pins={
+        "CS": CS,
+        "MOSI": MOSI,
+        "ALERT": ALERT,
+        "MISO": MISO,
+        "SCLK": SCLK,
+        "VS": Power(VS, voltage=VS.voltage),
+        "GND": GND,
+        "VBUS": VBUS,
+        "IN-": IN_N,
+        "IN+": IN_P,
+    },
+)

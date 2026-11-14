@@ -1,0 +1,82 @@
+[part]
+value = "RSER1"
+manufacturer = "Acme"
+description = "Test resistor series, 0402"
+category = "resistor"
+package = "0402"
+datasheet_url = "https://example.com/rser1.pdf"
+datasheet_rev = "A"
+datasheet_date = "2020-01"
+kicad_symbol = "RSER1.kicad_sym"
+kicad_footprint = "RSER1.kicad_mod"
+step = "none"
+series = "resistor"
+value_param = "res_range"
+e_series = ["E24"]
+series_power = "p70"
+series_vlimit = "v_max"
+series_tol = "tol"
+
+[[pin]]
+number = "1"
+name = "1"
+type = "passive"
+function = "Terminal 1"
+cite = "DS p.2, Dimensions, terminal 1"
+
+[[pin]]
+number = "2"
+name = "2"
+type = "passive"
+function = "Terminal 2"
+cite = "DS p.2, Dimensions, terminal 2"
+
+[param.res_range]
+name = "Resistance range"
+kind = "electrical"
+scope = "na"
+min = 10
+max = 1000
+unit = "ohm"
+conditions = ""
+cite = "DS p.1, Features, Resistance range"
+
+[param.p70]
+name = "Power rating at 70 degC"
+symbol = "P70"
+kind = "rec_op"
+scope = "na"
+max = 0.1
+unit = "W"
+conditions = "TA = 70 degC"
+cite = "DS p.1, Ratings, Power rating"
+
+[param.v_max]
+name = "Limiting element voltage"
+kind = "abs_max"
+scope = "na"
+max = 50
+unit = "V"
+conditions = ""
+cite = "DS p.1, Ratings, Limiting element voltage"
+
+[param.tol]
+name = "Resistance tolerance"
+kind = "electrical"
+scope = "full"
+min = -1
+max = 1
+unit = "%"
+conditions = ""
+cite = "DS p.1, Ratings, Tolerance"
+
+[param.t_oper]
+name = "Operating temperature"
+kind = "rec_op"
+scope = "na"
+min = -55
+max = 155
+unit = "degC"
+conditions = ""
+cite = "DS p.1, Ratings, Operating temperature"
+check_ambient = true

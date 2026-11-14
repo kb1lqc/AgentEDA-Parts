@@ -1,0 +1,317 @@
+"""VNF1248F: High-side switch controller with intelligent fuse protection, 6-60 V (70 V transient), AEC-Q100, QFN32L 5x5 mm.
+GENERATED from component.toml by `python3 -m lib.zen`; do not edit. Source of truth: component.toml and
+calc.py (numbers, cites, equations). DS: https://www.st.com/resource/en/datasheet/vnf1248f.pdf, Rev 8 (2026-07).
+Checks are DC steady-state on the voltages each instance declares. They do not cover transients, overshoot,
+hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
+Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
+
+# UNCHECKED: abs_vs: VS pin DC voltage (DS p.5, Table 2. Absolute maximum ratings, VS); covered by vs_op
+# UNCHECKED: abs_ignd: GND pin reverse DC current (DS p.5, Table 2. Absolute maximum ratings, -IGND); current rating, not a voltage; owner: module
+# UNCHECKED: abs_vspi: VSPI pin DC voltage (DS p.5, Table 2. Absolute maximum ratings, VSPI); covered by vspi_op
+# UNCHECKED: abs_v3v3: V3V3 pin DC voltage (DS p.5, Table 2. Absolute maximum ratings, V3V3); part-driven: output of the internal 3.3 V LDO (Table 1, pin 12); owner: module
+# UNCHECKED: abs_sdo: SDO pin DC voltage (DS p.5, Table 2. Absolute maximum ratings, VSDO); SDO is driven by the part; owner: module
+# UNCHECKED: abs_sdo_vspi: SDO pin DC voltage relative to VSPI (DS p.5, Table 2. Absolute maximum ratings, VSDO (VSPI + 0.3 V)); SDO is driven by the part; owner: module
+# UNCHECKED: abs_idiag: DIAG pin DC current (DS p.5, Table 2. Absolute maximum ratings, IDIAG); current rating, internally limited; part-driven pin; owner: module
+# UNCHECKED: abs_hs_gate: HS_GATE pin DC voltage (DS p.5, Table 2. Absolute maximum ratings, VHS_GATE); part-driven: gate drive output; owner: module
+# UNCHECKED: abs_out: OUT pin DC voltage (DS p.5, Table 2. Absolute maximum ratings, VOUT); OUT is the external MOSFET source, set by external parts; owner: module
+# UNCHECKED: abs_ntc: NTC, NTC_M pins DC voltage (DS p.5, Table 2. Absolute maximum ratings, VNTC, VNTC_M); NTC bridge nodes: voltage set by the external NTC network and the internal bridge (DS p.17 Figure 4); owner: module
+# UNCHECKED: abs_vcp: CP pin DC voltage (DS p.5, Table 2. Absolute maximum ratings, VCP); part-driven: charge pump output; owner: module
+# UNCHECKED: abs_vcp1p_cp2p: CP1P, CP2P pins DC voltage (DS p.5, Table 2. Absolute maximum ratings, VCP1P, VCP2P); part-driven: charge pump flying-capacitor nodes; owner: module
+# UNCHECKED: abs_vcp1m_cp2m: CP1M, CP2M pins DC voltage (DS p.5, Table 2. Absolute maximum ratings, VCP1M, VCP2M); part-driven: charge pump flying-capacitor nodes; owner: module
+# UNCHECKED: esd_hbm_2000: ESD, JEDEC 22A-114F (HBM), general pins (DS p.5, Table 2. Absolute maximum ratings, Electrostatic discharge (JEDEC 22A-114F), 2000); owner: assembly
+# UNCHECKED: esd_hbm_4000: ESD, JEDEC 22A-114F (HBM), VS, OUT, DIN only (DS p.5, Table 2. Absolute maximum ratings, Electrostatic discharge (JEDEC 22A-114F), 4000 (1)); owner: assembly
+# UNCHECKED: esd_cdm_500: ESD, CDM-AEC-Q100-011, all pins except corners (DS p.5, Table 2. Absolute maximum ratings, Charge device model (CDM-AEC-Q100-011), +/-500 (2)); owner: assembly
+# UNCHECKED: esd_cdm_750: ESD, CDM-AEC-Q100-011, corner pins (DS p.5, Table 2. Absolute maximum ratings, Charge device model (CDM-AEC-Q100-011), +/-750 (3)); owner: assembly
+# UNCHECKED: tj_abs: Junction operating temperature (DS p.5, Table 2. Absolute maximum ratings, Junction operating temperature (TJ)); TJ rating; needs dissipation; owner: module
+# UNCHECKED: tstg: Storage temperature (DS p.5, Table 2. Absolute maximum ratings, Storage temperature); owner: assembly
+# UNCHECKED: nftp: Maximum number of FTP NVM programming cycles (DS p.6, Table 2. Absolute maximum ratings (continued), NFTP); NVM programming endurance count, not a voltage or temperature; owner: module
+# UNCHECKED: vs_ext: Extended operating supply voltage (DS p.6, Table 4. Supply specification, VS_EXT); 100 ms transient limit; a DC check cannot model duration; owner: module
+
+# Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
+# GND can drive them; ground-named pins are Ground.
+# pin 1 VSPI, power_in: DS: DC supply input for the SPI interface. 3.3 V and 5 V are compatible.
+VSPI = io(Net)
+# pin 2 CSN, input: Chip select (active low) for SPI communication. CMOS compatible input.
+CSN = io(Net)
+# pin 3 SDI, input: Serial data input for SPI communication, sampled on SCK rising edge (connected to MOSI).
+SDI = io(Net)
+# pin 4 SDO, tri_state: Serial data output for SPI communication, shifted out on SCK falling edge (connected to MISO). DS Table 7: SDO tristate after CSN rising edge.
+SDO = io(Net)
+# pin 5 SCK, input: DS: Serial clock for SPI communication. CMOS compatible input.
+SCK = io(Net)
+# pin 6 DIAG, open_collector: DS: Diagnostic feedback pin: open drain logic output (active low).
+DIAG = io(Net)
+# pin 7 TEST1, passive: DS: Test mode pin 1. It must be connected to the ground through 1 kohm resistor.
+TEST1 = io(Net)
+# pin 8 TEST2, passive: DS: Test mode pin 2. It must be connected to the ground through 1 kohm resistor.
+TEST2 = io(Net)
+# pin 9 DIN, input: DS: Direct input to wake-up device from Standby and to control directly gate turn-on/turn-off. If not used, must be connected to the ground through 1 kohm resistor.
+DIN = io(Net)
+# pin 10 HWLO, input: DS: Active high input compatible with 3.3 V and 5 V CMOS. If not used, must be connected to the ground through 1 kohm resistor.
+HWLO = io(Net)
+# pin 12 V3V3, power_out: DS: Output of the 3.3 V internal LDO voltage regulator (logic and I/O supply). Connect a low ESR capacitor (1 uF) close to this pin.
+V3V3 = io(Net)
+# pin 13 GND, power_in: DS: Ground connection.
+# pin 33 GND, power_in: DS: TAB (footprint pad 33), the exposed pad (corner leads electrically connected to TAB, DS p.3). DS note: "TAB connection must be to the ground. TAB is not intended as the device reference ground (a dedicated pin shall be used)."
+GND = io(Ground)
+# pin 14 EXT_LDO, power_in: DS: External V3V3 supply. If not used, must be connected to the ground through 1 kohm resistor.
+EXT_LDO = io(Net)
+# pin 15 OUTST, open_collector: Gate status monitor. Reports HS_GATE status (OUTST = H when HS_GATE is high). Connect to ground by a 8.2 kohm resistor. Open drain, active high (DS Table 10 note 1).
+OUTST = io(Net)
+# pin 18 NTC_M, passive: Negative input pin for external NTC resistor.
+NTC_M = io(Net)
+# pin 19 NTC, passive: DS: Positive input pin for external NTC resistor.
+NTC = io(Net)
+# pin 20 ISNS_N, input: DS: Current sense amplifier negative input.
+ISNS_N = io(Net)
+# pin 21 ISNS_P, input: DS: Current sense amplifier positive input.
+ISNS_P = io(Net)
+# pin 23 OUT, passive: DS: External MOSFET source connection.
+OUT = io(Net)
+# pin 24 HS_GATE, output: DS: External MOSFET gate connection (gate drive output).
+HS_GATE = io(Net)
+# pin 25 VS, power_in: DS: Supply pin. Connect to the 12 V, 24 V, 48 V battery voltage by a Schottky diode.
+VS = io(Net)
+# pin 27 CP, power_out: DS: Charge pump output.
+CP = io(Net)
+# pin 28 CP2P, passive: DS: Charge pump, positive terminal of the flying capacitor CP2.
+CP2P = io(Net)
+# pin 29 CP2M, passive: DS: Charge pump, negative terminal of the flying capacitor CP2.
+CP2M = io(Net)
+# pin 30 CP1P, passive: DS: Charge pump, positive terminal of the flying capacitor CP1.
+CP1P = io(Net)
+# pin 31 CP1M, passive: DS: Charge pump, negative terminal of the flying capacitor CP1.
+CP1M = io(Net)
+# No-connect pins omitted (auto NotConnected): 11 N.C, 16 N.C, 17 N.C, 22 N.C, 26 N.C, 32 N.C.
+
+derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+
+_ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
+check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
+
+
+def _limit(name, fn, inputs, severity, waiver=""):
+    # Unset input: UNVERIFIED warning, never a silent pass. Waiver drops a warning to advice.
+    if waiver and severity != "warning":
+        error("only warning-level checks can be waived: " + name)
+    unset = [k for k, v in inputs.items() if v == None]
+    if unset:
+
+        def _unverified(_m):
+            error("UNVERIFIED " + name + ": no value for " + ", ".join(unset))
+
+        builtin.add_electrical_check(name=name, check_fn=_unverified, severity="advice" if _ROOT else "warning")
+    else:
+        builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
+
+
+def _range(_m, v, what, lo=None, hi=None, lo_ref=None, hi_ref=None):
+    # Worst case: v.min >= lo + lo_ref.max and v.max <= hi + hi_ref.min (narrowest window). No ref = absolute.
+    lo_b = None if lo == None else lo + (0.0 if lo_ref == None else lo_ref.max)
+    hi_b = None if hi == None else hi + (0.0 if hi_ref == None else hi_ref.min)
+    ok = (lo_b == None or v.min >= lo_b) and (hi_b == None or v.max <= hi_b)
+    lo_t = "no limit" if lo_b == None else "%s V" % lo_b
+    hi_t = "no limit" if hi_b == None else "%s V" % hi_b
+    check(ok, "%s: %s to %s V outside %s to %s" % (what, v.min, v.max, lo_t, hi_t))
+
+
+def _temp(_m, v, what, lo, hi):
+    # Temperatures are kelvin floats in Zener; messages in degC.
+    ok = v.min >= lo and v.max <= hi
+    msg = "%s: %s to %s degC outside %s to %s degC"
+    check(ok, msg % (what, v.min - 273.15, v.max - 273.15, lo - 273.15, hi - 273.15))
+
+
+# abs_ext_ldo_EXT_LDO: pin EXT_LDO (EXT_LDO) within the limit, x derate
+#   EXT_LDO pin DC voltage: min -0.3 / max 4.6 V
+#   DS p.5, Table 2. Absolute maximum ratings, VEXT_LDO
+#   Severity error: abs_max violated
+_limit(
+    "abs_ext_ldo_EXT_LDO",
+    _range,
+    {"v": EXT_LDO.voltage, "what": "abs_ext_ldo_EXT_LDO", "lo": -0.3 * derate, "hi": 4.6 * derate},
+    "error",
+)
+
+# abs_spi_in_CSN: pin CSN (CSN) within the limit, x derate
+#   SPI input pins DC voltage (CSN, SDI, SCK): min -0.3 / max 6.5 V
+#   DS p.5, Table 2. Absolute maximum ratings, VCSN, VSDI, VSCK
+#   Severity error: abs_max violated
+_limit(
+    "abs_spi_in_CSN",
+    _range,
+    {"v": CSN.voltage, "what": "abs_spi_in_CSN", "lo": -0.3 * derate, "hi": 6.5 * derate},
+    "error",
+)
+
+# abs_spi_in_SDI: pin SDI (SDI) within the limit, x derate
+#   SPI input pins DC voltage (CSN, SDI, SCK): min -0.3 / max 6.5 V
+#   DS p.5, Table 2. Absolute maximum ratings, VCSN, VSDI, VSCK
+#   Severity error: abs_max violated
+_limit(
+    "abs_spi_in_SDI",
+    _range,
+    {"v": SDI.voltage, "what": "abs_spi_in_SDI", "lo": -0.3 * derate, "hi": 6.5 * derate},
+    "error",
+)
+
+# abs_spi_in_SCK: pin SCK (SCK) within the limit, x derate
+#   SPI input pins DC voltage (CSN, SDI, SCK): min -0.3 / max 6.5 V
+#   DS p.5, Table 2. Absolute maximum ratings, VCSN, VSDI, VSCK
+#   Severity error: abs_max violated
+_limit(
+    "abs_spi_in_SCK",
+    _range,
+    {"v": SCK.voltage, "what": "abs_spi_in_SCK", "lo": -0.3 * derate, "hi": 6.5 * derate},
+    "error",
+)
+
+# abs_hwlo_HWLO: pin HWLO (HWLO) within the limit, x derate
+#   HWLO pin DC voltage: min -0.3 / max 70 V
+#   DS p.5, Table 2. Absolute maximum ratings, VHWLO
+#   Severity error: abs_max violated
+_limit(
+    "abs_hwlo_HWLO",
+    _range,
+    {"v": HWLO.voltage, "what": "abs_hwlo_HWLO", "lo": -0.3 * derate, "hi": 70.0 * derate},
+    "error",
+)
+
+# abs_diag_DIAG: pin DIAG (DIAG) within the limit, x derate
+#   DIAG pin DC voltage: min -0.3 / max 4.6 V
+#   DS p.5, Table 2. Absolute maximum ratings, VDIAG
+#   Severity error: abs_max violated
+_limit(
+    "abs_diag_DIAG",
+    _range,
+    {"v": DIAG.voltage, "what": "abs_diag_DIAG", "lo": -0.3 * derate, "hi": 4.6 * derate},
+    "error",
+)
+
+# abs_diag_v3v3_DIAG: pin DIAG (DIAG) within the limit, x derate
+#   VDIAG pin DC voltage relative to V3V3: max 0.3 V (max_ref rel. V3V3)
+#   DS p.5, Table 2. Absolute maximum ratings, VDIAG (V3V3 + 0.3 V)
+#   Severity error: abs_max violated
+_limit(
+    "abs_diag_v3v3_DIAG",
+    _range,
+    {"v": DIAG.voltage, "what": "abs_diag_v3v3_DIAG", "hi": 0.3 * derate, "hi_ref": V3V3.voltage},
+    "error",
+)
+
+# abs_isns_ISNS_P: pin ISNS_P (ISNS_P) within the limit, x derate
+#   ISNS_P and ISNS_N pins voltage: min -15 / max 70 V
+#   DS p.5, Table 2. Absolute maximum ratings, VISNS_P, VISNS_N
+#   Severity error: abs_max violated
+_limit(
+    "abs_isns_ISNS_P",
+    _range,
+    {"v": ISNS_P.voltage, "what": "abs_isns_ISNS_P", "lo": -15.0 * derate, "hi": 70.0 * derate},
+    "error",
+)
+
+# abs_isns_ISNS_N: pin ISNS_N (ISNS_N) within the limit, x derate
+#   ISNS_P and ISNS_N pins voltage: min -15 / max 70 V
+#   DS p.5, Table 2. Absolute maximum ratings, VISNS_P, VISNS_N
+#   Severity error: abs_max violated
+_limit(
+    "abs_isns_ISNS_N",
+    _range,
+    {"v": ISNS_N.voltage, "what": "abs_isns_ISNS_N", "lo": -15.0 * derate, "hi": 70.0 * derate},
+    "error",
+)
+
+# abs_dvisns_ISNS_P: pin ISNS_P (ISNS_P) within the limit, x derate
+#   Differential DC input voltage (VSENSE = VISNS_P - VISNS_N): max 3.3 V (max_ref rel. ISNS_N)
+#   DS p.5, Table 2. Absolute maximum ratings, Differential DC input voltage (VSENSE = VISNS_P - VISNS_N)
+#   Severity error: abs_max violated
+_limit(
+    "abs_dvisns_ISNS_P",
+    _range,
+    {"v": ISNS_P.voltage, "what": "abs_dvisns_ISNS_P", "hi": 3.3 * derate, "hi_ref": ISNS_N.voltage},
+    "error",
+)
+
+# abs_vdin_DIN: pin DIN (DIN) within the limit, x derate
+#   DIN pin DC voltage: min -0.3 / max 70 V
+#   DS p.5, Table 2. Absolute maximum ratings, VDIN
+#   Severity error: abs_max violated
+_limit(
+    "abs_vdin_DIN",
+    _range,
+    {"v": DIN.voltage, "what": "abs_vdin_DIN", "lo": -0.3 * derate, "hi": 70.0 * derate},
+    "error",
+)
+
+# abs_outst_OUTST: pin OUTST (OUTST) within the limit, x derate
+#   OUTST pin DC voltage: min -0.3 / max 4.6 V
+#   DS p.5, Table 2. Absolute maximum ratings, VOUTST
+#   Severity error: abs_max violated
+_limit(
+    "abs_outst_OUTST",
+    _range,
+    {"v": OUTST.voltage, "what": "abs_outst_OUTST", "lo": -0.3 * derate, "hi": 4.6 * derate},
+    "error",
+)
+
+# abs_outst_v3v3_OUTST: pin OUTST (OUTST) within the limit, x derate
+#   VOUTST pin DC voltage relative to V3V3: max 0.3 V (max_ref rel. V3V3)
+#   DS p.5, Table 2. Absolute maximum ratings, VOUTST (V3V3 + 0.3 V)
+#   Severity error: abs_max violated
+_limit(
+    "abs_outst_v3v3_OUTST",
+    _range,
+    {"v": OUTST.voltage, "what": "abs_outst_v3v3_OUTST", "hi": 0.3 * derate, "hi_ref": V3V3.voltage},
+    "error",
+)
+
+# vs_op_VS: pin VS (VS) within the limit
+#   Operating supply voltage: min 6 / typ 48 / max 60 V
+#   DS p.6, Table 4. Supply specification, VS
+#   Conditions: 6 V < VS < 60 V; -40 degC < TJ < 150 degC (general condition, DS p.6 2.3); typ at VS = 48 V, TJ = 25 degC
+#   Severity error: rec_op violated
+_limit("vs_op_VS", _range, {"v": VS.voltage, "what": "vs_op_VS", "lo": 6.0, "hi": 60.0}, "error")
+
+# vspi_op_VSPI: pin VSPI (VSPI) within the limit
+#   SPI pin operating range: min 3.0 / max 6.0 V
+#   DS p.7, Table 4. Supply specification, VSPI
+#   Severity error: rec_op violated
+_limit("vspi_op_VSPI", _range, {"v": VSPI.voltage, "what": "vspi_op_VSPI", "lo": 3.0, "hi": 6.0}, "error")
+
+Component(
+    name="VNF1248F",
+    symbol=Symbol(library="./VNF1248F.kicad_sym"),
+    part=Part(
+        mpn="VNF1248FTR",
+        manufacturer="STMicroelectronics",
+        datasheet="https://www.st.com/resource/en/datasheet/vnf1248f.pdf",
+    ),
+    pins={
+        "VSPI": Power(VSPI, voltage=VSPI.voltage),
+        "CSN": CSN,
+        "SDI": SDI,
+        "SDO": SDO,
+        "SCK": SCK,
+        "DIAG": DIAG,
+        "TEST1": TEST1,
+        "TEST2": TEST2,
+        "DIN": DIN,
+        "HWLO": HWLO,
+        "V3V3": Power(V3V3, voltage=V3V3.voltage),
+        "GND": GND,
+        "EXT_LDO": Power(EXT_LDO, voltage=EXT_LDO.voltage),
+        "OUTST": OUTST,
+        "NTC_M": NTC_M,
+        "NTC": NTC,
+        "ISNS_N": ISNS_N,
+        "ISNS_P": ISNS_P,
+        "OUT": OUT,
+        "HS_GATE": HS_GATE,
+        "VS": Power(VS, voltage=VS.voltage),
+        "CP": Power(CP, voltage=CP.voltage),
+        "CP2P": CP2P,
+        "CP2M": CP2M,
+        "CP1P": CP1P,
+        "CP1M": CP1M,
+    },
+)

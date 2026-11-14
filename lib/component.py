@@ -1,0 +1,231 @@
+"""Load a component directory: component.toml, calc.py, parameters in SI."""
+
+import dataclasses
+import importlib.util
+import tomllib
+from dataclasses import dataclass
+from pathlib import Path
+
+from . import series as _series
+from .param import Param
+from .units import to_si
+
+ROOT = Path(__file__).resolve().parent.parent
+# Param fields that are copied from the TOML as-is.
+META = ("name", "symbol", "kind", "scope", "conditions", "cite", "note", "min_ref", "max_ref", "typ_ref", "curve", "text")
+
+
+@dataclass
+class Part:
+    """A loaded component."""
+
+    path: Path  # component directory
+    info: dict  # the [part] table
+    pins: list  # list of [[pin]] dicts
+    params: dict  # key -> Param (SI)
+    calc: object  # imported calc.py module, or None
+    raw: dict  # the whole TOML as printed (printed units); for a variant, merged with its overrides
+    variant: str = None  # variant Value for a family part, None for a plain component
+    family_path: Path = None  # family directory (same as path) for a variant, None for a plain component
+
+    def param(self, key):
+        """Param for one TOML key, in SI. KeyError names the unknown key."""
+        if key not in self.params:
+            raise KeyError(f"{self.info.get('value')}: no parameter '{key}'")
+        return self.params[key]
+
+    def inputs(self, function):
+        """Datasheet arguments for calc.<function>, from its INPUTS map: {arg: Param or float}.
+
+        "key" gives the whole Param (wca sweeps its min/max); "key.max" gives that one number as a float.
+        Usage: wca(part.calc.rsns, ilim=5.0, **part.inputs("rsns")).
+        """
+        out = {}
+        for arg, key in getattr(self.calc, "INPUTS", {}).get(function, {}).items():
+            name, _, field = key.partition(".")
+            out[arg] = getattr(self.param(name), field) if field else self.param(name)
+        return out
+
+    def series(self, prefix):
+        """Params for keys '<prefix>_<n>' (n decimal): {n: Param}, sorted by n.
+
+        part.series("vovc_thr") -> {0: Param, 1: Param, ...}.
+        """
+        found = {}
+        for key, param in self.params.items():
+            head, _, tail = key.rpartition("_")
+            if head == prefix and tail.isdigit():
+                found[int(tail)] = param
+        return dict(sorted(found.items()))
+
+    def values(self):
+        """Allowed values (ohm) of a series component, sorted: the E-series values inside its value_param range."""
+        if not self.info.get("series"):
+            raise ValueError(f"{self.info.get('value')} is not a series component")
+        r = self.param(self.info["value_param"])
+        return _series.allowed_values(self.info["e_series"], r.min, r.max)
+
+    def _check_allowed(self, value):
+        """ValueError unless value (ohm) is one of values() (to 1e-9 relative)."""
+        if not any(abs(value - v) <= 1e-9 * v for v in self.values()):
+            raise ValueError(f"{self.info['value']}: {value:g} ohm is not an allowed value ({', '.join(self.info['e_series'])} "
+                             f"from {self.values()[0]:g} to {self.values()[-1]:g} ohm)")
+
+    def mpn(self, value):
+        """Orderable MPN of a series component for one allowed value (ohm), from calc.mpn."""
+        self._check_allowed(value)
+        return self.calc.mpn(value)
+
+    def series_value(self, value):
+        """Param for a chosen series value (ohm): typ = value, min/max from the `series_tol` row (a fraction).
+
+        erj.series_value(2.61e3) -> min 2.5839 kohm, typ 2.61 kohm, max 2.6361 kohm for a +/-1 % row.
+        """
+        self._check_allowed(value)
+        tol = self.param(self.info["series_tol"])
+        return Param(min=value * (1 + tol.min), typ=value, max=value * (1 + tol.max), unit="ohm")
+
+    def resolve(self, key, rails):
+        """Param with absolute min/max for a param stated relative to pins (min_ref / max_ref).
+
+        rails = {pin_name: float or Param}. A float is exact. Conservative (narrowest guaranteed
+        window): abs_min = offset_min + rail.max, abs_max = offset_max + rail.min.
+        typ is dropped when min_ref/max_ref is used, unless typ_ref names a rail: then typ = typ offset + rail.typ
+        (None if the rail Param has no typ). Params without refs are returned unchanged.
+
+        Example: INA821 input range is min = 2 (ref -VS), max = -2 (ref +VS).
+        With rails {"-VS": -15.0, "+VS": 15.0} resolve gives -13 V to 13 V.
+        With rails {"-VS": Param(min=-15.9, max=-14.1), "+VS": Param(min=14.1, max=15.9)} it gives
+        -12.1 V to 12.1 V (-14.1 + 2 and 14.1 - 2).
+        """
+        p = self.param(key)
+        if not (p.min_ref or p.max_ref or p.typ_ref):
+            return p
+        lo, hi, typ = p.min, p.max, p.typ
+        if p.min_ref:
+            lo = p.min + _rail(key, rails, p.min_ref).max
+        if p.max_ref:
+            hi = p.max + _rail(key, rails, p.max_ref).min
+        if p.typ_ref:  # typ = offset + rail typ; None if the rail has no typ
+            rail_typ = _rail(key, rails, p.typ_ref, bounds=False).typ
+            typ = None if rail_typ is None or p.typ is None else p.typ + rail_typ
+        elif p.min_ref or p.max_ref:
+            typ = None
+        return dataclasses.replace(p, min=lo, max=hi, typ=typ, min_ref=None, max_ref=None, typ_ref=None)
+
+
+def _rail(key, rails, pin, bounds=True):
+    """Rail for `pin` as a Param (floats become exact). ValueError if missing."""
+    if pin not in rails:
+        raise ValueError(f"resolve {key}: rails has no value for '{pin}'")
+    rail = rails[pin]
+    if not isinstance(rail, Param):
+        rail = Param(min=rail, typ=rail, max=rail)
+    if bounds and (rail.min is None or rail.max is None):
+        raise ValueError(f"resolve {key}: rail '{pin}' needs both min and max")
+    return rail
+
+
+def to_param(table):
+    """Build a Param (SI) from one [param.x] TOML table."""
+    unit = table.get("unit", "")
+    values = {}
+    for field in ("min", "typ", "max"):
+        if field in table:
+            values[field], base = to_si(table[field], unit)
+    base = to_si(0, unit)[1]
+    if "tol_pct" in table:  # DS prints "typ, -10 % / +10 %": min and max follow from typ
+        if "typ" not in values or "min" in values or "max" in values:
+            raise ValueError("tol_pct needs typ and no min/max")
+        lo, hi = table["tol_pct"]
+        values["min"], values["max"] = sorted([values["typ"] * (1 + lo / 100), values["typ"] * (1 + hi / 100)])
+    meta = {k: table[k] for k in META if k in table}
+    if table.get("sym"):  # DS printed an unsigned bound for a +/- quantity
+        if "max" not in values or "min" in values:
+            raise ValueError("sym = true needs max and no min")
+        values["min"] = -values["max"]
+    if table.get("typ_pm") or (table.get("sym") and "typ" in values):
+        # DS printed "+/-X" in the TYP column: centred on 0 with a typical spread of X.
+        values["typ_spread"], values["typ"] = abs(values["typ"]), 0.0
+    return Param(unit=base, **values, **meta)
+
+
+def load_calc(path):
+    """Import calc.py from a file path (no package needed). Returns the module."""
+    spec = importlib.util.spec_from_file_location("calc_" + path.parent.name.replace("-", "_"), path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def variants_of(folder):
+    """The [variant.<Value>] tables of a family directory's variants.toml ({} for a plain component)."""
+    file = Path(folder) / "variants.toml"
+    if not file.exists():
+        return {}
+    with open(file, "rb") as f:
+        return tomllib.load(f).get("variant", {})
+
+
+def merge_variant(raw, variants, name):
+    """component.toml data for one variant: shared data, filtered and overridden by variants.toml.
+
+    [part]: shared keys, overridden by the variant's own keys; value = the variant name.
+    Params: shared rows that apply to this variant (no `variants` list, or the list names it), then each
+    [variant.<name>.param.<key>] table replaces the row of that key (same position) or is added at the end.
+    """
+    if name not in variants:
+        raise ValueError(f"unknown variant '{name}'; variants: {', '.join(sorted(variants))}")
+    own = variants[name]
+    part = {**raw.get("part", {}), **{k: v for k, v in own.items() if k != "param"}, "value": name}
+    params = {}
+    for key, table in raw.get("param", {}).items():
+        if name in table.get("variants", [name]):
+            params[key] = {k: v for k, v in table.items() if k != "variants"}
+    params.update(own.get("param", {}))
+    return {**raw, "part": part, "param": params}
+
+
+def find_variant(path):
+    """(family directory, variant) for a path whose last part is a variant Value, found by scanning
+    <path.parent>/*/variants.toml. FileNotFoundError if no family lists it."""
+    for file in sorted(path.parent.glob("*/variants.toml")):
+        if path.name in variants_of(file.parent):
+            return file.parent, path.name
+    raise FileNotFoundError(f"no component or variant '{path.name}' under {path.parent}")
+
+
+def load(name, root=None, variant=None):
+    """Load 'Mfr/Value' (under components/) or a directory path.
+
+    A family directory (has variants.toml) needs variant=<Value>; a variant Value that is not a directory
+    ('Mfr/LTC4364HMS-1') is found by scanning the manufacturer's families.
+    """
+    path = Path(name)
+    if not path.is_dir():
+        path = (root or ROOT) / "components" / name
+    if not path.is_dir() and variant is None:
+        path, variant = find_variant(path)
+    with open(path / "component.toml", "rb") as f:
+        raw = tomllib.load(f)
+    variants = variants_of(path)
+    if variants and variant is None:
+        raise ValueError(f"{path.name} is a family; load it with variant= one of: {', '.join(sorted(variants))}")
+    if variants:
+        raw = merge_variant(raw, variants, variant)
+    elif variant is not None:
+        raise ValueError(f"{path.name} has no variants.toml, so variant='{variant}' is unknown")
+    params = {k: to_param(t) for k, t in raw.get("param", {}).items()}
+    calc_file = path / "calc.py"
+    calc = load_calc(calc_file) if calc_file.exists() else None
+    return Part(path, raw.get("part", {}), raw.get("pin", []), params, calc, raw,
+                variant=variant, family_path=path if variants else None)
+
+
+def run_example(calc, row):
+    """Run one calc.EXAMPLES row (function, kwargs, expected, rel tol, cite). Returns (got, ok)."""
+    fname, kwargs, expected, tol, _cite = row
+    got = getattr(calc, fname)(**kwargs)
+    # Tolerance is relative, except when expected is 0 (then it is absolute).
+    allowed = tol if expected == 0 else tol * abs(expected)
+    return got, abs(got - expected) <= allowed

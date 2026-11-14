@@ -1,42 +1,32 @@
-"""WSK2512R0250D 0.025 ohm ±0.5 % 1 W 4-terminal (Kelvin) Power Metal Strip current-sense resistor, 2512.
-DS: https://www.vishay.com/doc?30108, Document 30108, Revision 11-Dec-2023. Limits: ./wsk2512_limits.zen.
-Checks are DC steady-state. Transients, overshoot, hot-plug ringing and load dump are not covered.
-The only check is the board ambient range. Power, current and voltage across the part depend on the module's current,
-which no net carries: the module must call p_rated / i_max / v_max from wsk2512_limits.zen (UNCHECKED lines below).
-The DS gives no thermal resistance, temperature rise at rated power or element temperature limit: the module must
-obtain the rise from Vishay or measurement and must not call r_range with the ambient range as resistor temperature.
-Kelvin wiring: I1/I2 carry the current, E1/E2 sense the voltage. E1 sits on the I1 terminal and E2 on the I2 terminal
-(DS p.3, ELECTRICAL CONNECTION), but they are separate pads: keep the sense nets separate from the current nets.
-Verified: pcb 0.4.95, 0.4.97, 0.4.99 (test/matrix.sh, 12/12 cases)."""
+"""WSK2512R0250D: 0.025 ohm +/-0.5 % 1 W 4-terminal (Kelvin) Power Metal Strip current-sense resistor, 2512.
+GENERATED from component.toml by `python3 -m lib.zen`; do not edit. Source of truth: component.toml and
+calc.py (numbers, cites, equations). DS: https://www.vishay.com/doc?30108, 11-Dec-2023 (Document 30108) (2023-12-11).
+Checks are DC steady-state on the voltages each instance declares. They do not cover transients, overshoot,
+hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
+Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
 
-load("@stdlib/units.zen", "Temperature", "Voltage")
-load("./wsk2512_limits.zen", "TA_GRADE")
+load("@stdlib/units.zen", "Temperature")
 
-# The DS has no Absolute Maximum Ratings table; every rating row is a check below or one line here:
-# UNCHECKED: power rating 1 W at 70 °C, derated linearly to 0 W at 170 °C (DS p.1 P70 °C, DS p.3 DERATING); needs the
-#   current, which no net carries; owner: module (must call i_max(p_rated(ta) x derate, r_max)).
-# UNCHECKED: maximum working voltage (P x R)^1/2 (DS p.2, Technical Specifications); same as the power row; owner:
-#   module (v_max). Declared net voltages cannot give it: I1 and I2 normally sit on the same rail.
-# UNCHECKED: resistance 0.025 ohm ±0.5 % and TCR ±35 ppm/°C (DS p.1, DS p.2); not a limit; owner: module (r_range).
-# UNCHECKED: short time overload and pulse capability (DS p.3); no numbers in the DS; owner: module.
-# UNCHECKED: resistance change limits (DS p.3, PERFORMANCE); error budget, not a limit; owner: module (drift_max).
-# UNCHECKED: resistance to solder heat, moisture resistance (DS p.3, PERFORMANCE); owner: assembly.
-# UNCHECKED: solder profile (DS p.2 notes, www.vishay.com/doc?31052); owner: assembly.
-# Not in the DS (open items, "no data in DS"): element temperature max / thermal resistance, storage temperature,
-# ESD, insulation voltage terminal-to-ambient, lead finish metal, MSL. Revision currency, PCN, lifecycle: not checked
-# (no web access). TA/BA (tin/lead) variants are not alternatives: different plating, not RoHS (DS p.1).
+# UNCHECKED: p70: Power rating at 70 degC ambient (DS p.1, Standard Electrical Specifications, POWER RATING P70 degC, W, 1.0); dissipation depends on the load current; owner: module (calc.dissipation vs calc.rated_power)
+# UNCHECKED: max_working_voltage: Maximum working voltage (DS p.2, Technical Specifications, Maximum working voltage, (P x R)^1/2); formula rating; owner: module (calc.max_working_voltage)
+# UNCHECKED: derate_knee: Derating knee: 100 % rated power up to (DS p.3, Figure: DERATING graph (unnumbered; rated power vs ambient, 100 % line ends at 70 degC); coincides with DS p.1 P70 degC); curve value; used by calc.rated_power
+# UNCHECKED: derate_zero: Derating: 0 % rated power at (DS p.3, Figure: DERATING graph (unnumbered; rated power vs ambient, line reaches 0 % at 170 degC)); curve value; used by calc.rated_power
 
-I1 = io(Net)  # DS p.3, ELECTRICAL CONNECTION, I1: current connection (pad 4)
-I2 = io(Net)  # DS p.3, ELECTRICAL CONNECTION, I2: current connection (pad 1)
-E1 = io(Net)  # DS p.3, ELECTRICAL CONNECTION, E1: voltage sense, on the I1 terminal (pad 3)
-E2 = io(Net)  # DS p.3, ELECTRICAL CONNECTION, E2: voltage sense, on the I2 terminal (pad 2)
-ambient = config(Temperature, optional=True, help="Board ambient range")
-derate = config(
-    float, default=1.0, help="Project derating factor; accepted so modules can pass it down, nothing here is derated"
-)
+# Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
+# GND can drive them; ground-named pins are Ground.
+# pin 1 I2, passive: Current connection (I2)
+I2 = io(Net)
+# pin 2 E2, passive: Voltage sense connection (E2), on the I2 terminal
+E2 = io(Net)
+# pin 3 E1, passive: Voltage sense connection (E1), on the I1 terminal
+E1 = io(Net)
+# pin 4 I1, passive: Current connection (I1)
+I1 = io(Net)
+
+ambient = config(Temperature, optional=True, help="Board ambient temperature range")
+derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
 
 _ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
-_GND = Voltage("0V")  # template helper block, kept verbatim; unused here (no voltage checks)
 check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
 
 
@@ -55,56 +45,38 @@ def _limit(name, fn, inputs, severity, waiver=""):
         builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
 
 
-def _r3(x):  # round to 3 decimals for stable messages (no round() or %.3f in this Starlark)
-    return int(x * 1000 + (0.5 if x >= 0 else -0.5)) / 1000.0
+def _range(_m, v, what, lo=None, hi=None, lo_ref=None, hi_ref=None):
+    # Worst case: v.min >= lo + lo_ref.max and v.max <= hi + hi_ref.min (narrowest window). No ref = absolute.
+    lo_b = None if lo == None else lo + (0.0 if lo_ref == None else lo_ref.max)
+    hi_b = None if hi == None else hi + (0.0 if hi_ref == None else hi_ref.min)
+    ok = (lo_b == None or v.min >= lo_b) and (hi_b == None or v.max <= hi_b)
+    lo_t = "no limit" if lo_b == None else "%s V" % lo_b
+    hi_t = "no limit" if hi_b == None else "%s V" % hi_b
+    check(ok, "%s: %s to %s V outside %s to %s" % (what, v.min, v.max, lo_t, hi_t))
 
 
-def _toleranced(_m, v, rail):
-    check(v.max == 0 or v.min != v.max, rail + " has no tolerance; worst case not assessed")
+def _temp(_m, v, what, lo, hi):
+    # Temperatures are kelvin floats in Zener; messages in degC.
+    ok = v.min >= lo and v.max <= hi
+    msg = "%s: %s to %s degC outside %s to %s degC"
+    check(ok, msg % (what, v.min - 273.15, v.max - 273.15, lo - 273.15, hi - 273.15))
 
 
-def _rel(_m, v, ref, lim, k):  # limit referred to another pin; worst case both ways; k shrinks magnitudes only
-    lo, hi = v.min - ref.max, v.max - ref.min
-    lo_lim = lim.min * k if lim.min < 0 else lim.min
-    hi_lim = lim.max * k if lim.max > 0 else lim.max
-    check(
-        lo >= lo_lim and hi <= hi_lim,
-        "%s to %s V outside %s to %s V (derate %s)" % (_r3(lo), _r3(hi), _r3(lo_lim), _r3(hi_lim), k),
-    )
-
-
-def _band(_m, v, lo, hi, off):  # (lo)+off <= v <= (hi)-off, worst case against both rails; off is a float in volts
-    check(
-        v.min >= lo.max + off and v.max <= hi.min - off,
-        "%s to %s V outside (V-)+%s to (V+)-%s" % (_r3(v.min), _r3(v.max), off, off),
-    )
-
-
-def _within(_m, v, lim):
-    check(v.min >= lim.min and v.max <= lim.max, str(v) + " outside " + str(lim))
-
-
-# Checks. Each block states what is checked, the DS row, the worst-case formula, every assumption, the severity and
-# why, and the test/matrix.sh cases that cover it. No net voltage feeds a check, so there are no tolerance checks
-# (CLAUDE.md applies them to nets feeding a check) and the nets need no declared voltage.
-#
-# temp_grade: board ambient within -65 °C to 170 °C. DS p.2, Technical Specifications, Operating temperature range.
-#   Assumption: the DS has no abs-max or storage row; the operating range is the only temperature rating, so it is
-#   treated as rec-op. The DS p.2 row does not say ambient or element temperature; it is read as AMBIENT, the DS p.3
-#   DERATING axis; self-heating is then covered by the power rating.
-#   Rated power falls to 0 W at 170 °C (DS p.3): an ambient near the top passes here, but any current then fails the
-#   module's p_rated/i_max check.
-#   Worst case: ambient.min >= -65 °C and ambient.max <= 170 °C. Error (rating violated), not derated (a temperature
-#   range has no magnitude to shrink), not waivable. Unset ambient: UNVERIFIED warning.
-#   Tests: ta_lo_bound, ta_hi_bound, ta_lo_out, ta_hi_out, unset_ta, waiver_on_error.
-_limit("temp_grade", _within, {"v": ambient, "lim": TA_GRADE}, "error")
+# t_oper_ambient: board ambient range inside this range
+#   Operating temperature range: min -65 / max 170 degC
+#   DS p.2, Technical Specifications, Operating temperature range, -65 to +170
+#   Severity error: rec_op violated
+_limit("t_oper_ambient", _temp, {"v": ambient, "what": "t_oper_ambient", "lo": 208.15, "hi": 443.15}, "error")
 
 Component(
     name="WSK2512R0250D",
     symbol=Symbol(library="./WSK2512R0250D.kicad_sym"),
     part=Part(mpn="WSK2512R0250DEA", manufacturer="Vishay Dale", datasheet="https://www.vishay.com/doc?30108"),
-    pins={"I1": I1, "I2": I2, "E1": E1, "E2": E2},
-    # EK = bulk (DS p.1 packaging code). BEA = ±0.1 % (DS p.1, 0.01-0.2 ohm range covers 0.025 ohm); the DS gives one
-    # TCR and one performance table for all tolerances (DS p.2-3), so every other limit is equal.
-    properties={"alternatives": ["WSK2512R0250DEK", "WSK2512R0250BEA"]},
+    pins={
+        "I2": I2,
+        "E2": E2,
+        "E1": E1,
+        "I1": I1,
+    },
+    properties={"alternatives": ["WSK2512R0250DEK"]},
 )

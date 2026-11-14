@@ -1,0 +1,14 @@
+# Test harness for the generated WSK2512R0250D wrapper (tests/test_zen.py copies it next to the wrapper and builds it).
+# Default: industrial ambient, inside the -65 degC to 170 degC operating range.
+U = Module("./WSK2512R0250D.zen")
+
+ta = config(str, default="-40°C to 85°C")
+
+U(
+    name="R1",
+    I1=Net("I1"),
+    I2=Net("I2"),
+    E1=Net("E1"),
+    E2=Net("E2"),
+    **({} if ta == "unset" else {"ambient": ta}),
+)
