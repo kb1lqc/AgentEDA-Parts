@@ -1,0 +1,486 @@
+"""ERA-2AEB: 0402 (1005 metric) 0.063 W +/-0.1 % +/-25 ppm/degC thin film chip resistor, ERA-2AEB (47 to 100 k ohm, E24/E96).
+GENERATED from component.toml by `python3 -m lib.zen`; do not edit. Source of truth: component.toml and
+calc.py (numbers, cites, equations). DS: , Catalog 2026.5 (ERA A pages: footer 24-Apr-24, printed pp.19-21) (2026-05).
+Checks are DC steady-state on the voltages each instance declares. They do not cover transients, overshoot,
+hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
+Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
+
+load("@stdlib/units.zen", "Resistance", "Temperature")
+
+# UNCHECKED: v_overload: Maximum overload voltage (DS p.20, Ratings, Maximum overload voltage (V), ERA2AEB row); overload test voltage (short-time test condition), not an operating limit; owner: module
+# UNCHECKED: rcwv_rule: Rated continuous working voltage, RCWV (DS p.20, Ratings, footnote *2); formula rating; owner: module (calc.rated_voltage)
+# UNCHECKED: derate_knee: Derating knee: full rated power up to (DS p.20, Power derating curve (text: 'above 85 degC, power rating shall be derated')); derating knee (printed in text, not a limit); used by calc.rated_power
+# UNCHECKED: derate_zero: Derating: 0 % rated power at (DS p.20, Power derating curve (figure: the derating line reaches 0 % at the 155 degC label)); curve value; used by calc.rated_power
+# UNCHECKED: power derating above 70 degC: curve-based, depends on the dissipation; owner: module (calc.rated_power). rated_voltage below uses the 70 degC power rating at
+#   every ambient, so above 70 degC ambient it is OPTIMISTIC (0 W at the derating zero).
+
+# Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
+# GND can drive them; ground-named pins are Ground.
+# pin 1 1, passive: Resistor terminal
+P1 = io(Net)
+# pin 2 2, passive: Resistor terminal
+P2 = io(Net)
+
+value = config(Resistance, help="Resistance, an allowed E-series value (see the _MPN table)")
+ambient = config(Temperature, optional=True, help="Board ambient temperature range")
+derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+
+_ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
+check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
+
+
+def _limit(name, fn, inputs, severity, waiver=""):
+    # Unset input: UNVERIFIED warning, never a silent pass. Waiver drops a warning to advice.
+    if waiver and severity != "warning":
+        error("only warning-level checks can be waived: " + name)
+    unset = [k for k, v in inputs.items() if v == None]
+    if unset:
+
+        def _unverified(_m):
+            error("UNVERIFIED " + name + ": no value for " + ", ".join(unset))
+
+        builtin.add_electrical_check(name=name, check_fn=_unverified, severity="advice" if _ROOT else "warning")
+    else:
+        builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
+
+
+def _range(_m, v, what, lo=None, hi=None, lo_ref=None, hi_ref=None):
+    # Worst case: v.min >= lo + lo_ref.max and v.max <= hi + hi_ref.min (narrowest window). No ref = absolute.
+    lo_b = None if lo == None else lo + (0.0 if lo_ref == None else lo_ref.max)
+    hi_b = None if hi == None else hi + (0.0 if hi_ref == None else hi_ref.min)
+    ok = (lo_b == None or v.min >= lo_b) and (hi_b == None or v.max <= hi_b)
+    lo_t = "no limit" if lo_b == None else "%s V" % lo_b
+    hi_t = "no limit" if hi_b == None else "%s V" % hi_b
+    check(ok, "%s: %s to %s V outside %s to %s" % (what, v.min, v.max, lo_t, hi_t))
+
+
+def _temp(_m, v, what, lo, hi):
+    # Temperatures are kelvin floats in Zener; messages in degC.
+    ok = v.min >= lo and v.max <= hi
+    msg = "%s: %s to %s degC outside %s to %s degC"
+    check(ok, msg % (what, v.min - 273.15, v.max - 273.15, lo - 273.15, hi - 273.15))
+
+
+# Orderable part number per value, generated from calc.mpn() over every allowed value (calc.py is the single
+# source). Keys are integer micro-ohms: float text differs between Python and Zener, integers do not.
+_MPN = {
+    47000000: "ERA2AEB470X",  # 47 ohm
+    51000000: "ERA2AEB510X",  # 51 ohm
+    56000000: "ERA2AEB560X",  # 56 ohm
+    62000000: "ERA2AEB620X",  # 62 ohm
+    68000000: "ERA2AEB680X",  # 68 ohm
+    75000000: "ERA2AEB750X",  # 75 ohm
+    82000000: "ERA2AEB820X",  # 82 ohm
+    91000000: "ERA2AEB910X",  # 91 ohm
+    100000000: "ERA2AEB101X",  # 100 ohm
+    102000000: "ERA2AEB1020X",  # 102 ohm
+    105000000: "ERA2AEB1050X",  # 105 ohm
+    107000000: "ERA2AEB1070X",  # 107 ohm
+    110000000: "ERA2AEB111X",  # 110 ohm
+    113000000: "ERA2AEB1130X",  # 113 ohm
+    115000000: "ERA2AEB1150X",  # 115 ohm
+    118000000: "ERA2AEB1180X",  # 118 ohm
+    120000000: "ERA2AEB121X",  # 120 ohm
+    121000000: "ERA2AEB1210X",  # 121 ohm
+    124000000: "ERA2AEB1240X",  # 124 ohm
+    127000000: "ERA2AEB1270X",  # 127 ohm
+    130000000: "ERA2AEB131X",  # 130 ohm
+    133000000: "ERA2AEB1330X",  # 133 ohm
+    137000000: "ERA2AEB1370X",  # 137 ohm
+    140000000: "ERA2AEB1400X",  # 140 ohm
+    143000000: "ERA2AEB1430X",  # 143 ohm
+    147000000: "ERA2AEB1470X",  # 147 ohm
+    150000000: "ERA2AEB151X",  # 150 ohm
+    154000000: "ERA2AEB1540X",  # 154 ohm
+    158000000: "ERA2AEB1580X",  # 158 ohm
+    160000000: "ERA2AEB161X",  # 160 ohm
+    162000000: "ERA2AEB1620X",  # 162 ohm
+    165000000: "ERA2AEB1650X",  # 165 ohm
+    169000000: "ERA2AEB1690X",  # 169 ohm
+    174000000: "ERA2AEB1740X",  # 174 ohm
+    178000000: "ERA2AEB1780X",  # 178 ohm
+    180000000: "ERA2AEB181X",  # 180 ohm
+    182000000: "ERA2AEB1820X",  # 182 ohm
+    187000000: "ERA2AEB1870X",  # 187 ohm
+    191000000: "ERA2AEB1910X",  # 191 ohm
+    196000000: "ERA2AEB1960X",  # 196 ohm
+    200000000: "ERA2AEB201X",  # 200 ohm
+    205000000: "ERA2AEB2050X",  # 205 ohm
+    210000000: "ERA2AEB2100X",  # 210 ohm
+    215000000: "ERA2AEB2150X",  # 215 ohm
+    220000000: "ERA2AEB221X",  # 220 ohm
+    221000000: "ERA2AEB2210X",  # 221 ohm
+    226000000: "ERA2AEB2260X",  # 226 ohm
+    232000000: "ERA2AEB2320X",  # 232 ohm
+    237000000: "ERA2AEB2370X",  # 237 ohm
+    240000000: "ERA2AEB241X",  # 240 ohm
+    243000000: "ERA2AEB2430X",  # 243 ohm
+    249000000: "ERA2AEB2490X",  # 249 ohm
+    255000000: "ERA2AEB2550X",  # 255 ohm
+    261000000: "ERA2AEB2610X",  # 261 ohm
+    267000000: "ERA2AEB2670X",  # 267 ohm
+    270000000: "ERA2AEB271X",  # 270 ohm
+    274000000: "ERA2AEB2740X",  # 274 ohm
+    280000000: "ERA2AEB2800X",  # 280 ohm
+    287000000: "ERA2AEB2870X",  # 287 ohm
+    294000000: "ERA2AEB2940X",  # 294 ohm
+    300000000: "ERA2AEB301X",  # 300 ohm
+    301000000: "ERA2AEB3010X",  # 301 ohm
+    309000000: "ERA2AEB3090X",  # 309 ohm
+    316000000: "ERA2AEB3160X",  # 316 ohm
+    324000000: "ERA2AEB3240X",  # 324 ohm
+    330000000: "ERA2AEB331X",  # 330 ohm
+    332000000: "ERA2AEB3320X",  # 332 ohm
+    340000000: "ERA2AEB3400X",  # 340 ohm
+    348000000: "ERA2AEB3480X",  # 348 ohm
+    357000000: "ERA2AEB3570X",  # 357 ohm
+    360000000: "ERA2AEB361X",  # 360 ohm
+    365000000: "ERA2AEB3650X",  # 365 ohm
+    374000000: "ERA2AEB3740X",  # 374 ohm
+    383000000: "ERA2AEB3830X",  # 383 ohm
+    390000000: "ERA2AEB391X",  # 390 ohm
+    392000000: "ERA2AEB3920X",  # 392 ohm
+    402000000: "ERA2AEB4020X",  # 402 ohm
+    412000000: "ERA2AEB4120X",  # 412 ohm
+    422000000: "ERA2AEB4220X",  # 422 ohm
+    430000000: "ERA2AEB431X",  # 430 ohm
+    432000000: "ERA2AEB4320X",  # 432 ohm
+    442000000: "ERA2AEB4420X",  # 442 ohm
+    453000000: "ERA2AEB4530X",  # 453 ohm
+    464000000: "ERA2AEB4640X",  # 464 ohm
+    470000000: "ERA2AEB471X",  # 470 ohm
+    475000000: "ERA2AEB4750X",  # 475 ohm
+    487000000: "ERA2AEB4870X",  # 487 ohm
+    499000000: "ERA2AEB4990X",  # 499 ohm
+    510000000: "ERA2AEB511X",  # 510 ohm
+    511000000: "ERA2AEB5110X",  # 511 ohm
+    523000000: "ERA2AEB5230X",  # 523 ohm
+    536000000: "ERA2AEB5360X",  # 536 ohm
+    549000000: "ERA2AEB5490X",  # 549 ohm
+    560000000: "ERA2AEB561X",  # 560 ohm
+    562000000: "ERA2AEB5620X",  # 562 ohm
+    576000000: "ERA2AEB5760X",  # 576 ohm
+    590000000: "ERA2AEB5900X",  # 590 ohm
+    604000000: "ERA2AEB6040X",  # 604 ohm
+    619000000: "ERA2AEB6190X",  # 619 ohm
+    620000000: "ERA2AEB621X",  # 620 ohm
+    634000000: "ERA2AEB6340X",  # 634 ohm
+    649000000: "ERA2AEB6490X",  # 649 ohm
+    665000000: "ERA2AEB6650X",  # 665 ohm
+    680000000: "ERA2AEB681X",  # 680 ohm
+    681000000: "ERA2AEB6810X",  # 681 ohm
+    698000000: "ERA2AEB6980X",  # 698 ohm
+    715000000: "ERA2AEB7150X",  # 715 ohm
+    732000000: "ERA2AEB7320X",  # 732 ohm
+    750000000: "ERA2AEB751X",  # 750 ohm
+    768000000: "ERA2AEB7680X",  # 768 ohm
+    787000000: "ERA2AEB7870X",  # 787 ohm
+    806000000: "ERA2AEB8060X",  # 806 ohm
+    820000000: "ERA2AEB821X",  # 820 ohm
+    825000000: "ERA2AEB8250X",  # 825 ohm
+    845000000: "ERA2AEB8450X",  # 845 ohm
+    866000000: "ERA2AEB8660X",  # 866 ohm
+    887000000: "ERA2AEB8870X",  # 887 ohm
+    909000000: "ERA2AEB9090X",  # 909 ohm
+    910000000: "ERA2AEB911X",  # 910 ohm
+    931000000: "ERA2AEB9310X",  # 931 ohm
+    953000000: "ERA2AEB9530X",  # 953 ohm
+    976000000: "ERA2AEB9760X",  # 976 ohm
+    1000000000: "ERA2AEB102X",  # 1000 ohm
+    1020000000: "ERA2AEB1021X",  # 1020 ohm
+    1050000000: "ERA2AEB1051X",  # 1050 ohm
+    1070000000: "ERA2AEB1071X",  # 1070 ohm
+    1100000000: "ERA2AEB112X",  # 1100 ohm
+    1130000000: "ERA2AEB1131X",  # 1130 ohm
+    1150000000: "ERA2AEB1151X",  # 1150 ohm
+    1180000000: "ERA2AEB1181X",  # 1180 ohm
+    1200000000: "ERA2AEB122X",  # 1200 ohm
+    1210000000: "ERA2AEB1211X",  # 1210 ohm
+    1240000000: "ERA2AEB1241X",  # 1240 ohm
+    1270000000: "ERA2AEB1271X",  # 1270 ohm
+    1300000000: "ERA2AEB132X",  # 1300 ohm
+    1330000000: "ERA2AEB1331X",  # 1330 ohm
+    1370000000: "ERA2AEB1371X",  # 1370 ohm
+    1400000000: "ERA2AEB1401X",  # 1400 ohm
+    1430000000: "ERA2AEB1431X",  # 1430 ohm
+    1470000000: "ERA2AEB1471X",  # 1470 ohm
+    1500000000: "ERA2AEB152X",  # 1500 ohm
+    1540000000: "ERA2AEB1541X",  # 1540 ohm
+    1580000000: "ERA2AEB1581X",  # 1580 ohm
+    1600000000: "ERA2AEB162X",  # 1600 ohm
+    1620000000: "ERA2AEB1621X",  # 1620 ohm
+    1650000000: "ERA2AEB1651X",  # 1650 ohm
+    1690000000: "ERA2AEB1691X",  # 1690 ohm
+    1740000000: "ERA2AEB1741X",  # 1740 ohm
+    1780000000: "ERA2AEB1781X",  # 1780 ohm
+    1800000000: "ERA2AEB182X",  # 1800 ohm
+    1820000000: "ERA2AEB1821X",  # 1820 ohm
+    1870000000: "ERA2AEB1871X",  # 1870 ohm
+    1910000000: "ERA2AEB1911X",  # 1910 ohm
+    1960000000: "ERA2AEB1961X",  # 1960 ohm
+    2000000000: "ERA2AEB202X",  # 2000 ohm
+    2050000000: "ERA2AEB2051X",  # 2050 ohm
+    2100000000: "ERA2AEB2101X",  # 2100 ohm
+    2150000000: "ERA2AEB2151X",  # 2150 ohm
+    2200000000: "ERA2AEB222X",  # 2200 ohm
+    2210000000: "ERA2AEB2211X",  # 2210 ohm
+    2260000000: "ERA2AEB2261X",  # 2260 ohm
+    2320000000: "ERA2AEB2321X",  # 2320 ohm
+    2370000000: "ERA2AEB2371X",  # 2370 ohm
+    2400000000: "ERA2AEB242X",  # 2400 ohm
+    2430000000: "ERA2AEB2431X",  # 2430 ohm
+    2490000000: "ERA2AEB2491X",  # 2490 ohm
+    2550000000: "ERA2AEB2551X",  # 2550 ohm
+    2610000000: "ERA2AEB2611X",  # 2610 ohm
+    2670000000: "ERA2AEB2671X",  # 2670 ohm
+    2700000000: "ERA2AEB272X",  # 2700 ohm
+    2740000000: "ERA2AEB2741X",  # 2740 ohm
+    2800000000: "ERA2AEB2801X",  # 2800 ohm
+    2870000000: "ERA2AEB2871X",  # 2870 ohm
+    2940000000: "ERA2AEB2941X",  # 2940 ohm
+    3000000000: "ERA2AEB302X",  # 3000 ohm
+    3010000000: "ERA2AEB3011X",  # 3010 ohm
+    3090000000: "ERA2AEB3091X",  # 3090 ohm
+    3160000000: "ERA2AEB3161X",  # 3160 ohm
+    3240000000: "ERA2AEB3241X",  # 3240 ohm
+    3300000000: "ERA2AEB332X",  # 3300 ohm
+    3320000000: "ERA2AEB3321X",  # 3320 ohm
+    3400000000: "ERA2AEB3401X",  # 3400 ohm
+    3480000000: "ERA2AEB3481X",  # 3480 ohm
+    3570000000: "ERA2AEB3571X",  # 3570 ohm
+    3600000000: "ERA2AEB362X",  # 3600 ohm
+    3650000000: "ERA2AEB3651X",  # 3650 ohm
+    3740000000: "ERA2AEB3741X",  # 3740 ohm
+    3830000000: "ERA2AEB3831X",  # 3830 ohm
+    3900000000: "ERA2AEB392X",  # 3900 ohm
+    3920000000: "ERA2AEB3921X",  # 3920 ohm
+    4020000000: "ERA2AEB4021X",  # 4020 ohm
+    4120000000: "ERA2AEB4121X",  # 4120 ohm
+    4220000000: "ERA2AEB4221X",  # 4220 ohm
+    4300000000: "ERA2AEB432X",  # 4300 ohm
+    4320000000: "ERA2AEB4321X",  # 4320 ohm
+    4420000000: "ERA2AEB4421X",  # 4420 ohm
+    4530000000: "ERA2AEB4531X",  # 4530 ohm
+    4640000000: "ERA2AEB4641X",  # 4640 ohm
+    4700000000: "ERA2AEB472X",  # 4700 ohm
+    4750000000: "ERA2AEB4751X",  # 4750 ohm
+    4870000000: "ERA2AEB4871X",  # 4870 ohm
+    4990000000: "ERA2AEB4991X",  # 4990 ohm
+    5100000000: "ERA2AEB512X",  # 5100 ohm
+    5110000000: "ERA2AEB5111X",  # 5110 ohm
+    5230000000: "ERA2AEB5231X",  # 5230 ohm
+    5360000000: "ERA2AEB5361X",  # 5360 ohm
+    5490000000: "ERA2AEB5491X",  # 5490 ohm
+    5600000000: "ERA2AEB562X",  # 5600 ohm
+    5620000000: "ERA2AEB5621X",  # 5620 ohm
+    5760000000: "ERA2AEB5761X",  # 5760 ohm
+    5900000000: "ERA2AEB5901X",  # 5900 ohm
+    6040000000: "ERA2AEB6041X",  # 6040 ohm
+    6190000000: "ERA2AEB6191X",  # 6190 ohm
+    6200000000: "ERA2AEB622X",  # 6200 ohm
+    6340000000: "ERA2AEB6341X",  # 6340 ohm
+    6490000000: "ERA2AEB6491X",  # 6490 ohm
+    6650000000: "ERA2AEB6651X",  # 6650 ohm
+    6800000000: "ERA2AEB682X",  # 6800 ohm
+    6810000000: "ERA2AEB6811X",  # 6810 ohm
+    6980000000: "ERA2AEB6981X",  # 6980 ohm
+    7150000000: "ERA2AEB7151X",  # 7150 ohm
+    7320000000: "ERA2AEB7321X",  # 7320 ohm
+    7500000000: "ERA2AEB752X",  # 7500 ohm
+    7680000000: "ERA2AEB7681X",  # 7680 ohm
+    7870000000: "ERA2AEB7871X",  # 7870 ohm
+    8060000000: "ERA2AEB8061X",  # 8060 ohm
+    8200000000: "ERA2AEB822X",  # 8200 ohm
+    8250000000: "ERA2AEB8251X",  # 8250 ohm
+    8450000000: "ERA2AEB8451X",  # 8450 ohm
+    8660000000: "ERA2AEB8661X",  # 8660 ohm
+    8870000000: "ERA2AEB8871X",  # 8870 ohm
+    9090000000: "ERA2AEB9091X",  # 9090 ohm
+    9100000000: "ERA2AEB912X",  # 9100 ohm
+    9310000000: "ERA2AEB9311X",  # 9310 ohm
+    9530000000: "ERA2AEB9531X",  # 9530 ohm
+    9760000000: "ERA2AEB9761X",  # 9760 ohm
+    10000000000: "ERA2AEB103X",  # 10000 ohm
+    10200000000: "ERA2AEB1022X",  # 10200 ohm
+    10500000000: "ERA2AEB1052X",  # 10500 ohm
+    10700000000: "ERA2AEB1072X",  # 10700 ohm
+    11000000000: "ERA2AEB113X",  # 11000 ohm
+    11300000000: "ERA2AEB1132X",  # 11300 ohm
+    11500000000: "ERA2AEB1152X",  # 11500 ohm
+    11800000000: "ERA2AEB1182X",  # 11800 ohm
+    12000000000: "ERA2AEB123X",  # 12000 ohm
+    12100000000: "ERA2AEB1212X",  # 12100 ohm
+    12400000000: "ERA2AEB1242X",  # 12400 ohm
+    12700000000: "ERA2AEB1272X",  # 12700 ohm
+    13000000000: "ERA2AEB133X",  # 13000 ohm
+    13300000000: "ERA2AEB1332X",  # 13300 ohm
+    13700000000: "ERA2AEB1372X",  # 13700 ohm
+    14000000000: "ERA2AEB1402X",  # 14000 ohm
+    14300000000: "ERA2AEB1432X",  # 14300 ohm
+    14700000000: "ERA2AEB1472X",  # 14700 ohm
+    15000000000: "ERA2AEB153X",  # 15000 ohm
+    15400000000: "ERA2AEB1542X",  # 15400 ohm
+    15800000000: "ERA2AEB1582X",  # 15800 ohm
+    16000000000: "ERA2AEB163X",  # 16000 ohm
+    16200000000: "ERA2AEB1622X",  # 16200 ohm
+    16500000000: "ERA2AEB1652X",  # 16500 ohm
+    16900000000: "ERA2AEB1692X",  # 16900 ohm
+    17400000000: "ERA2AEB1742X",  # 17400 ohm
+    17800000000: "ERA2AEB1782X",  # 17800 ohm
+    18000000000: "ERA2AEB183X",  # 18000 ohm
+    18200000000: "ERA2AEB1822X",  # 18200 ohm
+    18700000000: "ERA2AEB1872X",  # 18700 ohm
+    19100000000: "ERA2AEB1912X",  # 19100 ohm
+    19600000000: "ERA2AEB1962X",  # 19600 ohm
+    20000000000: "ERA2AEB203X",  # 20000 ohm
+    20500000000: "ERA2AEB2052X",  # 20500 ohm
+    21000000000: "ERA2AEB2102X",  # 21000 ohm
+    21500000000: "ERA2AEB2152X",  # 21500 ohm
+    22000000000: "ERA2AEB223X",  # 22000 ohm
+    22100000000: "ERA2AEB2212X",  # 22100 ohm
+    22600000000: "ERA2AEB2262X",  # 22600 ohm
+    23200000000: "ERA2AEB2322X",  # 23200 ohm
+    23700000000: "ERA2AEB2372X",  # 23700 ohm
+    24000000000: "ERA2AEB243X",  # 24000 ohm
+    24300000000: "ERA2AEB2432X",  # 24300 ohm
+    24900000000: "ERA2AEB2492X",  # 24900 ohm
+    25500000000: "ERA2AEB2552X",  # 25500 ohm
+    26100000000: "ERA2AEB2612X",  # 26100 ohm
+    26700000000: "ERA2AEB2672X",  # 26700 ohm
+    27000000000: "ERA2AEB273X",  # 27000 ohm
+    27400000000: "ERA2AEB2742X",  # 27400 ohm
+    28000000000: "ERA2AEB2802X",  # 28000 ohm
+    28700000000: "ERA2AEB2872X",  # 28700 ohm
+    29400000000: "ERA2AEB2942X",  # 29400 ohm
+    30000000000: "ERA2AEB303X",  # 30000 ohm
+    30100000000: "ERA2AEB3012X",  # 30100 ohm
+    30900000000: "ERA2AEB3092X",  # 30900 ohm
+    31600000000: "ERA2AEB3162X",  # 31600 ohm
+    32400000000: "ERA2AEB3242X",  # 32400 ohm
+    33000000000: "ERA2AEB333X",  # 33000 ohm
+    33200000000: "ERA2AEB3322X",  # 33200 ohm
+    34000000000: "ERA2AEB3402X",  # 34000 ohm
+    34800000000: "ERA2AEB3482X",  # 34800 ohm
+    35700000000: "ERA2AEB3572X",  # 35700 ohm
+    36000000000: "ERA2AEB363X",  # 36000 ohm
+    36500000000: "ERA2AEB3652X",  # 36500 ohm
+    37400000000: "ERA2AEB3742X",  # 37400 ohm
+    38300000000: "ERA2AEB3832X",  # 38300 ohm
+    39000000000: "ERA2AEB393X",  # 39000 ohm
+    39200000000: "ERA2AEB3922X",  # 39200 ohm
+    40200000000: "ERA2AEB4022X",  # 40200 ohm
+    41200000000: "ERA2AEB4122X",  # 41200 ohm
+    42200000000: "ERA2AEB4222X",  # 42200 ohm
+    43000000000: "ERA2AEB433X",  # 43000 ohm
+    43200000000: "ERA2AEB4322X",  # 43200 ohm
+    44200000000: "ERA2AEB4422X",  # 44200 ohm
+    45300000000: "ERA2AEB4532X",  # 45300 ohm
+    46400000000: "ERA2AEB4642X",  # 46400 ohm
+    47000000000: "ERA2AEB473X",  # 47000 ohm
+    47500000000: "ERA2AEB4752X",  # 47500 ohm
+    48700000000: "ERA2AEB4872X",  # 48700 ohm
+    49900000000: "ERA2AEB4992X",  # 49900 ohm
+    51000000000: "ERA2AEB513X",  # 51000 ohm
+    51100000000: "ERA2AEB5112X",  # 51100 ohm
+    52300000000: "ERA2AEB5232X",  # 52300 ohm
+    53600000000: "ERA2AEB5362X",  # 53600 ohm
+    54900000000: "ERA2AEB5492X",  # 54900 ohm
+    56000000000: "ERA2AEB563X",  # 56000 ohm
+    56200000000: "ERA2AEB5622X",  # 56200 ohm
+    57600000000: "ERA2AEB5762X",  # 57600 ohm
+    59000000000: "ERA2AEB5902X",  # 59000 ohm
+    60400000000: "ERA2AEB6042X",  # 60400 ohm
+    61900000000: "ERA2AEB6192X",  # 61900 ohm
+    62000000000: "ERA2AEB623X",  # 62000 ohm
+    63400000000: "ERA2AEB6342X",  # 63400 ohm
+    64900000000: "ERA2AEB6492X",  # 64900 ohm
+    66500000000: "ERA2AEB6652X",  # 66500 ohm
+    68000000000: "ERA2AEB683X",  # 68000 ohm
+    68100000000: "ERA2AEB6812X",  # 68100 ohm
+    69800000000: "ERA2AEB6982X",  # 69800 ohm
+    71500000000: "ERA2AEB7152X",  # 71500 ohm
+    73200000000: "ERA2AEB7322X",  # 73200 ohm
+    75000000000: "ERA2AEB753X",  # 75000 ohm
+    76800000000: "ERA2AEB7682X",  # 76800 ohm
+    78700000000: "ERA2AEB7872X",  # 78700 ohm
+    80600000000: "ERA2AEB8062X",  # 80600 ohm
+    82000000000: "ERA2AEB823X",  # 82000 ohm
+    82500000000: "ERA2AEB8252X",  # 82500 ohm
+    84500000000: "ERA2AEB8452X",  # 84500 ohm
+    86600000000: "ERA2AEB8662X",  # 86600 ohm
+    88700000000: "ERA2AEB8872X",  # 88700 ohm
+    90900000000: "ERA2AEB9092X",  # 90900 ohm
+    91000000000: "ERA2AEB913X",  # 91000 ohm
+    93100000000: "ERA2AEB9312X",  # 93100 ohm
+    95300000000: "ERA2AEB9532X",  # 95300 ohm
+    97600000000: "ERA2AEB9762X",  # 97600 ohm
+    100000000000: "ERA2AEB104X",  # 100000 ohm
+}
+_KEY = int(value.value * 1e6 + 0.5)
+# Part number for an allowed value; any other value takes the first entry and fails value_allowed below.
+_MPN_STR = _MPN.get(_KEY, _MPN[47000000])
+
+
+def _allowed(_m, r, what):
+    check(
+        _KEY in _MPN,
+        "%s: %s ohm is not an allowed value (E24/E96 values from 47 to 100000 ohm (E96 only from 100 ohm))" % (what, r),
+    )
+
+
+_ALLOWED_SEVERITY = "advice" if _ROOT else "error"  # standalone build: value is unset
+builtin.add_electrical_check(
+    name="value_allowed",
+    check_fn=_allowed,
+    inputs={"r": value.value, "what": "value_allowed"},
+    severity=_ALLOWED_SEVERITY,
+)
+
+
+def _rated_voltage(_m, v1, v2, what, r, p, vlim, derate):
+    # Worst case |V(P1) - V(P2)| over both nets' ranges. Zener has no sqrt, so compare squares:
+    # vmax <= derate x min(sqrt(P x R), vlim)  <=>  vmax^2 <= derate^2 x min(P x R, vlim^2).
+    vmax = max(v1.max - v2.min, v2.max - v1.min)
+    limit2 = min(p * r, vlim * vlim) * derate * derate
+    msg = "%s: up to %s V across the part, (V across)^2 = %s V^2 > %s V^2 = derate^2 x min(P x R, Vlimit^2) with R = %s ohm, P = %s W, Vlimit = %s V"
+    check(vmax * vmax <= limit2, msg % (what, vmax, vmax * vmax, limit2, r, p, vlim))
+
+
+# category_temp_ambient: board ambient range inside this range
+#   Category temperature range: min -55 / max 155 degC
+#   DS p.20, Ratings, Category temperature range (degC), all rows of the table (also DS p.19 Features)
+#   Severity error: rec_op violated
+_limit(
+    "category_temp_ambient", _temp, {"v": ambient, "what": "category_temp_ambient", "lo": 218.15, "hi": 428.15}, "error"
+)
+
+# rated_voltage: voltage across the part within min(sqrt(P x R), Vlimit), x derate
+#   Power rating p85: Power rating at 85 degC: max 0.063 W (DS p.20, Ratings, Power rating (85 degC) (W), ERA2AEB row)
+#   Voltage limit v_limit: Limiting element voltage: max 50 V (DS p.20, Ratings, Limiting element voltage (V), ERA2AEB row)
+#   Evaluated for the configured value. Error: a rated part voltage is exceeded.
+#   Not checked here: power derating above 70 degC (curve) is the module's job, calc.rated_power;
+#   above 70 degC ambient this check is optimistic.
+_limit(
+    "rated_voltage",
+    _rated_voltage,
+    {
+        "v1": P1.voltage,
+        "v2": P2.voltage,
+        "what": "rated_voltage",
+        "r": value.value,
+        "p": 0.063,
+        "vlim": 50.0,
+        "derate": derate,
+    },
+    "error",
+)
+
+Component(
+    name="ERA-2AEB",
+    symbol=Symbol(library="./ERA-2AEB.kicad_sym"),
+    part=Part(mpn=_MPN_STR, manufacturer="Panasonic"),
+    pins={
+        "1": P1,
+        "2": P2,
+    },
+)

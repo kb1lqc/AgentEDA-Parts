@@ -173,7 +173,8 @@ def series_section(folder):
     rows = [[eng(v, "ohm"), eng(series.rated_voltage(v, power.max, vlim.max), "V")] for v in decades]
     text = "\n## Series\n\n"
     text += f"- **Value range**: {eng(values[0], 'ohm')} to {eng(values[-1], 'ohm')} (`{info['value_param']}`)\n"
-    text += f"- **E-series**: {', '.join(info['e_series'])} ({len(values)} values in range)\n"
+    text += f"- **E-series**: {', '.join(info['e_series'])} ({len(values)} values in range)"
+    text += "".join(f"; {n} only from {eng(v, 'ohm')}" for n, v in info.get("series_eseries_min", {}).items()) + "\n"
     text += f"- **Tolerance**: {tol.max * 100:g} % (`{info['series_tol']}`), used by `Part.series_value`\n"
     text += f"- **MPN rule**: `calc.mpn(value)`; examples: {examples}\n"
     text += (f"- **Rated voltage**: min(sqrt(P70 x R), Vlimit), P70 = {eng(power.max, 'W')} (`{info['series_power']}`), "

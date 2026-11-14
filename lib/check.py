@@ -258,6 +258,11 @@ def check_series_part(part, pins, params, folder):
     unknown = [n for n in names if n not in series.E_SERIES]
     if unknown or not names:
         out.append(("ERROR", f"[part] e_series must list names from {sorted(series.E_SERIES)}, got {names}"))
+    mins = part.get("series_eseries_min", {})
+    if not isinstance(mins, dict) or any(n not in names or isinstance(v, bool) or not isinstance(v, (int, float)) or v <= 0
+                                         for n, v in mins.items()):
+        out.append(("ERROR", f"[part] series_eseries_min must map names from e_series to a positive ohm value, got {mins}"))
+        mins = {}
     rng = params.get(part.get("value_param"), {})
     if rng and not (rng.get("unit", "").endswith("ohm") and "min" in rng and "max" in rng):
         out.append(("ERROR", f"param {part['value_param']}: the series value range needs min, max and an ohm unit"))
@@ -274,7 +279,7 @@ def check_series_part(part, pins, params, folder):
         return []  # check_calc reports the import failure
     if not callable(getattr(calc, "mpn", None)):
         return [("ERROR", "calc.py of a series must define mpn(value)")]
-    values = series.allowed_values(names, *(to_si(rng[f], rng["unit"])[0] for f in ("min", "max")))
+    values = series.allowed_values(names, *(to_si(rng[f], rng["unit"])[0] for f in ("min", "max")), mins)
     return [("ERROR", msg) for msg in series.mpn_table(calc, values)[1]]
 
 

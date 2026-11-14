@@ -27,6 +27,11 @@ Every part here has three things a person or an AI needs to design with it and c
 | ST VNF1248F | 12/24/48 V high-side switch controller with e-fuse, SPI, QFN32L 5x5 | [README](components/STMicroelectronics/VNF1248F/README.md) |
 | Panasonic ERJ-2RKF series | Thick film resistor, 0402, ±1 %, 10 Ω to 1 MΩ (E24/E96); value is a design input | [README](components/Panasonic/ERJ-2RKF/README.md) |
 | Panasonic ERJ-3EKF series | Thick film resistor, 0603, ±1 %, 10 Ω to 1 MΩ (E24/E96); value is a design input | [README](components/Panasonic/ERJ-3EKF/README.md) |
+| Panasonic ERJ-6ENF series | Thick film resistor, 0805, ±1 %, 10 Ω to 2.2 MΩ (E24/E96); value is a design input | [README](components/Panasonic/ERJ-6ENF/README.md) |
+| Panasonic ERJ-8ENF series | Thick film resistor, 1206, ±1 %, 10 Ω to 2.2 MΩ (E24/E96); NRFND in the 2026.5 catalog | [README](components/Panasonic/ERJ-8ENF/README.md) |
+| Panasonic ERA-2AEB series | Thin film resistor, 0402, ±0.1 %, ±25 ppm/°C, 47 Ω to 100 kΩ (E24; E96 from 100 Ω) | [README](components/Panasonic/ERA-2AEB/README.md) |
+| Panasonic ERA-3AEB series | Thin film resistor, 0603, ±0.1 %, ±25 ppm/°C, 47 Ω to 330 kΩ (E24; E96 from 100 Ω) | [README](components/Panasonic/ERA-3AEB/README.md) |
+| Panasonic ERA-6AEB series | Thin film resistor, 0805, ±0.1 %, ±25 ppm/°C, 47 Ω to 1 MΩ (E24; E96 from 100 Ω) | [README](components/Panasonic/ERA-6AEB/README.md) |
 | Murata GCM155 series (0402) | Automotive X7R and C0G MLCC, 697 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM155/README.md) |
 | Murata GCM188 series (0603) | Automotive X7R and C0G MLCC, 633 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM188/README.md) |
 | Murata GCM21A series (0805, 1.0 mm) | Automotive X7R and C0G MLCC, 163 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM21A/README.md) |

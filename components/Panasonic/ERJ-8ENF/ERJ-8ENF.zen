@@ -1,0 +1,739 @@
+"""ERJ-8ENF: 1206 (3216 metric) 0.25 W +/-1 % thick film chip resistor, ERJ-8ENF series (10 ohm to 2.2 Mohm, E24/E96); NRFND.
+GENERATED from component.toml by `python3 -m lib.zen`; do not edit. Source of truth: component.toml and
+calc.py (numbers, cites, equations). DS: , Products catalog 2026.5; page footers dated 29-May-25 (printed pp.8-11) (2025-05-29).
+Checks are DC steady-state on the voltages each instance declares. They do not cover transients, overshoot,
+hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
+Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
+
+load("@stdlib/units.zen", "Resistance", "Temperature")
+
+# UNCHECKED: v_overload: Maximum overload voltage (DS p.10, Ratings <+/-1 %>, Maximum overload voltage (V), ERJ8EN row); overload test voltage (short-time test condition), not an operating limit; owner: module
+# UNCHECKED: rcwv_rule: Rated continuous working voltage, RCWV (DS p.10, Ratings <+/-1 %>, footnote *2); formula rating; owner: module (calc.rated_voltage)
+# UNCHECKED: derate_knee: Derating knee: full rated power up to (DS p.10, Power derating curve (text: 'above 70 degC, power rating shall be derated')); derating knee (printed in text, not a limit); used by calc.rated_power
+# UNCHECKED: derate_zero: Derating: 0 % rated power at (DS p.10, Power derating curve (figure: the 155 degC line reaches 0 %)); curve value; used by calc.rated_power
+# UNCHECKED: power derating above 70 degC: curve-based, depends on the dissipation; owner: module (calc.rated_power). rated_voltage below uses the 70 degC power rating at
+#   every ambient, so above 70 degC ambient it is OPTIMISTIC (0 W at the derating zero).
+
+# Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
+# GND can drive them; ground-named pins are Ground.
+# pin 1 1, passive: Resistor terminal
+P1 = io(Net)
+# pin 2 2, passive: Resistor terminal
+P2 = io(Net)
+
+value = config(Resistance, help="Resistance, an allowed E-series value (see the _MPN table)")
+ambient = config(Temperature, optional=True, help="Board ambient temperature range")
+derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+
+_ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
+check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
+
+
+def _limit(name, fn, inputs, severity, waiver=""):
+    # Unset input: UNVERIFIED warning, never a silent pass. Waiver drops a warning to advice.
+    if waiver and severity != "warning":
+        error("only warning-level checks can be waived: " + name)
+    unset = [k for k, v in inputs.items() if v == None]
+    if unset:
+
+        def _unverified(_m):
+            error("UNVERIFIED " + name + ": no value for " + ", ".join(unset))
+
+        builtin.add_electrical_check(name=name, check_fn=_unverified, severity="advice" if _ROOT else "warning")
+    else:
+        builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
+
+
+def _range(_m, v, what, lo=None, hi=None, lo_ref=None, hi_ref=None):
+    # Worst case: v.min >= lo + lo_ref.max and v.max <= hi + hi_ref.min (narrowest window). No ref = absolute.
+    lo_b = None if lo == None else lo + (0.0 if lo_ref == None else lo_ref.max)
+    hi_b = None if hi == None else hi + (0.0 if hi_ref == None else hi_ref.min)
+    ok = (lo_b == None or v.min >= lo_b) and (hi_b == None or v.max <= hi_b)
+    lo_t = "no limit" if lo_b == None else "%s V" % lo_b
+    hi_t = "no limit" if hi_b == None else "%s V" % hi_b
+    check(ok, "%s: %s to %s V outside %s to %s" % (what, v.min, v.max, lo_t, hi_t))
+
+
+def _temp(_m, v, what, lo, hi):
+    # Temperatures are kelvin floats in Zener; messages in degC.
+    ok = v.min >= lo and v.max <= hi
+    msg = "%s: %s to %s degC outside %s to %s degC"
+    check(ok, msg % (what, v.min - 273.15, v.max - 273.15, lo - 273.15, hi - 273.15))
+
+
+# Orderable part number per value, generated from calc.mpn() over every allowed value (calc.py is the single
+# source). Keys are integer micro-ohms: float text differs between Python and Zener, integers do not.
+_MPN = {
+    10000000: "ERJ8ENF10R0V",  # 10 ohm
+    10200000: "ERJ8ENF10R2V",  # 10.2 ohm
+    10500000: "ERJ8ENF10R5V",  # 10.5 ohm
+    10700000: "ERJ8ENF10R7V",  # 10.7 ohm
+    11000000: "ERJ8ENF11R0V",  # 11 ohm
+    11300000: "ERJ8ENF11R3V",  # 11.3 ohm
+    11500000: "ERJ8ENF11R5V",  # 11.5 ohm
+    11800000: "ERJ8ENF11R8V",  # 11.8 ohm
+    12000000: "ERJ8ENF12R0V",  # 12 ohm
+    12100000: "ERJ8ENF12R1V",  # 12.1 ohm
+    12400000: "ERJ8ENF12R4V",  # 12.4 ohm
+    12700000: "ERJ8ENF12R7V",  # 12.7 ohm
+    13000000: "ERJ8ENF13R0V",  # 13 ohm
+    13300000: "ERJ8ENF13R3V",  # 13.3 ohm
+    13700000: "ERJ8ENF13R7V",  # 13.7 ohm
+    14000000: "ERJ8ENF14R0V",  # 14 ohm
+    14300000: "ERJ8ENF14R3V",  # 14.3 ohm
+    14700000: "ERJ8ENF14R7V",  # 14.7 ohm
+    15000000: "ERJ8ENF15R0V",  # 15 ohm
+    15400000: "ERJ8ENF15R4V",  # 15.4 ohm
+    15800000: "ERJ8ENF15R8V",  # 15.8 ohm
+    16000000: "ERJ8ENF16R0V",  # 16 ohm
+    16200000: "ERJ8ENF16R2V",  # 16.2 ohm
+    16500000: "ERJ8ENF16R5V",  # 16.5 ohm
+    16900000: "ERJ8ENF16R9V",  # 16.9 ohm
+    17400000: "ERJ8ENF17R4V",  # 17.4 ohm
+    17800000: "ERJ8ENF17R8V",  # 17.8 ohm
+    18000000: "ERJ8ENF18R0V",  # 18 ohm
+    18200000: "ERJ8ENF18R2V",  # 18.2 ohm
+    18700000: "ERJ8ENF18R7V",  # 18.7 ohm
+    19100000: "ERJ8ENF19R1V",  # 19.1 ohm
+    19600000: "ERJ8ENF19R6V",  # 19.6 ohm
+    20000000: "ERJ8ENF20R0V",  # 20 ohm
+    20500000: "ERJ8ENF20R5V",  # 20.5 ohm
+    21000000: "ERJ8ENF21R0V",  # 21 ohm
+    21500000: "ERJ8ENF21R5V",  # 21.5 ohm
+    22000000: "ERJ8ENF22R0V",  # 22 ohm
+    22100000: "ERJ8ENF22R1V",  # 22.1 ohm
+    22600000: "ERJ8ENF22R6V",  # 22.6 ohm
+    23200000: "ERJ8ENF23R2V",  # 23.2 ohm
+    23700000: "ERJ8ENF23R7V",  # 23.7 ohm
+    24000000: "ERJ8ENF24R0V",  # 24 ohm
+    24300000: "ERJ8ENF24R3V",  # 24.3 ohm
+    24900000: "ERJ8ENF24R9V",  # 24.9 ohm
+    25500000: "ERJ8ENF25R5V",  # 25.5 ohm
+    26100000: "ERJ8ENF26R1V",  # 26.1 ohm
+    26700000: "ERJ8ENF26R7V",  # 26.7 ohm
+    27000000: "ERJ8ENF27R0V",  # 27 ohm
+    27400000: "ERJ8ENF27R4V",  # 27.4 ohm
+    28000000: "ERJ8ENF28R0V",  # 28 ohm
+    28700000: "ERJ8ENF28R7V",  # 28.7 ohm
+    29400000: "ERJ8ENF29R4V",  # 29.4 ohm
+    30000000: "ERJ8ENF30R0V",  # 30 ohm
+    30100000: "ERJ8ENF30R1V",  # 30.1 ohm
+    30900000: "ERJ8ENF30R9V",  # 30.9 ohm
+    31600000: "ERJ8ENF31R6V",  # 31.6 ohm
+    32400000: "ERJ8ENF32R4V",  # 32.4 ohm
+    33000000: "ERJ8ENF33R0V",  # 33 ohm
+    33200000: "ERJ8ENF33R2V",  # 33.2 ohm
+    34000000: "ERJ8ENF34R0V",  # 34 ohm
+    34800000: "ERJ8ENF34R8V",  # 34.8 ohm
+    35700000: "ERJ8ENF35R7V",  # 35.7 ohm
+    36000000: "ERJ8ENF36R0V",  # 36 ohm
+    36500000: "ERJ8ENF36R5V",  # 36.5 ohm
+    37400000: "ERJ8ENF37R4V",  # 37.4 ohm
+    38300000: "ERJ8ENF38R3V",  # 38.3 ohm
+    39000000: "ERJ8ENF39R0V",  # 39 ohm
+    39200000: "ERJ8ENF39R2V",  # 39.2 ohm
+    40200000: "ERJ8ENF40R2V",  # 40.2 ohm
+    41200000: "ERJ8ENF41R2V",  # 41.2 ohm
+    42200000: "ERJ8ENF42R2V",  # 42.2 ohm
+    43000000: "ERJ8ENF43R0V",  # 43 ohm
+    43200000: "ERJ8ENF43R2V",  # 43.2 ohm
+    44200000: "ERJ8ENF44R2V",  # 44.2 ohm
+    45300000: "ERJ8ENF45R3V",  # 45.3 ohm
+    46400000: "ERJ8ENF46R4V",  # 46.4 ohm
+    47000000: "ERJ8ENF47R0V",  # 47 ohm
+    47500000: "ERJ8ENF47R5V",  # 47.5 ohm
+    48700000: "ERJ8ENF48R7V",  # 48.7 ohm
+    49900000: "ERJ8ENF49R9V",  # 49.9 ohm
+    51000000: "ERJ8ENF51R0V",  # 51 ohm
+    51100000: "ERJ8ENF51R1V",  # 51.1 ohm
+    52300000: "ERJ8ENF52R3V",  # 52.3 ohm
+    53600000: "ERJ8ENF53R6V",  # 53.6 ohm
+    54900000: "ERJ8ENF54R9V",  # 54.9 ohm
+    56000000: "ERJ8ENF56R0V",  # 56 ohm
+    56200000: "ERJ8ENF56R2V",  # 56.2 ohm
+    57600000: "ERJ8ENF57R6V",  # 57.6 ohm
+    59000000: "ERJ8ENF59R0V",  # 59 ohm
+    60400000: "ERJ8ENF60R4V",  # 60.4 ohm
+    61900000: "ERJ8ENF61R9V",  # 61.9 ohm
+    62000000: "ERJ8ENF62R0V",  # 62 ohm
+    63400000: "ERJ8ENF63R4V",  # 63.4 ohm
+    64900000: "ERJ8ENF64R9V",  # 64.9 ohm
+    66500000: "ERJ8ENF66R5V",  # 66.5 ohm
+    68000000: "ERJ8ENF68R0V",  # 68 ohm
+    68100000: "ERJ8ENF68R1V",  # 68.1 ohm
+    69800000: "ERJ8ENF69R8V",  # 69.8 ohm
+    71500000: "ERJ8ENF71R5V",  # 71.5 ohm
+    73200000: "ERJ8ENF73R2V",  # 73.2 ohm
+    75000000: "ERJ8ENF75R0V",  # 75 ohm
+    76800000: "ERJ8ENF76R8V",  # 76.8 ohm
+    78700000: "ERJ8ENF78R7V",  # 78.7 ohm
+    80600000: "ERJ8ENF80R6V",  # 80.6 ohm
+    82000000: "ERJ8ENF82R0V",  # 82 ohm
+    82500000: "ERJ8ENF82R5V",  # 82.5 ohm
+    84500000: "ERJ8ENF84R5V",  # 84.5 ohm
+    86600000: "ERJ8ENF86R6V",  # 86.6 ohm
+    88700000: "ERJ8ENF88R7V",  # 88.7 ohm
+    90900000: "ERJ8ENF90R9V",  # 90.9 ohm
+    91000000: "ERJ8ENF91R0V",  # 91 ohm
+    93100000: "ERJ8ENF93R1V",  # 93.1 ohm
+    95300000: "ERJ8ENF95R3V",  # 95.3 ohm
+    97600000: "ERJ8ENF97R6V",  # 97.6 ohm
+    100000000: "ERJ8ENF1000V",  # 100 ohm
+    102000000: "ERJ8ENF1020V",  # 102 ohm
+    105000000: "ERJ8ENF1050V",  # 105 ohm
+    107000000: "ERJ8ENF1070V",  # 107 ohm
+    110000000: "ERJ8ENF1100V",  # 110 ohm
+    113000000: "ERJ8ENF1130V",  # 113 ohm
+    115000000: "ERJ8ENF1150V",  # 115 ohm
+    118000000: "ERJ8ENF1180V",  # 118 ohm
+    120000000: "ERJ8ENF1200V",  # 120 ohm
+    121000000: "ERJ8ENF1210V",  # 121 ohm
+    124000000: "ERJ8ENF1240V",  # 124 ohm
+    127000000: "ERJ8ENF1270V",  # 127 ohm
+    130000000: "ERJ8ENF1300V",  # 130 ohm
+    133000000: "ERJ8ENF1330V",  # 133 ohm
+    137000000: "ERJ8ENF1370V",  # 137 ohm
+    140000000: "ERJ8ENF1400V",  # 140 ohm
+    143000000: "ERJ8ENF1430V",  # 143 ohm
+    147000000: "ERJ8ENF1470V",  # 147 ohm
+    150000000: "ERJ8ENF1500V",  # 150 ohm
+    154000000: "ERJ8ENF1540V",  # 154 ohm
+    158000000: "ERJ8ENF1580V",  # 158 ohm
+    160000000: "ERJ8ENF1600V",  # 160 ohm
+    162000000: "ERJ8ENF1620V",  # 162 ohm
+    165000000: "ERJ8ENF1650V",  # 165 ohm
+    169000000: "ERJ8ENF1690V",  # 169 ohm
+    174000000: "ERJ8ENF1740V",  # 174 ohm
+    178000000: "ERJ8ENF1780V",  # 178 ohm
+    180000000: "ERJ8ENF1800V",  # 180 ohm
+    182000000: "ERJ8ENF1820V",  # 182 ohm
+    187000000: "ERJ8ENF1870V",  # 187 ohm
+    191000000: "ERJ8ENF1910V",  # 191 ohm
+    196000000: "ERJ8ENF1960V",  # 196 ohm
+    200000000: "ERJ8ENF2000V",  # 200 ohm
+    205000000: "ERJ8ENF2050V",  # 205 ohm
+    210000000: "ERJ8ENF2100V",  # 210 ohm
+    215000000: "ERJ8ENF2150V",  # 215 ohm
+    220000000: "ERJ8ENF2200V",  # 220 ohm
+    221000000: "ERJ8ENF2210V",  # 221 ohm
+    226000000: "ERJ8ENF2260V",  # 226 ohm
+    232000000: "ERJ8ENF2320V",  # 232 ohm
+    237000000: "ERJ8ENF2370V",  # 237 ohm
+    240000000: "ERJ8ENF2400V",  # 240 ohm
+    243000000: "ERJ8ENF2430V",  # 243 ohm
+    249000000: "ERJ8ENF2490V",  # 249 ohm
+    255000000: "ERJ8ENF2550V",  # 255 ohm
+    261000000: "ERJ8ENF2610V",  # 261 ohm
+    267000000: "ERJ8ENF2670V",  # 267 ohm
+    270000000: "ERJ8ENF2700V",  # 270 ohm
+    274000000: "ERJ8ENF2740V",  # 274 ohm
+    280000000: "ERJ8ENF2800V",  # 280 ohm
+    287000000: "ERJ8ENF2870V",  # 287 ohm
+    294000000: "ERJ8ENF2940V",  # 294 ohm
+    300000000: "ERJ8ENF3000V",  # 300 ohm
+    301000000: "ERJ8ENF3010V",  # 301 ohm
+    309000000: "ERJ8ENF3090V",  # 309 ohm
+    316000000: "ERJ8ENF3160V",  # 316 ohm
+    324000000: "ERJ8ENF3240V",  # 324 ohm
+    330000000: "ERJ8ENF3300V",  # 330 ohm
+    332000000: "ERJ8ENF3320V",  # 332 ohm
+    340000000: "ERJ8ENF3400V",  # 340 ohm
+    348000000: "ERJ8ENF3480V",  # 348 ohm
+    357000000: "ERJ8ENF3570V",  # 357 ohm
+    360000000: "ERJ8ENF3600V",  # 360 ohm
+    365000000: "ERJ8ENF3650V",  # 365 ohm
+    374000000: "ERJ8ENF3740V",  # 374 ohm
+    383000000: "ERJ8ENF3830V",  # 383 ohm
+    390000000: "ERJ8ENF3900V",  # 390 ohm
+    392000000: "ERJ8ENF3920V",  # 392 ohm
+    402000000: "ERJ8ENF4020V",  # 402 ohm
+    412000000: "ERJ8ENF4120V",  # 412 ohm
+    422000000: "ERJ8ENF4220V",  # 422 ohm
+    430000000: "ERJ8ENF4300V",  # 430 ohm
+    432000000: "ERJ8ENF4320V",  # 432 ohm
+    442000000: "ERJ8ENF4420V",  # 442 ohm
+    453000000: "ERJ8ENF4530V",  # 453 ohm
+    464000000: "ERJ8ENF4640V",  # 464 ohm
+    470000000: "ERJ8ENF4700V",  # 470 ohm
+    475000000: "ERJ8ENF4750V",  # 475 ohm
+    487000000: "ERJ8ENF4870V",  # 487 ohm
+    499000000: "ERJ8ENF4990V",  # 499 ohm
+    510000000: "ERJ8ENF5100V",  # 510 ohm
+    511000000: "ERJ8ENF5110V",  # 511 ohm
+    523000000: "ERJ8ENF5230V",  # 523 ohm
+    536000000: "ERJ8ENF5360V",  # 536 ohm
+    549000000: "ERJ8ENF5490V",  # 549 ohm
+    560000000: "ERJ8ENF5600V",  # 560 ohm
+    562000000: "ERJ8ENF5620V",  # 562 ohm
+    576000000: "ERJ8ENF5760V",  # 576 ohm
+    590000000: "ERJ8ENF5900V",  # 590 ohm
+    604000000: "ERJ8ENF6040V",  # 604 ohm
+    619000000: "ERJ8ENF6190V",  # 619 ohm
+    620000000: "ERJ8ENF6200V",  # 620 ohm
+    634000000: "ERJ8ENF6340V",  # 634 ohm
+    649000000: "ERJ8ENF6490V",  # 649 ohm
+    665000000: "ERJ8ENF6650V",  # 665 ohm
+    680000000: "ERJ8ENF6800V",  # 680 ohm
+    681000000: "ERJ8ENF6810V",  # 681 ohm
+    698000000: "ERJ8ENF6980V",  # 698 ohm
+    715000000: "ERJ8ENF7150V",  # 715 ohm
+    732000000: "ERJ8ENF7320V",  # 732 ohm
+    750000000: "ERJ8ENF7500V",  # 750 ohm
+    768000000: "ERJ8ENF7680V",  # 768 ohm
+    787000000: "ERJ8ENF7870V",  # 787 ohm
+    806000000: "ERJ8ENF8060V",  # 806 ohm
+    820000000: "ERJ8ENF8200V",  # 820 ohm
+    825000000: "ERJ8ENF8250V",  # 825 ohm
+    845000000: "ERJ8ENF8450V",  # 845 ohm
+    866000000: "ERJ8ENF8660V",  # 866 ohm
+    887000000: "ERJ8ENF8870V",  # 887 ohm
+    909000000: "ERJ8ENF9090V",  # 909 ohm
+    910000000: "ERJ8ENF9100V",  # 910 ohm
+    931000000: "ERJ8ENF9310V",  # 931 ohm
+    953000000: "ERJ8ENF9530V",  # 953 ohm
+    976000000: "ERJ8ENF9760V",  # 976 ohm
+    1000000000: "ERJ8ENF1001V",  # 1000 ohm
+    1020000000: "ERJ8ENF1021V",  # 1020 ohm
+    1050000000: "ERJ8ENF1051V",  # 1050 ohm
+    1070000000: "ERJ8ENF1071V",  # 1070 ohm
+    1100000000: "ERJ8ENF1101V",  # 1100 ohm
+    1130000000: "ERJ8ENF1131V",  # 1130 ohm
+    1150000000: "ERJ8ENF1151V",  # 1150 ohm
+    1180000000: "ERJ8ENF1181V",  # 1180 ohm
+    1200000000: "ERJ8ENF1201V",  # 1200 ohm
+    1210000000: "ERJ8ENF1211V",  # 1210 ohm
+    1240000000: "ERJ8ENF1241V",  # 1240 ohm
+    1270000000: "ERJ8ENF1271V",  # 1270 ohm
+    1300000000: "ERJ8ENF1301V",  # 1300 ohm
+    1330000000: "ERJ8ENF1331V",  # 1330 ohm
+    1370000000: "ERJ8ENF1371V",  # 1370 ohm
+    1400000000: "ERJ8ENF1401V",  # 1400 ohm
+    1430000000: "ERJ8ENF1431V",  # 1430 ohm
+    1470000000: "ERJ8ENF1471V",  # 1470 ohm
+    1500000000: "ERJ8ENF1501V",  # 1500 ohm
+    1540000000: "ERJ8ENF1541V",  # 1540 ohm
+    1580000000: "ERJ8ENF1581V",  # 1580 ohm
+    1600000000: "ERJ8ENF1601V",  # 1600 ohm
+    1620000000: "ERJ8ENF1621V",  # 1620 ohm
+    1650000000: "ERJ8ENF1651V",  # 1650 ohm
+    1690000000: "ERJ8ENF1691V",  # 1690 ohm
+    1740000000: "ERJ8ENF1741V",  # 1740 ohm
+    1780000000: "ERJ8ENF1781V",  # 1780 ohm
+    1800000000: "ERJ8ENF1801V",  # 1800 ohm
+    1820000000: "ERJ8ENF1821V",  # 1820 ohm
+    1870000000: "ERJ8ENF1871V",  # 1870 ohm
+    1910000000: "ERJ8ENF1911V",  # 1910 ohm
+    1960000000: "ERJ8ENF1961V",  # 1960 ohm
+    2000000000: "ERJ8ENF2001V",  # 2000 ohm
+    2050000000: "ERJ8ENF2051V",  # 2050 ohm
+    2100000000: "ERJ8ENF2101V",  # 2100 ohm
+    2150000000: "ERJ8ENF2151V",  # 2150 ohm
+    2200000000: "ERJ8ENF2201V",  # 2200 ohm
+    2210000000: "ERJ8ENF2211V",  # 2210 ohm
+    2260000000: "ERJ8ENF2261V",  # 2260 ohm
+    2320000000: "ERJ8ENF2321V",  # 2320 ohm
+    2370000000: "ERJ8ENF2371V",  # 2370 ohm
+    2400000000: "ERJ8ENF2401V",  # 2400 ohm
+    2430000000: "ERJ8ENF2431V",  # 2430 ohm
+    2490000000: "ERJ8ENF2491V",  # 2490 ohm
+    2550000000: "ERJ8ENF2551V",  # 2550 ohm
+    2610000000: "ERJ8ENF2611V",  # 2610 ohm
+    2670000000: "ERJ8ENF2671V",  # 2670 ohm
+    2700000000: "ERJ8ENF2701V",  # 2700 ohm
+    2740000000: "ERJ8ENF2741V",  # 2740 ohm
+    2800000000: "ERJ8ENF2801V",  # 2800 ohm
+    2870000000: "ERJ8ENF2871V",  # 2870 ohm
+    2940000000: "ERJ8ENF2941V",  # 2940 ohm
+    3000000000: "ERJ8ENF3001V",  # 3000 ohm
+    3010000000: "ERJ8ENF3011V",  # 3010 ohm
+    3090000000: "ERJ8ENF3091V",  # 3090 ohm
+    3160000000: "ERJ8ENF3161V",  # 3160 ohm
+    3240000000: "ERJ8ENF3241V",  # 3240 ohm
+    3300000000: "ERJ8ENF3301V",  # 3300 ohm
+    3320000000: "ERJ8ENF3321V",  # 3320 ohm
+    3400000000: "ERJ8ENF3401V",  # 3400 ohm
+    3480000000: "ERJ8ENF3481V",  # 3480 ohm
+    3570000000: "ERJ8ENF3571V",  # 3570 ohm
+    3600000000: "ERJ8ENF3601V",  # 3600 ohm
+    3650000000: "ERJ8ENF3651V",  # 3650 ohm
+    3740000000: "ERJ8ENF3741V",  # 3740 ohm
+    3830000000: "ERJ8ENF3831V",  # 3830 ohm
+    3900000000: "ERJ8ENF3901V",  # 3900 ohm
+    3920000000: "ERJ8ENF3921V",  # 3920 ohm
+    4020000000: "ERJ8ENF4021V",  # 4020 ohm
+    4120000000: "ERJ8ENF4121V",  # 4120 ohm
+    4220000000: "ERJ8ENF4221V",  # 4220 ohm
+    4300000000: "ERJ8ENF4301V",  # 4300 ohm
+    4320000000: "ERJ8ENF4321V",  # 4320 ohm
+    4420000000: "ERJ8ENF4421V",  # 4420 ohm
+    4530000000: "ERJ8ENF4531V",  # 4530 ohm
+    4640000000: "ERJ8ENF4641V",  # 4640 ohm
+    4700000000: "ERJ8ENF4701V",  # 4700 ohm
+    4750000000: "ERJ8ENF4751V",  # 4750 ohm
+    4870000000: "ERJ8ENF4871V",  # 4870 ohm
+    4990000000: "ERJ8ENF4991V",  # 4990 ohm
+    5100000000: "ERJ8ENF5101V",  # 5100 ohm
+    5110000000: "ERJ8ENF5111V",  # 5110 ohm
+    5230000000: "ERJ8ENF5231V",  # 5230 ohm
+    5360000000: "ERJ8ENF5361V",  # 5360 ohm
+    5490000000: "ERJ8ENF5491V",  # 5490 ohm
+    5600000000: "ERJ8ENF5601V",  # 5600 ohm
+    5620000000: "ERJ8ENF5621V",  # 5620 ohm
+    5760000000: "ERJ8ENF5761V",  # 5760 ohm
+    5900000000: "ERJ8ENF5901V",  # 5900 ohm
+    6040000000: "ERJ8ENF6041V",  # 6040 ohm
+    6190000000: "ERJ8ENF6191V",  # 6190 ohm
+    6200000000: "ERJ8ENF6201V",  # 6200 ohm
+    6340000000: "ERJ8ENF6341V",  # 6340 ohm
+    6490000000: "ERJ8ENF6491V",  # 6490 ohm
+    6650000000: "ERJ8ENF6651V",  # 6650 ohm
+    6800000000: "ERJ8ENF6801V",  # 6800 ohm
+    6810000000: "ERJ8ENF6811V",  # 6810 ohm
+    6980000000: "ERJ8ENF6981V",  # 6980 ohm
+    7150000000: "ERJ8ENF7151V",  # 7150 ohm
+    7320000000: "ERJ8ENF7321V",  # 7320 ohm
+    7500000000: "ERJ8ENF7501V",  # 7500 ohm
+    7680000000: "ERJ8ENF7681V",  # 7680 ohm
+    7870000000: "ERJ8ENF7871V",  # 7870 ohm
+    8060000000: "ERJ8ENF8061V",  # 8060 ohm
+    8200000000: "ERJ8ENF8201V",  # 8200 ohm
+    8250000000: "ERJ8ENF8251V",  # 8250 ohm
+    8450000000: "ERJ8ENF8451V",  # 8450 ohm
+    8660000000: "ERJ8ENF8661V",  # 8660 ohm
+    8870000000: "ERJ8ENF8871V",  # 8870 ohm
+    9090000000: "ERJ8ENF9091V",  # 9090 ohm
+    9100000000: "ERJ8ENF9101V",  # 9100 ohm
+    9310000000: "ERJ8ENF9311V",  # 9310 ohm
+    9530000000: "ERJ8ENF9531V",  # 9530 ohm
+    9760000000: "ERJ8ENF9761V",  # 9760 ohm
+    10000000000: "ERJ8ENF1002V",  # 10000 ohm
+    10200000000: "ERJ8ENF1022V",  # 10200 ohm
+    10500000000: "ERJ8ENF1052V",  # 10500 ohm
+    10700000000: "ERJ8ENF1072V",  # 10700 ohm
+    11000000000: "ERJ8ENF1102V",  # 11000 ohm
+    11300000000: "ERJ8ENF1132V",  # 11300 ohm
+    11500000000: "ERJ8ENF1152V",  # 11500 ohm
+    11800000000: "ERJ8ENF1182V",  # 11800 ohm
+    12000000000: "ERJ8ENF1202V",  # 12000 ohm
+    12100000000: "ERJ8ENF1212V",  # 12100 ohm
+    12400000000: "ERJ8ENF1242V",  # 12400 ohm
+    12700000000: "ERJ8ENF1272V",  # 12700 ohm
+    13000000000: "ERJ8ENF1302V",  # 13000 ohm
+    13300000000: "ERJ8ENF1332V",  # 13300 ohm
+    13700000000: "ERJ8ENF1372V",  # 13700 ohm
+    14000000000: "ERJ8ENF1402V",  # 14000 ohm
+    14300000000: "ERJ8ENF1432V",  # 14300 ohm
+    14700000000: "ERJ8ENF1472V",  # 14700 ohm
+    15000000000: "ERJ8ENF1502V",  # 15000 ohm
+    15400000000: "ERJ8ENF1542V",  # 15400 ohm
+    15800000000: "ERJ8ENF1582V",  # 15800 ohm
+    16000000000: "ERJ8ENF1602V",  # 16000 ohm
+    16200000000: "ERJ8ENF1622V",  # 16200 ohm
+    16500000000: "ERJ8ENF1652V",  # 16500 ohm
+    16900000000: "ERJ8ENF1692V",  # 16900 ohm
+    17400000000: "ERJ8ENF1742V",  # 17400 ohm
+    17800000000: "ERJ8ENF1782V",  # 17800 ohm
+    18000000000: "ERJ8ENF1802V",  # 18000 ohm
+    18200000000: "ERJ8ENF1822V",  # 18200 ohm
+    18700000000: "ERJ8ENF1872V",  # 18700 ohm
+    19100000000: "ERJ8ENF1912V",  # 19100 ohm
+    19600000000: "ERJ8ENF1962V",  # 19600 ohm
+    20000000000: "ERJ8ENF2002V",  # 20000 ohm
+    20500000000: "ERJ8ENF2052V",  # 20500 ohm
+    21000000000: "ERJ8ENF2102V",  # 21000 ohm
+    21500000000: "ERJ8ENF2152V",  # 21500 ohm
+    22000000000: "ERJ8ENF2202V",  # 22000 ohm
+    22100000000: "ERJ8ENF2212V",  # 22100 ohm
+    22600000000: "ERJ8ENF2262V",  # 22600 ohm
+    23200000000: "ERJ8ENF2322V",  # 23200 ohm
+    23700000000: "ERJ8ENF2372V",  # 23700 ohm
+    24000000000: "ERJ8ENF2402V",  # 24000 ohm
+    24300000000: "ERJ8ENF2432V",  # 24300 ohm
+    24900000000: "ERJ8ENF2492V",  # 24900 ohm
+    25500000000: "ERJ8ENF2552V",  # 25500 ohm
+    26100000000: "ERJ8ENF2612V",  # 26100 ohm
+    26700000000: "ERJ8ENF2672V",  # 26700 ohm
+    27000000000: "ERJ8ENF2702V",  # 27000 ohm
+    27400000000: "ERJ8ENF2742V",  # 27400 ohm
+    28000000000: "ERJ8ENF2802V",  # 28000 ohm
+    28700000000: "ERJ8ENF2872V",  # 28700 ohm
+    29400000000: "ERJ8ENF2942V",  # 29400 ohm
+    30000000000: "ERJ8ENF3002V",  # 30000 ohm
+    30100000000: "ERJ8ENF3012V",  # 30100 ohm
+    30900000000: "ERJ8ENF3092V",  # 30900 ohm
+    31600000000: "ERJ8ENF3162V",  # 31600 ohm
+    32400000000: "ERJ8ENF3242V",  # 32400 ohm
+    33000000000: "ERJ8ENF3302V",  # 33000 ohm
+    33200000000: "ERJ8ENF3322V",  # 33200 ohm
+    34000000000: "ERJ8ENF3402V",  # 34000 ohm
+    34800000000: "ERJ8ENF3482V",  # 34800 ohm
+    35700000000: "ERJ8ENF3572V",  # 35700 ohm
+    36000000000: "ERJ8ENF3602V",  # 36000 ohm
+    36500000000: "ERJ8ENF3652V",  # 36500 ohm
+    37400000000: "ERJ8ENF3742V",  # 37400 ohm
+    38300000000: "ERJ8ENF3832V",  # 38300 ohm
+    39000000000: "ERJ8ENF3902V",  # 39000 ohm
+    39200000000: "ERJ8ENF3922V",  # 39200 ohm
+    40200000000: "ERJ8ENF4022V",  # 40200 ohm
+    41200000000: "ERJ8ENF4122V",  # 41200 ohm
+    42200000000: "ERJ8ENF4222V",  # 42200 ohm
+    43000000000: "ERJ8ENF4302V",  # 43000 ohm
+    43200000000: "ERJ8ENF4322V",  # 43200 ohm
+    44200000000: "ERJ8ENF4422V",  # 44200 ohm
+    45300000000: "ERJ8ENF4532V",  # 45300 ohm
+    46400000000: "ERJ8ENF4642V",  # 46400 ohm
+    47000000000: "ERJ8ENF4702V",  # 47000 ohm
+    47500000000: "ERJ8ENF4752V",  # 47500 ohm
+    48700000000: "ERJ8ENF4872V",  # 48700 ohm
+    49900000000: "ERJ8ENF4992V",  # 49900 ohm
+    51000000000: "ERJ8ENF5102V",  # 51000 ohm
+    51100000000: "ERJ8ENF5112V",  # 51100 ohm
+    52300000000: "ERJ8ENF5232V",  # 52300 ohm
+    53600000000: "ERJ8ENF5362V",  # 53600 ohm
+    54900000000: "ERJ8ENF5492V",  # 54900 ohm
+    56000000000: "ERJ8ENF5602V",  # 56000 ohm
+    56200000000: "ERJ8ENF5622V",  # 56200 ohm
+    57600000000: "ERJ8ENF5762V",  # 57600 ohm
+    59000000000: "ERJ8ENF5902V",  # 59000 ohm
+    60400000000: "ERJ8ENF6042V",  # 60400 ohm
+    61900000000: "ERJ8ENF6192V",  # 61900 ohm
+    62000000000: "ERJ8ENF6202V",  # 62000 ohm
+    63400000000: "ERJ8ENF6342V",  # 63400 ohm
+    64900000000: "ERJ8ENF6492V",  # 64900 ohm
+    66500000000: "ERJ8ENF6652V",  # 66500 ohm
+    68000000000: "ERJ8ENF6802V",  # 68000 ohm
+    68100000000: "ERJ8ENF6812V",  # 68100 ohm
+    69800000000: "ERJ8ENF6982V",  # 69800 ohm
+    71500000000: "ERJ8ENF7152V",  # 71500 ohm
+    73200000000: "ERJ8ENF7322V",  # 73200 ohm
+    75000000000: "ERJ8ENF7502V",  # 75000 ohm
+    76800000000: "ERJ8ENF7682V",  # 76800 ohm
+    78700000000: "ERJ8ENF7872V",  # 78700 ohm
+    80600000000: "ERJ8ENF8062V",  # 80600 ohm
+    82000000000: "ERJ8ENF8202V",  # 82000 ohm
+    82500000000: "ERJ8ENF8252V",  # 82500 ohm
+    84500000000: "ERJ8ENF8452V",  # 84500 ohm
+    86600000000: "ERJ8ENF8662V",  # 86600 ohm
+    88700000000: "ERJ8ENF8872V",  # 88700 ohm
+    90900000000: "ERJ8ENF9092V",  # 90900 ohm
+    91000000000: "ERJ8ENF9102V",  # 91000 ohm
+    93100000000: "ERJ8ENF9312V",  # 93100 ohm
+    95300000000: "ERJ8ENF9532V",  # 95300 ohm
+    97600000000: "ERJ8ENF9762V",  # 97600 ohm
+    100000000000: "ERJ8ENF1003V",  # 100000 ohm
+    102000000000: "ERJ8ENF1023V",  # 102000 ohm
+    105000000000: "ERJ8ENF1053V",  # 105000 ohm
+    107000000000: "ERJ8ENF1073V",  # 107000 ohm
+    110000000000: "ERJ8ENF1103V",  # 110000 ohm
+    113000000000: "ERJ8ENF1133V",  # 113000 ohm
+    115000000000: "ERJ8ENF1153V",  # 115000 ohm
+    118000000000: "ERJ8ENF1183V",  # 118000 ohm
+    120000000000: "ERJ8ENF1203V",  # 120000 ohm
+    121000000000: "ERJ8ENF1213V",  # 121000 ohm
+    124000000000: "ERJ8ENF1243V",  # 124000 ohm
+    127000000000: "ERJ8ENF1273V",  # 127000 ohm
+    130000000000: "ERJ8ENF1303V",  # 130000 ohm
+    133000000000: "ERJ8ENF1333V",  # 133000 ohm
+    137000000000: "ERJ8ENF1373V",  # 137000 ohm
+    140000000000: "ERJ8ENF1403V",  # 140000 ohm
+    143000000000: "ERJ8ENF1433V",  # 143000 ohm
+    147000000000: "ERJ8ENF1473V",  # 147000 ohm
+    150000000000: "ERJ8ENF1503V",  # 150000 ohm
+    154000000000: "ERJ8ENF1543V",  # 154000 ohm
+    158000000000: "ERJ8ENF1583V",  # 158000 ohm
+    160000000000: "ERJ8ENF1603V",  # 160000 ohm
+    162000000000: "ERJ8ENF1623V",  # 162000 ohm
+    165000000000: "ERJ8ENF1653V",  # 165000 ohm
+    169000000000: "ERJ8ENF1693V",  # 169000 ohm
+    174000000000: "ERJ8ENF1743V",  # 174000 ohm
+    178000000000: "ERJ8ENF1783V",  # 178000 ohm
+    180000000000: "ERJ8ENF1803V",  # 180000 ohm
+    182000000000: "ERJ8ENF1823V",  # 182000 ohm
+    187000000000: "ERJ8ENF1873V",  # 187000 ohm
+    191000000000: "ERJ8ENF1913V",  # 191000 ohm
+    196000000000: "ERJ8ENF1963V",  # 196000 ohm
+    200000000000: "ERJ8ENF2003V",  # 200000 ohm
+    205000000000: "ERJ8ENF2053V",  # 205000 ohm
+    210000000000: "ERJ8ENF2103V",  # 210000 ohm
+    215000000000: "ERJ8ENF2153V",  # 215000 ohm
+    220000000000: "ERJ8ENF2203V",  # 220000 ohm
+    221000000000: "ERJ8ENF2213V",  # 221000 ohm
+    226000000000: "ERJ8ENF2263V",  # 226000 ohm
+    232000000000: "ERJ8ENF2323V",  # 232000 ohm
+    237000000000: "ERJ8ENF2373V",  # 237000 ohm
+    240000000000: "ERJ8ENF2403V",  # 240000 ohm
+    243000000000: "ERJ8ENF2433V",  # 243000 ohm
+    249000000000: "ERJ8ENF2493V",  # 249000 ohm
+    255000000000: "ERJ8ENF2553V",  # 255000 ohm
+    261000000000: "ERJ8ENF2613V",  # 261000 ohm
+    267000000000: "ERJ8ENF2673V",  # 267000 ohm
+    270000000000: "ERJ8ENF2703V",  # 270000 ohm
+    274000000000: "ERJ8ENF2743V",  # 274000 ohm
+    280000000000: "ERJ8ENF2803V",  # 280000 ohm
+    287000000000: "ERJ8ENF2873V",  # 287000 ohm
+    294000000000: "ERJ8ENF2943V",  # 294000 ohm
+    300000000000: "ERJ8ENF3003V",  # 300000 ohm
+    301000000000: "ERJ8ENF3013V",  # 301000 ohm
+    309000000000: "ERJ8ENF3093V",  # 309000 ohm
+    316000000000: "ERJ8ENF3163V",  # 316000 ohm
+    324000000000: "ERJ8ENF3243V",  # 324000 ohm
+    330000000000: "ERJ8ENF3303V",  # 330000 ohm
+    332000000000: "ERJ8ENF3323V",  # 332000 ohm
+    340000000000: "ERJ8ENF3403V",  # 340000 ohm
+    348000000000: "ERJ8ENF3483V",  # 348000 ohm
+    357000000000: "ERJ8ENF3573V",  # 357000 ohm
+    360000000000: "ERJ8ENF3603V",  # 360000 ohm
+    365000000000: "ERJ8ENF3653V",  # 365000 ohm
+    374000000000: "ERJ8ENF3743V",  # 374000 ohm
+    383000000000: "ERJ8ENF3833V",  # 383000 ohm
+    390000000000: "ERJ8ENF3903V",  # 390000 ohm
+    392000000000: "ERJ8ENF3923V",  # 392000 ohm
+    402000000000: "ERJ8ENF4023V",  # 402000 ohm
+    412000000000: "ERJ8ENF4123V",  # 412000 ohm
+    422000000000: "ERJ8ENF4223V",  # 422000 ohm
+    430000000000: "ERJ8ENF4303V",  # 430000 ohm
+    432000000000: "ERJ8ENF4323V",  # 432000 ohm
+    442000000000: "ERJ8ENF4423V",  # 442000 ohm
+    453000000000: "ERJ8ENF4533V",  # 453000 ohm
+    464000000000: "ERJ8ENF4643V",  # 464000 ohm
+    470000000000: "ERJ8ENF4703V",  # 470000 ohm
+    475000000000: "ERJ8ENF4753V",  # 475000 ohm
+    487000000000: "ERJ8ENF4873V",  # 487000 ohm
+    499000000000: "ERJ8ENF4993V",  # 499000 ohm
+    510000000000: "ERJ8ENF5103V",  # 510000 ohm
+    511000000000: "ERJ8ENF5113V",  # 511000 ohm
+    523000000000: "ERJ8ENF5233V",  # 523000 ohm
+    536000000000: "ERJ8ENF5363V",  # 536000 ohm
+    549000000000: "ERJ8ENF5493V",  # 549000 ohm
+    560000000000: "ERJ8ENF5603V",  # 560000 ohm
+    562000000000: "ERJ8ENF5623V",  # 562000 ohm
+    576000000000: "ERJ8ENF5763V",  # 576000 ohm
+    590000000000: "ERJ8ENF5903V",  # 590000 ohm
+    604000000000: "ERJ8ENF6043V",  # 604000 ohm
+    619000000000: "ERJ8ENF6193V",  # 619000 ohm
+    620000000000: "ERJ8ENF6203V",  # 620000 ohm
+    634000000000: "ERJ8ENF6343V",  # 634000 ohm
+    649000000000: "ERJ8ENF6493V",  # 649000 ohm
+    665000000000: "ERJ8ENF6653V",  # 665000 ohm
+    680000000000: "ERJ8ENF6803V",  # 680000 ohm
+    681000000000: "ERJ8ENF6813V",  # 681000 ohm
+    698000000000: "ERJ8ENF6983V",  # 698000 ohm
+    715000000000: "ERJ8ENF7153V",  # 715000 ohm
+    732000000000: "ERJ8ENF7323V",  # 732000 ohm
+    750000000000: "ERJ8ENF7503V",  # 750000 ohm
+    768000000000: "ERJ8ENF7683V",  # 768000 ohm
+    787000000000: "ERJ8ENF7873V",  # 787000 ohm
+    806000000000: "ERJ8ENF8063V",  # 806000 ohm
+    820000000000: "ERJ8ENF8203V",  # 820000 ohm
+    825000000000: "ERJ8ENF8253V",  # 825000 ohm
+    845000000000: "ERJ8ENF8453V",  # 845000 ohm
+    866000000000: "ERJ8ENF8663V",  # 866000 ohm
+    887000000000: "ERJ8ENF8873V",  # 887000 ohm
+    909000000000: "ERJ8ENF9093V",  # 909000 ohm
+    910000000000: "ERJ8ENF9103V",  # 910000 ohm
+    931000000000: "ERJ8ENF9313V",  # 931000 ohm
+    953000000000: "ERJ8ENF9533V",  # 953000 ohm
+    976000000000: "ERJ8ENF9763V",  # 976000 ohm
+    1000000000000: "ERJ8ENF1004V",  # 1e+06 ohm
+    1020000000000: "ERJ8ENF1024V",  # 1.02e+06 ohm
+    1050000000000: "ERJ8ENF1054V",  # 1.05e+06 ohm
+    1070000000000: "ERJ8ENF1074V",  # 1.07e+06 ohm
+    1100000000000: "ERJ8ENF1104V",  # 1.1e+06 ohm
+    1130000000000: "ERJ8ENF1134V",  # 1.13e+06 ohm
+    1150000000000: "ERJ8ENF1154V",  # 1.15e+06 ohm
+    1180000000000: "ERJ8ENF1184V",  # 1.18e+06 ohm
+    1200000000000: "ERJ8ENF1204V",  # 1.2e+06 ohm
+    1210000000000: "ERJ8ENF1214V",  # 1.21e+06 ohm
+    1240000000000: "ERJ8ENF1244V",  # 1.24e+06 ohm
+    1270000000000: "ERJ8ENF1274V",  # 1.27e+06 ohm
+    1300000000000: "ERJ8ENF1304V",  # 1.3e+06 ohm
+    1330000000000: "ERJ8ENF1334V",  # 1.33e+06 ohm
+    1370000000000: "ERJ8ENF1374V",  # 1.37e+06 ohm
+    1400000000000: "ERJ8ENF1404V",  # 1.4e+06 ohm
+    1430000000000: "ERJ8ENF1434V",  # 1.43e+06 ohm
+    1470000000000: "ERJ8ENF1474V",  # 1.47e+06 ohm
+    1500000000000: "ERJ8ENF1504V",  # 1.5e+06 ohm
+    1540000000000: "ERJ8ENF1544V",  # 1.54e+06 ohm
+    1580000000000: "ERJ8ENF1584V",  # 1.58e+06 ohm
+    1600000000000: "ERJ8ENF1604V",  # 1.6e+06 ohm
+    1620000000000: "ERJ8ENF1624V",  # 1.62e+06 ohm
+    1650000000000: "ERJ8ENF1654V",  # 1.65e+06 ohm
+    1690000000000: "ERJ8ENF1694V",  # 1.69e+06 ohm
+    1740000000000: "ERJ8ENF1744V",  # 1.74e+06 ohm
+    1780000000000: "ERJ8ENF1784V",  # 1.78e+06 ohm
+    1800000000000: "ERJ8ENF1804V",  # 1.8e+06 ohm
+    1820000000000: "ERJ8ENF1824V",  # 1.82e+06 ohm
+    1870000000000: "ERJ8ENF1874V",  # 1.87e+06 ohm
+    1910000000000: "ERJ8ENF1914V",  # 1.91e+06 ohm
+    1960000000000: "ERJ8ENF1964V",  # 1.96e+06 ohm
+    2000000000000: "ERJ8ENF2004V",  # 2e+06 ohm
+    2050000000000: "ERJ8ENF2054V",  # 2.05e+06 ohm
+    2100000000000: "ERJ8ENF2104V",  # 2.1e+06 ohm
+    2150000000000: "ERJ8ENF2154V",  # 2.15e+06 ohm
+    2200000000000: "ERJ8ENF2204V",  # 2.2e+06 ohm
+}
+_KEY = int(value.value * 1e6 + 0.5)
+# Part number for an allowed value; any other value takes the first entry and fails value_allowed below.
+_MPN_STR = _MPN.get(_KEY, _MPN[10000000])
+
+
+def _allowed(_m, r, what):
+    check(_KEY in _MPN, "%s: %s ohm is not an allowed value (E24/E96 values from 10 to 2.2e+06 ohm)" % (what, r))
+
+
+_ALLOWED_SEVERITY = "advice" if _ROOT else "error"  # standalone build: value is unset
+builtin.add_electrical_check(
+    name="value_allowed",
+    check_fn=_allowed,
+    inputs={"r": value.value, "what": "value_allowed"},
+    severity=_ALLOWED_SEVERITY,
+)
+
+
+def _rated_voltage(_m, v1, v2, what, r, p, vlim, derate):
+    # Worst case |V(P1) - V(P2)| over both nets' ranges. Zener has no sqrt, so compare squares:
+    # vmax <= derate x min(sqrt(P x R), vlim)  <=>  vmax^2 <= derate^2 x min(P x R, vlim^2).
+    vmax = max(v1.max - v2.min, v2.max - v1.min)
+    limit2 = min(p * r, vlim * vlim) * derate * derate
+    msg = "%s: up to %s V across the part, (V across)^2 = %s V^2 > %s V^2 = derate^2 x min(P x R, Vlimit^2) with R = %s ohm, P = %s W, Vlimit = %s V"
+    check(vmax * vmax <= limit2, msg % (what, vmax, vmax * vmax, limit2, r, p, vlim))
+
+
+# category_temp_ambient: board ambient range inside this range
+#   Category temperature range: min -55 / max 155 degC
+#   DS p.10, Ratings <+/-1 %>, Category temperature range (degC), ERJ8EN row (merged cell with ERJ2RK, ERJ3EK, ERJ6EN; NRFND rows greyed)
+#   Severity error: rec_op violated
+_limit(
+    "category_temp_ambient", _temp, {"v": ambient, "what": "category_temp_ambient", "lo": 218.15, "hi": 428.15}, "error"
+)
+
+# rated_voltage: voltage across the part within min(sqrt(P x R), Vlimit), x derate
+#   Power rating p70: Rated power at 70 degC: max 0.25 W (DS p.10, Ratings <+/-1 %>, Power rating (70 degC) (W), ERJ8EN row)
+#   Voltage limit v_limit: Limiting element voltage: max 200 V (DS p.10, Ratings <+/-1 %>, Limiting element voltage (V), ERJ8EN row)
+#   Evaluated for the configured value. Error: a rated part voltage is exceeded.
+#   Not checked here: power derating above 70 degC (curve) is the module's job, calc.rated_power;
+#   above 70 degC ambient this check is optimistic.
+_limit(
+    "rated_voltage",
+    _rated_voltage,
+    {
+        "v1": P1.voltage,
+        "v2": P2.voltage,
+        "what": "rated_voltage",
+        "r": value.value,
+        "p": 0.25,
+        "vlim": 200.0,
+        "derate": derate,
+    },
+    "error",
+)
+
+Component(
+    name="ERJ-8ENF",
+    symbol=Symbol(library="./ERJ-8ENF.kicad_sym"),
+    part=Part(mpn=_MPN_STR, manufacturer="Panasonic"),
+    pins={
+        "1": P1,
+        "2": P2,
+    },
+)

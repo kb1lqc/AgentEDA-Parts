@@ -137,7 +137,7 @@ def series_code(info, params, part_dir):
     """
     problems = []
     rng, power, vlim = (to_param(params[info[f]]) for f in ("value_param", "series_power", "series_vlimit"))
-    values = series.allowed_values(info["e_series"], rng.min, rng.max)
+    values = series.allowed_values(info["e_series"], rng.min, rng.max, info.get("series_eseries_min"))
     rows, mpn_problems = series.mpn_table(load_calc(part_dir / "calc.py"), values)
     problems += mpn_problems
     if power.max is None or vlim.max is None or power.unit != "W" or vlim.unit != "V":
@@ -148,7 +148,9 @@ def series_code(info, params, part_dir):
         return [], [], problems + ["no allowed values"]
     t = params[info["series_power"]]
     tv = params[info["series_vlimit"]]
-    allowed = f"{'/'.join(info['e_series'])} values from {rng.min:g} to {rng.max:g} ohm"
+    mins = info.get("series_eseries_min", {})
+    allowed = f"{'/'.join(info['e_series'])} values from {rng.min:g} to {rng.max:g} ohm" + "".join(
+        f" ({n} only from {v:g} ohm)" for n, v in mins.items())
     lines = [
         "# Orderable part number per value, generated from calc.mpn() over every allowed value (calc.py is the single",
         "# source). Keys are integer micro-ohms: float text differs between Python and Zener, integers do not.",

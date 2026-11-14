@@ -66,7 +66,7 @@ class Part:
         if self.info.get("series") != "resistor":
             raise ValueError(f"{self.info.get('value')} is not a resistor series component")
         r = self.param(self.info["value_param"])
-        return _series.allowed_values(self.info["e_series"], r.min, r.max)
+        return _series.allowed_values(self.info["e_series"], r.min, r.max, self.info.get("series_eseries_min"))
 
     def _check_allowed(self, value):
         """ValueError unless value (ohm) is one of values() (to 1e-9 relative)."""
