@@ -1,0 +1,7 @@
+value,dielectric,capacitance,tolerance,rated_voltage,thickness,source
+CSER1-X104K,X7R,0.1μF,±10%,50Vdc,0.5mm ±0.05mm,"Acme test list, row CSER1-X104K"
+CSER1-X104M,X7R,0.1μF,±20%,50Vdc,0.5mm ±0.05mm,"Acme test list, row CSER1-X104M"
+CSER1-X104K16,X7R,0.1μF,±10%,16Vdc,0.5mm ±0.05mm,"Acme test list, row CSER1-X104K16"
+CSER1-X682K,X7R,"6,800pF",±10%,"1,000Vdc",0.5mm ±0.05mm,"Acme test list, row CSER1-X682K"
+CSER1-C101J,C0G,100pF,±5%,100Vdc,0.5mm ±0.05mm,"Acme test list, row CSER1-C101J"
+CSER1-C1R5C,C0G,1.5pF,±0.25pF,50Vdc,0.5mm ±0.05mm,"Acme test list, row CSER1-C1R5C"

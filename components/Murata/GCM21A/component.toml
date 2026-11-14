@@ -1,0 +1,638 @@
+# Murata GCM21A series: 2012M (0805) thickness code A (T 1.0 mm) X7R (R7) and C0G (5C) MLCCs, a capacitor series
+# (docs/SPEC.md, "Capacitor series"). One directory per Murata size+thickness code (the symbol, footprint and STEP are per
+# directory). Every orderable value is a row of catalog.csv, generated from Murata's product-list export by
+#   python3 -m lib.catalog murata-gcm docs/vendor/Murata_GCM/gcm-series-product-list-2026-11-14.csv components/Murata/GCM21A --dielectrics X7R,C0G
+# and cited per row to that export (a manufacturer export, not a datasheet). X7R and C0G rows are listed; each
+# dielectric has its temperature-characteristic row (tc_x7r, tc_c0g) and its operating-temperature row (op_temp_*).
+# Row scopes: rows without a restriction apply to every part; rows with dielectric = "X7R" / "C0G" to every part of that
+# dielectric; rows with parts = [...] only to the catalog values named there.
+# The per-part rows come from the one reference sheet this directory has for C0G: GCM21A5C2E101FX01 (100 pF, +/-1 %,
+# DC 250 V, T 1.0 mm), docs/datasheets/GCM21A5C2E101FX01-00B-EN.pdf (Murata reference sheet, "product specifications as
+# of Apr.8,2026"). The other catalog values (C0G and X7R, 1.0 mm) have no per-part datasheet rows (open item).
+# Shared rows: the land rows (land_*_015, land_*_020) come from the newer GCM21B X7R reference sheet, DS p.27
+# (shared by every 0805 directory). Dielectric rows: the C0G rows come from the C0G sheet of GCM21A, the X7R rows from the X7R
+# sheet of GCM21B; both dielectrics are listed in both directories.
+# Lifecycle, revision currency, errata and PCN: not checked (no web access).
+#
+# Part decode (DS p.2, MURATA Part No. System, example GCM21A5C2E101FX01-00B): GCM series, 21 = L x W 2012M (0805) 2.0 x 1.25,
+# A = T 1.0 mm (thickness code A), 5C = C0G (EIA), 2E = DC 250 V, 101 = 100 pF, F = +/-1 %, X01 = individual specification
+# (Murata control code), D/J = package (see below). R7 = X7R (EIA) in the X7R sheet.
+# Package letters (DS p.2 Package table, C0G sheet, thickness 1.0 mm): D = phi180 reel, paper tape W8P4, 4000 pcs/reel;
+#   J = phi330, paper tape W8P4, 10000 pcs/reel. The package table is taken from this one sheet (1.0 mm) and assumed for both
+#   dielectrics of thickness code A (open item: the X7R 1.0 mm parts have no X7R 1.0 mm sheet to confirm it).
+#   MPN = catalog value + package letter; default letter D; J is the same part in other packaging.
+# The decode tables in lib/catalog.py are a cross-check of the export only ("Not a DS rule"): the reference sheet decodes
+# just its own example number.
+#
+# Open items (DS gives no numbers, so nothing is stored):
+#   - DC voltage characteristic (X7R capacitance loss under DC bias): the DS figure is an example for another sample
+#     (0.1 uF, 50 VDC, ref. p.13 section 5); no number is printed, so nothing is stored as a bound (see the dc_bias row).
+#     capacitance_worst_pct/_ppm exclude it.
+#   - AC voltage characteristic: text only. Self-heating (< 20 degC) and the AC peak rule are stored (self_heating, ac_peak).
+#     The self-heating row is per-part on the X7R reference part only (C0G self-heating is not printed as a number).
+#   - Aging (capacitance decrease with time): DS p.16 (C0G) and DS p.14 (X7R), section 6, text only; no rate printed.
+#   - Operating temperature range is a single row (-55 to 125 degC); no derating curve is printed.
+#   - Thickness code A exists in the export for X7R (7 rows): their L/W/T class is the export's, not a datasheet's.
+#   - Land pattern: footprint uses a 1.2 / b 0.7 / c 1.3 mm, chosen to fit both rows of GCM21BR72A104KA37-01A DS p.27
+#     (2.0x1.25 +/-0.15 and +/-0.20). The older GCM21A5C2E101FX01-00B sheet (DS p.29) prints a different single row
+#     (a 1.0-1.2, b 0.6-0.7, c 0.8-1.1), not used (open item).
+#   - L/W tolerance class of the export: 1.0 mm X7R rows and 1.25 mm rows exist in both classes; the C0G sheet is +/-0.2,
+#     the X7R sheet is +/-0.15. The per-part size rows apply to the reference part only.
+# Product URL: the reference sheet prints no product page address; the only URL printed is a contact form; datasheet_url
+# says so and datasheet_file is the source (open item).
+
+[part]
+value           = "GCM21A"                    # series: the catalog values are rows of catalog.csv
+manufacturer    = "Murata"
+description     = "Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 2012M (0805), thickness 1.0 mm (code A), AEC-Q200 (GCM series)"
+category        = "capacitor_mlcc"
+package         = "2012M (0805)"
+kicad_symbol    = "GCM21A.kicad_sym"
+kicad_footprint = "GCM21A.kicad_mod"
+step            = "GCM21A.step"
+datasheet_url   = ""  # open item: the reference sheet prints no datasheet URL (only a contact form); use datasheet_file
+datasheet_file  = "docs/datasheets/GCM21A5C2E101FX01-00B-EN.pdf"  # C0G reference sheet of GCM21A5C2E101FX01; the per-part rows come from it
+datasheet_rev   = "00B"
+datasheet_date  = "2026-04"                   # DS p.2 "product specifications in this catalog are as of Apr.8,2026"
+series          = "capacitor"
+catalog         = "catalog.csv"
+catalog_decoder = "murata-gcm"          # lib.check re-decodes every row (lib/catalog.py tables, cross-check only)
+tc_param        = { X7R = "tc_x7r", C0G = "tc_c0g" }  # dielectric -> the row holding its temperature characteristic
+package_default    = "D"                      # DS p.2 Package table (C0G sheet, 1.0 mm): D = phi180 reel, paper tape
+package_alternates = ["J"]                    # DS p.2 Package table: J = phi330 reel, paper tape (packaging only)
+
+# Pins: DS p.2 Type & Dimension figure. Non-polarized two-terminal chip capacitor; pin names are the terminal numbers.
+
+[[pin]]
+number   = "1"
+name     = "1"
+type     = "passive"
+function = "Capacitor terminal (non-polarized)"
+cite     = "DS p.2, Type & Dimension, image:Dimension"
+
+[[pin]]
+number   = "2"
+name     = "2"
+type     = "passive"
+function = "Capacitor terminal (non-polarized)"
+cite     = "DS p.2, Type & Dimension, image:Dimension"
+
+# Land pattern (footprint, reflow), shared by every 0805 directory. Source: the newer GCM21B X7R reference sheet
+# (docs/datasheets/GCM21BR72A104KA37-01A-EN.pdf), DS p.27, "2. Land Dimensions", Table 2 Reflow Soldering Method, row
+# 2.0x1.25 (both tolerance rows). The DS labels the dimensions only by letter: neutral names. Inferred meaning, not
+# printed: a = land-to-land gap, b = land length, c = land width (as for GCM188). Footprint used: a 1.2 / b 0.7 / c 1.3 mm,
+# chosen to fit both rows (a 1.2 is inside 1.0-1.4 and 1.2; b 0.7 is inside 0.6-0.8; c 1.3 is inside 1.2-1.4).
+# The older GCM21A5C2E101FX01-00B sheet (DS p.29) prints a different single row (a 1.0-1.2, b 0.6-0.7, c 0.8-1.1): open
+# item, not used.
+
+[param.land_a_015]
+name       = "Land pattern dimension a (reflow)"
+symbol     = "a"
+kind       = "mechanical"
+scope      = "na"
+min        = 1.2
+max        = 1.2
+unit       = "mm"
+conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.15), code 21"
+cite       = "DS p.27 (GCM21BR72A104KA37-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), a"
+note       = "Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed). Row for the +/-0.15 chip; the +/-0.20 row is land_a_020."
+
+[param.land_b_015]
+name       = "Land pattern dimension b (reflow)"
+symbol     = "b"
+kind       = "mechanical"
+scope      = "na"
+min        = 0.6
+max        = 0.8
+unit       = "mm"
+conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.15), code 21"
+cite       = "DS p.27 (GCM21BR72A104KA37-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), b"
+note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed)."
+
+[param.land_c_015]
+name       = "Land pattern dimension c (reflow)"
+symbol     = "c"
+kind       = "mechanical"
+scope      = "na"
+min        = 1.2
+max        = 1.4
+unit       = "mm"
+conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.15), code 21"
+cite       = "DS p.27 (GCM21BR72A104KA37-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), c"
+note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed)."
+
+[param.land_a_020]
+name       = "Land pattern dimension a (reflow)"
+symbol     = "a"
+kind       = "mechanical"
+scope      = "na"
+min        = 1.0
+max        = 1.4
+unit       = "mm"
+conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.20), code 21"
+cite       = "DS p.27 (GCM21BR72A104KA37-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), a"
+note       = "Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed)."
+
+[param.land_b_020]
+name       = "Land pattern dimension b (reflow)"
+symbol     = "b"
+kind       = "mechanical"
+scope      = "na"
+min        = 0.6
+max        = 0.8
+unit       = "mm"
+conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.20), code 21"
+cite       = "DS p.27 (GCM21BR72A104KA37-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), b"
+note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed)."
+
+[param.land_c_020]
+name       = "Land pattern dimension c (reflow)"
+symbol     = "c"
+kind       = "mechanical"
+scope      = "na"
+min        = 1.2
+max        = 1.4
+unit       = "mm"
+conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.20), code 21"
+cite       = "DS p.27 (GCM21BR72A104KA37-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), c"
+note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed)."
+
+# C0G per-part rows (GCM21A5C2E101FX01, from the C0G reference sheet). Keys end in _c0g.
+
+# Rated value (DS p.2, Rated Value)
+
+[param.capacitance_ds_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Capacitance"
+symbol     = "C"
+kind       = "electrical"
+scope      = "25C"
+typ        = 100
+unit       = "pF"
+conditions = "25 degC, 1.0 +/-0.1 MHz, 0.5 to 5.0 Vrms (DS p.5, No. 17)"
+cite       = "DS p.2, Rated Value, Capacitance (100pF)"
+
+[param.rated_v_ds_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Rated voltage (DC)"
+kind       = "rec_op"
+scope      = "na"
+min        = -250
+max        = 250
+unit       = "V"
+min_ref    = "2"
+max_ref    = "2"
+unchecked  = "the generated rated_voltage check applies the catalog rated voltage of the selected part; this per-part row duplicates it (owner: module)"
+conditions = "Voltage between pin 1 and pin 2 (non-polarized; either polarity)"
+cite       = "DS p.2, Rated Value, Rated Voltage (DC 250V)"
+note       = "DS prints DC 250V with no MIN/MAX label. Stored symmetric (min -250, max 250) because the part is non-polarized: |V(1)-V(2)| <= 250 V. The wrapper checks the catalog rating (same value for this part), not this row."
+
+[param.tolerance_ds_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Capacitance tolerance"
+kind       = "electrical"
+scope      = "na"
+min        = -1
+max        = 1
+unit       = "%"
+conditions = ""
+cite       = "DS p.2, Rated Value, Capacitance Tolerance (+/-1 %)"
+note       = "Printed +/-1 % as a limit: min -1, max 1 (SPEC +/-X rule). The catalog tolerance of this value (catalog.csv) is the export's own printed value."
+
+# Type & Dimension (DS p.2). L, W, T, e, g are per part here: the two 0805 sheets print different tolerance classes
+# (C0G L 2.0+/-0.2, W 1.25+/-0.2, T 1.0+0/-0.3, e 0.3 min; X7R L 2.0+/-0.15, W 1.25+/-0.15, T 1.25+/-0.15, e 0.2 to 0.7).
+
+[param.length_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Length (L)"
+symbol     = "L"
+kind       = "mechanical"
+scope      = "na"
+min        = 1.8
+typ        = 2.0
+max        = 2.2
+unit       = "mm"
+conditions = ""
+cite       = "DS p.2, Type & Dimension, L (2.0+/-0.2)"
+note       = "min and max are the printed nominal 2.0 -/+ 0.2 (arithmetic); the DS prints 2.0+/-0.2."
+
+[param.width_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Width (W)"
+symbol     = "W"
+kind       = "mechanical"
+scope      = "na"
+min        = 1.05
+typ        = 1.25
+max        = 1.45
+unit       = "mm"
+conditions = ""
+cite       = "DS p.2, Type & Dimension, W (1.25+/-0.2)"
+note       = "min and max are the printed nominal 1.25 -/+ 0.2 (arithmetic); the DS prints 1.25+/-0.2."
+
+[param.thickness_t_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Thickness (T)"
+symbol     = "T"
+kind       = "mechanical"
+scope      = "na"
+min        = 0.7
+typ        = 1.0
+max        = 1.0
+unit       = "mm"
+conditions = ""
+cite       = "DS p.2, Type & Dimension, T (1.0+0/-0.3)"
+note       = "Printed 1.0 +0/-0.3: min 0.7, typ 1.0, max 1.0. Catalog thickness column: 1mm +0mm/-0.3mm (export, agrees)."
+
+[param.dim_e_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Terminal width (e)"
+symbol     = "e"
+kind       = "mechanical"
+scope      = "na"
+min        = 0.3
+unit       = "mm"
+conditions = ""
+cite       = "DS p.2, Type & Dimension, e (0.3 min.)"
+note       = "Printed as a minimum only; no max stored."
+
+[param.dim_g_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Gap between terminals (g)"
+symbol     = "g"
+kind       = "mechanical"
+scope      = "na"
+min        = 0.7
+unit       = "mm"
+conditions = ""
+cite       = "DS p.2, Type & Dimension, g (0.7 min.)"
+note       = "Printed as a minimum only; no max stored."
+
+# Specifications and Test Methods (C0G reference sheet). Limits after stress are scope na (room temperature).
+
+[param.q_25c_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Q or dissipation factor (Q), initial"
+symbol     = "Q"
+kind       = "electrical"
+scope      = "25C"
+min        = 1000
+unit       = ""
+conditions = "25 degC, 1.0 +/-0.1 MHz, 0.5 to 5.0 Vrms"
+cite       = "DS p.5, Specifications and Test Methods, No. 18 Q or Dissipation Factor (DF): Q>=1000"
+note       = "C0G is specified as Q (not DF): stored as a minimum, as printed."
+
+[param.ir_25c_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Insulation resistance (IR), 25 degC"
+symbol     = "IR"
+kind       = "electrical"
+scope      = "25C"
+text       = "More than 100000 Mohm (printed 'More than 100000MΩ')"
+unit       = ""
+conditions = "25 degC, DC 250 V, charging time 1 min, charge/discharge current 50 mA max"
+cite       = "DS p.5, Specifications and Test Methods, No. 19 Insulation Resistance (IR), Room Temperature"
+
+[param.ir_125c_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Insulation resistance (IR), 125 degC"
+symbol     = "IR"
+kind       = "electrical"
+scope      = "na"
+text       = "More than 10000 Mohm (printed 'More than 10000MΩ')"
+unit       = ""
+conditions = "125 degC, DC 250 V, charging time 1 min, charge/discharge current 50 mA max"
+cite       = "DS p.5, Specifications and Test Methods, No. 20 Insulation Resistance (IR), High Temperature"
+
+[param.hte_cap_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Capacitance change, high-temperature exposure (storage)"
+symbol     = "dC"
+kind       = "electrical"
+scope      = "na"
+min        = -2
+max        = 2
+unit       = "%"
+conditions = "150 degC, 1000 h, no bias; after 24 h at room temperature"
+cite       = "DS p.3, Specifications and Test Methods, No. 3 High Temperature Exposure (Storage), Capacitance Change"
+
+[param.hte_q_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Q, high-temperature exposure"
+symbol     = "Q"
+kind       = "electrical"
+scope      = "na"
+text       = "Within the specified initial value"
+unit       = ""
+conditions = "150 degC, 1000 h, no bias; after 24 h at room temperature"
+cite       = "DS p.3, Specifications and Test Methods, No. 3 High Temperature Exposure (Storage), Q or D.F."
+note       = "The 0805 C0G sheet prints 'Within the specified initial value' here (the initial limit is q_25c_c0g, Q >= 1000); the 0402/0603 sheets print Q >= 1000."
+
+[param.hte_ir_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Insulation resistance, high-temperature exposure"
+symbol     = "IR"
+kind       = "electrical"
+scope      = "na"
+text       = "More than 10000 Mohm (printed 'More than 10000MΩ')"
+unit       = ""
+conditions = "Room temperature, after 150 degC, 1000 h exposure"
+cite       = "DS p.3, Specifications and Test Methods, No. 3 High Temperature Exposure (Storage), I.R. (Room Temp.)"
+
+[param.cycle_cap_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Capacitance change, temperature cycling"
+symbol     = "dC"
+kind       = "electrical"
+scope      = "na"
+min        = -2
+max        = 2
+unit       = "%"
+conditions = "1000 cycles, min operating temp to max operating temp (15 min dwell each); after room-temperature sit"
+cite       = "DS p.3, Specifications and Test Methods, No. 4 Temperature Cycling, Capacitance Change"
+
+[param.cycle_q_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Q, temperature cycling"
+symbol     = "Q"
+kind       = "electrical"
+scope      = "na"
+text       = "Within the specified initial value"
+unit       = ""
+conditions = "1000 cycles; after room-temperature sit"
+cite       = "DS p.3, Specifications and Test Methods, No. 4 Temperature Cycling, Q or D.F."
+note       = "The 0805 C0G sheet prints 'Within the specified initial value' here (the initial limit is q_25c_c0g, Q >= 1000); the 0402/0603 sheets print Q >= 1000."
+
+[param.cycle_ir_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Insulation resistance, temperature cycling"
+symbol     = "IR"
+kind       = "electrical"
+scope      = "na"
+text       = "More than 10000 Mohm (printed 'More than 10000MΩ')"
+unit       = ""
+conditions = "Room temperature, after 1000 cycles"
+cite       = "DS p.3, Specifications and Test Methods, No. 4 Temperature Cycling, I.R. (Room Temp.)"
+
+[param.solder_cap_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Capacitance change, resistance to soldering heat"
+symbol     = "dC"
+kind       = "electrical"
+scope      = "na"
+min        = -5
+max        = 5
+unit       = "%"
+conditions = "Solder bath method, Sn-3.0Ag-0.5Cu, 260 +/-5 degC, 10 +/-1 s; after 24 h at room temperature"
+cite       = "DS p.4, Specifications and Test Methods, No. 14 Resistance to Soldering Heat, Capacitance Change"
+
+[param.moist_cap_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Capacitance change, moisture resistance"
+symbol     = "dC"
+kind       = "electrical"
+scope      = "na"
+min        = -2
+max        = 2
+unit       = "%"
+conditions = "+25 degC to +65 degC, 80 to 98 %RH, 10 cycles of the 24 h profile"
+cite       = "DS p.3, Specifications and Test Methods, No. 6 Moisture Resistance, Capacitance Change"
+
+[param.moist_q_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Q, moisture resistance"
+symbol     = "Q"
+kind       = "electrical"
+scope      = "na"
+min        = 350
+unit       = ""
+conditions = "+25 degC to +65 degC, 80 to 98 %RH, 10 cycles of the 24 h profile"
+cite       = "DS p.3, Specifications and Test Methods, No. 6 Moisture Resistance, Q or D.F."
+
+[param.moist_ir_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Insulation resistance, moisture resistance"
+symbol     = "IR"
+kind       = "electrical"
+scope      = "na"
+text       = "More than 10000 Mohm (printed 'More than 10000MΩ')"
+unit       = ""
+conditions = "Room temperature, after the moisture test"
+cite       = "DS p.3, Specifications and Test Methods, No. 6 Moisture Resistance, I.R. (Room Temp.)"
+
+[param.hb_cap_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Capacitance change, humidity bias"
+symbol     = "dC"
+kind       = "electrical"
+scope      = "na"
+min        = -3
+max        = 3
+unit       = "%"
+conditions = "85 degC, 80 to 85 %RH, 1000 h; test voltage: rated voltage and 1.3 +0.2/-0 V DC (6.8 kohm series, as printed)"
+cite       = "DS p.4, Specifications and Test Methods, No. 7 Humidity Bias, Capacitance Change"
+
+[param.hb_q_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Q, humidity bias"
+symbol     = "Q"
+kind       = "electrical"
+scope      = "na"
+min        = 200
+unit       = ""
+conditions = "85 degC, 80 to 85 %RH, 1000 h"
+cite       = "DS p.4, Specifications and Test Methods, No. 7 Humidity Bias, Q or D.F."
+
+[param.hb_ir_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Insulation resistance, humidity bias"
+symbol     = "IR"
+kind       = "electrical"
+scope      = "na"
+text       = "More than 1000 Mohm (printed 'More than 1000MΩ')"
+unit       = ""
+conditions = "Room temperature, after the humidity bias test"
+cite       = "DS p.4, Specifications and Test Methods, No. 7 Humidity Bias, I.R. (Room Temp.)"
+
+[param.htol_cap_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Capacitance change, high-temperature operating life"
+symbol     = "dC"
+kind       = "electrical"
+scope      = "na"
+min        = -3
+max        = 3
+unit       = "%"
+conditions = "Max operating temp +/-3 degC (125 degC), 1000 h, 150 % of rated voltage"
+cite       = "DS p.4, Specifications and Test Methods, No. 8 High Temperature Operating Life, Capacitance Change"
+
+[param.htol_q_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Q, high-temperature operating life"
+symbol     = "Q"
+kind       = "electrical"
+scope      = "na"
+min        = 350
+unit       = ""
+conditions = "Max operating temp +/-3 degC, 1000 h, 150 % of rated voltage"
+cite       = "DS p.4, Specifications and Test Methods, No. 8 High Temperature Operating Life, Q or D.F."
+
+[param.htol_ir_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Insulation resistance, high-temperature operating life"
+symbol     = "IR"
+kind       = "electrical"
+scope      = "na"
+text       = "More than 1000 Mohm (printed 'More than 1000MΩ')"
+unit       = ""
+conditions = "Room temperature, after the high-temperature operating life test"
+cite       = "DS p.4, Specifications and Test Methods, No. 8 High Temperature Operating Life, I.R. (Room Temp.)"
+
+[param.board_flex_cap_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Capacitance change, board flex"
+symbol     = "dC"
+kind       = "electrical"
+scope      = "na"
+min        = -5
+max        = 5
+unit       = "%"
+conditions = "Flexure 3 mm, holding time 60 s, reflow solder on test substrate (1.6 mm glass epoxy); after test"
+cite       = "DS p.5, Specifications and Test Methods, No. 22 Board Flex, Capacitance Change"
+
+[param.beam_load_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Beam load test, destruction value"
+kind       = "mechanical"
+scope      = "na"
+text       = "More than 20 N (destruction value)"
+unit       = ""
+conditions = "Speed 2.5 mm/s (C0G sheet); placement diagram"
+cite       = "DS p.5, Specifications and Test Methods, No. 24 Beam Load Test"
+note       = "The C0G sheet prints 2.5 mm/s for the stress speed; the X7R sheet prints 0.5 mm/s (GCM21B)."
+
+[param.solderability_c0g]
+parts = ["GCM21A5C2E101FX01"]
+name       = "Solderability: terminations soldered evenly and continuously"
+kind       = "mechanical"
+scope      = "na"
+min        = 95
+unit       = "%"
+conditions = "Specifications and Test Methods No.16 (a) test conditions"
+cite       = "DS p.5, Specifications and Test Methods, No.16 Solderability (a)"
+note       = "Assembly acceptance criterion, not a circuit limit."
+
+# C0G dielectric rows (dielectric 5C, Murata public code C0G (EIA)). Source: the C0G reference sheet (DS p.2, p.5-7).
+
+[param.tc_c0g]
+dielectric = "C0G"
+name       = "Temperature characteristic, C0G (EIA)"
+symbol     = "TC"
+kind       = "electrical"
+scope      = "partial"
+min        = -30
+max        = 30
+unit       = "ppm/degC"
+conditions = "Ref. temp 25 degC; temp range printed as 25 to 125 degC; coefficient 0 +/-30 ppm/degC"
+cite       = "DS p.2, Rated Value, Temp. coeff. or Cap. Change (0+/-30 ppm/degC), Temp. Range (25 to 125 degC)"
+note       = "Public STD code C0G (EIA). A temperature coefficient, not a percent-change class. The DS prints the range 25 to 125 degC only: no coefficient is printed below 25 degC. The -55 to -10 degC capacitance drift is in the Table A rows (capdrift_*_c0g); the -10 to 25 degC segment has no printed number (open item). capacitance_worst_ppm requires dt and refuses values outside 0 to 100 degC (docs/SPEC.md, Capacitor series)."
+
+[param.op_temp_c0g]
+dielectric = "C0G"
+name       = "Operating temperature range"
+kind       = "rec_op"
+scope      = "na"
+min        = -55
+max        = 125
+unit       = "degC"
+conditions = ""
+cite       = "DS p.2, Rated Value, Operating Temp. Range (-55 to 125 degC)"
+check_ambient = true
+note       = "Read from the C0G reference sheet of GCM21A5C2E101FX01. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every C0G catalog row uses it."
+
+# Table A (DS p.7): capacitance change between the reference temperature (25 degC) and each stated temperature, 5C.
+# Printed as Max. and Min. columns in %. Identical to the 0603 C0G sheet (same 5C characteristic).
+
+[param.capdrift_m55_c0g]
+dielectric = "C0G"
+name       = "Capacitance change at -55 degC vs 25 degC (Table A)"
+symbol     = "dC"
+kind       = "electrical"
+scope      = "partial"
+min        = -0.24
+max        = 0.58
+unit       = "%"
+conditions = "Reference 25 degC, no bias; measured at -55 degC"
+cite       = "DS p.7, Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -55 degC"
+note       = "Printed Max 0.58, Min -0.24: stored as min -0.24, max 0.58 (printed columns). Covers only the -55 degC point."
+
+[param.capdrift_m30_c0g]
+dielectric = "C0G"
+name       = "Capacitance change at -30 degC vs 25 degC (Table A)"
+symbol     = "dC"
+kind       = "electrical"
+scope      = "partial"
+min        = -0.17
+max        = 0.4
+unit       = "%"
+conditions = "Reference 25 degC, no bias; measured at -30 degC"
+cite       = "DS p.7, Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -30 degC"
+note       = "Printed Max 0.4, Min -0.17: stored as min -0.17, max 0.4 (printed columns). Covers only the -30 degC point."
+
+[param.capdrift_m10_c0g]
+dielectric = "C0G"
+name       = "Capacitance change at -10 degC vs 25 degC (Table A)"
+symbol     = "dC"
+kind       = "electrical"
+scope      = "partial"
+min        = -0.11
+max        = 0.25
+unit       = "%"
+conditions = "Reference 25 degC, no bias; measured at -10 degC"
+cite       = "DS p.7, Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -10 degC"
+note       = "Printed Max 0.25, Min -0.11: stored as min -0.11, max 0.25 (printed columns). Covers only the -10 degC point."
+
+[param.capdrift_limit_c0g]
+dielectric = "C0G"
+name       = "Capacitance drift limit (temperature characteristics test)"
+symbol     = "dC"
+kind       = "electrical"
+scope      = "na"
+text       = "Within +/-0.2 % or +/-0.05 pF, whichever is larger"
+unit       = "%"
+conditions = "Temperature characteristics test, 1.0 Vrms max; capacitance at steps 1, 3, 5 compared with step 3"
+cite       = "DS p.6, Specifications and Test Methods, No. 25 Temperature Characteristics, Capacitance Drift"
+note       = "Text row: the limit is the larger of a percentage and an absolute value. Not stored as numbers."
+
+# X7R dielectric rows (dielectric X7R, Murata public code X7R (EIA)). Source: the X7R reference sheet of GCM21B
+# (docs/datasheets/GCM21BR72A104KA37-01A-EN.pdf, DS p.2). Both dielectrics are listed in every 0805 directory.
+
+[param.tc_x7r]
+dielectric = "X7R"
+name       = "Temperature characteristic, R7 (X7R)"
+symbol     = "TC"
+kind       = "electrical"
+scope      = "full"
+min        = -15
+max        = 15
+unit       = "%"
+conditions = "Ref. temp 25 degC; temp range -55 to 125 degC; capacitance change over temperature"
+cite       = "DS p.2 (X7R sheet of GCM21B), Rated Value, Temp. coeff. or Cap. Change (-15 to 15 %)"
+note       = "Public STD code X7R (EIA). Capacitance change over temperature, not a DC-bias or aging limit. Read from the X7R reference sheet (GCM21BR72A104KA37, 1.25 mm); used for every X7R catalog row, including the 1.0 mm X7R rows of this directory (open item: no 1.0 mm X7R sheet)."
+
+[param.op_temp_x7r]
+dielectric = "X7R"
+name       = "Operating temperature range"
+kind       = "rec_op"
+scope      = "na"
+min        = -55
+max        = 125
+unit       = "degC"
+conditions = ""
+cite       = "DS p.2 (X7R sheet of GCM21B), Rated Value, Operating Temp. Range (-55 to 125 degC)"
+check_ambient = true
+note       = "Read from the X7R reference sheet of GCM21BR72A104KA37. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every X7R catalog row uses it."
+
+# Open item: qualification-test rows not stored (as for GCM188): visual, dimensions, solvents, mechanical shock, vibration,
+# soldering heat, ESD (C0G DS p.3-5 No. 9-15), DPA (No. 5), voltage proof (No. 21), board-flex Q/IR (No. 22),
+# terminal strength (No. 23), mounting method, rating section (DS p.12 onward).

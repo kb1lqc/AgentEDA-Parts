@@ -155,18 +155,36 @@ CASES = [
     ("STMicroelectronics/STM32H723ZET6", "vdd_unset", ["vdd=unset"], "warning", "UNVERIFIED vdd_op_VDD"),
     ("STMicroelectronics/STM32H723ZET6", "ambient_out", ["ta=-40°C to 105°C"], "error", "ta_range6_max_power_ambient"),
     ("STMicroelectronics/STM32H723ZET6", "ambient_unset", ["ta=unset"], "warning", "UNVERIFIED ta_range6_max_power_ambient"),
-    ("Murata/GCM155", "nominal", [], "pass", ""),
-    ("Murata/GCM155", "rated_v_out", ["va=52V"], "error", "rated_v_P1"),  # > DC 50 V
-    ("Murata/GCM155", "reversed_out", ["va=0V", "vb=52V"], "error", "rated_v_P1"),  # non-polar: -52 V also fails
+    ("Murata/GCM155", "nominal", [], "pass", ""),  # 0.1 uF 50 V X7R
+    ("Murata/GCM155", "tolerance_ambiguous", ["tolerance="], "error", "part_orderable"),  # +/-10 % and +/-20 % both exist
+    ("Murata/GCM155", "tolerance_not_listed", ["tolerance=+/-5%"], "error", "part_orderable"),
+    ("Murata/GCM155", "other_value", ["value=1uF", "rated=4V", "va=3V"], "pass", ""),  # GCM155R70G105KE02, only +/-10 %
+    ("Murata/GCM155", "rated_v_out", ["va=52V"], "error", "rated_voltage: up to 52.0 V"),  # > 50 V
+    ("Murata/GCM155", "reversed_out", ["va=0V", "vb=52V"], "error", "rated_voltage"),  # non-polar: -52 V also fails
+    ("Murata/GCM155", "derated_out", ["va=48V", "derate=0.9"], "error", "rated_voltage"),  # 48 V > 0.9 x 50 V
     ("Murata/GCM155", "both_nets_spread", ["va=48V 1%", "vb=0V"], "pass", ""),  # 48.48 V worst case, inside 50 V
-    ("Murata/GCM155", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_v_P1"),
-    ("Murata/GCM155", "ambient_out", ["ta=-40°C to 130°C"], "error", "op_temp_ambient"),
-    ("Murata/GCM188", "nominal", [], "pass", ""),
-    ("Murata/GCM188", "rated_v_out", ["va=52V"], "error", "rated_v_P1"),  # > DC 50 V
-    ("Murata/GCM188", "reversed_out", ["va=0V", "vb=52V"], "error", "rated_v_P1"),  # non-polar: -52 V also fails
+    ("Murata/GCM155", "value_not_listed", ["value=0.11uF"], "error", "part_orderable"),  # not in the catalog
+    ("Murata/GCM155", "voltage_not_listed", ["rated=40V"], "error", "part_orderable"),  # 0.1 uF has no 40 V part
+    ("Murata/GCM155", "dielectric_not_listed", ["dielectric=X8R"], "error", "part_orderable"),  # X8R is not in the catalog
+    ("Murata/GCM155", "c0g_nominal", ["dielectric=C0G", "value=100pF", "tolerance=+/-1%"], "pass", ""),  # GCM1555C1H101FA16, 100 pF 50 V +/-1 %
+    ("Murata/GCM155", "c0g_ambient_out", ["dielectric=C0G", "value=100pF", "tolerance=+/-1%", "ta=-60°C to 85°C"], "error", "ambient_range"),  # C0G range -55 to 125 degC
+    ("Murata/GCM155", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Murata/GCM155", "ambient_out", ["ta=-40°C to 130°C"], "error", "ambient_range"),
+    ("Murata/GCM155", "ambient_unset", ["ta=unset"], "warning", "UNVERIFIED ambient_range"),
+    ("Murata/GCM188", "nominal", [], "pass", ""),  # 0.1 uF 50 V X7R
+    ("Murata/GCM188", "tolerance_optional", ["tolerance="], "pass", ""),  # only one tolerance listed
+    ("Murata/GCM188", "rated_v_out", ["va=52V"], "error", "rated_voltage: up to 52.0 V"),  # > 50 V
+    ("Murata/GCM188", "reversed_out", ["va=0V", "vb=52V"], "error", "rated_voltage"),  # non-polar: -52 V also fails
+    ("Murata/GCM188", "derated_out", ["va=48V", "derate=0.9"], "error", "rated_voltage"),  # 48 V > 0.9 x 50 V
     ("Murata/GCM188", "both_nets_spread", ["va=48V 1%", "vb=0V"], "pass", ""),  # 48.48 V worst case, inside 50 V
-    ("Murata/GCM188", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_v_P1"),
-    ("Murata/GCM188", "ambient_out", ["ta=-40°C to 130°C"], "error", "op_temp_ambient"),
+    ("Murata/GCM188", "value_not_listed", ["value=0.11uF"], "error", "part_orderable"),  # not in the catalog
+    ("Murata/GCM188", "voltage_not_listed", ["rated=40V"], "error", "part_orderable"),  # 0.1 uF has no 40 V part
+    ("Murata/GCM188", "dielectric_not_listed", ["dielectric=X8R"], "error", "part_orderable"),  # X8R is not in the catalog
+    ("Murata/GCM188", "c0g_nominal", ["dielectric=C0G", "value=100pF", "tolerance=+/-2%"], "pass", ""),  # GCM1885C1H101GA16, 100 pF 50 V +/-2 %
+    ("Murata/GCM188", "c0g_ambient_out", ["dielectric=C0G", "value=100pF", "tolerance=+/-2%", "ta=-60°C to 85°C"], "error", "ambient_range"),  # C0G range -55 to 125 degC
+    ("Murata/GCM188", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Murata/GCM188", "ambient_out", ["ta=-40°C to 130°C"], "error", "ambient_range"),
+    ("Murata/GCM188", "ambient_unset", ["ta=unset"], "warning", "UNVERIFIED ambient_range"),
     ("TexasInstruments/TPS48000QDGXQ1", "nominal", [], "pass", ""),
     ("TexasInstruments/TPS48000QDGXQ1", "vs_abs_out", ["vs=101V"], "error", "abs_vs_cs_gnd_VS"),  # also fails rec_vs_VS
     ("TexasInstruments/TPS48000QDGXQ1", "vs_rec_out", ["vs=96V"], "error", "rec_vs_VS"),  # inside abs 100 V, outside rec-op 95 V
@@ -182,6 +200,86 @@ CASES = [
     ("TexasInstruments/TPS48000QDGXQ1", "vs_unset", ["vs=unset"], "warning", "UNVERIFIED abs_vs_cs_gnd_VS"),
     ("TexasInstruments/TPS48000QDGXQ1", "ambient_out", ["ta=-40°C to 130°C"], "error", "ta_grade_1_ambient"),
     ("TexasInstruments/TPS48000QDGXQ1", "ambient_unset", ["ta=unset"], "warning", "UNVERIFIED ta_grade_1_ambient"),
+    ("Murata/GCM21A", "nominal", [], "pass", ""),  # GCM21A5C2E101FX01, 100 pF 250 V C0G +/-1 %
+    ("Murata/GCM21A", "tolerance_ambiguous", ["tolerance="], "error", "part_orderable"),  # +/-1/2/5 % all listed
+    ("Murata/GCM21A", "rated_v_out", ["va=252V"], "error", "rated_voltage"),  # > 250 V
+    ("Murata/GCM21A", "reversed_out", ["va=0V", "vb=252V"], "error", "rated_voltage"),  # non-polar
+    ("Murata/GCM21A", "derated_out", ["va=240V", "derate=0.9"], "error", "rated_voltage"),  # 240 V > 0.9 x 250 V
+    ("Murata/GCM21A", "x7r_nominal", ["dielectric=X7R", "value=1000pF", "tolerance=+/-10%"], "pass", ""),  # GCM21AR72E102KWB1, 250 V
+    ("Murata/GCM21A", "value_not_listed", ["value=0.1uF", "rated=100V"], "error", "part_orderable"),  # no 0.1 uF in 1.0 mm
+    ("Murata/GCM21A", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Murata/GCM21A", "ambient_out", ["ta=-60°C to 85°C"], "error", "ambient_range"),  # C0G range -55 to 125 degC
+    ("Murata/GCM21A", "ambient_unset", ["ta=unset"], "warning", "UNVERIFIED ambient_range"),
+    ("Murata/GCM21B", "nominal", [], "pass", ""),  # GCM21BR72A104KA37, 0.1 uF 100 V X7R +/-10 %
+    ("Murata/GCM21B", "tolerance_ambiguous", ["tolerance="], "error", "part_orderable"),  # +/-10/20 % both listed
+    ("Murata/GCM21B", "rated_v_out", ["va=102V"], "error", "rated_voltage"),  # > 100 V
+    ("Murata/GCM21B", "reversed_out", ["va=0V", "vb=102V"], "error", "rated_voltage"),  # non-polar
+    ("Murata/GCM21B", "derated_out", ["va=95V", "derate=0.9"], "error", "rated_voltage"),  # 95 V > 0.9 x 100 V
+    ("Murata/GCM21B", "c0g_nominal", ["dielectric=C0G", "value=18000pF", "rated=50V", "tolerance=+/-1%", "va=12V 5%"], "pass", ""),  # GCM21B5C1H183FA16
+    ("Murata/GCM21B", "value_not_listed", ["value=0.11uF"], "error", "part_orderable"),
+    ("Murata/GCM21B", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Murata/GCM21B", "ambient_out", ["ta=-40°C to 130°C"], "error", "ambient_range"),
+    ("Murata/GCM21B", "ambient_unset", ["ta=unset"], "warning", "UNVERIFIED ambient_range"),
+    ("Murata/GCM216", "nominal", [], "pass", ""),  # GCM2165C2A222FA16
+    ("Murata/GCM216", "rated_v_out", ["va=102V"], "error", "rated_voltage"),  # > 100 V
+    ("Murata/GCM216", "reversed_out", ["va=0V", "vb=102V"], "error", "rated_voltage"),  # non-polar
+    ("Murata/GCM216", "value_not_listed", ["value=1.23nF"], "error", "part_orderable"),
+    ("Murata/GCM216", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Murata/GCM216", "ambient_out", ["ta=-60°C to 85°C"], "error", "ambient_range"),  # range -55 to 125 degC
+    ("Murata/GCM219", "nominal", [], "pass", ""),  # GCM2195C1K153FA16
+    ("Murata/GCM219", "rated_v_out", ["va=81.6V"], "error", "rated_voltage"),  # > 80 V
+    ("Murata/GCM219", "reversed_out", ["va=0V", "vb=81.6V"], "error", "rated_voltage"),  # non-polar
+    ("Murata/GCM219", "value_not_listed", ["value=1.23nF"], "error", "part_orderable"),
+    ("Murata/GCM219", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Murata/GCM219", "ambient_out", ["ta=-60°C to 85°C"], "error", "ambient_range"),  # range -55 to 125 degC
+    ("Murata/GCM319", "nominal", [], "pass", ""),  # GCM3195C2A432FA16
+    ("Murata/GCM319", "rated_v_out", ["va=102V"], "error", "rated_voltage"),  # > 100 V
+    ("Murata/GCM319", "reversed_out", ["va=0V", "vb=102V"], "error", "rated_voltage"),  # non-polar
+    ("Murata/GCM319", "value_not_listed", ["value=1.23nF"], "error", "part_orderable"),
+    ("Murata/GCM319", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Murata/GCM319", "ambient_out", ["ta=-60°C to 85°C"], "error", "ambient_range"),  # range -55 to 125 degC
+    ("Murata/GCM31A", "nominal", [], "pass", ""),  # GCM31A5C2J680GX01
+    ("Murata/GCM31A", "rated_v_out", ["va=642.6V"], "error", "rated_voltage"),  # > 630 V
+    ("Murata/GCM31A", "reversed_out", ["va=0V", "vb=642.6V"], "error", "rated_voltage"),  # non-polar
+    ("Murata/GCM31A", "value_not_listed", ["value=1.23nF"], "error", "part_orderable"),
+    ("Murata/GCM31A", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Murata/GCM31A", "ambient_out", ["ta=-60°C to 85°C"], "error", "ambient_range"),  # range -55 to 125 degC
+    ("Murata/GCM31B", "nominal", [], "pass", ""),  # GCM31B5C2J272GX01
+    ("Murata/GCM31B", "rated_v_out", ["va=642.6V"], "error", "rated_voltage"),  # > 630 V
+    ("Murata/GCM31B", "reversed_out", ["va=0V", "vb=642.6V"], "error", "rated_voltage"),  # non-polar
+    ("Murata/GCM31B", "value_not_listed", ["value=1.23nF"], "error", "part_orderable"),
+    ("Murata/GCM31B", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Murata/GCM31B", "ambient_out", ["ta=-60°C to 85°C"], "error", "ambient_range"),  # range -55 to 125 degC
+    ("Murata/GCM31C", "nominal", [], "pass", ""),  # GCM31C5C2J103FX03
+    ("Murata/GCM31C", "rated_v_out", ["va=642.6V"], "error", "rated_voltage"),  # > 630 V
+    ("Murata/GCM31C", "reversed_out", ["va=0V", "vb=642.6V"], "error", "rated_voltage"),  # non-polar
+    ("Murata/GCM31C", "value_not_listed", ["value=1.23nF"], "error", "part_orderable"),
+    ("Murata/GCM31C", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Murata/GCM31C", "ambient_out", ["ta=-60°C to 85°C"], "error", "ambient_range"),  # range -55 to 125 degC
+    ("Murata/GCM31M", "nominal", [], "pass", ""),  # GCM31M5C1H513JA16
+    ("Murata/GCM31M", "rated_v_out", ["va=51V"], "error", "rated_voltage"),  # > 50 V
+    ("Murata/GCM31M", "reversed_out", ["va=0V", "vb=51V"], "error", "rated_voltage"),  # non-polar
+    ("Murata/GCM31M", "value_not_listed", ["value=1.23nF"], "error", "part_orderable"),
+    ("Murata/GCM31M", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Murata/GCM31M", "ambient_out", ["ta=-60°C to 85°C"], "error", "ambient_range"),  # range -55 to 125 degC
+    ("Murata/GCM32D", "nominal", [], "pass", ""),  # GCM32D5C3A682GX01
+    ("Murata/GCM32D", "rated_v_out", ["va=1020V"], "error", "rated_voltage"),  # > 1000 V
+    ("Murata/GCM32D", "reversed_out", ["va=0V", "vb=1020V"], "error", "rated_voltage"),  # non-polar
+    ("Murata/GCM32D", "value_not_listed", ["value=1.23nF"], "error", "part_orderable"),
+    ("Murata/GCM32D", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Murata/GCM32D", "ambient_out", ["ta=-60°C to 85°C"], "error", "ambient_range"),  # range -55 to 125 degC
+    ("Murata/GCM32E", "nominal", [], "pass", ""),  # GCM32E5C3A153GX0A
+    ("Murata/GCM32E", "rated_v_out", ["va=1020V"], "error", "rated_voltage"),  # > 1000 V
+    ("Murata/GCM32E", "reversed_out", ["va=0V", "vb=1020V"], "error", "rated_voltage"),  # non-polar
+    ("Murata/GCM32E", "value_not_listed", ["value=1.23nF"], "error", "part_orderable"),
+    ("Murata/GCM32E", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Murata/GCM32E", "ambient_out", ["ta=-60°C to 85°C"], "error", "ambient_range"),  # range -55 to 125 degC
+    ("Murata/GCM32Q", "nominal", [], "pass", ""),  # GCM32QR72J103KWB1
+    ("Murata/GCM32Q", "rated_v_out", ["va=642.6V"], "error", "rated_voltage"),  # > 630 V
+    ("Murata/GCM32Q", "reversed_out", ["va=0V", "vb=642.6V"], "error", "rated_voltage"),  # non-polar
+    ("Murata/GCM32Q", "value_not_listed", ["value=1.23nF"], "error", "part_orderable"),
+    ("Murata/GCM32Q", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Murata/GCM32Q", "ambient_out", ["ta=-60°C to 85°C"], "error", "ambient_range"),  # range -55 to 125 degC
     ("Vishay/WSK2512R0250D", "nominal", [], "pass", ""),
     ("Vishay/WSK2512R0250D", "ambient_out", ["ta=-40°C to 180°C"], "error", "t_oper_ambient"),
     ("Vishay/WSK2512R0250D", "ambient_unset", ["ta=unset"], "warning", "UNVERIFIED t_oper_ambient"),

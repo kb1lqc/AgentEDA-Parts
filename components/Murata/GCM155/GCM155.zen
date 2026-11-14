@@ -1,0 +1,1181 @@
+"""GCM155: Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 1005M (0402), AEC-Q200 (GCM series).
+GENERATED from component.toml by `python3 -m lib.zen`; do not edit. Source of truth: component.toml and
+calc.py (numbers, cites, equations). DS: , 01A (2026-04).
+Checks are DC steady-state on the voltages each instance declares. They do not cover transients, overshoot,
+hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
+Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
+
+load("@stdlib/units.zen", "Capacitance", "Temperature", "Voltage")
+
+# UNCHECKED: rated_v_ds [parts GCM155R71H104KE02]: Rated voltage (DC) (DS p.2, Rated Value, Rated Voltage (DC 50V)); the generated rated_voltage check applies the catalog rated voltage of the selected part; this per-part row duplicates it (owner: module)
+# UNCHECKED: self_heating [parts GCM155R71H104KE02]: Self-heating of the capacitor body (AC or pulse load) (DS p.14, Rating 4. Type of Applied Voltage and Self-heating Temperature); depends on AC/pulse current, not a DC net voltage; owner: module
+# UNCHECKED: ac_peak [parts GCM155R71H104KE02]: AC or pulse voltage: peak-to-peak (and zero-to-peak with DC) within the rated DC voltage (DS p.13, Rating 3. Applied Voltage, 1-1 (1)); AC/pulse waveform is not modelled by the DC net-voltage check; owner: module
+# UNCHECKED: rated_v_ds_c0g [parts GCM1555C1H101FA16]: Rated voltage (DC) (DS p.2, Rated Value, Rated Voltage (DC 50V)); the generated rated_voltage check applies the catalog rated voltage of the selected part; this per-part row duplicates it (owner: module)
+# UNCHECKED: capacitance under DC bias, aging and AC/ripple stress: curve-based or not quantified by the datasheet; owner: module (calc.capacitance_worst_pct/_ppm exclude them)
+
+# Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
+# GND can drive them; ground-named pins are Ground.
+# pin 1 1, passive: Capacitor terminal (non-polarized)
+P1 = io(Net)
+# pin 2 2, passive: Capacitor terminal (non-polarized)
+P2 = io(Net)
+
+ambient = config(Temperature, optional=True, help="Board ambient temperature range")
+derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+value = config(Capacitance, help="Capacitance, a catalog value (see the _VALUE table)")
+rated_v = config(Voltage, help="Rated DC voltage of the part, a catalog value, for example 50V")
+dielectric = config(str, help="Dielectric as printed in the catalog, for example X7R")
+tolerance = config(
+    str,
+    default="",
+    help="Tolerance as printed, ASCII, for example +/-10%; only needed when the catalog lists several for the value",
+)
+
+_ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
+check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
+
+
+def _limit(name, fn, inputs, severity, waiver=""):
+    # Unset input: UNVERIFIED warning, never a silent pass. Waiver drops a warning to advice.
+    if waiver and severity != "warning":
+        error("only warning-level checks can be waived: " + name)
+    unset = [k for k, v in inputs.items() if v == None]
+    if unset:
+
+        def _unverified(_m):
+            error("UNVERIFIED " + name + ": no value for " + ", ".join(unset))
+
+        builtin.add_electrical_check(name=name, check_fn=_unverified, severity="advice" if _ROOT else "warning")
+    else:
+        builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
+
+
+def _range(_m, v, what, lo=None, hi=None, lo_ref=None, hi_ref=None):
+    # Worst case: v.min >= lo + lo_ref.max and v.max <= hi + hi_ref.min (narrowest window). No ref = absolute.
+    lo_b = None if lo == None else lo + (0.0 if lo_ref == None else lo_ref.max)
+    hi_b = None if hi == None else hi + (0.0 if hi_ref == None else hi_ref.min)
+    ok = (lo_b == None or v.min >= lo_b) and (hi_b == None or v.max <= hi_b)
+    lo_t = "no limit" if lo_b == None else "%s V" % lo_b
+    hi_t = "no limit" if hi_b == None else "%s V" % hi_b
+    check(ok, "%s: %s to %s V outside %s to %s" % (what, v.min, v.max, lo_t, hi_t))
+
+
+def _temp(_m, v, what, lo, hi):
+    # Temperatures are kelvin floats in Zener; messages in degC.
+    ok = v.min >= lo and v.max <= hi
+    msg = "%s: %s to %s degC outside %s to %s degC"
+    check(ok, msg % (what, v.min - 273.15, v.max - 273.15, lo - 273.15, hi - 273.15))
+
+
+_AMBIENT = {
+    "C0G": (218.15, 398.15),  # op_temp_c0g
+    "X7R": (218.15, 398.15),  # op_temp_x7r
+}
+_AMBIENT_RANGE = _AMBIENT.get(dielectric, _AMBIENT["C0G"])
+
+
+# Orderable catalog value per (dielectric, femtofarad, millivolt, tolerance), generated from catalog.csv (the
+# single source; each row cites the manufacturer export there). Integer keys: float text differs between
+# Python and Zener, integers do not. The package letter is added below.
+_VALUE = {
+    ("C0G", 10000, 50000, "+/-1%"): "GCM1555C1H100FA16",  # 10pF 50Vdc +/-1%
+    ("C0G", 10000, 50000, "+/-2%"): "GCM1555C1H100GA16",  # 10pF 50Vdc +/-2%
+    ("C0G", 10000, 50000, "+/-5%"): "GCM1555C1H100JA16",  # 10pF 50Vdc +/-5%
+    ("C0G", 10000, 50000, "+/-2.5%"): "GCM1555C1H100RA16",  # 10pF 50Vdc +/-2.5%
+    ("C0G", 100000, 50000, "+/-1%"): "GCM1555C1H101FA16",  # 100pF 50Vdc +/-1%
+    ("C0G", 100000, 50000, "+/-2%"): "GCM1555C1H101GA16",  # 100pF 50Vdc +/-2%
+    ("C0G", 100000, 50000, "+/-5%"): "GCM1555C1H101JA16",  # 100pF 50Vdc +/-5%
+    ("C0G", 1000000, 50000, "+/-1%"): "GCM1555C1H102FA16",  # 1,000pF 50Vdc +/-1%
+    ("C0G", 1000000, 50000, "+/-2%"): "GCM1555C1H102GA16",  # 1,000pF 50Vdc +/-2%
+    ("C0G", 1000000, 50000, "+/-5%"): "GCM1555C1H102JA16",  # 1,000pF 50Vdc +/-5%
+    ("C0G", 11000, 50000, "+/-1%"): "GCM1555C1H110FA16",  # 11pF 50Vdc +/-1%
+    ("C0G", 11000, 50000, "+/-2%"): "GCM1555C1H110GA16",  # 11pF 50Vdc +/-2%
+    ("C0G", 11000, 50000, "+/-5%"): "GCM1555C1H110JA16",  # 11pF 50Vdc +/-5%
+    ("C0G", 110000, 50000, "+/-1%"): "GCM1555C1H111FA16",  # 110pF 50Vdc +/-1%
+    ("C0G", 110000, 50000, "+/-2%"): "GCM1555C1H111GA16",  # 110pF 50Vdc +/-2%
+    ("C0G", 110000, 50000, "+/-5%"): "GCM1555C1H111JA16",  # 110pF 50Vdc +/-5%
+    ("C0G", 12000, 50000, "+/-1%"): "GCM1555C1H120FA16",  # 12pF 50Vdc +/-1%
+    ("C0G", 12000, 50000, "+/-2%"): "GCM1555C1H120GA16",  # 12pF 50Vdc +/-2%
+    ("C0G", 12000, 50000, "+/-5%"): "GCM1555C1H120JA16",  # 12pF 50Vdc +/-5%
+    ("C0G", 120000, 50000, "+/-1%"): "GCM1555C1H121FA16",  # 120pF 50Vdc +/-1%
+    ("C0G", 120000, 50000, "+/-2%"): "GCM1555C1H121GA16",  # 120pF 50Vdc +/-2%
+    ("C0G", 120000, 50000, "+/-5%"): "GCM1555C1H121JA16",  # 120pF 50Vdc +/-5%
+    ("C0G", 13000, 50000, "+/-1%"): "GCM1555C1H130FA16",  # 13pF 50Vdc +/-1%
+    ("C0G", 13000, 50000, "+/-2%"): "GCM1555C1H130GA16",  # 13pF 50Vdc +/-2%
+    ("C0G", 13000, 50000, "+/-5%"): "GCM1555C1H130JA16",  # 13pF 50Vdc +/-5%
+    ("C0G", 130000, 50000, "+/-1%"): "GCM1555C1H131FA16",  # 130pF 50Vdc +/-1%
+    ("C0G", 130000, 50000, "+/-2%"): "GCM1555C1H131GA16",  # 130pF 50Vdc +/-2%
+    ("C0G", 130000, 50000, "+/-5%"): "GCM1555C1H131JA16",  # 130pF 50Vdc +/-5%
+    ("C0G", 15000, 50000, "+/-1%"): "GCM1555C1H150FA16",  # 15pF 50Vdc +/-1%
+    ("C0G", 15000, 50000, "+/-2%"): "GCM1555C1H150GA16",  # 15pF 50Vdc +/-2%
+    ("C0G", 15000, 50000, "+/-5%"): "GCM1555C1H150JA16",  # 15pF 50Vdc +/-5%
+    ("C0G", 150000, 50000, "+/-1%"): "GCM1555C1H151FA16",  # 150pF 50Vdc +/-1%
+    ("C0G", 150000, 50000, "+/-2%"): "GCM1555C1H151GA16",  # 150pF 50Vdc +/-2%
+    ("C0G", 150000, 50000, "+/-5%"): "GCM1555C1H151JA16",  # 150pF 50Vdc +/-5%
+    ("C0G", 16000, 50000, "+/-1%"): "GCM1555C1H160FA16",  # 16pF 50Vdc +/-1%
+    ("C0G", 16000, 50000, "+/-2%"): "GCM1555C1H160GA16",  # 16pF 50Vdc +/-2%
+    ("C0G", 16000, 50000, "+/-5%"): "GCM1555C1H160JA16",  # 16pF 50Vdc +/-5%
+    ("C0G", 160000, 50000, "+/-1%"): "GCM1555C1H161FA16",  # 160pF 50Vdc +/-1%
+    ("C0G", 160000, 50000, "+/-2%"): "GCM1555C1H161GA16",  # 160pF 50Vdc +/-2%
+    ("C0G", 160000, 50000, "+/-5%"): "GCM1555C1H161JA16",  # 160pF 50Vdc +/-5%
+    ("C0G", 18000, 50000, "+/-1%"): "GCM1555C1H180FA16",  # 18pF 50Vdc +/-1%
+    ("C0G", 18000, 50000, "+/-2%"): "GCM1555C1H180GA16",  # 18pF 50Vdc +/-2%
+    ("C0G", 18000, 50000, "+/-5%"): "GCM1555C1H180JA16",  # 18pF 50Vdc +/-5%
+    ("C0G", 180000, 50000, "+/-1%"): "GCM1555C1H181FA16",  # 180pF 50Vdc +/-1%
+    ("C0G", 180000, 50000, "+/-2%"): "GCM1555C1H181GA16",  # 180pF 50Vdc +/-2%
+    ("C0G", 180000, 50000, "+/-5%"): "GCM1555C1H181JA16",  # 180pF 50Vdc +/-5%
+    ("C0G", 1000, 50000, "+/-0.1pF"): "GCM1555C1H1R0BA16",  # 1pF 50Vdc +/-0.1pF
+    ("C0G", 1000, 50000, "+/-0.25pF"): "GCM1555C1H1R0CA16",  # 1pF 50Vdc +/-0.25pF
+    ("C0G", 1000, 50000, "+/-5%"): "GCM1555C1H1R0JA16",  # 1pF 50Vdc +/-5%
+    ("C0G", 1100, 50000, "+/-0.1pF"): "GCM1555C1H1R1BA16",  # 1.1pF 50Vdc +/-0.1pF
+    ("C0G", 1100, 50000, "+/-0.25pF"): "GCM1555C1H1R1CA16",  # 1.1pF 50Vdc +/-0.25pF
+    ("C0G", 1200, 50000, "+/-0.1pF"): "GCM1555C1H1R2BA16",  # 1.2pF 50Vdc +/-0.1pF
+    ("C0G", 1200, 50000, "+/-0.25pF"): "GCM1555C1H1R2CA16",  # 1.2pF 50Vdc +/-0.25pF
+    ("C0G", 1300, 50000, "+/-0.1pF"): "GCM1555C1H1R3BA16",  # 1.3pF 50Vdc +/-0.1pF
+    ("C0G", 1300, 50000, "+/-0.25pF"): "GCM1555C1H1R3CA16",  # 1.3pF 50Vdc +/-0.25pF
+    ("C0G", 1400, 50000, "+/-0.1pF"): "GCM1555C1H1R4BA16",  # 1.4pF 50Vdc +/-0.1pF
+    ("C0G", 1400, 50000, "+/-0.25pF"): "GCM1555C1H1R4CA16",  # 1.4pF 50Vdc +/-0.25pF
+    ("C0G", 1500, 50000, "+/-0.1pF"): "GCM1555C1H1R5BA16",  # 1.5pF 50Vdc +/-0.1pF
+    ("C0G", 1500, 50000, "+/-0.25pF"): "GCM1555C1H1R5CA16",  # 1.5pF 50Vdc +/-0.25pF
+    ("C0G", 1500, 50000, "+/-5%"): "GCM1555C1H1R5JA16",  # 1.5pF 50Vdc +/-5%
+    ("C0G", 1500, 50000, "+/-0.05pF"): "GCM1555C1H1R5WA16",  # 1.5pF 50Vdc +/-0.05pF
+    ("C0G", 1600, 50000, "+/-0.1pF"): "GCM1555C1H1R6BA16",  # 1.6pF 50Vdc +/-0.1pF
+    ("C0G", 1600, 50000, "+/-0.25pF"): "GCM1555C1H1R6CA16",  # 1.6pF 50Vdc +/-0.25pF
+    ("C0G", 1600, 50000, "+/-0.05pF"): "GCM1555C1H1R6WA16",  # 1.6pF 50Vdc +/-0.05pF
+    ("C0G", 1700, 50000, "+/-0.1pF"): "GCM1555C1H1R7BA16",  # 1.7pF 50Vdc +/-0.1pF
+    ("C0G", 1700, 50000, "+/-0.25pF"): "GCM1555C1H1R7CA16",  # 1.7pF 50Vdc +/-0.25pF
+    ("C0G", 1800, 50000, "+/-0.1pF"): "GCM1555C1H1R8BA16",  # 1.8pF 50Vdc +/-0.1pF
+    ("C0G", 1800, 50000, "+/-0.25pF"): "GCM1555C1H1R8CA16",  # 1.8pF 50Vdc +/-0.25pF
+    ("C0G", 1800, 50000, "+/-0.05pF"): "GCM1555C1H1R8WA16",  # 1.8pF 50Vdc +/-0.05pF
+    ("C0G", 1900, 50000, "+/-0.1pF"): "GCM1555C1H1R9BA16",  # 1.9pF 50Vdc +/-0.1pF
+    ("C0G", 1900, 50000, "+/-0.25pF"): "GCM1555C1H1R9CA16",  # 1.9pF 50Vdc +/-0.25pF
+    ("C0G", 20000, 50000, "+/-1%"): "GCM1555C1H200FA16",  # 20pF 50Vdc +/-1%
+    ("C0G", 20000, 50000, "+/-2%"): "GCM1555C1H200GA16",  # 20pF 50Vdc +/-2%
+    ("C0G", 20000, 50000, "+/-5%"): "GCM1555C1H200JA16",  # 20pF 50Vdc +/-5%
+    ("C0G", 200000, 50000, "+/-1%"): "GCM1555C1H201FA16",  # 200pF 50Vdc +/-1%
+    ("C0G", 200000, 50000, "+/-2%"): "GCM1555C1H201GA16",  # 200pF 50Vdc +/-2%
+    ("C0G", 200000, 50000, "+/-5%"): "GCM1555C1H201JA16",  # 200pF 50Vdc +/-5%
+    ("C0G", 22000, 50000, "+/-1%"): "GCM1555C1H220FA16",  # 22pF 50Vdc +/-1%
+    ("C0G", 22000, 50000, "+/-2%"): "GCM1555C1H220GA16",  # 22pF 50Vdc +/-2%
+    ("C0G", 22000, 50000, "+/-5%"): "GCM1555C1H220JA16",  # 22pF 50Vdc +/-5%
+    ("C0G", 220000, 50000, "+/-1%"): "GCM1555C1H221FA16",  # 220pF 50Vdc +/-1%
+    ("C0G", 220000, 50000, "+/-2%"): "GCM1555C1H221GA16",  # 220pF 50Vdc +/-2%
+    ("C0G", 220000, 50000, "+/-5%"): "GCM1555C1H221JA16",  # 220pF 50Vdc +/-5%
+    ("C0G", 24000, 50000, "+/-1%"): "GCM1555C1H240FA16",  # 24pF 50Vdc +/-1%
+    ("C0G", 24000, 50000, "+/-2%"): "GCM1555C1H240GA16",  # 24pF 50Vdc +/-2%
+    ("C0G", 24000, 50000, "+/-5%"): "GCM1555C1H240JA16",  # 24pF 50Vdc +/-5%
+    ("C0G", 240000, 50000, "+/-1%"): "GCM1555C1H241FA16",  # 240pF 50Vdc +/-1%
+    ("C0G", 240000, 50000, "+/-2%"): "GCM1555C1H241GA16",  # 240pF 50Vdc +/-2%
+    ("C0G", 240000, 50000, "+/-5%"): "GCM1555C1H241JA16",  # 240pF 50Vdc +/-5%
+    ("C0G", 27000, 50000, "+/-1%"): "GCM1555C1H270FA16",  # 27pF 50Vdc +/-1%
+    ("C0G", 27000, 50000, "+/-2%"): "GCM1555C1H270GA16",  # 27pF 50Vdc +/-2%
+    ("C0G", 27000, 50000, "+/-5%"): "GCM1555C1H270JA16",  # 27pF 50Vdc +/-5%
+    ("C0G", 270000, 50000, "+/-1%"): "GCM1555C1H271FA16",  # 270pF 50Vdc +/-1%
+    ("C0G", 270000, 50000, "+/-2%"): "GCM1555C1H271GA16",  # 270pF 50Vdc +/-2%
+    ("C0G", 270000, 50000, "+/-5%"): "GCM1555C1H271JA16",  # 270pF 50Vdc +/-5%
+    ("C0G", 2000, 50000, "+/-0.1pF"): "GCM1555C1H2R0BA16",  # 2pF 50Vdc +/-0.1pF
+    ("C0G", 2000, 50000, "+/-0.25pF"): "GCM1555C1H2R0CA16",  # 2pF 50Vdc +/-0.25pF
+    ("C0G", 2100, 50000, "+/-0.1pF"): "GCM1555C1H2R1BA16",  # 2.1pF 50Vdc +/-0.1pF
+    ("C0G", 2100, 50000, "+/-0.25pF"): "GCM1555C1H2R1CA16",  # 2.1pF 50Vdc +/-0.25pF
+    ("C0G", 2200, 50000, "+/-0.1pF"): "GCM1555C1H2R2BA16",  # 2.2pF 50Vdc +/-0.1pF
+    ("C0G", 2200, 50000, "+/-0.25pF"): "GCM1555C1H2R2CA16",  # 2.2pF 50Vdc +/-0.25pF
+    ("C0G", 2200, 50000, "+/-0.05pF"): "GCM1555C1H2R2WA16",  # 2.2pF 50Vdc +/-0.05pF
+    ("C0G", 2300, 50000, "+/-0.1pF"): "GCM1555C1H2R3BA16",  # 2.3pF 50Vdc +/-0.1pF
+    ("C0G", 2300, 50000, "+/-0.25pF"): "GCM1555C1H2R3CA16",  # 2.3pF 50Vdc +/-0.25pF
+    ("C0G", 2400, 50000, "+/-0.1pF"): "GCM1555C1H2R4BA16",  # 2.4pF 50Vdc +/-0.1pF
+    ("C0G", 2400, 50000, "+/-0.25pF"): "GCM1555C1H2R4CA16",  # 2.4pF 50Vdc +/-0.25pF
+    ("C0G", 2500, 50000, "+/-0.1pF"): "GCM1555C1H2R5BA16",  # 2.5pF 50Vdc +/-0.1pF
+    ("C0G", 2500, 50000, "+/-0.25pF"): "GCM1555C1H2R5CA16",  # 2.5pF 50Vdc +/-0.25pF
+    ("C0G", 2600, 50000, "+/-0.1pF"): "GCM1555C1H2R6BA16",  # 2.6pF 50Vdc +/-0.1pF
+    ("C0G", 2600, 50000, "+/-0.25pF"): "GCM1555C1H2R6CA16",  # 2.6pF 50Vdc +/-0.25pF
+    ("C0G", 2700, 50000, "+/-0.1pF"): "GCM1555C1H2R7BA16",  # 2.7pF 50Vdc +/-0.1pF
+    ("C0G", 2700, 50000, "+/-0.25pF"): "GCM1555C1H2R7CA16",  # 2.7pF 50Vdc +/-0.25pF
+    ("C0G", 2700, 50000, "+/-0.05pF"): "GCM1555C1H2R7WA16",  # 2.7pF 50Vdc +/-0.05pF
+    ("C0G", 2800, 50000, "+/-0.1pF"): "GCM1555C1H2R8BA16",  # 2.8pF 50Vdc +/-0.1pF
+    ("C0G", 2800, 50000, "+/-0.25pF"): "GCM1555C1H2R8CA16",  # 2.8pF 50Vdc +/-0.25pF
+    ("C0G", 2900, 50000, "+/-0.1pF"): "GCM1555C1H2R9BA16",  # 2.9pF 50Vdc +/-0.1pF
+    ("C0G", 2900, 50000, "+/-0.25pF"): "GCM1555C1H2R9CA16",  # 2.9pF 50Vdc +/-0.25pF
+    ("C0G", 30000, 50000, "+/-1%"): "GCM1555C1H300FA16",  # 30pF 50Vdc +/-1%
+    ("C0G", 30000, 50000, "+/-2%"): "GCM1555C1H300GA16",  # 30pF 50Vdc +/-2%
+    ("C0G", 30000, 50000, "+/-5%"): "GCM1555C1H300JA16",  # 30pF 50Vdc +/-5%
+    ("C0G", 300000, 50000, "+/-1%"): "GCM1555C1H301FA16",  # 300pF 50Vdc +/-1%
+    ("C0G", 300000, 50000, "+/-2%"): "GCM1555C1H301GA16",  # 300pF 50Vdc +/-2%
+    ("C0G", 300000, 50000, "+/-5%"): "GCM1555C1H301JA16",  # 300pF 50Vdc +/-5%
+    ("C0G", 33000, 50000, "+/-1%"): "GCM1555C1H330FA16",  # 33pF 50Vdc +/-1%
+    ("C0G", 33000, 50000, "+/-2%"): "GCM1555C1H330GA16",  # 33pF 50Vdc +/-2%
+    ("C0G", 33000, 50000, "+/-5%"): "GCM1555C1H330JA16",  # 33pF 50Vdc +/-5%
+    ("C0G", 330000, 50000, "+/-1%"): "GCM1555C1H331FA16",  # 330pF 50Vdc +/-1%
+    ("C0G", 330000, 50000, "+/-2%"): "GCM1555C1H331GA16",  # 330pF 50Vdc +/-2%
+    ("C0G", 330000, 50000, "+/-5%"): "GCM1555C1H331JA16",  # 330pF 50Vdc +/-5%
+    ("C0G", 36000, 50000, "+/-1%"): "GCM1555C1H360FA16",  # 36pF 50Vdc +/-1%
+    ("C0G", 36000, 50000, "+/-2%"): "GCM1555C1H360GA16",  # 36pF 50Vdc +/-2%
+    ("C0G", 36000, 50000, "+/-5%"): "GCM1555C1H360JA16",  # 36pF 50Vdc +/-5%
+    ("C0G", 360000, 50000, "+/-1%"): "GCM1555C1H361FA16",  # 360pF 50Vdc +/-1%
+    ("C0G", 360000, 50000, "+/-2%"): "GCM1555C1H361GA16",  # 360pF 50Vdc +/-2%
+    ("C0G", 360000, 50000, "+/-5%"): "GCM1555C1H361JA16",  # 360pF 50Vdc +/-5%
+    ("C0G", 39000, 50000, "+/-1%"): "GCM1555C1H390FA16",  # 39pF 50Vdc +/-1%
+    ("C0G", 39000, 50000, "+/-2%"): "GCM1555C1H390GA16",  # 39pF 50Vdc +/-2%
+    ("C0G", 39000, 50000, "+/-5%"): "GCM1555C1H390JA16",  # 39pF 50Vdc +/-5%
+    ("C0G", 390000, 50000, "+/-1%"): "GCM1555C1H391FA16",  # 390pF 50Vdc +/-1%
+    ("C0G", 390000, 50000, "+/-2%"): "GCM1555C1H391GA16",  # 390pF 50Vdc +/-2%
+    ("C0G", 390000, 50000, "+/-5%"): "GCM1555C1H391JA16",  # 390pF 50Vdc +/-5%
+    ("C0G", 3000, 50000, "+/-0.1pF"): "GCM1555C1H3R0BA16",  # 3pF 50Vdc +/-0.1pF
+    ("C0G", 3000, 50000, "+/-0.25pF"): "GCM1555C1H3R0CA16",  # 3pF 50Vdc +/-0.25pF
+    ("C0G", 3100, 50000, "+/-0.1pF"): "GCM1555C1H3R1BA16",  # 3.1pF 50Vdc +/-0.1pF
+    ("C0G", 3100, 50000, "+/-0.25pF"): "GCM1555C1H3R1CA16",  # 3.1pF 50Vdc +/-0.25pF
+    ("C0G", 3200, 50000, "+/-0.1pF"): "GCM1555C1H3R2BA16",  # 3.2pF 50Vdc +/-0.1pF
+    ("C0G", 3200, 50000, "+/-0.25pF"): "GCM1555C1H3R2CA16",  # 3.2pF 50Vdc +/-0.25pF
+    ("C0G", 3300, 50000, "+/-0.1pF"): "GCM1555C1H3R3BA16",  # 3.3pF 50Vdc +/-0.1pF
+    ("C0G", 3300, 50000, "+/-0.25pF"): "GCM1555C1H3R3CA16",  # 3.3pF 50Vdc +/-0.25pF
+    ("C0G", 3300, 50000, "+/-2%"): "GCM1555C1H3R3GA16",  # 3.3pF 50Vdc +/-2%
+    ("C0G", 3400, 50000, "+/-0.1pF"): "GCM1555C1H3R4BA16",  # 3.4pF 50Vdc +/-0.1pF
+    ("C0G", 3400, 50000, "+/-0.25pF"): "GCM1555C1H3R4CA16",  # 3.4pF 50Vdc +/-0.25pF
+    ("C0G", 3500, 50000, "+/-0.1pF"): "GCM1555C1H3R5BA16",  # 3.5pF 50Vdc +/-0.1pF
+    ("C0G", 3500, 50000, "+/-0.25pF"): "GCM1555C1H3R5CA16",  # 3.5pF 50Vdc +/-0.25pF
+    ("C0G", 3600, 50000, "+/-0.1pF"): "GCM1555C1H3R6BA16",  # 3.6pF 50Vdc +/-0.1pF
+    ("C0G", 3600, 50000, "+/-0.25pF"): "GCM1555C1H3R6CA16",  # 3.6pF 50Vdc +/-0.25pF
+    ("C0G", 3700, 50000, "+/-0.25pF"): "GCM1555C1H3R7CA16",  # 3.7pF 50Vdc +/-0.25pF
+    ("C0G", 3800, 50000, "+/-0.25pF"): "GCM1555C1H3R8CA16",  # 3.8pF 50Vdc +/-0.25pF
+    ("C0G", 3900, 50000, "+/-0.1pF"): "GCM1555C1H3R9BA16",  # 3.9pF 50Vdc +/-0.1pF
+    ("C0G", 3900, 50000, "+/-0.25pF"): "GCM1555C1H3R9CA16",  # 3.9pF 50Vdc +/-0.25pF
+    ("C0G", 43000, 50000, "+/-1%"): "GCM1555C1H430FA16",  # 43pF 50Vdc +/-1%
+    ("C0G", 43000, 50000, "+/-2%"): "GCM1555C1H430GA16",  # 43pF 50Vdc +/-2%
+    ("C0G", 43000, 50000, "+/-5%"): "GCM1555C1H430JA16",  # 43pF 50Vdc +/-5%
+    ("C0G", 430000, 50000, "+/-1%"): "GCM1555C1H431FA16",  # 430pF 50Vdc +/-1%
+    ("C0G", 430000, 50000, "+/-2%"): "GCM1555C1H431GA16",  # 430pF 50Vdc +/-2%
+    ("C0G", 430000, 50000, "+/-5%"): "GCM1555C1H431JA16",  # 430pF 50Vdc +/-5%
+    ("C0G", 47000, 50000, "+/-1%"): "GCM1555C1H470FA16",  # 47pF 50Vdc +/-1%
+    ("C0G", 47000, 50000, "+/-2%"): "GCM1555C1H470GA16",  # 47pF 50Vdc +/-2%
+    ("C0G", 47000, 50000, "+/-5%"): "GCM1555C1H470JA16",  # 47pF 50Vdc +/-5%
+    ("C0G", 470000, 50000, "+/-1%"): "GCM1555C1H471FA16",  # 470pF 50Vdc +/-1%
+    ("C0G", 470000, 50000, "+/-2%"): "GCM1555C1H471GA16",  # 470pF 50Vdc +/-2%
+    ("C0G", 470000, 50000, "+/-5%"): "GCM1555C1H471JA16",  # 470pF 50Vdc +/-5%
+    ("C0G", 4000, 50000, "+/-0.1pF"): "GCM1555C1H4R0BA16",  # 4pF 50Vdc +/-0.1pF
+    ("C0G", 4000, 50000, "+/-0.25pF"): "GCM1555C1H4R0CA16",  # 4pF 50Vdc +/-0.25pF
+    ("C0G", 4000, 50000, "+/-2%"): "GCM1555C1H4R0GA16",  # 4pF 50Vdc +/-2%
+    ("C0G", 4000, 50000, "+/-5%"): "GCM1555C1H4R0JA16",  # 4pF 50Vdc +/-5%
+    ("C0G", 4100, 50000, "+/-0.25pF"): "GCM1555C1H4R1CA16",  # 4.1pF 50Vdc +/-0.25pF
+    ("C0G", 4200, 50000, "+/-0.1pF"): "GCM1555C1H4R2BA16",  # 4.2pF 50Vdc +/-0.1pF
+    ("C0G", 4200, 50000, "+/-0.25pF"): "GCM1555C1H4R2CA16",  # 4.2pF 50Vdc +/-0.25pF
+    ("C0G", 4300, 50000, "+/-0.1pF"): "GCM1555C1H4R3BA16",  # 4.3pF 50Vdc +/-0.1pF
+    ("C0G", 4300, 50000, "+/-0.25pF"): "GCM1555C1H4R3CA16",  # 4.3pF 50Vdc +/-0.25pF
+    ("C0G", 4400, 50000, "+/-0.25pF"): "GCM1555C1H4R4CA16",  # 4.4pF 50Vdc +/-0.25pF
+    ("C0G", 4500, 50000, "+/-0.25pF"): "GCM1555C1H4R5CA16",  # 4.5pF 50Vdc +/-0.25pF
+    ("C0G", 4600, 50000, "+/-0.25pF"): "GCM1555C1H4R6CA16",  # 4.6pF 50Vdc +/-0.25pF
+    ("C0G", 4700, 50000, "+/-0.1pF"): "GCM1555C1H4R7BA16",  # 4.7pF 50Vdc +/-0.1pF
+    ("C0G", 4700, 50000, "+/-0.25pF"): "GCM1555C1H4R7CA16",  # 4.7pF 50Vdc +/-0.25pF
+    ("C0G", 4700, 50000, "+/-0.05pF"): "GCM1555C1H4R7WA16",  # 4.7pF 50Vdc +/-0.05pF
+    ("C0G", 4800, 50000, "+/-0.25pF"): "GCM1555C1H4R8CA16",  # 4.8pF 50Vdc +/-0.25pF
+    ("C0G", 4900, 50000, "+/-0.25pF"): "GCM1555C1H4R9CA16",  # 4.9pF 50Vdc +/-0.25pF
+    ("C0G", 51000, 50000, "+/-1%"): "GCM1555C1H510FA16",  # 51pF 50Vdc +/-1%
+    ("C0G", 51000, 50000, "+/-2%"): "GCM1555C1H510GA16",  # 51pF 50Vdc +/-2%
+    ("C0G", 51000, 50000, "+/-5%"): "GCM1555C1H510JA16",  # 51pF 50Vdc +/-5%
+    ("C0G", 510000, 50000, "+/-1%"): "GCM1555C1H511FA16",  # 510pF 50Vdc +/-1%
+    ("C0G", 510000, 50000, "+/-2%"): "GCM1555C1H511GA16",  # 510pF 50Vdc +/-2%
+    ("C0G", 510000, 50000, "+/-5%"): "GCM1555C1H511JA16",  # 510pF 50Vdc +/-5%
+    ("C0G", 56000, 50000, "+/-1%"): "GCM1555C1H560FA16",  # 56pF 50Vdc +/-1%
+    ("C0G", 56000, 50000, "+/-2%"): "GCM1555C1H560GA16",  # 56pF 50Vdc +/-2%
+    ("C0G", 56000, 50000, "+/-5%"): "GCM1555C1H560JA16",  # 56pF 50Vdc +/-5%
+    ("C0G", 560000, 50000, "+/-1%"): "GCM1555C1H561FA16",  # 560pF 50Vdc +/-1%
+    ("C0G", 560000, 50000, "+/-2%"): "GCM1555C1H561GA16",  # 560pF 50Vdc +/-2%
+    ("C0G", 560000, 50000, "+/-5%"): "GCM1555C1H561JA16",  # 560pF 50Vdc +/-5%
+    ("C0G", 5000, 50000, "+/-0.1pF"): "GCM1555C1H5R0BA16",  # 5pF 50Vdc +/-0.1pF
+    ("C0G", 5000, 50000, "+/-0.25pF"): "GCM1555C1H5R0CA16",  # 5pF 50Vdc +/-0.25pF
+    ("C0G", 5000, 50000, "+/-1%"): "GCM1555C1H5R0FA16",  # 5pF 50Vdc +/-1%
+    ("C0G", 5100, 50000, "+/-0.1pF"): "GCM1555C1H5R1BA16",  # 5.1pF 50Vdc +/-0.1pF
+    ("C0G", 5100, 50000, "+/-0.25pF"): "GCM1555C1H5R1CA16",  # 5.1pF 50Vdc +/-0.25pF
+    ("C0G", 5100, 50000, "+/-0.5pF"): "GCM1555C1H5R1DA16",  # 5.1pF 50Vdc +/-0.5pF
+    ("C0G", 5100, 50000, "+/-1%"): "GCM1555C1H5R1FA16",  # 5.1pF 50Vdc +/-1%
+    ("C0G", 5200, 50000, "+/-0.25pF"): "GCM1555C1H5R2CA16",  # 5.2pF 50Vdc +/-0.25pF
+    ("C0G", 5200, 50000, "+/-0.5pF"): "GCM1555C1H5R2DA16",  # 5.2pF 50Vdc +/-0.5pF
+    ("C0G", 5300, 50000, "+/-0.5pF"): "GCM1555C1H5R3DA16",  # 5.3pF 50Vdc +/-0.5pF
+    ("C0G", 5300, 50000, "+/-0.05pF"): "GCM1555C1H5R3WA16",  # 5.3pF 50Vdc +/-0.05pF
+    ("C0G", 5400, 50000, "+/-0.5pF"): "GCM1555C1H5R4DA16",  # 5.4pF 50Vdc +/-0.5pF
+    ("C0G", 5500, 50000, "+/-0.5pF"): "GCM1555C1H5R5DA16",  # 5.5pF 50Vdc +/-0.5pF
+    ("C0G", 5500, 50000, "+/-0.05pF"): "GCM1555C1H5R5WA16",  # 5.5pF 50Vdc +/-0.05pF
+    ("C0G", 5600, 50000, "+/-0.1pF"): "GCM1555C1H5R6BA16",  # 5.6pF 50Vdc +/-0.1pF
+    ("C0G", 5600, 50000, "+/-0.25pF"): "GCM1555C1H5R6CA16",  # 5.6pF 50Vdc +/-0.25pF
+    ("C0G", 5600, 50000, "+/-0.5pF"): "GCM1555C1H5R6DA16",  # 5.6pF 50Vdc +/-0.5pF
+    ("C0G", 5700, 50000, "+/-0.5pF"): "GCM1555C1H5R7DA16",  # 5.7pF 50Vdc +/-0.5pF
+    ("C0G", 5800, 50000, "+/-0.5pF"): "GCM1555C1H5R8DA16",  # 5.8pF 50Vdc +/-0.5pF
+    ("C0G", 5900, 50000, "+/-0.5pF"): "GCM1555C1H5R9DA16",  # 5.9pF 50Vdc +/-0.5pF
+    ("C0G", 62000, 50000, "+/-1%"): "GCM1555C1H620FA16",  # 62pF 50Vdc +/-1%
+    ("C0G", 62000, 50000, "+/-2%"): "GCM1555C1H620GA16",  # 62pF 50Vdc +/-2%
+    ("C0G", 62000, 50000, "+/-5%"): "GCM1555C1H620JA16",  # 62pF 50Vdc +/-5%
+    ("C0G", 620000, 50000, "+/-1%"): "GCM1555C1H621FA16",  # 620pF 50Vdc +/-1%
+    ("C0G", 620000, 50000, "+/-2%"): "GCM1555C1H621GA16",  # 620pF 50Vdc +/-2%
+    ("C0G", 620000, 50000, "+/-5%"): "GCM1555C1H621JA16",  # 620pF 50Vdc +/-5%
+    ("C0G", 68000, 50000, "+/-1%"): "GCM1555C1H680FA16",  # 68pF 50Vdc +/-1%
+    ("C0G", 68000, 50000, "+/-2%"): "GCM1555C1H680GA16",  # 68pF 50Vdc +/-2%
+    ("C0G", 68000, 50000, "+/-5%"): "GCM1555C1H680JA16",  # 68pF 50Vdc +/-5%
+    ("C0G", 680000, 50000, "+/-1%"): "GCM1555C1H681FA16",  # 680pF 50Vdc +/-1%
+    ("C0G", 680000, 50000, "+/-2%"): "GCM1555C1H681GA16",  # 680pF 50Vdc +/-2%
+    ("C0G", 680000, 50000, "+/-5%"): "GCM1555C1H681JA16",  # 680pF 50Vdc +/-5%
+    ("C0G", 6000, 50000, "+/-0.1pF"): "GCM1555C1H6R0BA16",  # 6pF 50Vdc +/-0.1pF
+    ("C0G", 6000, 50000, "+/-0.25pF"): "GCM1555C1H6R0CA16",  # 6pF 50Vdc +/-0.25pF
+    ("C0G", 6000, 50000, "+/-0.5pF"): "GCM1555C1H6R0DA16",  # 6pF 50Vdc +/-0.5pF
+    ("C0G", 6000, 50000, "+/-1%"): "GCM1555C1H6R0FA16",  # 6pF 50Vdc +/-1%
+    ("C0G", 6100, 50000, "+/-0.5pF"): "GCM1555C1H6R1DA16",  # 6.1pF 50Vdc +/-0.5pF
+    ("C0G", 6200, 50000, "+/-0.1pF"): "GCM1555C1H6R2BA16",  # 6.2pF 50Vdc +/-0.1pF
+    ("C0G", 6200, 50000, "+/-0.25pF"): "GCM1555C1H6R2CA16",  # 6.2pF 50Vdc +/-0.25pF
+    ("C0G", 6200, 50000, "+/-0.5pF"): "GCM1555C1H6R2DA16",  # 6.2pF 50Vdc +/-0.5pF
+    ("C0G", 6300, 50000, "+/-0.5pF"): "GCM1555C1H6R3DA16",  # 6.3pF 50Vdc +/-0.5pF
+    ("C0G", 6400, 50000, "+/-0.5pF"): "GCM1555C1H6R4DA16",  # 6.4pF 50Vdc +/-0.5pF
+    ("C0G", 6500, 50000, "+/-0.5pF"): "GCM1555C1H6R5DA16",  # 6.5pF 50Vdc +/-0.5pF
+    ("C0G", 6500, 50000, "+/-0.05pF"): "GCM1555C1H6R5WA16",  # 6.5pF 50Vdc +/-0.05pF
+    ("C0G", 6600, 50000, "+/-0.5pF"): "GCM1555C1H6R6DA16",  # 6.6pF 50Vdc +/-0.5pF
+    ("C0G", 6700, 50000, "+/-0.5pF"): "GCM1555C1H6R7DA16",  # 6.7pF 50Vdc +/-0.5pF
+    ("C0G", 6700, 50000, "+/-0.05pF"): "GCM1555C1H6R7WA16",  # 6.7pF 50Vdc +/-0.05pF
+    ("C0G", 6800, 50000, "+/-0.1pF"): "GCM1555C1H6R8BA16",  # 6.8pF 50Vdc +/-0.1pF
+    ("C0G", 6800, 50000, "+/-0.25pF"): "GCM1555C1H6R8CA16",  # 6.8pF 50Vdc +/-0.25pF
+    ("C0G", 6800, 50000, "+/-0.5pF"): "GCM1555C1H6R8DA16",  # 6.8pF 50Vdc +/-0.5pF
+    ("C0G", 6800, 50000, "+/-1%"): "GCM1555C1H6R8FA16",  # 6.8pF 50Vdc +/-1%
+    ("C0G", 6800, 50000, "+/-0.05pF"): "GCM1555C1H6R8WA16",  # 6.8pF 50Vdc +/-0.05pF
+    ("C0G", 6900, 50000, "+/-0.5pF"): "GCM1555C1H6R9DA16",  # 6.9pF 50Vdc +/-0.5pF
+    ("C0G", 75000, 50000, "+/-1%"): "GCM1555C1H750FA16",  # 75pF 50Vdc +/-1%
+    ("C0G", 75000, 50000, "+/-2%"): "GCM1555C1H750GA16",  # 75pF 50Vdc +/-2%
+    ("C0G", 75000, 50000, "+/-5%"): "GCM1555C1H750JA16",  # 75pF 50Vdc +/-5%
+    ("C0G", 750000, 50000, "+/-1%"): "GCM1555C1H751FA16",  # 750pF 50Vdc +/-1%
+    ("C0G", 750000, 50000, "+/-2%"): "GCM1555C1H751GA16",  # 750pF 50Vdc +/-2%
+    ("C0G", 750000, 50000, "+/-5%"): "GCM1555C1H751JA16",  # 750pF 50Vdc +/-5%
+    ("C0G", 7000, 50000, "+/-0.1pF"): "GCM1555C1H7R0BA16",  # 7pF 50Vdc +/-0.1pF
+    ("C0G", 7000, 50000, "+/-0.25pF"): "GCM1555C1H7R0CA16",  # 7pF 50Vdc +/-0.25pF
+    ("C0G", 7000, 50000, "+/-0.5pF"): "GCM1555C1H7R0DA16",  # 7pF 50Vdc +/-0.5pF
+    ("C0G", 7000, 50000, "+/-1%"): "GCM1555C1H7R0FA16",  # 7pF 50Vdc +/-1%
+    ("C0G", 7000, 50000, "+/-0.05pF"): "GCM1555C1H7R0WA16",  # 7pF 50Vdc +/-0.05pF
+    ("C0G", 7100, 50000, "+/-0.5pF"): "GCM1555C1H7R1DA16",  # 7.1pF 50Vdc +/-0.5pF
+    ("C0G", 7200, 50000, "+/-0.25pF"): "GCM1555C1H7R2CA16",  # 7.2pF 50Vdc +/-0.25pF
+    ("C0G", 7200, 50000, "+/-0.5pF"): "GCM1555C1H7R2DA16",  # 7.2pF 50Vdc +/-0.5pF
+    ("C0G", 7300, 50000, "+/-0.5pF"): "GCM1555C1H7R3DA16",  # 7.3pF 50Vdc +/-0.5pF
+    ("C0G", 7400, 50000, "+/-0.5pF"): "GCM1555C1H7R4DA16",  # 7.4pF 50Vdc +/-0.5pF
+    ("C0G", 7500, 50000, "+/-0.1pF"): "GCM1555C1H7R5BA16",  # 7.5pF 50Vdc +/-0.1pF
+    ("C0G", 7500, 50000, "+/-0.25pF"): "GCM1555C1H7R5CA16",  # 7.5pF 50Vdc +/-0.25pF
+    ("C0G", 7500, 50000, "+/-0.5pF"): "GCM1555C1H7R5DA16",  # 7.5pF 50Vdc +/-0.5pF
+    ("C0G", 7600, 50000, "+/-0.5pF"): "GCM1555C1H7R6DA16",  # 7.6pF 50Vdc +/-0.5pF
+    ("C0G", 7700, 50000, "+/-0.5pF"): "GCM1555C1H7R7DA16",  # 7.7pF 50Vdc +/-0.5pF
+    ("C0G", 7800, 50000, "+/-0.25pF"): "GCM1555C1H7R8CA16",  # 7.8pF 50Vdc +/-0.25pF
+    ("C0G", 7800, 50000, "+/-0.5pF"): "GCM1555C1H7R8DA16",  # 7.8pF 50Vdc +/-0.5pF
+    ("C0G", 7900, 50000, "+/-0.5pF"): "GCM1555C1H7R9DA16",  # 7.9pF 50Vdc +/-0.5pF
+    ("C0G", 82000, 50000, "+/-1%"): "GCM1555C1H820FA16",  # 82pF 50Vdc +/-1%
+    ("C0G", 82000, 50000, "+/-2%"): "GCM1555C1H820GA16",  # 82pF 50Vdc +/-2%
+    ("C0G", 82000, 50000, "+/-5%"): "GCM1555C1H820JA16",  # 82pF 50Vdc +/-5%
+    ("C0G", 820000, 50000, "+/-1%"): "GCM1555C1H821FA16",  # 820pF 50Vdc +/-1%
+    ("C0G", 820000, 50000, "+/-2%"): "GCM1555C1H821GA16",  # 820pF 50Vdc +/-2%
+    ("C0G", 820000, 50000, "+/-5%"): "GCM1555C1H821JA16",  # 820pF 50Vdc +/-5%
+    ("C0G", 8000, 50000, "+/-0.1pF"): "GCM1555C1H8R0BA16",  # 8pF 50Vdc +/-0.1pF
+    ("C0G", 8000, 50000, "+/-0.25pF"): "GCM1555C1H8R0CA16",  # 8pF 50Vdc +/-0.25pF
+    ("C0G", 8000, 50000, "+/-0.5pF"): "GCM1555C1H8R0DA16",  # 8pF 50Vdc +/-0.5pF
+    ("C0G", 8000, 50000, "+/-1%"): "GCM1555C1H8R0FA16",  # 8pF 50Vdc +/-1%
+    ("C0G", 8000, 50000, "+/-0.05pF"): "GCM1555C1H8R0WA16",  # 8pF 50Vdc +/-0.05pF
+    ("C0G", 8100, 50000, "+/-0.5pF"): "GCM1555C1H8R1DA16",  # 8.1pF 50Vdc +/-0.5pF
+    ("C0G", 8200, 50000, "+/-0.1pF"): "GCM1555C1H8R2BA16",  # 8.2pF 50Vdc +/-0.1pF
+    ("C0G", 8200, 50000, "+/-0.25pF"): "GCM1555C1H8R2CA16",  # 8.2pF 50Vdc +/-0.25pF
+    ("C0G", 8200, 50000, "+/-0.5pF"): "GCM1555C1H8R2DA16",  # 8.2pF 50Vdc +/-0.5pF
+    ("C0G", 8300, 50000, "+/-0.5pF"): "GCM1555C1H8R3DA16",  # 8.3pF 50Vdc +/-0.5pF
+    ("C0G", 8400, 50000, "+/-0.1pF"): "GCM1555C1H8R4BA16",  # 8.4pF 50Vdc +/-0.1pF
+    ("C0G", 8400, 50000, "+/-0.5pF"): "GCM1555C1H8R4DA16",  # 8.4pF 50Vdc +/-0.5pF
+    ("C0G", 8500, 50000, "+/-0.5pF"): "GCM1555C1H8R5DA16",  # 8.5pF 50Vdc +/-0.5pF
+    ("C0G", 8600, 50000, "+/-0.5pF"): "GCM1555C1H8R6DA16",  # 8.6pF 50Vdc +/-0.5pF
+    ("C0G", 8700, 50000, "+/-0.1pF"): "GCM1555C1H8R7BA16",  # 8.7pF 50Vdc +/-0.1pF
+    ("C0G", 8700, 50000, "+/-0.5pF"): "GCM1555C1H8R7DA16",  # 8.7pF 50Vdc +/-0.5pF
+    ("C0G", 8800, 50000, "+/-0.5pF"): "GCM1555C1H8R8DA16",  # 8.8pF 50Vdc +/-0.5pF
+    ("C0G", 8900, 50000, "+/-0.5pF"): "GCM1555C1H8R9DA16",  # 8.9pF 50Vdc +/-0.5pF
+    ("C0G", 91000, 50000, "+/-1%"): "GCM1555C1H910FA16",  # 91pF 50Vdc +/-1%
+    ("C0G", 91000, 50000, "+/-2%"): "GCM1555C1H910GA16",  # 91pF 50Vdc +/-2%
+    ("C0G", 91000, 50000, "+/-5%"): "GCM1555C1H910JA16",  # 91pF 50Vdc +/-5%
+    ("C0G", 910000, 50000, "+/-1%"): "GCM1555C1H911FA16",  # 910pF 50Vdc +/-1%
+    ("C0G", 910000, 50000, "+/-2%"): "GCM1555C1H911GA16",  # 910pF 50Vdc +/-2%
+    ("C0G", 910000, 50000, "+/-5%"): "GCM1555C1H911JA16",  # 910pF 50Vdc +/-5%
+    ("C0G", 9000, 50000, "+/-0.1pF"): "GCM1555C1H9R0BA16",  # 9pF 50Vdc +/-0.1pF
+    ("C0G", 9000, 50000, "+/-0.25pF"): "GCM1555C1H9R0CA16",  # 9pF 50Vdc +/-0.25pF
+    ("C0G", 9000, 50000, "+/-0.5pF"): "GCM1555C1H9R0DA16",  # 9pF 50Vdc +/-0.5pF
+    ("C0G", 9000, 50000, "+/-0.05pF"): "GCM1555C1H9R0WA16",  # 9pF 50Vdc +/-0.05pF
+    ("C0G", 9100, 50000, "+/-0.1pF"): "GCM1555C1H9R1BA16",  # 9.1pF 50Vdc +/-0.1pF
+    ("C0G", 9100, 50000, "+/-0.25pF"): "GCM1555C1H9R1CA16",  # 9.1pF 50Vdc +/-0.25pF
+    ("C0G", 9100, 50000, "+/-0.5pF"): "GCM1555C1H9R1DA16",  # 9.1pF 50Vdc +/-0.5pF
+    ("C0G", 9200, 50000, "+/-0.25pF"): "GCM1555C1H9R2CA16",  # 9.2pF 50Vdc +/-0.25pF
+    ("C0G", 9200, 50000, "+/-0.5pF"): "GCM1555C1H9R2DA16",  # 9.2pF 50Vdc +/-0.5pF
+    ("C0G", 9300, 50000, "+/-0.5pF"): "GCM1555C1H9R3DA16",  # 9.3pF 50Vdc +/-0.5pF
+    ("C0G", 9400, 50000, "+/-0.5pF"): "GCM1555C1H9R4DA16",  # 9.4pF 50Vdc +/-0.5pF
+    ("C0G", 9500, 50000, "+/-0.5pF"): "GCM1555C1H9R5DA16",  # 9.5pF 50Vdc +/-0.5pF
+    ("C0G", 9600, 50000, "+/-0.5pF"): "GCM1555C1H9R6DA16",  # 9.6pF 50Vdc +/-0.5pF
+    ("C0G", 9700, 50000, "+/-0.5pF"): "GCM1555C1H9R7DA16",  # 9.7pF 50Vdc +/-0.5pF
+    ("C0G", 9800, 50000, "+/-0.5pF"): "GCM1555C1H9R8DA16",  # 9.8pF 50Vdc +/-0.5pF
+    ("C0G", 9900, 50000, "+/-0.5pF"): "GCM1555C1H9R9DA16",  # 9.9pF 50Vdc +/-0.5pF
+    ("C0G", 110, 50000, "+/-0.1pF"): "GCM1555C1HR11BA16",  # 0.11pF 50Vdc +/-0.1pF
+    ("C0G", 120, 50000, "+/-0.1pF"): "GCM1555C1HR12BA16",  # 0.12pF 50Vdc +/-0.1pF
+    ("C0G", 130, 50000, "+/-0.1pF"): "GCM1555C1HR13BA16",  # 0.13pF 50Vdc +/-0.1pF
+    ("C0G", 150, 50000, "+/-0.1pF"): "GCM1555C1HR15BA16",  # 0.15pF 50Vdc +/-0.1pF
+    ("C0G", 160, 50000, "+/-0.1pF"): "GCM1555C1HR16BA16",  # 0.16pF 50Vdc +/-0.1pF
+    ("C0G", 180, 50000, "+/-0.1pF"): "GCM1555C1HR18BA16",  # 0.18pF 50Vdc +/-0.1pF
+    ("C0G", 200, 50000, "+/-0.1pF"): "GCM1555C1HR20BA16",  # 0.2pF 50Vdc +/-0.1pF
+    ("C0G", 200, 50000, "+/-20%"): "GCM1555C1HR20MA16",  # 0.2pF 50Vdc +/-20%
+    ("C0G", 220, 50000, "+/-0.1pF"): "GCM1555C1HR22BA16",  # 0.22pF 50Vdc +/-0.1pF
+    ("C0G", 240, 50000, "+/-0.1pF"): "GCM1555C1HR24BA16",  # 0.24pF 50Vdc +/-0.1pF
+    ("C0G", 300, 50000, "+/-0.1pF"): "GCM1555C1HR30BA16",  # 0.3pF 50Vdc +/-0.1pF
+    ("C0G", 300, 50000, "+/-0.05pF"): "GCM1555C1HR30WA16",  # 0.3pF 50Vdc +/-0.05pF
+    ("C0G", 330, 50000, "+/-0.1pF"): "GCM1555C1HR33BA16",  # 0.33pF 50Vdc +/-0.1pF
+    ("C0G", 360, 50000, "+/-0.1pF"): "GCM1555C1HR36BA16",  # 0.36pF 50Vdc +/-0.1pF
+    ("C0G", 390, 50000, "+/-0.1pF"): "GCM1555C1HR39BA16",  # 0.39pF 50Vdc +/-0.1pF
+    ("C0G", 400, 50000, "+/-0.1pF"): "GCM1555C1HR40BA16",  # 0.4pF 50Vdc +/-0.1pF
+    ("C0G", 400, 50000, "+/-0.05pF"): "GCM1555C1HR40WA16",  # 0.4pF 50Vdc +/-0.05pF
+    ("C0G", 430, 50000, "+/-0.1pF"): "GCM1555C1HR43BA16",  # 0.43pF 50Vdc +/-0.1pF
+    ("C0G", 470, 50000, "+/-0.1pF"): "GCM1555C1HR47BA16",  # 0.47pF 50Vdc +/-0.1pF
+    ("C0G", 470, 50000, "+/-0.25pF"): "GCM1555C1HR47CA16",  # 0.47pF 50Vdc +/-0.25pF
+    ("C0G", 500, 50000, "+/-0.1pF"): "GCM1555C1HR50BA16",  # 0.5pF 50Vdc +/-0.1pF
+    ("C0G", 500, 50000, "+/-0.25pF"): "GCM1555C1HR50CA16",  # 0.5pF 50Vdc +/-0.25pF
+    ("C0G", 500, 50000, "+/-0.05pF"): "GCM1555C1HR50WA16",  # 0.5pF 50Vdc +/-0.05pF
+    ("C0G", 510, 50000, "+/-0.1pF"): "GCM1555C1HR51BA16",  # 0.51pF 50Vdc +/-0.1pF
+    ("C0G", 560, 50000, "+/-0.1pF"): "GCM1555C1HR56BA16",  # 0.56pF 50Vdc +/-0.1pF
+    ("C0G", 600, 50000, "+/-0.1pF"): "GCM1555C1HR60BA16",  # 0.6pF 50Vdc +/-0.1pF
+    ("C0G", 600, 50000, "+/-0.05pF"): "GCM1555C1HR60WA16",  # 0.6pF 50Vdc +/-0.05pF
+    ("C0G", 620, 50000, "+/-0.1pF"): "GCM1555C1HR62BA16",  # 0.62pF 50Vdc +/-0.1pF
+    ("C0G", 680, 50000, "+/-0.1pF"): "GCM1555C1HR68BA16",  # 0.68pF 50Vdc +/-0.1pF
+    ("C0G", 700, 50000, "+/-0.1pF"): "GCM1555C1HR70BA16",  # 0.7pF 50Vdc +/-0.1pF
+    ("C0G", 700, 50000, "+/-0.05pF"): "GCM1555C1HR70WA16",  # 0.7pF 50Vdc +/-0.05pF
+    ("C0G", 750, 50000, "+/-0.1pF"): "GCM1555C1HR75BA16",  # 0.75pF 50Vdc +/-0.1pF
+    ("C0G", 750, 50000, "+/-0.25pF"): "GCM1555C1HR75CA16",  # 0.75pF 50Vdc +/-0.25pF
+    ("C0G", 800, 50000, "+/-0.1pF"): "GCM1555C1HR80BA16",  # 0.8pF 50Vdc +/-0.1pF
+    ("C0G", 800, 50000, "+/-0.05pF"): "GCM1555C1HR80WA16",  # 0.8pF 50Vdc +/-0.05pF
+    ("C0G", 820, 50000, "+/-0.1pF"): "GCM1555C1HR82BA16",  # 0.82pF 50Vdc +/-0.1pF
+    ("C0G", 900, 50000, "+/-0.1pF"): "GCM1555C1HR90BA16",  # 0.9pF 50Vdc +/-0.1pF
+    ("C0G", 900, 50000, "+/-0.05pF"): "GCM1555C1HR90WA16",  # 0.9pF 50Vdc +/-0.05pF
+    ("C0G", 910, 50000, "+/-0.1pF"): "GCM1555C1HR91BA16",  # 0.91pF 50Vdc +/-0.1pF
+    ("C0G", 10000, 100000, "+/-2%"): "GCM1555C2A100GE02",  # 10pF 100Vdc +/-2%
+    ("C0G", 10000, 100000, "+/-5%"): "GCM1555C2A100JE02",  # 10pF 100Vdc +/-5%
+    ("C0G", 100000, 100000, "+/-2%"): "GCM1555C2A101GE02",  # 100pF 100Vdc +/-2%
+    ("C0G", 100000, 100000, "+/-5%"): "GCM1555C2A101JE02",  # 100pF 100Vdc +/-5%
+    ("C0G", 1000000, 100000, "+/-2%"): "GCM1555C2A102GE02",  # 1,000pF 100Vdc +/-2%
+    ("C0G", 1000000, 100000, "+/-5%"): "GCM1555C2A102JE02",  # 1,000pF 100Vdc +/-5%
+    ("C0G", 11000, 100000, "+/-2%"): "GCM1555C2A110GE02",  # 11pF 100Vdc +/-2%
+    ("C0G", 11000, 100000, "+/-5%"): "GCM1555C2A110JE02",  # 11pF 100Vdc +/-5%
+    ("C0G", 12000, 100000, "+/-2%"): "GCM1555C2A120GE02",  # 12pF 100Vdc +/-2%
+    ("C0G", 12000, 100000, "+/-5%"): "GCM1555C2A120JE02",  # 12pF 100Vdc +/-5%
+    ("C0G", 120000, 100000, "+/-2%"): "GCM1555C2A121GE02",  # 120pF 100Vdc +/-2%
+    ("C0G", 120000, 100000, "+/-5%"): "GCM1555C2A121JE02",  # 120pF 100Vdc +/-5%
+    ("C0G", 13000, 100000, "+/-2%"): "GCM1555C2A130GE02",  # 13pF 100Vdc +/-2%
+    ("C0G", 13000, 100000, "+/-5%"): "GCM1555C2A130JE02",  # 13pF 100Vdc +/-5%
+    ("C0G", 15000, 100000, "+/-2%"): "GCM1555C2A150GE02",  # 15pF 100Vdc +/-2%
+    ("C0G", 15000, 100000, "+/-5%"): "GCM1555C2A150JE02",  # 15pF 100Vdc +/-5%
+    ("C0G", 150000, 100000, "+/-2%"): "GCM1555C2A151GE02",  # 150pF 100Vdc +/-2%
+    ("C0G", 150000, 100000, "+/-5%"): "GCM1555C2A151JE02",  # 150pF 100Vdc +/-5%
+    ("C0G", 16000, 100000, "+/-2%"): "GCM1555C2A160GE02",  # 16pF 100Vdc +/-2%
+    ("C0G", 16000, 100000, "+/-5%"): "GCM1555C2A160JE02",  # 16pF 100Vdc +/-5%
+    ("C0G", 18000, 100000, "+/-2%"): "GCM1555C2A180GE02",  # 18pF 100Vdc +/-2%
+    ("C0G", 18000, 100000, "+/-5%"): "GCM1555C2A180JE02",  # 18pF 100Vdc +/-5%
+    ("C0G", 180000, 100000, "+/-2%"): "GCM1555C2A181GE02",  # 180pF 100Vdc +/-2%
+    ("C0G", 180000, 100000, "+/-5%"): "GCM1555C2A181JE02",  # 180pF 100Vdc +/-5%
+    ("C0G", 1000, 100000, "+/-0.1pF"): "GCM1555C2A1R0BE02",  # 1pF 100Vdc +/-0.1pF
+    ("C0G", 1000, 100000, "+/-0.25pF"): "GCM1555C2A1R0CE02",  # 1pF 100Vdc +/-0.25pF
+    ("C0G", 1100, 100000, "+/-0.1pF"): "GCM1555C2A1R1BE02",  # 1.1pF 100Vdc +/-0.1pF
+    ("C0G", 1100, 100000, "+/-0.25pF"): "GCM1555C2A1R1CE02",  # 1.1pF 100Vdc +/-0.25pF
+    ("C0G", 1200, 100000, "+/-0.1pF"): "GCM1555C2A1R2BE02",  # 1.2pF 100Vdc +/-0.1pF
+    ("C0G", 1200, 100000, "+/-0.25pF"): "GCM1555C2A1R2CE02",  # 1.2pF 100Vdc +/-0.25pF
+    ("C0G", 1300, 100000, "+/-0.1pF"): "GCM1555C2A1R3BE02",  # 1.3pF 100Vdc +/-0.1pF
+    ("C0G", 1300, 100000, "+/-0.25pF"): "GCM1555C2A1R3CE02",  # 1.3pF 100Vdc +/-0.25pF
+    ("C0G", 1500, 100000, "+/-0.1pF"): "GCM1555C2A1R5BE02",  # 1.5pF 100Vdc +/-0.1pF
+    ("C0G", 1500, 100000, "+/-0.25pF"): "GCM1555C2A1R5CE02",  # 1.5pF 100Vdc +/-0.25pF
+    ("C0G", 1600, 100000, "+/-0.1pF"): "GCM1555C2A1R6BE02",  # 1.6pF 100Vdc +/-0.1pF
+    ("C0G", 1600, 100000, "+/-0.25pF"): "GCM1555C2A1R6CE02",  # 1.6pF 100Vdc +/-0.25pF
+    ("C0G", 1800, 100000, "+/-0.1pF"): "GCM1555C2A1R8BE02",  # 1.8pF 100Vdc +/-0.1pF
+    ("C0G", 1800, 100000, "+/-0.25pF"): "GCM1555C2A1R8CE02",  # 1.8pF 100Vdc +/-0.25pF
+    ("C0G", 20000, 100000, "+/-2%"): "GCM1555C2A200GE02",  # 20pF 100Vdc +/-2%
+    ("C0G", 20000, 100000, "+/-5%"): "GCM1555C2A200JE02",  # 20pF 100Vdc +/-5%
+    ("C0G", 22000, 100000, "+/-2%"): "GCM1555C2A220GE02",  # 22pF 100Vdc +/-2%
+    ("C0G", 22000, 100000, "+/-5%"): "GCM1555C2A220JE02",  # 22pF 100Vdc +/-5%
+    ("C0G", 220000, 100000, "+/-2%"): "GCM1555C2A221GE02",  # 220pF 100Vdc +/-2%
+    ("C0G", 220000, 100000, "+/-5%"): "GCM1555C2A221JE02",  # 220pF 100Vdc +/-5%
+    ("C0G", 24000, 100000, "+/-2%"): "GCM1555C2A240GE02",  # 24pF 100Vdc +/-2%
+    ("C0G", 24000, 100000, "+/-5%"): "GCM1555C2A240JE02",  # 24pF 100Vdc +/-5%
+    ("C0G", 27000, 100000, "+/-2%"): "GCM1555C2A270GE02",  # 27pF 100Vdc +/-2%
+    ("C0G", 27000, 100000, "+/-5%"): "GCM1555C2A270JE02",  # 27pF 100Vdc +/-5%
+    ("C0G", 270000, 100000, "+/-2%"): "GCM1555C2A271GE02",  # 270pF 100Vdc +/-2%
+    ("C0G", 270000, 100000, "+/-5%"): "GCM1555C2A271JE02",  # 270pF 100Vdc +/-5%
+    ("C0G", 2000, 100000, "+/-0.1pF"): "GCM1555C2A2R0BE02",  # 2pF 100Vdc +/-0.1pF
+    ("C0G", 2000, 100000, "+/-0.25pF"): "GCM1555C2A2R0CE02",  # 2pF 100Vdc +/-0.25pF
+    ("C0G", 2200, 100000, "+/-0.1pF"): "GCM1555C2A2R2BE02",  # 2.2pF 100Vdc +/-0.1pF
+    ("C0G", 2200, 100000, "+/-0.25pF"): "GCM1555C2A2R2CE02",  # 2.2pF 100Vdc +/-0.25pF
+    ("C0G", 2400, 100000, "+/-0.1pF"): "GCM1555C2A2R4BE02",  # 2.4pF 100Vdc +/-0.1pF
+    ("C0G", 2400, 100000, "+/-0.25pF"): "GCM1555C2A2R4CE02",  # 2.4pF 100Vdc +/-0.25pF
+    ("C0G", 2700, 100000, "+/-0.1pF"): "GCM1555C2A2R7BE02",  # 2.7pF 100Vdc +/-0.1pF
+    ("C0G", 2700, 100000, "+/-0.25pF"): "GCM1555C2A2R7CE02",  # 2.7pF 100Vdc +/-0.25pF
+    ("C0G", 30000, 100000, "+/-2%"): "GCM1555C2A300GE02",  # 30pF 100Vdc +/-2%
+    ("C0G", 30000, 100000, "+/-5%"): "GCM1555C2A300JE02",  # 30pF 100Vdc +/-5%
+    ("C0G", 33000, 100000, "+/-2%"): "GCM1555C2A330GE02",  # 33pF 100Vdc +/-2%
+    ("C0G", 33000, 100000, "+/-5%"): "GCM1555C2A330JE02",  # 33pF 100Vdc +/-5%
+    ("C0G", 330000, 100000, "+/-2%"): "GCM1555C2A331GE02",  # 330pF 100Vdc +/-2%
+    ("C0G", 330000, 100000, "+/-5%"): "GCM1555C2A331JE02",  # 330pF 100Vdc +/-5%
+    ("C0G", 36000, 100000, "+/-2%"): "GCM1555C2A360GE02",  # 36pF 100Vdc +/-2%
+    ("C0G", 36000, 100000, "+/-5%"): "GCM1555C2A360JE02",  # 36pF 100Vdc +/-5%
+    ("C0G", 39000, 100000, "+/-2%"): "GCM1555C2A390GE02",  # 39pF 100Vdc +/-2%
+    ("C0G", 39000, 100000, "+/-5%"): "GCM1555C2A390JE02",  # 39pF 100Vdc +/-5%
+    ("C0G", 390000, 100000, "+/-2%"): "GCM1555C2A391GE02",  # 390pF 100Vdc +/-2%
+    ("C0G", 390000, 100000, "+/-5%"): "GCM1555C2A391JE02",  # 390pF 100Vdc +/-5%
+    ("C0G", 3000, 100000, "+/-0.1pF"): "GCM1555C2A3R0BE02",  # 3pF 100Vdc +/-0.1pF
+    ("C0G", 3000, 100000, "+/-0.25pF"): "GCM1555C2A3R0CE02",  # 3pF 100Vdc +/-0.25pF
+    ("C0G", 3300, 100000, "+/-0.1pF"): "GCM1555C2A3R3BE02",  # 3.3pF 100Vdc +/-0.1pF
+    ("C0G", 3300, 100000, "+/-0.25pF"): "GCM1555C2A3R3CE02",  # 3.3pF 100Vdc +/-0.25pF
+    ("C0G", 3600, 100000, "+/-0.1pF"): "GCM1555C2A3R6BE02",  # 3.6pF 100Vdc +/-0.1pF
+    ("C0G", 3600, 100000, "+/-0.25pF"): "GCM1555C2A3R6CE02",  # 3.6pF 100Vdc +/-0.25pF
+    ("C0G", 3900, 100000, "+/-0.1pF"): "GCM1555C2A3R9BE02",  # 3.9pF 100Vdc +/-0.1pF
+    ("C0G", 3900, 100000, "+/-0.25pF"): "GCM1555C2A3R9CE02",  # 3.9pF 100Vdc +/-0.25pF
+    ("C0G", 43000, 100000, "+/-2%"): "GCM1555C2A430GE02",  # 43pF 100Vdc +/-2%
+    ("C0G", 43000, 100000, "+/-5%"): "GCM1555C2A430JE02",  # 43pF 100Vdc +/-5%
+    ("C0G", 47000, 100000, "+/-2%"): "GCM1555C2A470GE02",  # 47pF 100Vdc +/-2%
+    ("C0G", 47000, 100000, "+/-5%"): "GCM1555C2A470JE02",  # 47pF 100Vdc +/-5%
+    ("C0G", 470000, 100000, "+/-2%"): "GCM1555C2A471GE02",  # 470pF 100Vdc +/-2%
+    ("C0G", 470000, 100000, "+/-5%"): "GCM1555C2A471JE02",  # 470pF 100Vdc +/-5%
+    ("C0G", 4000, 100000, "+/-0.1pF"): "GCM1555C2A4R0BE02",  # 4pF 100Vdc +/-0.1pF
+    ("C0G", 4000, 100000, "+/-0.25pF"): "GCM1555C2A4R0CE02",  # 4pF 100Vdc +/-0.25pF
+    ("C0G", 4300, 100000, "+/-0.1pF"): "GCM1555C2A4R3BE02",  # 4.3pF 100Vdc +/-0.1pF
+    ("C0G", 4300, 100000, "+/-0.25pF"): "GCM1555C2A4R3CE02",  # 4.3pF 100Vdc +/-0.25pF
+    ("C0G", 4700, 100000, "+/-0.1pF"): "GCM1555C2A4R7BE02",  # 4.7pF 100Vdc +/-0.1pF
+    ("C0G", 4700, 100000, "+/-0.25pF"): "GCM1555C2A4R7CE02",  # 4.7pF 100Vdc +/-0.25pF
+    ("C0G", 51000, 100000, "+/-2%"): "GCM1555C2A510GE02",  # 51pF 100Vdc +/-2%
+    ("C0G", 51000, 100000, "+/-5%"): "GCM1555C2A510JE02",  # 51pF 100Vdc +/-5%
+    ("C0G", 56000, 100000, "+/-2%"): "GCM1555C2A560GE02",  # 56pF 100Vdc +/-2%
+    ("C0G", 56000, 100000, "+/-5%"): "GCM1555C2A560JE02",  # 56pF 100Vdc +/-5%
+    ("C0G", 560000, 100000, "+/-2%"): "GCM1555C2A561GE02",  # 560pF 100Vdc +/-2%
+    ("C0G", 560000, 100000, "+/-5%"): "GCM1555C2A561JE02",  # 560pF 100Vdc +/-5%
+    ("C0G", 5000, 100000, "+/-0.1pF"): "GCM1555C2A5R0BE02",  # 5pF 100Vdc +/-0.1pF
+    ("C0G", 5000, 100000, "+/-0.25pF"): "GCM1555C2A5R0CE02",  # 5pF 100Vdc +/-0.25pF
+    ("C0G", 5100, 100000, "+/-0.25pF"): "GCM1555C2A5R1CE02",  # 5.1pF 100Vdc +/-0.25pF
+    ("C0G", 5100, 100000, "+/-0.5pF"): "GCM1555C2A5R1DE02",  # 5.1pF 100Vdc +/-0.5pF
+    ("C0G", 5600, 100000, "+/-0.25pF"): "GCM1555C2A5R6CE02",  # 5.6pF 100Vdc +/-0.25pF
+    ("C0G", 5600, 100000, "+/-0.5pF"): "GCM1555C2A5R6DE02",  # 5.6pF 100Vdc +/-0.5pF
+    ("C0G", 62000, 100000, "+/-2%"): "GCM1555C2A620GE02",  # 62pF 100Vdc +/-2%
+    ("C0G", 62000, 100000, "+/-5%"): "GCM1555C2A620JE02",  # 62pF 100Vdc +/-5%
+    ("C0G", 68000, 100000, "+/-2%"): "GCM1555C2A680GE02",  # 68pF 100Vdc +/-2%
+    ("C0G", 68000, 100000, "+/-5%"): "GCM1555C2A680JE02",  # 68pF 100Vdc +/-5%
+    ("C0G", 680000, 100000, "+/-2%"): "GCM1555C2A681GE02",  # 680pF 100Vdc +/-2%
+    ("C0G", 680000, 100000, "+/-5%"): "GCM1555C2A681JE02",  # 680pF 100Vdc +/-5%
+    ("C0G", 6000, 100000, "+/-0.25pF"): "GCM1555C2A6R0CE02",  # 6pF 100Vdc +/-0.25pF
+    ("C0G", 6000, 100000, "+/-0.5pF"): "GCM1555C2A6R0DE02",  # 6pF 100Vdc +/-0.5pF
+    ("C0G", 6200, 100000, "+/-0.25pF"): "GCM1555C2A6R2CE02",  # 6.2pF 100Vdc +/-0.25pF
+    ("C0G", 6200, 100000, "+/-0.5pF"): "GCM1555C2A6R2DE02",  # 6.2pF 100Vdc +/-0.5pF
+    ("C0G", 6800, 100000, "+/-0.25pF"): "GCM1555C2A6R8CE02",  # 6.8pF 100Vdc +/-0.25pF
+    ("C0G", 6800, 100000, "+/-0.5pF"): "GCM1555C2A6R8DE02",  # 6.8pF 100Vdc +/-0.5pF
+    ("C0G", 75000, 100000, "+/-2%"): "GCM1555C2A750GE02",  # 75pF 100Vdc +/-2%
+    ("C0G", 75000, 100000, "+/-5%"): "GCM1555C2A750JE02",  # 75pF 100Vdc +/-5%
+    ("C0G", 7000, 100000, "+/-0.25pF"): "GCM1555C2A7R0CE02",  # 7pF 100Vdc +/-0.25pF
+    ("C0G", 7000, 100000, "+/-0.5pF"): "GCM1555C2A7R0DE02",  # 7pF 100Vdc +/-0.5pF
+    ("C0G", 7500, 100000, "+/-0.25pF"): "GCM1555C2A7R5CE02",  # 7.5pF 100Vdc +/-0.25pF
+    ("C0G", 7500, 100000, "+/-0.5pF"): "GCM1555C2A7R5DE02",  # 7.5pF 100Vdc +/-0.5pF
+    ("C0G", 82000, 100000, "+/-2%"): "GCM1555C2A820GE02",  # 82pF 100Vdc +/-2%
+    ("C0G", 82000, 100000, "+/-5%"): "GCM1555C2A820JE02",  # 82pF 100Vdc +/-5%
+    ("C0G", 820000, 100000, "+/-2%"): "GCM1555C2A821GE02",  # 820pF 100Vdc +/-2%
+    ("C0G", 820000, 100000, "+/-5%"): "GCM1555C2A821JE02",  # 820pF 100Vdc +/-5%
+    ("C0G", 8000, 100000, "+/-0.25pF"): "GCM1555C2A8R0CE02",  # 8pF 100Vdc +/-0.25pF
+    ("C0G", 8000, 100000, "+/-0.5pF"): "GCM1555C2A8R0DE02",  # 8pF 100Vdc +/-0.5pF
+    ("C0G", 8200, 100000, "+/-0.25pF"): "GCM1555C2A8R2CE02",  # 8.2pF 100Vdc +/-0.25pF
+    ("C0G", 8200, 100000, "+/-0.5pF"): "GCM1555C2A8R2DE02",  # 8.2pF 100Vdc +/-0.5pF
+    ("C0G", 91000, 100000, "+/-2%"): "GCM1555C2A910GE02",  # 91pF 100Vdc +/-2%
+    ("C0G", 91000, 100000, "+/-5%"): "GCM1555C2A910JE02",  # 91pF 100Vdc +/-5%
+    ("C0G", 9000, 100000, "+/-0.25pF"): "GCM1555C2A9R0CE02",  # 9pF 100Vdc +/-0.25pF
+    ("C0G", 9000, 100000, "+/-0.5pF"): "GCM1555C2A9R0DE02",  # 9pF 100Vdc +/-0.5pF
+    ("C0G", 9100, 100000, "+/-0.25pF"): "GCM1555C2A9R1CE02",  # 9.1pF 100Vdc +/-0.25pF
+    ("C0G", 9100, 100000, "+/-0.5pF"): "GCM1555C2A9R1DE02",  # 9.1pF 100Vdc +/-0.5pF
+    ("C0G", 100, 100000, "+/-0.05pF"): "GCM1555C2AR10WE02",  # 0.1pF 100Vdc +/-0.05pF
+    ("C0G", 110, 100000, "+/-0.1pF"): "GCM1555C2AR11BE02",  # 0.11pF 100Vdc +/-0.1pF
+    ("C0G", 110, 100000, "+/-0.05pF"): "GCM1555C2AR11WE02",  # 0.11pF 100Vdc +/-0.05pF
+    ("C0G", 120, 100000, "+/-0.1pF"): "GCM1555C2AR12BE02",  # 0.12pF 100Vdc +/-0.1pF
+    ("C0G", 120, 100000, "+/-0.05pF"): "GCM1555C2AR12WE02",  # 0.12pF 100Vdc +/-0.05pF
+    ("C0G", 130, 100000, "+/-0.1pF"): "GCM1555C2AR13BE02",  # 0.13pF 100Vdc +/-0.1pF
+    ("C0G", 130, 100000, "+/-0.05pF"): "GCM1555C2AR13WE02",  # 0.13pF 100Vdc +/-0.05pF
+    ("C0G", 150, 100000, "+/-0.1pF"): "GCM1555C2AR15BE02",  # 0.15pF 100Vdc +/-0.1pF
+    ("C0G", 150, 100000, "+/-0.05pF"): "GCM1555C2AR15WE02",  # 0.15pF 100Vdc +/-0.05pF
+    ("C0G", 160, 100000, "+/-0.1pF"): "GCM1555C2AR16BE02",  # 0.16pF 100Vdc +/-0.1pF
+    ("C0G", 160, 100000, "+/-0.05pF"): "GCM1555C2AR16WE02",  # 0.16pF 100Vdc +/-0.05pF
+    ("C0G", 180, 100000, "+/-0.1pF"): "GCM1555C2AR18BE02",  # 0.18pF 100Vdc +/-0.1pF
+    ("C0G", 180, 100000, "+/-0.05pF"): "GCM1555C2AR18WE02",  # 0.18pF 100Vdc +/-0.05pF
+    ("C0G", 200, 100000, "+/-0.1pF"): "GCM1555C2AR20BE02",  # 0.2pF 100Vdc +/-0.1pF
+    ("C0G", 200, 100000, "+/-0.05pF"): "GCM1555C2AR20WE02",  # 0.2pF 100Vdc +/-0.05pF
+    ("C0G", 220, 100000, "+/-0.1pF"): "GCM1555C2AR22BE02",  # 0.22pF 100Vdc +/-0.1pF
+    ("C0G", 220, 100000, "+/-0.05pF"): "GCM1555C2AR22WE02",  # 0.22pF 100Vdc +/-0.05pF
+    ("C0G", 240, 100000, "+/-0.1pF"): "GCM1555C2AR24BE02",  # 0.24pF 100Vdc +/-0.1pF
+    ("C0G", 240, 100000, "+/-0.05pF"): "GCM1555C2AR24WE02",  # 0.24pF 100Vdc +/-0.05pF
+    ("C0G", 270, 100000, "+/-0.1pF"): "GCM1555C2AR27BE02",  # 0.27pF 100Vdc +/-0.1pF
+    ("C0G", 270, 100000, "+/-0.05pF"): "GCM1555C2AR27WE02",  # 0.27pF 100Vdc +/-0.05pF
+    ("C0G", 300, 100000, "+/-0.1pF"): "GCM1555C2AR30BE02",  # 0.3pF 100Vdc +/-0.1pF
+    ("C0G", 300, 100000, "+/-0.05pF"): "GCM1555C2AR30WE02",  # 0.3pF 100Vdc +/-0.05pF
+    ("C0G", 330, 100000, "+/-0.1pF"): "GCM1555C2AR33BE02",  # 0.33pF 100Vdc +/-0.1pF
+    ("C0G", 330, 100000, "+/-0.05pF"): "GCM1555C2AR33WE02",  # 0.33pF 100Vdc +/-0.05pF
+    ("C0G", 360, 100000, "+/-0.1pF"): "GCM1555C2AR36BE02",  # 0.36pF 100Vdc +/-0.1pF
+    ("C0G", 360, 100000, "+/-0.05pF"): "GCM1555C2AR36WE02",  # 0.36pF 100Vdc +/-0.05pF
+    ("C0G", 390, 100000, "+/-0.1pF"): "GCM1555C2AR39BE02",  # 0.39pF 100Vdc +/-0.1pF
+    ("C0G", 390, 100000, "+/-0.05pF"): "GCM1555C2AR39WE02",  # 0.39pF 100Vdc +/-0.05pF
+    ("C0G", 400, 100000, "+/-0.1pF"): "GCM1555C2AR40BE02",  # 0.4pF 100Vdc +/-0.1pF
+    ("C0G", 400, 100000, "+/-0.05pF"): "GCM1555C2AR40WE02",  # 0.4pF 100Vdc +/-0.05pF
+    ("C0G", 430, 100000, "+/-0.1pF"): "GCM1555C2AR43BE02",  # 0.43pF 100Vdc +/-0.1pF
+    ("C0G", 430, 100000, "+/-0.05pF"): "GCM1555C2AR43WE02",  # 0.43pF 100Vdc +/-0.05pF
+    ("C0G", 470, 100000, "+/-0.1pF"): "GCM1555C2AR47BE02",  # 0.47pF 100Vdc +/-0.1pF
+    ("C0G", 470, 100000, "+/-0.05pF"): "GCM1555C2AR47WE02",  # 0.47pF 100Vdc +/-0.05pF
+    ("C0G", 500, 100000, "+/-0.1pF"): "GCM1555C2AR50BE02",  # 0.5pF 100Vdc +/-0.1pF
+    ("C0G", 500, 100000, "+/-0.05pF"): "GCM1555C2AR50WE02",  # 0.5pF 100Vdc +/-0.05pF
+    ("C0G", 510, 100000, "+/-0.1pF"): "GCM1555C2AR51BE02",  # 0.51pF 100Vdc +/-0.1pF
+    ("C0G", 510, 100000, "+/-0.05pF"): "GCM1555C2AR51WE02",  # 0.51pF 100Vdc +/-0.05pF
+    ("C0G", 560, 100000, "+/-0.1pF"): "GCM1555C2AR56BE02",  # 0.56pF 100Vdc +/-0.1pF
+    ("C0G", 560, 100000, "+/-0.05pF"): "GCM1555C2AR56WE02",  # 0.56pF 100Vdc +/-0.05pF
+    ("C0G", 600, 100000, "+/-0.1pF"): "GCM1555C2AR60BE02",  # 0.6pF 100Vdc +/-0.1pF
+    ("C0G", 600, 100000, "+/-0.05pF"): "GCM1555C2AR60WE02",  # 0.6pF 100Vdc +/-0.05pF
+    ("C0G", 620, 100000, "+/-0.1pF"): "GCM1555C2AR62BE02",  # 0.62pF 100Vdc +/-0.1pF
+    ("C0G", 620, 100000, "+/-0.05pF"): "GCM1555C2AR62WE02",  # 0.62pF 100Vdc +/-0.05pF
+    ("C0G", 680, 100000, "+/-0.1pF"): "GCM1555C2AR68BE02",  # 0.68pF 100Vdc +/-0.1pF
+    ("C0G", 680, 100000, "+/-0.05pF"): "GCM1555C2AR68WE02",  # 0.68pF 100Vdc +/-0.05pF
+    ("C0G", 700, 100000, "+/-0.1pF"): "GCM1555C2AR70BE02",  # 0.7pF 100Vdc +/-0.1pF
+    ("C0G", 700, 100000, "+/-0.05pF"): "GCM1555C2AR70WE02",  # 0.7pF 100Vdc +/-0.05pF
+    ("C0G", 750, 100000, "+/-0.1pF"): "GCM1555C2AR75BE02",  # 0.75pF 100Vdc +/-0.1pF
+    ("C0G", 750, 100000, "+/-0.05pF"): "GCM1555C2AR75WE02",  # 0.75pF 100Vdc +/-0.05pF
+    ("C0G", 800, 100000, "+/-0.1pF"): "GCM1555C2AR80BE02",  # 0.8pF 100Vdc +/-0.1pF
+    ("C0G", 800, 100000, "+/-0.05pF"): "GCM1555C2AR80WE02",  # 0.8pF 100Vdc +/-0.05pF
+    ("C0G", 820, 100000, "+/-0.1pF"): "GCM1555C2AR82BE02",  # 0.82pF 100Vdc +/-0.1pF
+    ("C0G", 820, 100000, "+/-0.05pF"): "GCM1555C2AR82WE02",  # 0.82pF 100Vdc +/-0.05pF
+    ("C0G", 900, 100000, "+/-0.1pF"): "GCM1555C2AR90BE02",  # 0.9pF 100Vdc +/-0.1pF
+    ("C0G", 900, 100000, "+/-0.05pF"): "GCM1555C2AR90WE02",  # 0.9pF 100Vdc +/-0.05pF
+    ("C0G", 910, 100000, "+/-0.1pF"): "GCM1555C2AR91BE02",  # 0.91pF 100Vdc +/-0.1pF
+    ("C0G", 910, 100000, "+/-0.05pF"): "GCM1555C2AR91WE02",  # 0.91pF 100Vdc +/-0.05pF
+    ("X7R", 1000000000, 4000, "+/-10%"): "GCM155R70G105KE02",  # 1uF 4Vdc +/-10%
+    ("X7R", 1000000000, 6300, "+/-10%"): "GCM155R70J105KE02",  # 1uF 6.3Vdc +/-10%
+    ("X7R", 100000000, 10000, "+/-10%"): "GCM155R71A104KA55",  # 0.1uF 10Vdc +/-10%
+    ("X7R", 100000000, 16000, "+/-10%"): "GCM155R71C104KA55",  # 0.1uF 16Vdc +/-10%
+    ("X7R", 100000000, 16000, "+/-20%"): "GCM155R71C104MA55",  # 0.1uF 16Vdc +/-20%
+    ("X7R", 150000000, 16000, "+/-10%"): "GCM155R71C154KE02",  # 0.15uF 16Vdc +/-10%
+    ("X7R", 150000000, 16000, "+/-20%"): "GCM155R71C154ME02",  # 0.15uF 16Vdc +/-20%
+    ("X7R", 220000000, 16000, "+/-10%"): "GCM155R71C224KE02",  # 0.22uF 16Vdc +/-10%
+    ("X7R", 220000000, 16000, "+/-20%"): "GCM155R71C224ME02",  # 0.22uF 16Vdc +/-20%
+    ("X7R", 27000000, 16000, "+/-10%"): "GCM155R71C273KA37",  # 27,000pF 16Vdc +/-10%
+    ("X7R", 27000000, 16000, "+/-20%"): "GCM155R71C273MA37",  # 27,000pF 16Vdc +/-20%
+    ("X7R", 33000000, 16000, "+/-10%"): "GCM155R71C333KA37",  # 33,000pF 16Vdc +/-10%
+    ("X7R", 33000000, 16000, "+/-20%"): "GCM155R71C333MA37",  # 33,000pF 16Vdc +/-20%
+    ("X7R", 39000000, 16000, "+/-10%"): "GCM155R71C393KA37",  # 39,000pF 16Vdc +/-10%
+    ("X7R", 39000000, 16000, "+/-20%"): "GCM155R71C393MA37",  # 39,000pF 16Vdc +/-20%
+    ("X7R", 47000000, 16000, "+/-10%"): "GCM155R71C473KA37",  # 47,000pF 16Vdc +/-10%
+    ("X7R", 47000000, 16000, "+/-20%"): "GCM155R71C473MA37",  # 47,000pF 16Vdc +/-20%
+    ("X7R", 56000000, 16000, "+/-10%"): "GCM155R71C563KA55",  # 56,000pF 16Vdc +/-10%
+    ("X7R", 56000000, 16000, "+/-20%"): "GCM155R71C563MA55",  # 56,000pF 16Vdc +/-20%
+    ("X7R", 68000000, 16000, "+/-10%"): "GCM155R71C683KA55",  # 68,000pF 16Vdc +/-10%
+    ("X7R", 68000000, 16000, "+/-20%"): "GCM155R71C683MA55",  # 68,000pF 16Vdc +/-20%
+    ("X7R", 82000000, 16000, "+/-10%"): "GCM155R71C823KA55",  # 82,000pF 16Vdc +/-10%
+    ("X7R", 82000000, 16000, "+/-20%"): "GCM155R71C823MA55",  # 82,000pF 16Vdc +/-20%
+    ("X7R", 10000000, 25000, "+/-10%"): "GCM155R71E103KA37",  # 10,000pF 25Vdc +/-10%
+    ("X7R", 10000000, 25000, "+/-20%"): "GCM155R71E103MA37",  # 10,000pF 25Vdc +/-20%
+    ("X7R", 100000000, 25000, "+/-10%"): "GCM155R71E104KE02",  # 0.1uF 25Vdc +/-10%
+    ("X7R", 12000000, 25000, "+/-10%"): "GCM155R71E123KA55",  # 12,000pF 25Vdc +/-10%
+    ("X7R", 12000000, 25000, "+/-20%"): "GCM155R71E123MA55",  # 12,000pF 25Vdc +/-20%
+    ("X7R", 15000000, 25000, "+/-10%"): "GCM155R71E153KA55",  # 15,000pF 25Vdc +/-10%
+    ("X7R", 15000000, 25000, "+/-20%"): "GCM155R71E153MA55",  # 15,000pF 25Vdc +/-20%
+    ("X7R", 18000000, 25000, "+/-10%"): "GCM155R71E183KA55",  # 18,000pF 25Vdc +/-10%
+    ("X7R", 18000000, 25000, "+/-20%"): "GCM155R71E183MA55",  # 18,000pF 25Vdc +/-20%
+    ("X7R", 22000000, 25000, "+/-10%"): "GCM155R71E223KA55",  # 22,000pF 25Vdc +/-10%
+    ("X7R", 22000000, 25000, "+/-20%"): "GCM155R71E223MA55",  # 22,000pF 25Vdc +/-20%
+    ("X7R", 27000000, 25000, "+/-10%"): "GCM155R71E273KA55",  # 27,000pF 25Vdc +/-10%
+    ("X7R", 27000000, 25000, "+/-20%"): "GCM155R71E273MA55",  # 27,000pF 25Vdc +/-20%
+    ("X7R", 33000000, 25000, "+/-10%"): "GCM155R71E333KA55",  # 33,000pF 25Vdc +/-10%
+    ("X7R", 33000000, 25000, "+/-20%"): "GCM155R71E333MA55",  # 33,000pF 25Vdc +/-20%
+    ("X7R", 39000000, 25000, "+/-10%"): "GCM155R71E393KA55",  # 39,000pF 25Vdc +/-10%
+    ("X7R", 39000000, 25000, "+/-20%"): "GCM155R71E393MA55",  # 39,000pF 25Vdc +/-20%
+    ("X7R", 4700000, 25000, "+/-10%"): "GCM155R71E472KA37",  # 4,700pF 25Vdc +/-10%
+    ("X7R", 47000000, 25000, "+/-10%"): "GCM155R71E473KA55",  # 47,000pF 25Vdc +/-10%
+    ("X7R", 47000000, 25000, "+/-20%"): "GCM155R71E473MA55",  # 47,000pF 25Vdc +/-20%
+    ("X7R", 5600000, 25000, "+/-10%"): "GCM155R71E562KA37",  # 5,600pF 25Vdc +/-10%
+    ("X7R", 5600000, 25000, "+/-20%"): "GCM155R71E562MA37",  # 5,600pF 25Vdc +/-20%
+    ("X7R", 6800000, 25000, "+/-10%"): "GCM155R71E682KA37",  # 6,800pF 25Vdc +/-10%
+    ("X7R", 6800000, 25000, "+/-20%"): "GCM155R71E682MA37",  # 6,800pF 25Vdc +/-20%
+    ("X7R", 8200000, 25000, "+/-10%"): "GCM155R71E822KA37",  # 8,200pF 25Vdc +/-10%
+    ("X7R", 8200000, 25000, "+/-20%"): "GCM155R71E822MA37",  # 8,200pF 25Vdc +/-20%
+    ("X7R", 1000000, 50000, "+/-10%"): "GCM155R71H102KA37",  # 1,000pF 50Vdc +/-10%
+    ("X7R", 1000000, 50000, "+/-20%"): "GCM155R71H102MA37",  # 1,000pF 50Vdc +/-20%
+    ("X7R", 10000000, 50000, "+/-10%"): "GCM155R71H103KA55",  # 10,000pF 50Vdc +/-10%
+    ("X7R", 10000000, 50000, "+/-20%"): "GCM155R71H103MA55",  # 10,000pF 50Vdc +/-20%
+    ("X7R", 100000000, 50000, "+/-10%"): "GCM155R71H104KE02",  # 0.1uF 50Vdc +/-10%
+    ("X7R", 100000000, 50000, "+/-20%"): "GCM155R71H104ME02",  # 0.1uF 50Vdc +/-20%
+    ("X7R", 1200000, 50000, "+/-10%"): "GCM155R71H122KA37",  # 1,200pF 50Vdc +/-10%
+    ("X7R", 1200000, 50000, "+/-20%"): "GCM155R71H122MA37",  # 1,200pF 50Vdc +/-20%
+    ("X7R", 12000000, 50000, "+/-10%"): "GCM155R71H123KA55",  # 12,000pF 50Vdc +/-10%
+    ("X7R", 12000000, 50000, "+/-20%"): "GCM155R71H123MA55",  # 12,000pF 50Vdc +/-20%
+    ("X7R", 1500000, 50000, "+/-10%"): "GCM155R71H152KA37",  # 1,500pF 50Vdc +/-10%
+    ("X7R", 1500000, 50000, "+/-20%"): "GCM155R71H152MA37",  # 1,500pF 50Vdc +/-20%
+    ("X7R", 15000000, 50000, "+/-10%"): "GCM155R71H153KA55",  # 15,000pF 50Vdc +/-10%
+    ("X7R", 15000000, 50000, "+/-20%"): "GCM155R71H153MA55",  # 15,000pF 50Vdc +/-20%
+    ("X7R", 1800000, 50000, "+/-10%"): "GCM155R71H182KA37",  # 1,800pF 50Vdc +/-10%
+    ("X7R", 1800000, 50000, "+/-20%"): "GCM155R71H182MA37",  # 1,800pF 50Vdc +/-20%
+    ("X7R", 18000000, 50000, "+/-10%"): "GCM155R71H183KA55",  # 18,000pF 50Vdc +/-10%
+    ("X7R", 18000000, 50000, "+/-20%"): "GCM155R71H183MA55",  # 18,000pF 50Vdc +/-20%
+    ("X7R", 220000, 50000, "+/-10%"): "GCM155R71H221KA37",  # 220pF 50Vdc +/-10%
+    ("X7R", 220000, 50000, "+/-20%"): "GCM155R71H221MA37",  # 220pF 50Vdc +/-20%
+    ("X7R", 2200000, 50000, "+/-10%"): "GCM155R71H222KA37",  # 2,200pF 50Vdc +/-10%
+    ("X7R", 2200000, 50000, "+/-20%"): "GCM155R71H222MA37",  # 2,200pF 50Vdc +/-20%
+    ("X7R", 22000000, 50000, "+/-10%"): "GCM155R71H223KA55",  # 22,000pF 50Vdc +/-10%
+    ("X7R", 22000000, 50000, "+/-20%"): "GCM155R71H223MA55",  # 22,000pF 50Vdc +/-20%
+    ("X7R", 270000, 50000, "+/-10%"): "GCM155R71H271KA37",  # 270pF 50Vdc +/-10%
+    ("X7R", 270000, 50000, "+/-20%"): "GCM155R71H271MA37",  # 270pF 50Vdc +/-20%
+    ("X7R", 2700000, 50000, "+/-10%"): "GCM155R71H272KA37",  # 2,700pF 50Vdc +/-10%
+    ("X7R", 2700000, 50000, "+/-20%"): "GCM155R71H272MA37",  # 2,700pF 50Vdc +/-20%
+    ("X7R", 330000, 50000, "+/-10%"): "GCM155R71H331KA37",  # 330pF 50Vdc +/-10%
+    ("X7R", 330000, 50000, "+/-20%"): "GCM155R71H331MA37",  # 330pF 50Vdc +/-20%
+    ("X7R", 3300000, 50000, "+/-10%"): "GCM155R71H332KA37",  # 3,300pF 50Vdc +/-10%
+    ("X7R", 3300000, 50000, "+/-20%"): "GCM155R71H332MA37",  # 3,300pF 50Vdc +/-20%
+    ("X7R", 33000000, 50000, "+/-10%"): "GCM155R71H333KE02",  # 33,000pF 50Vdc +/-10%
+    ("X7R", 33000000, 50000, "+/-20%"): "GCM155R71H333ME02",  # 33,000pF 50Vdc +/-20%
+    ("X7R", 390000, 50000, "+/-10%"): "GCM155R71H391KA37",  # 390pF 50Vdc +/-10%
+    ("X7R", 390000, 50000, "+/-20%"): "GCM155R71H391MA37",  # 390pF 50Vdc +/-20%
+    ("X7R", 3900000, 50000, "+/-10%"): "GCM155R71H392KA37",  # 3,900pF 50Vdc +/-10%
+    ("X7R", 3900000, 50000, "+/-20%"): "GCM155R71H392MA37",  # 3,900pF 50Vdc +/-20%
+    ("X7R", 470000, 50000, "+/-10%"): "GCM155R71H471KA37",  # 470pF 50Vdc +/-10%
+    ("X7R", 470000, 50000, "+/-20%"): "GCM155R71H471MA37",  # 470pF 50Vdc +/-20%
+    ("X7R", 4700000, 50000, "+/-10%"): "GCM155R71H472KA37",  # 4,700pF 50Vdc +/-10%
+    ("X7R", 4700000, 50000, "+/-20%"): "GCM155R71H472MA37",  # 4,700pF 50Vdc +/-20%
+    ("X7R", 47000000, 50000, "+/-10%"): "GCM155R71H473KE02",  # 47,000pF 50Vdc +/-10%
+    ("X7R", 47000000, 50000, "+/-20%"): "GCM155R71H473ME02",  # 47,000pF 50Vdc +/-20%
+    ("X7R", 560000, 50000, "+/-10%"): "GCM155R71H561KA37",  # 560pF 50Vdc +/-10%
+    ("X7R", 560000, 50000, "+/-20%"): "GCM155R71H561MA37",  # 560pF 50Vdc +/-20%
+    ("X7R", 5600000, 50000, "+/-10%"): "GCM155R71H562KA55",  # 5,600pF 50Vdc +/-10%
+    ("X7R", 5600000, 50000, "+/-20%"): "GCM155R71H562MA55",  # 5,600pF 50Vdc +/-20%
+    ("X7R", 680000, 50000, "+/-10%"): "GCM155R71H681KA37",  # 680pF 50Vdc +/-10%
+    ("X7R", 680000, 50000, "+/-20%"): "GCM155R71H681MA37",  # 680pF 50Vdc +/-20%
+    ("X7R", 6800000, 50000, "+/-10%"): "GCM155R71H682KA55",  # 6,800pF 50Vdc +/-10%
+    ("X7R", 6800000, 50000, "+/-20%"): "GCM155R71H682MA55",  # 6,800pF 50Vdc +/-20%
+    ("X7R", 68000000, 50000, "+/-10%"): "GCM155R71H683KE02",  # 68,000pF 50Vdc +/-10%
+    ("X7R", 68000000, 50000, "+/-20%"): "GCM155R71H683ME02",  # 68,000pF 50Vdc +/-20%
+    ("X7R", 820000, 50000, "+/-10%"): "GCM155R71H821KA37",  # 820pF 50Vdc +/-10%
+    ("X7R", 820000, 50000, "+/-20%"): "GCM155R71H821MA37",  # 820pF 50Vdc +/-20%
+    ("X7R", 8200000, 50000, "+/-10%"): "GCM155R71H822KA55",  # 8,200pF 50Vdc +/-10%
+    ("X7R", 8200000, 50000, "+/-20%"): "GCM155R71H822MA55",  # 8,200pF 50Vdc +/-20%
+    ("X7R", 1000000, 100000, "+/-10%"): "GCM155R72A102KA37",  # 1,000pF 100Vdc +/-10%
+    ("X7R", 1000000, 100000, "+/-20%"): "GCM155R72A102MA37",  # 1,000pF 100Vdc +/-20%
+    ("X7R", 1200000, 100000, "+/-10%"): "GCM155R72A122KA37",  # 1,200pF 100Vdc +/-10%
+    ("X7R", 1200000, 100000, "+/-20%"): "GCM155R72A122MA37",  # 1,200pF 100Vdc +/-20%
+    ("X7R", 1500000, 100000, "+/-10%"): "GCM155R72A152KA37",  # 1,500pF 100Vdc +/-10%
+    ("X7R", 1500000, 100000, "+/-20%"): "GCM155R72A152MA37",  # 1,500pF 100Vdc +/-20%
+    ("X7R", 1800000, 100000, "+/-10%"): "GCM155R72A182KA37",  # 1,800pF 100Vdc +/-10%
+    ("X7R", 1800000, 100000, "+/-20%"): "GCM155R72A182MA37",  # 1,800pF 100Vdc +/-20%
+    ("X7R", 220000, 100000, "+/-10%"): "GCM155R72A221KA37",  # 220pF 100Vdc +/-10%
+    ("X7R", 220000, 100000, "+/-20%"): "GCM155R72A221MA37",  # 220pF 100Vdc +/-20%
+    ("X7R", 2200000, 100000, "+/-10%"): "GCM155R72A222KA37",  # 2,200pF 100Vdc +/-10%
+    ("X7R", 2200000, 100000, "+/-20%"): "GCM155R72A222MA37",  # 2,200pF 100Vdc +/-20%
+    ("X7R", 270000, 100000, "+/-10%"): "GCM155R72A271KA37",  # 270pF 100Vdc +/-10%
+    ("X7R", 270000, 100000, "+/-20%"): "GCM155R72A271MA37",  # 270pF 100Vdc +/-20%
+    ("X7R", 2700000, 100000, "+/-10%"): "GCM155R72A272KA37",  # 2,700pF 100Vdc +/-10%
+    ("X7R", 2700000, 100000, "+/-20%"): "GCM155R72A272MA37",  # 2,700pF 100Vdc +/-20%
+    ("X7R", 330000, 100000, "+/-10%"): "GCM155R72A331KA37",  # 330pF 100Vdc +/-10%
+    ("X7R", 330000, 100000, "+/-20%"): "GCM155R72A331MA37",  # 330pF 100Vdc +/-20%
+    ("X7R", 3300000, 100000, "+/-10%"): "GCM155R72A332KA37",  # 3,300pF 100Vdc +/-10%
+    ("X7R", 3300000, 100000, "+/-20%"): "GCM155R72A332MA37",  # 3,300pF 100Vdc +/-20%
+    ("X7R", 390000, 100000, "+/-10%"): "GCM155R72A391KA37",  # 390pF 100Vdc +/-10%
+    ("X7R", 390000, 100000, "+/-20%"): "GCM155R72A391MA37",  # 390pF 100Vdc +/-20%
+    ("X7R", 3900000, 100000, "+/-10%"): "GCM155R72A392KA37",  # 3,900pF 100Vdc +/-10%
+    ("X7R", 3900000, 100000, "+/-20%"): "GCM155R72A392MA37",  # 3,900pF 100Vdc +/-20%
+    ("X7R", 470000, 100000, "+/-10%"): "GCM155R72A471KA37",  # 470pF 100Vdc +/-10%
+    ("X7R", 470000, 100000, "+/-20%"): "GCM155R72A471MA37",  # 470pF 100Vdc +/-20%
+    ("X7R", 4700000, 100000, "+/-10%"): "GCM155R72A472KA37",  # 4,700pF 100Vdc +/-10%
+    ("X7R", 4700000, 100000, "+/-20%"): "GCM155R72A472MA37",  # 4,700pF 100Vdc +/-20%
+    ("X7R", 560000, 100000, "+/-10%"): "GCM155R72A561KA37",  # 560pF 100Vdc +/-10%
+    ("X7R", 560000, 100000, "+/-20%"): "GCM155R72A561MA37",  # 560pF 100Vdc +/-20%
+    ("X7R", 680000, 100000, "+/-10%"): "GCM155R72A681KA37",  # 680pF 100Vdc +/-10%
+    ("X7R", 680000, 100000, "+/-20%"): "GCM155R72A681MA37",  # 680pF 100Vdc +/-20%
+    ("X7R", 820000, 100000, "+/-10%"): "GCM155R72A821KA37",  # 820pF 100Vdc +/-10%
+    ("X7R", 820000, 100000, "+/-20%"): "GCM155R72A821MA37",  # 820pF 100Vdc +/-20%
+}
+# Tolerances the catalog lists for one (dielectric, femtofarad, millivolt): needed when there are several.
+_TOLS = {
+    ("C0G", 10000, 50000): ["+/-1%", "+/-2%", "+/-2.5%", "+/-5%"],
+    ("C0G", 100000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 1000000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 11000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 110000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 12000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 120000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 13000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 130000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 15000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 150000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 16000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 160000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 18000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 180000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 1000, 50000): ["+/-0.1pF", "+/-0.25pF", "+/-5%"],
+    ("C0G", 1100, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 1200, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 1300, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 1400, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 1500, 50000): ["+/-0.05pF", "+/-0.1pF", "+/-0.25pF", "+/-5%"],
+    ("C0G", 1600, 50000): ["+/-0.05pF", "+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 1700, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 1800, 50000): ["+/-0.05pF", "+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 1900, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 20000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 200000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 22000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 220000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 24000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 240000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 27000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 270000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 2000, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 2100, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 2200, 50000): ["+/-0.05pF", "+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 2300, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 2400, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 2500, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 2600, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 2700, 50000): ["+/-0.05pF", "+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 2800, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 2900, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 30000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 300000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 33000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 330000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 36000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 360000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 39000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 390000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 3000, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 3100, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 3200, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 3300, 50000): ["+/-0.1pF", "+/-0.25pF", "+/-2%"],
+    ("C0G", 3400, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 3500, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 3600, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 3700, 50000): ["+/-0.25pF"],
+    ("C0G", 3800, 50000): ["+/-0.25pF"],
+    ("C0G", 3900, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 43000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 430000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 47000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 470000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 4000, 50000): ["+/-0.1pF", "+/-0.25pF", "+/-2%", "+/-5%"],
+    ("C0G", 4100, 50000): ["+/-0.25pF"],
+    ("C0G", 4200, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 4300, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 4400, 50000): ["+/-0.25pF"],
+    ("C0G", 4500, 50000): ["+/-0.25pF"],
+    ("C0G", 4600, 50000): ["+/-0.25pF"],
+    ("C0G", 4700, 50000): ["+/-0.05pF", "+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 4800, 50000): ["+/-0.25pF"],
+    ("C0G", 4900, 50000): ["+/-0.25pF"],
+    ("C0G", 51000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 510000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 56000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 560000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 5000, 50000): ["+/-0.1pF", "+/-0.25pF", "+/-1%"],
+    ("C0G", 5100, 50000): ["+/-0.1pF", "+/-0.25pF", "+/-0.5pF", "+/-1%"],
+    ("C0G", 5200, 50000): ["+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 5300, 50000): ["+/-0.05pF", "+/-0.5pF"],
+    ("C0G", 5400, 50000): ["+/-0.5pF"],
+    ("C0G", 5500, 50000): ["+/-0.05pF", "+/-0.5pF"],
+    ("C0G", 5600, 50000): ["+/-0.1pF", "+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 5700, 50000): ["+/-0.5pF"],
+    ("C0G", 5800, 50000): ["+/-0.5pF"],
+    ("C0G", 5900, 50000): ["+/-0.5pF"],
+    ("C0G", 62000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 620000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 68000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 680000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 6000, 50000): ["+/-0.1pF", "+/-0.25pF", "+/-0.5pF", "+/-1%"],
+    ("C0G", 6100, 50000): ["+/-0.5pF"],
+    ("C0G", 6200, 50000): ["+/-0.1pF", "+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 6300, 50000): ["+/-0.5pF"],
+    ("C0G", 6400, 50000): ["+/-0.5pF"],
+    ("C0G", 6500, 50000): ["+/-0.05pF", "+/-0.5pF"],
+    ("C0G", 6600, 50000): ["+/-0.5pF"],
+    ("C0G", 6700, 50000): ["+/-0.05pF", "+/-0.5pF"],
+    ("C0G", 6800, 50000): ["+/-0.05pF", "+/-0.1pF", "+/-0.25pF", "+/-0.5pF", "+/-1%"],
+    ("C0G", 6900, 50000): ["+/-0.5pF"],
+    ("C0G", 75000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 750000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 7000, 50000): ["+/-0.05pF", "+/-0.1pF", "+/-0.25pF", "+/-0.5pF", "+/-1%"],
+    ("C0G", 7100, 50000): ["+/-0.5pF"],
+    ("C0G", 7200, 50000): ["+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 7300, 50000): ["+/-0.5pF"],
+    ("C0G", 7400, 50000): ["+/-0.5pF"],
+    ("C0G", 7500, 50000): ["+/-0.1pF", "+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 7600, 50000): ["+/-0.5pF"],
+    ("C0G", 7700, 50000): ["+/-0.5pF"],
+    ("C0G", 7800, 50000): ["+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 7900, 50000): ["+/-0.5pF"],
+    ("C0G", 82000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 820000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 8000, 50000): ["+/-0.05pF", "+/-0.1pF", "+/-0.25pF", "+/-0.5pF", "+/-1%"],
+    ("C0G", 8100, 50000): ["+/-0.5pF"],
+    ("C0G", 8200, 50000): ["+/-0.1pF", "+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 8300, 50000): ["+/-0.5pF"],
+    ("C0G", 8400, 50000): ["+/-0.1pF", "+/-0.5pF"],
+    ("C0G", 8500, 50000): ["+/-0.5pF"],
+    ("C0G", 8600, 50000): ["+/-0.5pF"],
+    ("C0G", 8700, 50000): ["+/-0.1pF", "+/-0.5pF"],
+    ("C0G", 8800, 50000): ["+/-0.5pF"],
+    ("C0G", 8900, 50000): ["+/-0.5pF"],
+    ("C0G", 91000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 910000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 9000, 50000): ["+/-0.05pF", "+/-0.1pF", "+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 9100, 50000): ["+/-0.1pF", "+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 9200, 50000): ["+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 9300, 50000): ["+/-0.5pF"],
+    ("C0G", 9400, 50000): ["+/-0.5pF"],
+    ("C0G", 9500, 50000): ["+/-0.5pF"],
+    ("C0G", 9600, 50000): ["+/-0.5pF"],
+    ("C0G", 9700, 50000): ["+/-0.5pF"],
+    ("C0G", 9800, 50000): ["+/-0.5pF"],
+    ("C0G", 9900, 50000): ["+/-0.5pF"],
+    ("C0G", 110, 50000): ["+/-0.1pF"],
+    ("C0G", 120, 50000): ["+/-0.1pF"],
+    ("C0G", 130, 50000): ["+/-0.1pF"],
+    ("C0G", 150, 50000): ["+/-0.1pF"],
+    ("C0G", 160, 50000): ["+/-0.1pF"],
+    ("C0G", 180, 50000): ["+/-0.1pF"],
+    ("C0G", 200, 50000): ["+/-0.1pF", "+/-20%"],
+    ("C0G", 220, 50000): ["+/-0.1pF"],
+    ("C0G", 240, 50000): ["+/-0.1pF"],
+    ("C0G", 300, 50000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 330, 50000): ["+/-0.1pF"],
+    ("C0G", 360, 50000): ["+/-0.1pF"],
+    ("C0G", 390, 50000): ["+/-0.1pF"],
+    ("C0G", 400, 50000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 430, 50000): ["+/-0.1pF"],
+    ("C0G", 470, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 500, 50000): ["+/-0.05pF", "+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 510, 50000): ["+/-0.1pF"],
+    ("C0G", 560, 50000): ["+/-0.1pF"],
+    ("C0G", 600, 50000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 620, 50000): ["+/-0.1pF"],
+    ("C0G", 680, 50000): ["+/-0.1pF"],
+    ("C0G", 700, 50000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 750, 50000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 800, 50000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 820, 50000): ["+/-0.1pF"],
+    ("C0G", 900, 50000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 910, 50000): ["+/-0.1pF"],
+    ("C0G", 10000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 100000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 1000000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 11000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 12000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 120000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 13000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 15000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 150000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 16000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 18000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 180000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 1000, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 1100, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 1200, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 1300, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 1500, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 1600, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 1800, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 20000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 22000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 220000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 24000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 27000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 270000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 2000, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 2200, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 2400, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 2700, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 30000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 33000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 330000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 36000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 39000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 390000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 3000, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 3300, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 3600, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 3900, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 43000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 47000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 470000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 4000, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 4300, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 4700, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 51000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 56000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 560000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 5000, 100000): ["+/-0.1pF", "+/-0.25pF"],
+    ("C0G", 5100, 100000): ["+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 5600, 100000): ["+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 62000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 68000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 680000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 6000, 100000): ["+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 6200, 100000): ["+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 6800, 100000): ["+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 75000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 7000, 100000): ["+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 7500, 100000): ["+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 82000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 820000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 8000, 100000): ["+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 8200, 100000): ["+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 91000, 100000): ["+/-2%", "+/-5%"],
+    ("C0G", 9000, 100000): ["+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 9100, 100000): ["+/-0.25pF", "+/-0.5pF"],
+    ("C0G", 100, 100000): ["+/-0.05pF"],
+    ("C0G", 110, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 120, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 130, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 150, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 160, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 180, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 200, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 220, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 240, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 270, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 300, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 330, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 360, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 390, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 400, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 430, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 470, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 500, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 510, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 560, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 600, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 620, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 680, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 700, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 750, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 800, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 820, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 900, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("C0G", 910, 100000): ["+/-0.05pF", "+/-0.1pF"],
+    ("X7R", 1000000000, 4000): ["+/-10%"],
+    ("X7R", 1000000000, 6300): ["+/-10%"],
+    ("X7R", 100000000, 10000): ["+/-10%"],
+    ("X7R", 100000000, 16000): ["+/-10%", "+/-20%"],
+    ("X7R", 150000000, 16000): ["+/-10%", "+/-20%"],
+    ("X7R", 220000000, 16000): ["+/-10%", "+/-20%"],
+    ("X7R", 27000000, 16000): ["+/-10%", "+/-20%"],
+    ("X7R", 33000000, 16000): ["+/-10%", "+/-20%"],
+    ("X7R", 39000000, 16000): ["+/-10%", "+/-20%"],
+    ("X7R", 47000000, 16000): ["+/-10%", "+/-20%"],
+    ("X7R", 56000000, 16000): ["+/-10%", "+/-20%"],
+    ("X7R", 68000000, 16000): ["+/-10%", "+/-20%"],
+    ("X7R", 82000000, 16000): ["+/-10%", "+/-20%"],
+    ("X7R", 10000000, 25000): ["+/-10%", "+/-20%"],
+    ("X7R", 100000000, 25000): ["+/-10%"],
+    ("X7R", 12000000, 25000): ["+/-10%", "+/-20%"],
+    ("X7R", 15000000, 25000): ["+/-10%", "+/-20%"],
+    ("X7R", 18000000, 25000): ["+/-10%", "+/-20%"],
+    ("X7R", 22000000, 25000): ["+/-10%", "+/-20%"],
+    ("X7R", 27000000, 25000): ["+/-10%", "+/-20%"],
+    ("X7R", 33000000, 25000): ["+/-10%", "+/-20%"],
+    ("X7R", 39000000, 25000): ["+/-10%", "+/-20%"],
+    ("X7R", 4700000, 25000): ["+/-10%"],
+    ("X7R", 47000000, 25000): ["+/-10%", "+/-20%"],
+    ("X7R", 5600000, 25000): ["+/-10%", "+/-20%"],
+    ("X7R", 6800000, 25000): ["+/-10%", "+/-20%"],
+    ("X7R", 8200000, 25000): ["+/-10%", "+/-20%"],
+    ("X7R", 1000000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 10000000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 100000000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 1200000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 12000000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 1500000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 15000000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 1800000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 18000000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 220000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 2200000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 22000000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 270000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 2700000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 330000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 3300000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 33000000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 390000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 3900000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 470000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 4700000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 47000000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 560000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 5600000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 680000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 6800000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 68000000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 820000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 8200000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 1000000, 100000): ["+/-10%", "+/-20%"],
+    ("X7R", 1200000, 100000): ["+/-10%", "+/-20%"],
+    ("X7R", 1500000, 100000): ["+/-10%", "+/-20%"],
+    ("X7R", 1800000, 100000): ["+/-10%", "+/-20%"],
+    ("X7R", 220000, 100000): ["+/-10%", "+/-20%"],
+    ("X7R", 2200000, 100000): ["+/-10%", "+/-20%"],
+    ("X7R", 270000, 100000): ["+/-10%", "+/-20%"],
+    ("X7R", 2700000, 100000): ["+/-10%", "+/-20%"],
+    ("X7R", 330000, 100000): ["+/-10%", "+/-20%"],
+    ("X7R", 3300000, 100000): ["+/-10%", "+/-20%"],
+    ("X7R", 390000, 100000): ["+/-10%", "+/-20%"],
+    ("X7R", 3900000, 100000): ["+/-10%", "+/-20%"],
+    ("X7R", 470000, 100000): ["+/-10%", "+/-20%"],
+    ("X7R", 4700000, 100000): ["+/-10%", "+/-20%"],
+    ("X7R", 560000, 100000): ["+/-10%", "+/-20%"],
+    ("X7R", 680000, 100000): ["+/-10%", "+/-20%"],
+    ("X7R", 820000, 100000): ["+/-10%", "+/-20%"],
+}
+_KEY = (dielectric, int(value.value * 1e15 + 0.5), int(rated_v.value * 1e3 + 0.5))
+_AVAILABLE = _TOLS.get(_KEY, [])
+_FULL = _KEY + (tolerance if tolerance != "" or len(_AVAILABLE) != 1 else _AVAILABLE[0],)
+# Catalog value for the configured part. An unorderable combination gets the sentinel MPN UNORDERABLE (never a
+# real but wrong part number) and fails part_orderable.
+_VALUE_STR = _VALUE.get(_FULL, "UNORDERABLE")
+_MPN_STR = _VALUE_STR + "D" if _FULL in _VALUE else "UNORDERABLE"  # default package letter; the others are alternates
+
+
+def _orderable(_m, found, what, key, available):
+    why = "no catalog part for (dielectric, fF, mV, tolerance) = %s" % (key,)
+    if len(available) > 0:
+        why += "; the catalog lists these tolerances for it: %s (set tolerance)" % available
+    check(found, "%s: %s" % (what, why))
+
+
+_ORDERABLE_SEVERITY = "advice" if _ROOT else "error"  # standalone build: the configs are unset
+builtin.add_electrical_check(
+    name="part_orderable",
+    check_fn=_orderable,
+    inputs={"found": _FULL in _VALUE, "what": "part_orderable", "key": _FULL, "available": _AVAILABLE},
+    severity=_ORDERABLE_SEVERITY,
+)
+
+
+def _rated_voltage(_m, v1, v2, what, vr, derate):
+    # Worst case |V(P1) - V(P2)| over both nets' ranges against derate x the rated voltage (non-polarized).
+    vmax = max(v1.max - v2.min, v2.max - v1.min)
+    msg = "%s: up to %s V across the part > derate x rated voltage = %s x %s V"
+    check(vmax <= vr * derate, msg % (what, vmax, derate, vr))
+
+
+# rated_voltage: voltage across the part within derate x the rated voltage of the configured catalog part
+#   Rated voltage = the rated_v config (it selects the catalog part; part_orderable fails if it is not listed).
+#   Source of the rating: the catalog row (manufacturer export cited there). Error: the rating is exceeded.
+#   Not checked: DC-bias capacitance loss, ripple/AC peak and self-heating (owner: module).
+_limit(
+    "rated_voltage",
+    _rated_voltage,
+    {"v1": P1.voltage, "v2": P2.voltage, "what": "rated_voltage", "vr": rated_v.value, "derate": derate},
+    "error",
+)
+
+# ambient_range: board ambient inside the operating range of the configured dielectric
+#   C0G: op_temp_c0g: Operating temperature range (DS p.2, Rated Value, Operating Temp. Range (-55 to 125 degC))
+#   X7R: op_temp_x7r: Operating temperature range (DS p.2, Rated Value, Operating Temp. Range (-55 to 125 degC))
+_limit(
+    "ambient_range",
+    _temp,
+    {"v": ambient, "what": "ambient_range", "lo": _AMBIENT_RANGE[0], "hi": _AMBIENT_RANGE[1]},
+    "error",
+)
+
+Component(
+    name="GCM155",
+    symbol=Symbol(library="./GCM155.kicad_sym"),
+    part=Part(mpn=_MPN_STR, manufacturer="Murata"),
+    pins={
+        "1": P1,
+        "2": P2,
+    },
+    properties={"alternatives": [_VALUE_STR + l for l in ["W", "J", "V"]] if _FULL in _VALUE else []},
+)

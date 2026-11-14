@@ -1,0 +1,148 @@
+# Murata GCM32Q series: 3225M (1210) thickness code Q (T 1.5 mm) X7R (R7) MLCCs, a capacitor series
+# (docs/SPEC.md, "Capacitor series"). One directory per Murata size+thickness code (the symbol, footprint and STEP are per
+# directory). Every orderable value is a row of catalog.csv, generated from Murata's product-list export by
+#   python3 -m lib.catalog murata-gcm docs/vendor/Murata_GCM/gcm-series-product-list-2026-11-14.csv components/Murata/GCM32Q --dielectrics X7R,C0G
+# and cited per row to that export (a manufacturer export, not a datasheet). The export lists X7R values only for this
+# thickness code (4 rows); each listed dielectric has its temperature-characteristic row (tc_x7r) and operating-temperature row
+# (op_temp_x7r). Row scopes: rows without a restriction apply to every part; rows with dielectric = "X7R" to every part of that dielectric.
+# Lifecycle, revision currency, errata and PCN: not checked (no web access).
+#
+# Per-part rows: NONE. The only reference sheet in docs/datasheets for this directory is GCM32Q7U2J682JX01-00B-EN.pdf, a
+# U2J (7U, -750 +/-120 ppm/degC) part: a dielectric outside this library's scope (the export's Temperature characteristics column
+# for this thickness code lists X7R only). That sheet is used ONLY for the packaging letters and the 1.5 mm thickness below, cited
+# as such; no U2J value is stored. There is no X7R reference sheet for thickness code Q (open item): the X7R dielectric rows come
+# from the 1210 X7R sheet of thickness code E (GCM32ER71C226ME19-01A, DS p.2), and no per-part X7R row (tolerance, dimensions,
+# test limits) is stored for any GCM32Q value.
+#
+# Part decode (DS p.2, MURATA Part No. System, example GCM32Q7U2J682JX01-00B): GCM series, 32 = L x W 3225M (1210) 3.2 x 2.5,
+# Q = T 1.5 mm (thickness code Q, from the U2J sheet's dimension table, DS p.2: T 1.5+0/-0.3), R7 = X7R (EIA) for this
+# directory's catalog values (the decode table in lib/catalog.py), L/K = package (see below).
+# Package letters (DS p.2 Package table, U2J sheet, 1.5 mm): L = phi180 reel, plastic tape W8P4, 2000 pcs/reel;
+#   K = phi330 reel, plastic tape W8P4, 8000 pcs/reel. The letters L/K are the same as the 2.0 and 2.5 mm sheets; the quantities
+#   differ from the 2.0 / 2.5 mm sheets (1000/4000 pcs), so the quantities of this thickness are not stored (open item:
+#   quantities for X7R 1.5 mm parts are not printed on an X7R sheet).
+#   MPN = catalog value + package letter; default letter L; K is the same part in other packaging.
+# The decode tables in lib/catalog.py are a cross-check of the export only ("Not a DS rule").
+#
+# Open items (DS gives no numbers, so nothing is stored):
+#   - No X7R reference sheet for thickness code Q: no per-part rows (capacitance, tolerance, L/W/T, DF, IR, stress tests).
+#   - Thickness T 1.5 +0/-0.3 mm and g 1.2 min., e 0.3 min. are printed on the U2J sheet (DS p.2) only, for a different dielectric;
+#     they are recorded here and not stored as rows (no per-part row exists for this dielectric).
+#   - DC voltage characteristic (X7R capacitance loss under DC bias): the DS figure is an example for another sample (1210 X7R
+#     sheet, DS p.14 section 5); no number is printed, so nothing is stored as a bound. capacitance_worst_pct excludes it.
+#   - AC voltage characteristic: text only; self-heating (below 20 degC, rated voltage below 100 VDC, DS p.14 section 4) is printed
+#     for the 1210 X7R sheet and not stored per part for this directory (no per-part sheet).
+#   - Aging (capacitance decrease with time): DS p.15 (X7R 1210 sheet, section 6), text only; no rate printed.
+#   - Operating temperature range is a single row (-55 to 125 degC); no derating curve is printed.
+#   - Land pattern: footprint uses a 2.2 / b 1.1 / c 2.0 mm (inside the 3.2x2.5 row of the shared land table,
+#     GCM32ER71C226ME19-01A DS p.28). a and b at midpoints; c 2.0 is inside 1.8-2.3 (midpoint 2.05).
+#   - Product URL: the reference sheets print no product page address; the only URL printed is a contact form; datasheet_url
+#     says so and datasheet_file is the source (open item).
+
+# Open item: X7R qualification text rows not stored: No. 14 Resistance to Soldering Heat ('Capacitance: within the specified
+#   initial value', GCM32ER71C226ME19-01A DS p.5) and No. 23 Terminal Strength (DS p.6).
+[part]
+value           = "GCM32Q"                    # series: the catalog values are rows of catalog.csv
+manufacturer    = "Murata"
+description     = "Chip multilayer ceramic capacitors, X7R (R7), 3225M (1210), thickness 1.5 mm (code Q), AEC-Q200 (GCM series)"
+category        = "capacitor_mlcc"
+package         = "3225M (1210)"
+kicad_symbol    = "GCM32Q.kicad_sym"
+kicad_footprint = "GCM32Q.kicad_mod"
+step            = "GCM32Q.step"
+datasheet_url   = ""  # open item: the reference sheets print no datasheet URL (only a contact form); use datasheet_file
+datasheet_file  = "docs/datasheets/GCM32Q7U2J682JX01-00B-EN.pdf"  # U2J reference sheet of GCM32Q7U2J682JX01: source of the packaging letters and the 1.5 mm thickness ONLY (no U2J values stored)
+datasheet_rev   = "00B"
+datasheet_date  = "2026-04"                   # DS p.2 "product specifications in this catalog are as of Apr.13,2026"
+series          = "capacitor"
+catalog         = "catalog.csv"
+catalog_decoder = "murata-gcm"          # lib.check re-decodes every row (lib/catalog.py tables, cross-check only)
+tc_param        = { X7R = "tc_x7r" }  # dielectric -> the row holding its temperature characteristic (X7R only: the export lists no other dielectric for this thickness code)
+package_default    = "L"                      # DS p.2 Package table (U2J sheet, 1.5 mm): L = phi180 reel, plastic tape
+package_alternates = ["K"]                    # DS p.2 Package table: K = phi330 reel, plastic tape (packaging only)
+
+# Pins: DS p.2 Type & Dimension figure (U2J sheet). Non-polarized two-terminal chip capacitor; pin names are the terminal numbers.
+
+[[pin]]
+number   = "1"
+name     = "1"
+type     = "passive"
+function = "Capacitor terminal (non-polarized)"
+cite     = "DS p.2, Type & Dimension, image:Dimension"
+
+[[pin]]
+number   = "2"
+name     = "2"
+type     = "passive"
+function = "Capacitor terminal (non-polarized)"
+cite     = "DS p.2, Type & Dimension, image:Dimension"
+
+# Land pattern (footprint, reflow), shared by every 1210 directory. Source: the 1210 X7R reference sheet
+# (docs/datasheets/GCM32ER71C226ME19-01A-EN.pdf), DS p.28, "2. Land Dimensions", Table 2 Reflow Soldering Method, row
+# 3.2x2.5. The DS labels the dimensions only by letter: neutral names. Inferred meaning, not printed: a = land-to-land gap,
+# b = land length, c = land width (as for GCM21). Footprint used: a 2.2 / b 1.1 / c 2.0 mm (c 2.0 is inside the printed 1.8-2.3).
+
+[param.land_a]
+name       = "Land pattern dimension a (reflow)"
+symbol     = "a"
+kind       = "mechanical"
+scope      = "na"
+min        = 2.0
+max        = 2.4
+unit       = "mm"
+conditions = "Reflow soldering, chip 3.2x2.5, code 32"
+cite       = "DS p.28 (GCM32ER71C226ME19-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, a"
+note       = "Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed)."
+
+[param.land_b]
+name       = "Land pattern dimension b (reflow)"
+symbol     = "b"
+kind       = "mechanical"
+scope      = "na"
+min        = 1.0
+max        = 1.2
+unit       = "mm"
+conditions = "Reflow soldering, chip 3.2x2.5, code 32"
+cite       = "DS p.28 (GCM32ER71C226ME19-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, b"
+note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed)."
+
+[param.land_c]
+name       = "Land pattern dimension c (reflow)"
+symbol     = "c"
+kind       = "mechanical"
+scope      = "na"
+min        = 1.8
+max        = 2.3
+unit       = "mm"
+conditions = "Reflow soldering, chip 3.2x2.5, code 32"
+cite       = "DS p.28 (GCM32ER71C226ME19-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, c"
+note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed)."
+
+# X7R dielectric rows (dielectric X7R, Murata public code R7 / X7R (EIA)). Source: the 1210 X7R reference sheet
+# GCM32ER71C226ME19-01A (DS p.2); the same characteristic as every 1210 X7R value, used here for this thickness code.
+
+[param.tc_x7r]
+dielectric = "X7R"
+name       = "Temperature characteristic, R7 (X7R)"
+symbol     = "TC"
+kind       = "electrical"
+scope      = "full"
+min        = -15
+max        = 15
+unit       = "%"
+conditions = "Ref. temp 25 degC; temp range -55 to 125 degC; capacitance change over temperature"
+cite       = "DS p.2 (X7R sheet GCM32ER71C226ME19-01A), Rated Value, Temp. coeff. or Cap. Change (-15 to 15 %)"
+note       = "Public STD code X7R (EIA). Capacitance change over temperature, not a DC-bias or aging limit. Read from the 1210 X7R sheet of thickness code E, used for every X7R catalog row of thickness code Q (open item: no X7R sheet for thickness code Q)."
+
+[param.op_temp_x7r]
+dielectric = "X7R"
+name       = "Operating temperature range"
+kind       = "rec_op"
+scope      = "na"
+min        = -55
+max        = 125
+unit       = "degC"
+conditions = ""
+cite       = "DS p.2 (X7R sheet GCM32ER71C226ME19-01A), Rated Value, Operating Temp. Range (-55 to 125 degC)"
+check_ambient = true
+note       = "Read from the 1210 X7R sheet GCM32ER71C226ME19-01A. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every X7R catalog row uses it."

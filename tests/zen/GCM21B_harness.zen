@@ -1,0 +1,27 @@
+# Test harness for the generated Murata GCM21B capacitor series wrapper (tests/test_zen.py copies it next to GCM21B.zen and
+# builds it).
+# Defaults: GCM21BR72A104KA37 (0.1 uF, 100 V, X7R, +/-10 %), the X7R reference part; 0.1 uF 100 V X7R comes in
+#   +/-10/20 %, so the tolerance is given. 48 V +/-5 % across the part (worst case 50.4 V, inside 100 V, either polarity);
+#   derate 1.0; ambient -40 degC to 85 degC, inside the -55 degC to 125 degC X7R operating range.
+U = Module("./GCM21B.zen")
+
+value = config(str, default="0.1uF")  # catalog capacitance
+rated = config(str, default="100V")  # catalog rated DC voltage
+dielectric = config(str, default="X7R")  # catalog dielectric: X7R or C0G (both listed)
+tolerance = config(str, default="+/-10%")  # printed tolerance, ASCII; "" lets the wrapper choose when it is unique
+va = config(str, default="48V 5%")  # P1 voltage
+vb = config(str, default="0V")  # P2 voltage
+ta = config(str, default="-40°C to 85°C")
+derate = config(float, default=1.0)
+
+U(
+    name="C1",
+    value=value,
+    rated_v=rated,
+    dielectric=dielectric,
+    tolerance=tolerance,
+    P1=Net("A") if va == "unset" else Power("A", voltage=va),
+    P2=Power("B", voltage=vb),
+    derate=derate,
+    **({} if ta == "unset" else {"ambient": ta}),
+)

@@ -1,0 +1,264 @@
+"""GCM31C: Chip multilayer ceramic capacitors, C0G (5C) and X7R (R7), 3216M (1206), thickness 1.6 mm (code C), AEC-Q200 (GCM series).
+GENERATED from component.toml by `python3 -m lib.zen`; do not edit. Source of truth: component.toml and
+calc.py (numbers, cites, equations). DS: , 01A (2026-04).
+Checks are DC steady-state on the voltages each instance declares. They do not cover transients, overshoot,
+hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
+Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
+
+load("@stdlib/units.zen", "Capacitance", "Temperature", "Voltage")
+
+# UNCHECKED: rated_v_ds_c0g [parts GCM31C5C1H104FA16]: Rated voltage (DC) (DS p.2 (C0G sheet of GCM31C5C1H104FA16), Rated Value, Rated Voltage (DC 50V)); the generated rated_voltage check applies the catalog rated voltage of the selected part; this per-part row duplicates it (owner: module)
+# UNCHECKED: rated_v_ds [parts GCM31CR71E475KA55]: Rated voltage (DC) (DS p.2 (X7R sheet of GCM31CR71E475KA55), Rated Value, Rated Voltage (DC 25V)); the generated rated_voltage check applies the catalog rated voltage of the selected part; this per-part row duplicates it (owner: module)
+# UNCHECKED: self_heating [parts GCM31CR71E475KA55]: Self-heating of the capacitor body (AC or pulse load) (DS p.14, Rating 4. Type of Applied Voltage and Self-heating Temperature, '< Applicable to Rated Voltage of less than 100VDC >'); depends on AC/pulse current, not a DC net voltage; owner: module
+# UNCHECKED: ac_peak [parts GCM31CR71E475KA55]: AC or pulse voltage: peak-to-peak (and zero-to-peak with DC) within the rated DC voltage (DS p.13, Rating 3. Applied Voltage, 1-1 (1)); AC/pulse waveform is not modelled by the DC net-voltage check; owner: module
+# UNCHECKED: capacitance under DC bias, aging and AC/ripple stress: curve-based or not quantified by the datasheet; owner: module (calc.capacitance_worst_pct/_ppm exclude them)
+
+# Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
+# GND can drive them; ground-named pins are Ground.
+# pin 1 1, passive: Capacitor terminal (non-polarized)
+P1 = io(Net)
+# pin 2 2, passive: Capacitor terminal (non-polarized)
+P2 = io(Net)
+
+ambient = config(Temperature, optional=True, help="Board ambient temperature range")
+derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+value = config(Capacitance, help="Capacitance, a catalog value (see the _VALUE table)")
+rated_v = config(Voltage, help="Rated DC voltage of the part, a catalog value, for example 50V")
+dielectric = config(str, help="Dielectric as printed in the catalog, for example X7R")
+tolerance = config(
+    str,
+    default="",
+    help="Tolerance as printed, ASCII, for example +/-10%; only needed when the catalog lists several for the value",
+)
+
+_ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
+check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
+
+
+def _limit(name, fn, inputs, severity, waiver=""):
+    # Unset input: UNVERIFIED warning, never a silent pass. Waiver drops a warning to advice.
+    if waiver and severity != "warning":
+        error("only warning-level checks can be waived: " + name)
+    unset = [k for k, v in inputs.items() if v == None]
+    if unset:
+
+        def _unverified(_m):
+            error("UNVERIFIED " + name + ": no value for " + ", ".join(unset))
+
+        builtin.add_electrical_check(name=name, check_fn=_unverified, severity="advice" if _ROOT else "warning")
+    else:
+        builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
+
+
+def _range(_m, v, what, lo=None, hi=None, lo_ref=None, hi_ref=None):
+    # Worst case: v.min >= lo + lo_ref.max and v.max <= hi + hi_ref.min (narrowest window). No ref = absolute.
+    lo_b = None if lo == None else lo + (0.0 if lo_ref == None else lo_ref.max)
+    hi_b = None if hi == None else hi + (0.0 if hi_ref == None else hi_ref.min)
+    ok = (lo_b == None or v.min >= lo_b) and (hi_b == None or v.max <= hi_b)
+    lo_t = "no limit" if lo_b == None else "%s V" % lo_b
+    hi_t = "no limit" if hi_b == None else "%s V" % hi_b
+    check(ok, "%s: %s to %s V outside %s to %s" % (what, v.min, v.max, lo_t, hi_t))
+
+
+def _temp(_m, v, what, lo, hi):
+    # Temperatures are kelvin floats in Zener; messages in degC.
+    ok = v.min >= lo and v.max <= hi
+    msg = "%s: %s to %s degC outside %s to %s degC"
+    check(ok, msg % (what, v.min - 273.15, v.max - 273.15, lo - 273.15, hi - 273.15))
+
+
+_AMBIENT = {
+    "C0G": (218.15, 398.15),  # op_temp_c0g
+    "X7R": (218.15, 398.15),  # op_temp_x7r
+}
+_AMBIENT_RANGE = _AMBIENT.get(dielectric, _AMBIENT["C0G"])
+
+
+# Orderable catalog value per (dielectric, femtofarad, millivolt, tolerance), generated from catalog.csv (the
+# single source; each row cites the manufacturer export there). Integer keys: float text differs between
+# Python and Zener, integers do not. The package letter is added below.
+_VALUE = {
+    ("C0G", 100000000, 50000, "+/-1%"): "GCM31C5C1H104FA16",  # 0.1uF 50Vdc +/-1%
+    ("C0G", 100000000, 50000, "+/-2%"): "GCM31C5C1H104GA16",  # 0.1uF 50Vdc +/-2%
+    ("C0G", 100000000, 50000, "+/-5%"): "GCM31C5C1H104JA16",  # 0.1uF 50Vdc +/-5%
+    ("C0G", 62000000, 50000, "+/-1%"): "GCM31C5C1H623FA16",  # 62,000pF 50Vdc +/-1%
+    ("C0G", 62000000, 50000, "+/-2%"): "GCM31C5C1H623GA16",  # 62,000pF 50Vdc +/-2%
+    ("C0G", 62000000, 50000, "+/-5%"): "GCM31C5C1H623JA16",  # 62,000pF 50Vdc +/-5%
+    ("C0G", 68000000, 50000, "+/-1%"): "GCM31C5C1H683FA16",  # 68,000pF 50Vdc +/-1%
+    ("C0G", 68000000, 50000, "+/-2%"): "GCM31C5C1H683GA16",  # 68,000pF 50Vdc +/-2%
+    ("C0G", 68000000, 50000, "+/-5%"): "GCM31C5C1H683JA16",  # 68,000pF 50Vdc +/-5%
+    ("C0G", 75000000, 50000, "+/-1%"): "GCM31C5C1H753FA16",  # 75,000pF 50Vdc +/-1%
+    ("C0G", 75000000, 50000, "+/-2%"): "GCM31C5C1H753GA16",  # 75,000pF 50Vdc +/-2%
+    ("C0G", 75000000, 50000, "+/-5%"): "GCM31C5C1H753JA16",  # 75,000pF 50Vdc +/-5%
+    ("C0G", 82000000, 50000, "+/-1%"): "GCM31C5C1H823FA16",  # 82,000pF 50Vdc +/-1%
+    ("C0G", 82000000, 50000, "+/-2%"): "GCM31C5C1H823GA16",  # 82,000pF 50Vdc +/-2%
+    ("C0G", 82000000, 50000, "+/-5%"): "GCM31C5C1H823JA16",  # 82,000pF 50Vdc +/-5%
+    ("C0G", 91000000, 50000, "+/-1%"): "GCM31C5C1H913FA16",  # 91,000pF 50Vdc +/-1%
+    ("C0G", 91000000, 50000, "+/-2%"): "GCM31C5C1H913GA16",  # 91,000pF 50Vdc +/-2%
+    ("C0G", 91000000, 50000, "+/-5%"): "GCM31C5C1H913JA16",  # 91,000pF 50Vdc +/-5%
+    ("C0G", 100000000, 100000, "+/-5%"): "GCM31C5C2A104JE02",  # 0.1uF 100Vdc +/-5%
+    ("C0G", 62000000, 100000, "+/-5%"): "GCM31C5C2A623JE02",  # 62,000pF 100Vdc +/-5%
+    ("C0G", 68000000, 100000, "+/-5%"): "GCM31C5C2A683JE02",  # 68,000pF 100Vdc +/-5%
+    ("C0G", 75000000, 100000, "+/-5%"): "GCM31C5C2A753JE02",  # 75,000pF 100Vdc +/-5%
+    ("C0G", 82000000, 100000, "+/-5%"): "GCM31C5C2A823JE02",  # 82,000pF 100Vdc +/-5%
+    ("C0G", 91000000, 100000, "+/-5%"): "GCM31C5C2A913JE02",  # 91,000pF 100Vdc +/-5%
+    ("C0G", 15000000, 250000, "+/-1%"): "GCM31C5C2E153FX03",  # 15,000pF 250Vdc +/-1%
+    ("C0G", 15000000, 250000, "+/-2%"): "GCM31C5C2E153GX03",  # 15,000pF 250Vdc +/-2%
+    ("C0G", 15000000, 250000, "+/-5%"): "GCM31C5C2E153JX03",  # 15,000pF 250Vdc +/-5%
+    ("C0G", 18000000, 250000, "+/-1%"): "GCM31C5C2E183FX03",  # 18,000pF 250Vdc +/-1%
+    ("C0G", 18000000, 250000, "+/-2%"): "GCM31C5C2E183GX03",  # 18,000pF 250Vdc +/-2%
+    ("C0G", 18000000, 250000, "+/-5%"): "GCM31C5C2E183JX03",  # 18,000pF 250Vdc +/-5%
+    ("C0G", 22000000, 250000, "+/-1%"): "GCM31C5C2E223FX03",  # 22,000pF 250Vdc +/-1%
+    ("C0G", 22000000, 250000, "+/-2%"): "GCM31C5C2E223GX03",  # 22,000pF 250Vdc +/-2%
+    ("C0G", 22000000, 250000, "+/-5%"): "GCM31C5C2E223JX03",  # 22,000pF 250Vdc +/-5%
+    ("C0G", 10000000, 630000, "+/-1%"): "GCM31C5C2J103FX03",  # 10,000pF 630Vdc +/-1%
+    ("C0G", 10000000, 630000, "+/-2%"): "GCM31C5C2J103GX03",  # 10,000pF 630Vdc +/-2%
+    ("C0G", 10000000, 630000, "+/-5%"): "GCM31C5C2J103JX03",  # 10,000pF 630Vdc +/-5%
+    ("C0G", 3300000, 630000, "+/-1%"): "GCM31C5C2J332FX03",  # 3,300pF 630Vdc +/-1%
+    ("C0G", 3300000, 630000, "+/-2%"): "GCM31C5C2J332GX03",  # 3,300pF 630Vdc +/-2%
+    ("C0G", 3300000, 630000, "+/-5%"): "GCM31C5C2J332JX03",  # 3,300pF 630Vdc +/-5%
+    ("C0G", 3900000, 630000, "+/-1%"): "GCM31C5C2J392FX03",  # 3,900pF 630Vdc +/-1%
+    ("C0G", 3900000, 630000, "+/-2%"): "GCM31C5C2J392GX03",  # 3,900pF 630Vdc +/-2%
+    ("C0G", 3900000, 630000, "+/-5%"): "GCM31C5C2J392JX03",  # 3,900pF 630Vdc +/-5%
+    ("C0G", 4700000, 630000, "+/-1%"): "GCM31C5C2J472FX03",  # 4,700pF 630Vdc +/-1%
+    ("C0G", 4700000, 630000, "+/-2%"): "GCM31C5C2J472GX03",  # 4,700pF 630Vdc +/-2%
+    ("C0G", 4700000, 630000, "+/-5%"): "GCM31C5C2J472JX03",  # 4,700pF 630Vdc +/-5%
+    ("C0G", 5600000, 630000, "+/-1%"): "GCM31C5C2J562FX03",  # 5,600pF 630Vdc +/-1%
+    ("C0G", 5600000, 630000, "+/-2%"): "GCM31C5C2J562GX03",  # 5,600pF 630Vdc +/-2%
+    ("C0G", 5600000, 630000, "+/-5%"): "GCM31C5C2J562JX03",  # 5,600pF 630Vdc +/-5%
+    ("C0G", 6800000, 630000, "+/-1%"): "GCM31C5C2J682FX03",  # 6,800pF 630Vdc +/-1%
+    ("C0G", 6800000, 630000, "+/-2%"): "GCM31C5C2J682GX03",  # 6,800pF 630Vdc +/-2%
+    ("C0G", 6800000, 630000, "+/-5%"): "GCM31C5C2J682JX03",  # 6,800pF 630Vdc +/-5%
+    ("C0G", 8200000, 630000, "+/-1%"): "GCM31C5C2J822FX03",  # 8,200pF 630Vdc +/-1%
+    ("C0G", 8200000, 630000, "+/-2%"): "GCM31C5C2J822GX03",  # 8,200pF 630Vdc +/-2%
+    ("C0G", 8200000, 630000, "+/-5%"): "GCM31C5C2J822JX03",  # 8,200pF 630Vdc +/-5%
+    ("C0G", 1000000, 1000000, "+/-1%"): "GCM31C5C3A102FX03",  # 1,000pF 1,000Vdc +/-1%
+    ("C0G", 1000000, 1000000, "+/-2%"): "GCM31C5C3A102GX03",  # 1,000pF 1,000Vdc +/-2%
+    ("C0G", 1000000, 1000000, "+/-5%"): "GCM31C5C3A102JX03",  # 1,000pF 1,000Vdc +/-5%
+    ("C0G", 3300000, 1000000, "+/-1%"): "GCM31C5C3A332FWA1",  # 3,300pF 1,000Vdc +/-1%
+    ("C0G", 3300000, 1000000, "+/-2%"): "GCM31C5C3A332GWA1",  # 3,300pF 1,000Vdc +/-2%
+    ("C0G", 3300000, 1000000, "+/-5%"): "GCM31C5C3A332JWA1",  # 3,300pF 1,000Vdc +/-5%
+    ("C0G", 3900000, 1000000, "+/-1%"): "GCM31C5C3A392FWA1",  # 3,900pF 1,000Vdc +/-1%
+    ("C0G", 3900000, 1000000, "+/-2%"): "GCM31C5C3A392GWA1",  # 3,900pF 1,000Vdc +/-2%
+    ("C0G", 3900000, 1000000, "+/-5%"): "GCM31C5C3A392JWA1",  # 3,900pF 1,000Vdc +/-5%
+    ("C0G", 820000, 1000000, "+/-1%"): "GCM31C5C3A821FX03",  # 820pF 1,000Vdc +/-1%
+    ("C0G", 820000, 1000000, "+/-2%"): "GCM31C5C3A821GX03",  # 820pF 1,000Vdc +/-2%
+    ("C0G", 820000, 1000000, "+/-5%"): "GCM31C5C3A821JX03",  # 820pF 1,000Vdc +/-5%
+    ("X7R", 22000000000, 6300, "+/-10%"): "GCM31CR70J226KE23",  # 22uF 6.3Vdc +/-10%
+    ("X7R", 22000000000, 6300, "+/-20%"): "GCM31CR70J226ME23",  # 22uF 6.3Vdc +/-20%
+    ("X7R", 22000000000, 10000, "+/-10%"): "GCM31CR71A226KE02",  # 22uF 10Vdc +/-10%
+    ("X7R", 22000000000, 10000, "+/-20%"): "GCM31CR71A226ME02",  # 22uF 10Vdc +/-20%
+    ("X7R", 10000000000, 16000, "+/-10%"): "GCM31CR71C106KA64",  # 10uF 16Vdc +/-10%
+    ("X7R", 10000000000, 16000, "+/-20%"): "GCM31CR71C106MA64",  # 10uF 16Vdc +/-20%
+    ("X7R", 4700000000, 16000, "+/-10%"): "GCM31CR71C475KA37",  # 4.7uF 16Vdc +/-10%
+    ("X7R", 4700000000, 16000, "+/-20%"): "GCM31CR71C475MA37",  # 4.7uF 16Vdc +/-20%
+    ("X7R", 4700000000, 25000, "+/-10%"): "GCM31CR71E475KA55",  # 4.7uF 25Vdc +/-10%
+    ("X7R", 4700000000, 25000, "+/-20%"): "GCM31CR71E475MA55",  # 4.7uF 25Vdc +/-20%
+    ("X7R", 1500000000, 50000, "+/-10%"): "GCM31CR71H155KA55",  # 1.5uF 50Vdc +/-10%
+    ("X7R", 1500000000, 50000, "+/-20%"): "GCM31CR71H155MA55",  # 1.5uF 50Vdc +/-20%
+    ("X7R", 2200000000, 50000, "+/-10%"): "GCM31CR71H225KA55",  # 2.2uF 50Vdc +/-10%
+    ("X7R", 2200000000, 50000, "+/-20%"): "GCM31CR71H225MA55",  # 2.2uF 50Vdc +/-20%
+    ("X7R", 15000000, 630000, "+/-10%"): "GCM31CR72J153KWB1",  # 15,000pF 630Vdc +/-10%
+    ("X7R", 22000000, 630000, "+/-10%"): "GCM31CR72J223KWB1",  # 22,000pF 630Vdc +/-10%
+}
+# Tolerances the catalog lists for one (dielectric, femtofarad, millivolt): needed when there are several.
+_TOLS = {
+    ("C0G", 100000000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 62000000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 68000000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 75000000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 82000000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 91000000, 50000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 100000000, 100000): ["+/-5%"],
+    ("C0G", 62000000, 100000): ["+/-5%"],
+    ("C0G", 68000000, 100000): ["+/-5%"],
+    ("C0G", 75000000, 100000): ["+/-5%"],
+    ("C0G", 82000000, 100000): ["+/-5%"],
+    ("C0G", 91000000, 100000): ["+/-5%"],
+    ("C0G", 15000000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 18000000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 22000000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 10000000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 3300000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 3900000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 4700000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 5600000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 6800000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 8200000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 1000000, 1000000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 3300000, 1000000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 3900000, 1000000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 820000, 1000000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("X7R", 22000000000, 6300): ["+/-10%", "+/-20%"],
+    ("X7R", 22000000000, 10000): ["+/-10%", "+/-20%"],
+    ("X7R", 10000000000, 16000): ["+/-10%", "+/-20%"],
+    ("X7R", 4700000000, 16000): ["+/-10%", "+/-20%"],
+    ("X7R", 4700000000, 25000): ["+/-10%", "+/-20%"],
+    ("X7R", 1500000000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 2200000000, 50000): ["+/-10%", "+/-20%"],
+    ("X7R", 15000000, 630000): ["+/-10%"],
+    ("X7R", 22000000, 630000): ["+/-10%"],
+}
+_KEY = (dielectric, int(value.value * 1e15 + 0.5), int(rated_v.value * 1e3 + 0.5))
+_AVAILABLE = _TOLS.get(_KEY, [])
+_FULL = _KEY + (tolerance if tolerance != "" or len(_AVAILABLE) != 1 else _AVAILABLE[0],)
+# Catalog value for the configured part. An unorderable combination gets the sentinel MPN UNORDERABLE (never a
+# real but wrong part number) and fails part_orderable.
+_VALUE_STR = _VALUE.get(_FULL, "UNORDERABLE")
+_MPN_STR = _VALUE_STR + "L" if _FULL in _VALUE else "UNORDERABLE"  # default package letter; the others are alternates
+
+
+def _orderable(_m, found, what, key, available):
+    why = "no catalog part for (dielectric, fF, mV, tolerance) = %s" % (key,)
+    if len(available) > 0:
+        why += "; the catalog lists these tolerances for it: %s (set tolerance)" % available
+    check(found, "%s: %s" % (what, why))
+
+
+_ORDERABLE_SEVERITY = "advice" if _ROOT else "error"  # standalone build: the configs are unset
+builtin.add_electrical_check(
+    name="part_orderable",
+    check_fn=_orderable,
+    inputs={"found": _FULL in _VALUE, "what": "part_orderable", "key": _FULL, "available": _AVAILABLE},
+    severity=_ORDERABLE_SEVERITY,
+)
+
+
+def _rated_voltage(_m, v1, v2, what, vr, derate):
+    # Worst case |V(P1) - V(P2)| over both nets' ranges against derate x the rated voltage (non-polarized).
+    vmax = max(v1.max - v2.min, v2.max - v1.min)
+    msg = "%s: up to %s V across the part > derate x rated voltage = %s x %s V"
+    check(vmax <= vr * derate, msg % (what, vmax, derate, vr))
+
+
+# rated_voltage: voltage across the part within derate x the rated voltage of the configured catalog part
+#   Rated voltage = the rated_v config (it selects the catalog part; part_orderable fails if it is not listed).
+#   Source of the rating: the catalog row (manufacturer export cited there). Error: the rating is exceeded.
+#   Not checked: DC-bias capacitance loss, ripple/AC peak and self-heating (owner: module).
+_limit(
+    "rated_voltage",
+    _rated_voltage,
+    {"v1": P1.voltage, "v2": P2.voltage, "what": "rated_voltage", "vr": rated_v.value, "derate": derate},
+    "error",
+)
+
+# ambient_range: board ambient inside the operating range of the configured dielectric
+#   C0G: op_temp_c0g: Operating temperature range (DS p.2 (C0G sheet of GCM31C5C1H104FA16), Rated Value, Operating Temp. Range (-55 to 125 degC))
+#   X7R: op_temp_x7r: Operating temperature range (DS p.2 (X7R sheet of GCM31CR71E475KA55), Rated Value, Operating Temp. Range (-55 to 125 degC))
+_limit(
+    "ambient_range",
+    _temp,
+    {"v": ambient, "what": "ambient_range", "lo": _AMBIENT_RANGE[0], "hi": _AMBIENT_RANGE[1]},
+    "error",
+)
+
+Component(
+    name="GCM31C",
+    symbol=Symbol(library="./GCM31C.kicad_sym"),
+    part=Part(mpn=_MPN_STR, manufacturer="Murata"),
+    pins={
+        "1": P1,
+        "2": P2,
+    },
+    properties={"alternatives": [_VALUE_STR + l for l in ["K"]] if _FULL in _VALUE else []},
+)

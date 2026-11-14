@@ -4,9 +4,9 @@ import inspect
 import sys
 import tomllib
 
-from . import series
+from . import capacitor, series
 from .check import find_components
-from .component import load, load_calc, merge_variant, run_example, variants_of
+from .component import load, load_calc, merge_variant, restriction, run_example, variants_of
 from .units import eng
 
 HEADER = "<!-- GENERATED - do not edit. Run: python3 -m lib.readme -->"
@@ -50,6 +50,8 @@ def param_rows(params, kind):
         if t.get("kind") != kind:
             continue
         cond = t.get("conditions", "") + (f" Variants: {', '.join(t['variants'])}." if t.get("variants") else "")
+        if restriction(t):
+            cond += f" Applies to: {restriction(t)}."
         cond += f" Note: {t['note']}" if t.get("note") else ""
         cite = t.get("cite", "") + (" (curve)" if t.get("curve") else "")
         rows.append([t.get("name", ""), t.get("symbol", ""), shown(t, "min"), shown(t, "typ"), shown(t, "max"),
@@ -62,6 +64,9 @@ def inputs_text(args, params):
     lines = ""
     for arg, key in args.items():
         t = params.get(key.partition(".")[0])
+        if t is None and key.partition(".")[0] in capacitor.SELECTION_KEYS:
+            lines += f"- `{arg}` -> `{key}` (from the catalog part selection, `Part.select`)\n"
+            continue
         if t is None:
             lines += f"- `{arg}` -> `{key}` (unknown key)\n"
             continue
@@ -184,6 +189,36 @@ def series_section(folder):
     return text + md_table(["Resistance", "Rated voltage"], rows)
 
 
+def capacitor_section(folder):
+    """'Series' section of a capacitor series: catalog summary, MPN rule, selection API, wrapper and worst-case use."""
+    part = load(folder)
+    info, rows = part.info, part.catalog()
+    letter, alts = info["package_default"], info["package_alternates"]
+    example = rows[len(rows) // 2]
+    table = []
+    for d in part.dielectrics():
+        of = [r for r in rows if r.dielectric == d]
+        c = [r.c for r in of]
+        table.append([d, len(of), f"{eng(min(c), 'F')} to {eng(max(c), 'F')}",
+                      ", ".join(eng(v, "V") for v in sorted({r.v for r in of})),
+                      ", ".join(sorted({r.tolerance for r in of})), f"`{info['tc_param'].get(d, '')}`"])
+    text = "\n## Series\n\n"
+    text += f"- **Catalog**: `{info['catalog']}`, {len(rows)} orderable values, one row per value with its cite (a manufacturer export, not a datasheet table)\n"
+    text += (f"- **MPN rule**: catalog value + package letter; default `{letter}`, alternates {', '.join(f'`{a}`' for a in alts)} "
+             f"(same part, other packaging); example: `{example.value}` -> `{example.value + letter}`\n")
+    text += ("- **Selection**: `sel = part.select(capacitance, rated_voltage, dielectric, tolerance=None)` returns the MPN, "
+             "`capacitance` / `rated_voltage` Params and `sel.part`, a Part holding the rows that apply (dielectric and "
+             "part restrictions applied, plus `capacitance`, `tolerance`, `rated_v` and `tc`); an unlisted or ambiguous "
+             "request raises ValueError\n")
+    text += ("- **Zener wrapper**: configs `value`, `rated_v`, `dielectric`, optional `tolerance`; checks `part_orderable`, "
+             "`rated_voltage` (|V(P1) - V(P2)| <= derate x rated voltage) and `ambient_range` (per dielectric)\n")
+    text += ("- **Worst-case capacitance**: X7R (percent change): `wca(sel.part.calc.capacitance_worst_pct, "
+             "**sel.part.inputs('capacitance_worst_pct'))`; C0G (ppm/degC): `wca(sel.part.calc.capacitance_worst_ppm, "
+             "dt=Param(min=0, max=100), **sel.part.inputs('capacitance_worst_ppm'))` (dt required, 0 to 100 degC; below 25 degC "
+             "use the printed drift rows). Both EXCLUDE DC-bias and aging loss\n\n")
+    return text + md_table(["Dielectric", "Parts", "Capacitance", "Rated voltages", "Tolerances", "TC row"], table)
+
+
 def build(folder):
     """README text for one component or family directory."""
     with open(folder / "component.toml", "rb") as f:
@@ -197,7 +232,9 @@ def build(folder):
     if variants:
         text += "\n## Variants\n\nShared data below applies to every variant unless a row names its variants.\n\n"
         text += variants_table(part, variants)
-    if part.get("series"):
+    if part.get("series") == "capacitor":
+        text += capacitor_section(folder)
+    elif part.get("series"):
         text += series_section(folder)
     text += "\n## Pins\n\n"
     pin_rows = [[p.get(k, "") for k in ("number", "name", "type", "function", "cite")] for p in data.get("pin", [])]

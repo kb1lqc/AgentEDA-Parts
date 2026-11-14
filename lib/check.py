@@ -7,7 +7,7 @@ import sys
 import tomllib
 from pathlib import Path
 
-from . import kicad, series
+from . import capacitor, catalog, kicad, series
 from .component import ROOT, load_calc, merge_variant, run_example, variants_of
 from .units import to_si
 
@@ -23,6 +23,7 @@ CITE_STARTS = ("DS p.", "DS PDF p.")
 
 
 SERIES_FIELDS = ["value_param", "e_series", "series_power", "series_vlimit", "series_tol"]
+CAPACITOR_FIELDS = ["catalog", "tc_param", "package_default", "package_alternates"]
 
 
 def check_part(part, folder, family=False):
@@ -167,10 +168,84 @@ def check_order(label, t):
     return []
 
 
+def check_capacitor_part(part, pins, params, folder):
+    """[part] capacitor fields, the catalog file, dielectric / parts restrictions and the temperature-characteristic and
+    ambient rows every catalog dielectric needs (docs/SPEC.md, Capacitor series). Returns (messages, catalog rows)."""
+    out = [("ERROR", f"[part] series needs '{f}'") for f in CAPACITOR_FIELDS if f not in part]
+    if "mpn" in part:
+        out.append(("ERROR", "[part] mpn must be absent for a series: the catalog value plus the package letter is the MPN"))
+    if len(pins) != 2:
+        out.append(("ERROR", f"a series capacitor needs exactly 2 pins, found {len(pins)}"))
+    letters = [part.get("package_default")] + list(part.get("package_alternates", []))
+    if any(not (isinstance(x, str) and re.fullmatch(r"[A-Z]", x)) for x in letters) or len(set(letters)) != len(letters):
+        out.append(("ERROR", f"[part] package_default and package_alternates must be distinct single capital letters, got {letters}"))
+    tc_param = part.get("tc_param", {})
+    if not isinstance(tc_param, dict) or not all(isinstance(k, str) and isinstance(v, str) for k, v in tc_param.items()):
+        return out + [("ERROR", "[part] tc_param must be a table {dielectric = \"param key\"}")], []
+    if "catalog" not in part:
+        return out, []
+    try:
+        rows = capacitor.read_catalog(folder / part["catalog"])
+    except ValueError as e:
+        return out + [("ERROR", line) for line in str(e).splitlines()], []
+    dielectrics = {r.dielectric for r in rows}
+    values = {r.value for r in rows}
+    if part.get("catalog_decoder") == "murata-gcm":  # re-decode every row: a hand edit of a column is an error
+        for r in rows:
+            out += [("ERROR", f"catalog row {r.value}: {m}") for m in catalog.catalog_row_problems(r, folder.name)]
+    elif "catalog_decoder" in part:
+        out.append(("ERROR", f"[part] catalog_decoder = '{part['catalog_decoder']}': only 'murata-gcm' exists"))
+    by_value = {r.value: r.dielectric for r in rows}
+    if not rows:
+        out.append(("ERROR", "the catalog has no rows"))
+    for d in sorted(dielectrics):
+        if d not in tc_param:
+            out.append(("ERROR", f"catalog dielectric '{d}' has no [part] tc_param entry: no temperature-characteristic row, "
+                                 f"so its parts cannot be listed"))
+    for d, key in tc_param.items():
+        t = params.get(key)
+        if t is None:
+            out.append(("ERROR", f"[part] tc_param {d} = '{key}' is not a param key"))
+        elif t.get("dielectric") != d:
+            out.append(("ERROR", f"param {key}: the temperature-characteristic row of {d} must have dielectric = \"{d}\""))
+        elif not (t.get("unit") in ("%", "ppm/degC") and "min" in t and "max" in t):
+            out.append(("ERROR", f"param {key}: a temperature characteristic needs min, max and unit % or ppm/degC"))
+    ambient = {d: [k for k, t in params.items() if t.get("check_ambient") and t.get("dielectric", d) == d] for d in dielectrics}
+    for d, keys in sorted(ambient.items()):
+        if len(keys) != 1:
+            out.append(("ERROR", f"dielectric {d}: needs exactly one check_ambient row (unrestricted or dielectric = \"{d}\"), "
+                                 f"found {len(keys)}"))
+    for key, t in params.items():
+        label = f"param {key}"
+        if key in capacitor.SELECTION_KEYS:
+            out.append(("ERROR", f"{label}: key is reserved for the part selection ({', '.join(capacitor.SELECTION_KEYS)})"))
+        if "dielectric" in t and "parts" in t:
+            out.append(("ERROR", f"{label}: a row has dielectric or parts, not both"))
+        suffix = next((d for d in dielectrics if key.lower().endswith("_" + d.lower())), None)
+        if suffix and "dielectric" in t and t["dielectric"] != suffix:
+            out.append(("WARN", f"{label}: key ends in _{suffix.lower()} but dielectric = '{t['dielectric']}'"))
+        if suffix and "parts" in t and isinstance(t["parts"], list):
+            other = [x for x in t["parts"] if by_value.get(x, suffix) != suffix]
+            if other:
+                out.append(("WARN", f"{label}: key ends in _{suffix.lower()} but parts names {', '.join(other)} of another dielectric"))
+        if "dielectric" in t and t["dielectric"] not in dielectrics:
+            out.append(("ERROR", f"{label}: dielectric '{t['dielectric']}' is not in the catalog ({', '.join(sorted(dielectrics))})"))
+        if "parts" in t:
+            if not (isinstance(t["parts"], list) and t["parts"] and all(isinstance(x, str) for x in t["parts"])):
+                out.append(("ERROR", f"{label}: parts must be a non-empty list of catalog values"))
+            else:
+                out += [("ERROR", f"{label}: parts names '{x}', which is not a catalog value") for x in t["parts"] if x not in values]
+            if t.get("check_ambient"):
+                out.append(("ERROR", f"{label}: a part-restricted row cannot have check_ambient (the wrapper checks per dielectric)"))
+        if t.get("check_pins"):
+            out.append(("ERROR", f"{label}: check_pins is not supported in a capacitor series (the wrapper checks the catalog rated voltage)"))
+    return out, rows
+
+
 def check_series_part(part, pins, params, folder):
     """[part] series fields, the rows they name, and calc.mpn over every allowed value (docs/SPEC.md, Series components)."""
     if part.get("series") != "resistor":
-        return [("ERROR", f"[part] series = '{part.get('series')}': only 'resistor' is supported")]
+        return [("ERROR", f"[part] series = '{part.get('series')}': only 'resistor' and 'capacitor' are supported")]
     out = [("ERROR", f"[part] series needs '{f}'") for f in SERIES_FIELDS if f not in part]
     if "mpn" in part:
         out.append(("ERROR", "[part] mpn must be absent for a series: calc.mpn(value) is the single source"))
@@ -320,13 +395,19 @@ def check_component(folder):
     used = series.series_keys(part)
     if part.get("series") and variants:
         out.append(("ERROR", "a series component cannot be a family (variants.toml)"))
+    elif part.get("series") == "capacitor":
+        found, _ = check_capacitor_part(part, pins, data.get("param", {}), folder)
+        out += found
     elif part.get("series"):
         out += check_series_part(part, pins, data.get("param", {}), folder)
     for key, table in data.get("param", {}).items():
         out += check_param(key, table, names, used_by_series=key in used)
     out += check_kicad(pins, part, folder)
     if not variants:
-        return out + check_calc(folder, data.get("param", {}))
+        calc_params = data.get("param", {})
+        if part.get("series") == "capacitor":  # the part selection supplies these keys to INPUTS
+            calc_params = {**calc_params, **{k: {"min": 0, "typ": 0, "max": 0} for k in capacitor.SELECTION_KEYS}}
+        return out + check_calc(folder, calc_params)
     out += check_calc(folder, data.get("param", {}), inputs=False)
     for key, table in data.get("param", {}).items():
         for v in table.get("variants", []):

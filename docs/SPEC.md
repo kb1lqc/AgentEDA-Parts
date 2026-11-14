@@ -86,6 +86,8 @@ note       = "Specified by characterization (DS note 3)"   # optional
 | `typ_ref` | no | Like `min_ref`/`max_ref`, for typ: the DS prints "Typ = VS + 11 V" as `typ = 11, typ_ref = "+VS"`. `part.resolve()` returns typ = offset + the rail's typ (a float rail is exact; a rail Param without typ gives typ `None`). The Zener generator ignores typ |
 | `tol_pct` | no | `[lo, hi]` printed percentages: the DS prints a typ with "-10 % / +10 %" in the MIN/MAX columns. Store `typ` as printed plus `tol_pct = [-10, 10]`, no `min`/`max`. The loader sets min = typ x (1 + lo/100) and max = typ x (1 + hi/100), sorted so min <= max (also for a negative typ); wca and Zener checks use those. The README shows "-10 %" / "+10 %" in the Min/Max cells |
 | `variants` | no | Family directories only: list of variant Values the row applies to; absent = all variants (see "Families and variants") |
+| `dielectric` | no | Capacitor series only: the row applies to catalog parts of that dielectric (`"X7R"`); absent = all (see "Capacitor series") |
+| `parts` | no | Capacitor series only: list of catalog values (MPN without package letter) the row applies to; absent = all. A row has `dielectric` or `parts`, not both |
 | `note` | no | Footnotes, characterization notes, ambiguity |
 | `sym` | no | `true` if the DS prints an unsigned magnitude bound for a quantity that can have either sign (TI prints VOS "40 uV" max, meaning ±40 uV). Store `max` (and `typ`) as printed; the loader sets min = -max. Say why in `note` |
 | `check_pins` | no | Zener wrapper: list of `[[pin]]` names whose net voltage must stay within this row's min/max (with `min_ref`/`max_ref` resolved to those pins' nets). Voltage rows only. See "Zener wrapper" |
@@ -171,12 +173,13 @@ suffix 16").
 ## Series components (the value is a design input)
 
 A passive whose value the designer chooses (a resistor series: one directory per package, ERJ-3EKF 0603) is a
-series component. It is an ordinary component directory plus these `[part]` keys:
+series component. (A capacitor series, whose values come from a catalog file, is the next section.) It is an ordinary
+component directory plus these `[part]` keys:
 
 ```toml
 [part]
 value          = "ERJ-3EKF"              # directory name; no `mpn` key: calc.mpn(value) gives it
-series         = "resistor"              # marks a series component; only "resistor" exists
+series         = "resistor"              # marks a series component: "resistor" (here) or "capacitor" (next section)
 value_param    = "res_range"             # param row: allowed resistance range, min and max, unit ohm
 e_series       = ["E24", "E96"]          # allowed values: these IEC 60063 series inside the range
 series_power   = "p70"                   # param row: power rating at 70 degC (W, max)
@@ -201,6 +204,107 @@ series_tol     = "tol"                   # param row: tolerance (%, min and max,
   the rated-voltage formula and a table of rated voltage at the decade values (10 ohm ... 1 Mohm) inside the range,
   "computed from" the power and voltage-limit rows.
 - Zener: see "Zener wrapper", "Series wrapper".
+
+## Capacitor series (the part is picked from a catalog)
+
+A capacitor series is a directory for one package whose orderable values are the rows of a committed catalog file.
+Murata GCM MLCCs: one directory per Murata size+thickness code (`GCM155`, `GCM188`, `GCM21B`, ...), each with one
+symbol, footprint and STEP (the height differs per thickness code), holding every C0G and X7R value. It is an ordinary
+component directory plus `catalog.csv` and these `[part]` keys (no `mpn`, no `variants.toml`, exactly 2 pins):
+
+```toml
+[part]
+value              = "GCM155"            # directory name
+series             = "capacitor"
+catalog            = "catalog.csv"       # file in this directory
+tc_param           = { X7R = "tc_x7r" }  # dielectric -> param row with its temperature characteristic
+package_default    = "D"                 # package letter appended to the catalog value: MPN = value + letter
+package_alternates = ["W", "J", "V"]     # other letters: the same part in other packaging
+```
+
+**catalog.csv** (UTF-8, header row, one row per orderable value; comma separated, quote cells that contain a comma):
+
+| Column | Meaning |
+|---|---|
+| `value` | MPN without the package letter (`GCM155R71H104KE02`); unique in the file |
+| `dielectric` | name as printed by the source (`X7R`, `C0G`) |
+| `capacitance` | as printed (`0.1μF`, `6,800pF`, `1.5pF`); units pF, nF, uF (Greek mu or u) |
+| `tolerance` | as printed, symmetric (`±10%`, `±0.25pF`); an absolute pF tolerance is divided by C where a fraction is needed |
+| `rated_voltage` | as printed (`50Vdc`, `1,000Vdc`) |
+| `thickness` | as printed (`0.5mm ±0.05mm`); informational |
+| `source` | the cite of the row |
+
+- **The export is the source.** A manufacturer product-list export is a cited source for per-part values. The cite is
+  `Murata product list export <file name>, row <part number>` (the part number exactly as the export prints it, with
+  the `#` package placeholder). It is not a datasheet table and says so in every Param `note`; per-dielectric and
+  per-size rows still cite the reference sheet (`DS p.`).
+- **Generating the catalog.** `python3 -m lib.catalog murata-gcm <vendor csv> <component dir> [--dielectrics X7R,C0G]`
+  keeps the export rows whose part number carries the directory's size+thickness code (`GCM155` -> `155`) and whose
+  `Temperature characteristics` column is an allowed dielectric (default: the keys of `[part] tc_param`, so a dielectric
+  with no temperature-characteristic row is never written), In Production only, and writes `catalog.csv` sorted by
+  value. Before writing, every kept row is decoded from its part number and compared with the export's own columns:
+  size (length and width), thickness code, dielectric code (`5C` = C0G, `R7` = X7R), rated-voltage code (`1H` = 50 V,
+  `2A` = 100 V, ...), the 3-digit capacitance code (two digits and a power of ten in pF; `R` is the decimal point:
+  `1R5` = 1.5 pF), the tolerance letter, and the operating temperature (-55 to 125 degC, the range of the shared
+  `op_temp_*` rows). Any mismatch, a part number of another form or a repeated part number is an error: the row is not
+  written and the command exits 1.
+- **The decode tables are a cross-check only ("Not a DS rule").** The Murata reference sheets decode just their own
+  example part number (DS p.2). Only `15`/`5`, `18`/`8`, `R7`, `1H`, `104`, `K` and the package letters are printed there;
+  the other codes come from Murata's published part-number system and are consistent with every row of the export
+  (one printed value per code). A row passing the decode proves the export agrees with itself and with the tables,
+  not that the tables are Murata's rules. The tables live in `lib/catalog.py`, each with its source.
+- **Restricting rows.** In a capacitor series a param row may carry `dielectric = "X7R"` (applies to every catalog part
+  of that dielectric: the temperature characteristic, shared test limits) or `parts = ["GCM155R71H104KE02"]` (applies to
+  those catalog values only: per-part rows from a reference sheet, such as thickness T, IR limits, stress-test limits).
+  Rows with neither apply to every part. Row keys are unique, so a dielectric-specific quantity has one key per
+  dielectric (`tc_x7r`, `tc_c0g`).
+- **Loading.** `load(dir)` returns a Part holding only the unrestricted rows (`part.hidden` maps the other keys to
+  their restriction; `part.param("tc_x7r")` then says which restriction hides it). `part.catalog()` returns the
+  `lib.capacitor.CatalogRow` list, `part.dielectrics()` the dielectrics in it.
+- **Selecting a part.** `sel = part.select(capacitance, rated_voltage, dielectric, tolerance=None)`; capacitance in F
+  and rated voltage in V (or printed text, `"0.1uF"`, `"50Vdc"`), dielectric as in the catalog, tolerance as printed
+  (`"+/-10%"` or `"±10%"`) and only needed when the catalog lists several for that value. It returns a `Selection`
+  with `value`, `mpn` (value + `package_default`), `alternates` (value + each `package_alternates`), `dielectric`,
+  `tolerance`, `thickness`, `capacitance` (Param, F: typ = printed value, min/max from the tolerance),
+  `rated_voltage` (Param, V: min = -rating, max = rating, non-polarized) and `part`, a Part of the rows that apply
+  to this part (dielectric rows of its dielectric, `parts` rows naming its value) plus the selection keys
+  `capacitance`, `tolerance` (fraction), `rated_v` and `tc` (the row `tc_param` names for its dielectric, an alias).
+  No match raises `ValueError` ("no catalog part for ...", with the voltages or tolerances that do exist); several
+  matches (two tolerances and none given; two values with the same tolerance) raise `ValueError` "ambiguous: ..."
+  listing the values. Capacitance and rated voltage match to 1e-9 relative.
+- **calc.** Two functions, one per temperature-characteristic kind, so a coefficient can never be read as a fraction.
+  `capacitance_worst_pct(c0, tol, tc)` is `C0 x (1 + tol) x (1 + tc)` for percent-change classes (X7R: `tc` a fraction,
+  -15 to 15 % over the whole range). `capacitance_worst_ppm(c0, tol, tc, dt)` is `C0 x (1 + tol) x (1 + tc x dt)` for
+  ppm classes (C0G: `tc` in 1/degC, 0 +/-30 ppm/degC); `dt` (T - 25 degC) is required, and `ValueError` is raised for
+  `dt` below 0 or above 100, because the coefficient is printed for 25 to 125 degC only (below 25 degC the Table A drift
+  rows apply, and their docstring says so). Each raises `ValueError` if `tc` has the other kind's magnitude. Each has
+  its own `INPUTS` (`c0` -> `capacitance.typ`, `tol` -> `tolerance`, `tc` -> `tc`, the dielectric's row, never
+  hard-coded) and its own `EXAMPLES` from printed numbers. Neither includes DC-bias or aging capacitance loss (the
+  reference sheets print no number; for X7R these can dominate), and the docstrings say so:
+  `wca(sel.part.calc.capacitance_worst_pct, **sel.part.inputs("capacitance_worst_pct"))`, or for C0G
+  `wca(sel.part.calc.capacitance_worst_ppm, dt=Param(min=0, max=100), **sel.part.inputs("capacitance_worst_ppm"))`.
+  The tolerance and tc rows are bound-only, so the result has no typ unless the caller states one.
+- **Re-decoding the catalog.** `[part] catalog_decoder = "murata-gcm"` makes `lib.check` decode every committed row again
+  with the offline half of the `lib.catalog` decode (`value + "#"` against the part-number form, then dielectric, rated
+  voltage, capacitance code, tolerance letter and thickness code against the row's columns, and the size+thickness
+  code against the directory name; length, width and operating temperature exist only in the export and are skipped).
+  A hand edit of a column is an ERROR. Same tables as the generator, same "Not a DS rule" status.
+- **Suffix convention.** A row key ending in `_c0g` / `_x7r` (the dielectric name, lower case) is expected to be about
+  that dielectric: `lib.check` WARNs when such a `parts` row names a part of the other dielectric, or such a
+  `dielectric` row names another one.
+- `lib.check` (capacitor series) ERRORs on: a missing `[part]` key, `mpn` present, a series that does not have exactly
+  2 pins, package letters that are not distinct single capital letters, an unreadable catalog (wrong columns, empty or
+  unparseable cells, a repeated `value`; every problem is listed), a catalog dielectric with no `tc_param` entry (such
+  parts cannot be listed: add the temperature-characteristic row from that dielectric's reference sheet first), a
+  `tc_param` row that is missing, has another `dielectric` or lacks min, max and unit % or ppm/degC, a catalog
+  dielectric without exactly one `check_ambient` row (unrestricted or restricted to it), a row with both `dielectric`
+  and `parts`, a `dielectric` not in the catalog, a `parts` entry that is not a catalog value, a `check_ambient` or
+  `check_pins` row restricted to parts, and a row key that is reserved for the selection (`capacitance`, `tolerance`,
+  `rated_v`, `tc`). `INPUTS` may name those four keys. Rating rows still need `check_pins`, `check_ambient` or `unchecked`;
+  in a capacitor series only `check_ambient` (per dielectric) and `unchecked` are possible.
+- `lib.readme` adds a "Series" section (catalog count, MPN rule, selection, wrapper, a table per dielectric) and shows
+  "Applies to: dielectric X7R." / "Applies to: parts ..." in the Conditions of restricted rows.
+- Zener: see "Capacitor wrapper".
 
 ## calc.py
 
@@ -282,7 +386,7 @@ What the generator emits, so a reviewer can predict the file from the TOML:
 
 ### Series wrapper
 
-A series component (see "Series components") gets one wrapper, `<Value>.zen`. It differs from the above as follows:
+A resistor series component (see "Series components") gets one wrapper, `<Value>.zen`. It differs from the above as follows:
 - `value = config(Resistance, ...)`: required, no default (an instance without it fails to build).
 - Pins `"1"` and `"2"` become `P1` and `P2` (a purely numeric pin name gets a `P` prefix: `io_name("1") = "P1"`).
 - `_MPN = {<micro-ohm integer>: "<MPN>", ...}`, generated from `calc.mpn` over every allowed value, and
@@ -297,6 +401,35 @@ A series component (see "Series components") gets one wrapper, `<Value>.zen`. It
 - Power derating above 70 degC is a curve (`calc.rated_power`) and is not checked in Zener; the wrapper lists it as
   `# UNCHECKED ... owner: module`. The four series rows are not listed as UNCHECKED (the series check reads them).
 - The ambient check comes from the normal `check_ambient` row.
+
+### Capacitor wrapper
+
+A capacitor series (see "Capacitor series") gets one wrapper, `<Value>.zen` (`GCM155.zen`). It differs from the above as
+follows:
+- Pins `"1"` and `"2"` become `P1` and `P2`, as in the resistor wrapper.
+- Required configs: `value = config(Capacitance)`, `rated_v = config(Voltage)` (the rated DC voltage that selects the
+  catalog part, `50V`) and `dielectric = config(str)` (as printed in the catalog, `X7R`). Optional `tolerance =
+  config(str, default="")`, ASCII as printed (`+/-10%`), needed only when the catalog lists several for that value.
+- `_VALUE = {(dielectric, femtofarad, millivolt, tolerance): "<catalog value>", ...}`, generated from `catalog.csv`
+  (one row per orderable value, with a trailing comment of the printed values; an unorderable combination gets the sentinel MPN `UNORDERABLE`, never a real part number), and `_TOLS`, the tolerances listed for
+  each (dielectric, femtofarad, millivolt). Keys are integers (`int(C x 1e15 + 0.5)`, `int(V x 1e3 + 0.5)`; the same
+  arithmetic in `lib.capacitor.zen_key`) because float text differs between Python and Zener. The wrapper adds the
+  package letter: `Part(mpn=_MPN_STR)` with `_MPN_STR = <value> + package_default`, and the alternates property is
+  `<value> + each package_alternates` (empty when unorderable). Tuple dict keys, a `Voltage` config and `.value` floats were confirmed with a scratch
+  build (pcb 0.4.102). Two catalog values with the same key are a generator problem.
+- Check `part_orderable` (error; advice when the wrapper is built alone): the configured combination is a key of
+  `_VALUE`. The message names the tolerances the catalog lists for it. A check, not an `error()` call, because Zener
+  loads the module once with placeholder configs.
+- Check `rated_voltage` (error, through `_limit`, so an unset net is UNVERIFIED): max(P1.max - P2.min, P2.max - P1.min)
+  is at most `derate x rated_v` (non-polarized, either polarity). `derate` applies, as for the resistor series.
+- Check `ambient_range` (error): the `ambient` config inside the `check_ambient` row of the configured dielectric
+  (`_AMBIENT = {dielectric: (lo, hi)}`, one `check_ambient` row per dielectric, kelvin). An ambient row must be
+  error severity (not 25C or partial).
+- Rows restricted to parts, and rating rows restricted to a dielectric without a check, are listed as
+  `# UNCHECKED: <key> [parts ...]: ...; <reason>`. DC-bias capacitance loss, aging and AC stress are listed as unchecked
+  (owner: module). No `check_pins` in a capacitor series: the rated voltage comes from the catalog.
+- The generated module grows with the catalog: about 140 rows is 23 kB (GCM155). A catalog of hundreds of rows builds in
+  well under a second.
 
 Choosing check rows: inputs and supplies the circuit sets (supply pins, signal inputs, pull-up rails, divider
 inputs) get `check_pins`. Pins the part drives or whose voltage is set by external parts (outputs, gate drives,
@@ -320,8 +453,11 @@ g   = wca(ina.calc.gain, rg=rg)  # Param(min=..., typ=..., max=...)
 print(table([("Gain", g, "")]))
 ```
 
-A series component (`[part] series`) also gives `part.values()`, `part.mpn(value)` and `part.series_value(value)`
-(see "Series components"): `wca(fn, r=load("Panasonic/ERJ-3EKF").series_value(2.61e3))`.
+A resistor series component (`[part] series = "resistor"`) also gives `part.values()`, `part.mpn(value)` and
+`part.series_value(value)` (see "Series components"): `wca(fn, r=load("Panasonic/ERJ-3EKF").series_value(2.61e3))`.
+A capacitor series gives `part.catalog()` and `part.select(capacitance, rated_voltage, dielectric, tolerance=None)`
+(see "Capacitor series"): `sel = load("Murata/GCM155").select(0.1e-6, 50, "X7R", "+/-10%")`, `sel.mpn`, and
+`wca(sel.part.calc.capacitance_worst_pct, **sel.part.inputs("capacitance_worst_pct"))` (X7R; `capacitance_worst_ppm` for C0G).
 
 Worst-case method (`wca`), stated so a human can check it by hand:
 1. typ = function evaluated with every input at its typ value. If any input has no typ, result typ is `None`.
@@ -338,7 +474,7 @@ Worst-case method (`wca`), stated so a human can check it by hand:
 - Every `calc.EXAMPLES` row reproduces within its tolerance.
 - `typ_ref` names a `[[pin]]` and needs `typ`; ordering is not checked for rows with any `*_ref`. `tol_pct` needs
   `typ`, forbids `min`/`max`, and `lo <= hi`.
-- Families: see "Families and variants". Series components: see "Series components".
+- Families: see "Families and variants". Series components: see "Series components" and "Capacitor series".
 
 The generated README has a "Limits of this data" line for every part: row counts per scope (25C-only rows hold only
 at 25 degC), curve rows, text rows, and, when a junction-temperature row (unit degC, `abs_max`/`rec_op`, "TJ" or

@@ -27,8 +27,20 @@ Every part here has three things a person or an AI needs to design with it and c
 | ST VNF1248F | 12/24/48 V high-side switch controller with e-fuse, SPI, QFN32L 5x5 | [README](components/STMicroelectronics/VNF1248F/README.md) |
 | Panasonic ERJ-2RKF series | Thick film resistor, 0402, ±1 %, 10 Ω to 1 MΩ (E24/E96); value is a design input | [README](components/Panasonic/ERJ-2RKF/README.md) |
 | Panasonic ERJ-3EKF series | Thick film resistor, 0603, ±1 %, 10 Ω to 1 MΩ (E24/E96); value is a design input | [README](components/Panasonic/ERJ-3EKF/README.md) |
-| Murata GCM155 family (0402) | Automotive X7R MLCC; variants: GCM155R71H104KE02 (0.1 µF 50 V ±10 %) | [README](components/Murata/GCM155/README.md) |
-| Murata GCM188 family (0603) | Automotive X7R MLCC; variants: GCM188R71H104KA57 (0.1 µF 50 V ±10 %) | [README](components/Murata/GCM188/README.md) |
+| Murata GCM155 series (0402) | Automotive X7R and C0G MLCC, 697 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM155/README.md) |
+| Murata GCM188 series (0603) | Automotive X7R and C0G MLCC, 633 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM188/README.md) |
+| Murata GCM21A series (0805, 1.0 mm) | Automotive X7R and C0G MLCC, 163 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM21A/README.md) |
+| Murata GCM21B series (0805, 1.25 mm) | Automotive X7R and C0G MLCC, 137 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM21B/README.md) |
+| Murata GCM216 series (0805, 0.6 mm) | Automotive X7R and C0G MLCC, 33 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM216/README.md) |
+| Murata GCM219 series (0805, 0.85 mm) | Automotive X7R and C0G MLCC, 49 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM219/README.md) |
+| Murata GCM319 series (1206, 0.85 mm) | Automotive C0G MLCC, 44 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM319/README.md) |
+| Murata GCM31A series (1206, 1.0 mm) | Automotive C0G MLCC, 147 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM31A/README.md) |
+| Murata GCM31B series (1206, 1.25 mm) | Automotive X7R and C0G MLCC, 22 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM31B/README.md) |
+| Murata GCM31C series (1206, 1.6 mm) | Automotive X7R and C0G MLCC, 82 catalog values (no 3D model yet); part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM31C/README.md) |
+| Murata GCM31M series (1206, 1.15 mm) | Automotive X7R and C0G MLCC, 18 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM31M/README.md) |
+| Murata GCM32D series (1210, 2.0 mm) | Automotive X7R and C0G MLCC, 41 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM32D/README.md) |
+| Murata GCM32E series (1210, 2.5 mm) | Automotive X7R and C0G MLCC, 43 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM32E/README.md) |
+| Murata GCM32Q series (1210, 1.5 mm) | Automotive X7R MLCC, 4 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM32Q/README.md) |
 | Vishay Dale WSK2512R0250D | 25 mohm ±0.5 % 4-terminal current-sense resistor | [README](components/Vishay/WSK2512R0250D/README.md) |
 
 ## Use it

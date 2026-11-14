@@ -75,6 +75,8 @@ me; they return evidence.
    grade or option are one family directory named for the package (`LTC4364MS`) with `variants.toml` (SPEC
    "Families and variants"): rows that differ are restricted with `variants = [...]` or overridden per variant; each
    variant sets its own `mpn`. Another package is another directory and needs its own KiCad files.
+   MLCC series: catalog from the vendor export, one directory per size+thickness code (`python3 -m lib.catalog`, SPEC
+   "Capacitor series"); no family, per-dielectric rows use `dielectric = ...`, per-part rows `parts = [...]`.
 2. **KiCad files** (docs/KICAD.md). Vendor files come in L/N/M densities: use N. Copy symbol and footprint into
    `components/<Manufacturer>/<Value>/<Value>.kicad_sym` / `.kicad_mod` and fix them up by editing the S-expressions:
    properties (Value, MPN, Manufacturer, Datasheet URL, Description, Footprint link), pin names verbatim from the DS,

@@ -1,0 +1,178 @@
+"""GCM31B: Chip multilayer ceramic capacitors, C0G (5C) and X7R (R7), 3216M (1206), thickness 1.25 mm (code B), AEC-Q200 (GCM series).
+GENERATED from component.toml by `python3 -m lib.zen`; do not edit. Source of truth: component.toml and
+calc.py (numbers, cites, equations). DS: , 00B (2026-04).
+Checks are DC steady-state on the voltages each instance declares. They do not cover transients, overshoot,
+hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
+Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
+
+load("@stdlib/units.zen", "Capacitance", "Temperature", "Voltage")
+
+# UNCHECKED: rated_v_ds_c0g [parts GCM31B5C2E123FX01]: Rated voltage (DC) (DS p.2 (C0G sheet of GCM31B5C2E123FX01), Rated Value, Rated Voltage (DC 250V)); the generated rated_voltage check applies the catalog rated voltage of the selected part; this per-part row duplicates it (owner: module)
+# UNCHECKED: capacitance under DC bias, aging and AC/ripple stress: curve-based or not quantified by the datasheet; owner: module (calc.capacitance_worst_pct/_ppm exclude them)
+
+# Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
+# GND can drive them; ground-named pins are Ground.
+# pin 1 1, passive: Capacitor terminal (non-polarized)
+P1 = io(Net)
+# pin 2 2, passive: Capacitor terminal (non-polarized)
+P2 = io(Net)
+
+ambient = config(Temperature, optional=True, help="Board ambient temperature range")
+derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+value = config(Capacitance, help="Capacitance, a catalog value (see the _VALUE table)")
+rated_v = config(Voltage, help="Rated DC voltage of the part, a catalog value, for example 50V")
+dielectric = config(str, help="Dielectric as printed in the catalog, for example X7R")
+tolerance = config(
+    str,
+    default="",
+    help="Tolerance as printed, ASCII, for example +/-10%; only needed when the catalog lists several for the value",
+)
+
+_ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
+check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
+
+
+def _limit(name, fn, inputs, severity, waiver=""):
+    # Unset input: UNVERIFIED warning, never a silent pass. Waiver drops a warning to advice.
+    if waiver and severity != "warning":
+        error("only warning-level checks can be waived: " + name)
+    unset = [k for k, v in inputs.items() if v == None]
+    if unset:
+
+        def _unverified(_m):
+            error("UNVERIFIED " + name + ": no value for " + ", ".join(unset))
+
+        builtin.add_electrical_check(name=name, check_fn=_unverified, severity="advice" if _ROOT else "warning")
+    else:
+        builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
+
+
+def _range(_m, v, what, lo=None, hi=None, lo_ref=None, hi_ref=None):
+    # Worst case: v.min >= lo + lo_ref.max and v.max <= hi + hi_ref.min (narrowest window). No ref = absolute.
+    lo_b = None if lo == None else lo + (0.0 if lo_ref == None else lo_ref.max)
+    hi_b = None if hi == None else hi + (0.0 if hi_ref == None else hi_ref.min)
+    ok = (lo_b == None or v.min >= lo_b) and (hi_b == None or v.max <= hi_b)
+    lo_t = "no limit" if lo_b == None else "%s V" % lo_b
+    hi_t = "no limit" if hi_b == None else "%s V" % hi_b
+    check(ok, "%s: %s to %s V outside %s to %s" % (what, v.min, v.max, lo_t, hi_t))
+
+
+def _temp(_m, v, what, lo, hi):
+    # Temperatures are kelvin floats in Zener; messages in degC.
+    ok = v.min >= lo and v.max <= hi
+    msg = "%s: %s to %s degC outside %s to %s degC"
+    check(ok, msg % (what, v.min - 273.15, v.max - 273.15, lo - 273.15, hi - 273.15))
+
+
+_AMBIENT = {
+    "C0G": (218.15, 398.15),  # op_temp_c0g
+    "X7R": (218.15, 398.15),  # op_temp_x7r
+}
+_AMBIENT_RANGE = _AMBIENT.get(dielectric, _AMBIENT["C0G"])
+
+
+# Orderable catalog value per (dielectric, femtofarad, millivolt, tolerance), generated from catalog.csv (the
+# single source; each row cites the manufacturer export there). Integer keys: float text differs between
+# Python and Zener, integers do not. The package letter is added below.
+_VALUE = {
+    ("C0G", 12000000, 250000, "+/-1%"): "GCM31B5C2E123FX01",  # 12,000pF 250Vdc +/-1%
+    ("C0G", 12000000, 250000, "+/-2%"): "GCM31B5C2E123GX01",  # 12,000pF 250Vdc +/-2%
+    ("C0G", 12000000, 250000, "+/-5%"): "GCM31B5C2E123JX01",  # 12,000pF 250Vdc +/-5%
+    ("C0G", 2200000, 630000, "+/-1%"): "GCM31B5C2J222FX01",  # 2,200pF 630Vdc +/-1%
+    ("C0G", 2200000, 630000, "+/-2%"): "GCM31B5C2J222GX01",  # 2,200pF 630Vdc +/-2%
+    ("C0G", 2200000, 630000, "+/-5%"): "GCM31B5C2J222JX01",  # 2,200pF 630Vdc +/-5%
+    ("C0G", 2700000, 630000, "+/-1%"): "GCM31B5C2J272FX01",  # 2,700pF 630Vdc +/-1%
+    ("C0G", 2700000, 630000, "+/-2%"): "GCM31B5C2J272GX01",  # 2,700pF 630Vdc +/-2%
+    ("C0G", 2700000, 630000, "+/-5%"): "GCM31B5C2J272JX01",  # 2,700pF 630Vdc +/-5%
+    ("C0G", 560000, 1000000, "+/-1%"): "GCM31B5C3A561FX01",  # 560pF 1,000Vdc +/-1%
+    ("C0G", 560000, 1000000, "+/-2%"): "GCM31B5C3A561GX01",  # 560pF 1,000Vdc +/-2%
+    ("C0G", 560000, 1000000, "+/-5%"): "GCM31B5C3A561JX01",  # 560pF 1,000Vdc +/-5%
+    ("C0G", 680000, 1000000, "+/-1%"): "GCM31B5C3A681FX01",  # 680pF 1,000Vdc +/-1%
+    ("C0G", 680000, 1000000, "+/-2%"): "GCM31B5C3A681GX01",  # 680pF 1,000Vdc +/-2%
+    ("C0G", 680000, 1000000, "+/-5%"): "GCM31B5C3A681JX01",  # 680pF 1,000Vdc +/-5%
+    ("X7R", 1000000, 630000, "+/-10%"): "GCM31BR72J102KWB1",  # 1,000pF 630Vdc +/-10%
+    ("X7R", 10000000, 630000, "+/-10%"): "GCM31BR72J103KWB1",  # 10,000pF 630Vdc +/-10%
+    ("X7R", 1500000, 630000, "+/-10%"): "GCM31BR72J152KWB1",  # 1,500pF 630Vdc +/-10%
+    ("X7R", 2200000, 630000, "+/-10%"): "GCM31BR72J222KWB1",  # 2,200pF 630Vdc +/-10%
+    ("X7R", 3300000, 630000, "+/-10%"): "GCM31BR72J332KWB1",  # 3,300pF 630Vdc +/-10%
+    ("X7R", 4700000, 630000, "+/-10%"): "GCM31BR72J472KWB1",  # 4,700pF 630Vdc +/-10%
+    ("X7R", 6800000, 630000, "+/-10%"): "GCM31BR72J682KWB1",  # 6,800pF 630Vdc +/-10%
+}
+# Tolerances the catalog lists for one (dielectric, femtofarad, millivolt): needed when there are several.
+_TOLS = {
+    ("C0G", 12000000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 2200000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 2700000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 560000, 1000000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 680000, 1000000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("X7R", 1000000, 630000): ["+/-10%"],
+    ("X7R", 10000000, 630000): ["+/-10%"],
+    ("X7R", 1500000, 630000): ["+/-10%"],
+    ("X7R", 2200000, 630000): ["+/-10%"],
+    ("X7R", 3300000, 630000): ["+/-10%"],
+    ("X7R", 4700000, 630000): ["+/-10%"],
+    ("X7R", 6800000, 630000): ["+/-10%"],
+}
+_KEY = (dielectric, int(value.value * 1e15 + 0.5), int(rated_v.value * 1e3 + 0.5))
+_AVAILABLE = _TOLS.get(_KEY, [])
+_FULL = _KEY + (tolerance if tolerance != "" or len(_AVAILABLE) != 1 else _AVAILABLE[0],)
+# Catalog value for the configured part. An unorderable combination gets the sentinel MPN UNORDERABLE (never a
+# real but wrong part number) and fails part_orderable.
+_VALUE_STR = _VALUE.get(_FULL, "UNORDERABLE")
+_MPN_STR = _VALUE_STR + "L" if _FULL in _VALUE else "UNORDERABLE"  # default package letter; the others are alternates
+
+
+def _orderable(_m, found, what, key, available):
+    why = "no catalog part for (dielectric, fF, mV, tolerance) = %s" % (key,)
+    if len(available) > 0:
+        why += "; the catalog lists these tolerances for it: %s (set tolerance)" % available
+    check(found, "%s: %s" % (what, why))
+
+
+_ORDERABLE_SEVERITY = "advice" if _ROOT else "error"  # standalone build: the configs are unset
+builtin.add_electrical_check(
+    name="part_orderable",
+    check_fn=_orderable,
+    inputs={"found": _FULL in _VALUE, "what": "part_orderable", "key": _FULL, "available": _AVAILABLE},
+    severity=_ORDERABLE_SEVERITY,
+)
+
+
+def _rated_voltage(_m, v1, v2, what, vr, derate):
+    # Worst case |V(P1) - V(P2)| over both nets' ranges against derate x the rated voltage (non-polarized).
+    vmax = max(v1.max - v2.min, v2.max - v1.min)
+    msg = "%s: up to %s V across the part > derate x rated voltage = %s x %s V"
+    check(vmax <= vr * derate, msg % (what, vmax, derate, vr))
+
+
+# rated_voltage: voltage across the part within derate x the rated voltage of the configured catalog part
+#   Rated voltage = the rated_v config (it selects the catalog part; part_orderable fails if it is not listed).
+#   Source of the rating: the catalog row (manufacturer export cited there). Error: the rating is exceeded.
+#   Not checked: DC-bias capacitance loss, ripple/AC peak and self-heating (owner: module).
+_limit(
+    "rated_voltage",
+    _rated_voltage,
+    {"v1": P1.voltage, "v2": P2.voltage, "what": "rated_voltage", "vr": rated_v.value, "derate": derate},
+    "error",
+)
+
+# ambient_range: board ambient inside the operating range of the configured dielectric
+#   C0G: op_temp_c0g: Operating temperature range (DS p.2 (C0G sheet of GCM31B5C2E123FX01), Rated Value, Operating Temp. Range (-55 to 125 degC))
+#   X7R: op_temp_x7r: Operating temperature range (DS p.2 (X7R sheet of GCM31CR71E475KA55), Rated Value, Operating Temp. Range (-55 to 125 degC))
+_limit(
+    "ambient_range",
+    _temp,
+    {"v": ambient, "what": "ambient_range", "lo": _AMBIENT_RANGE[0], "hi": _AMBIENT_RANGE[1]},
+    "error",
+)
+
+Component(
+    name="GCM31B",
+    symbol=Symbol(library="./GCM31B.kicad_sym"),
+    part=Part(mpn=_MPN_STR, manufacturer="Murata"),
+    pins={
+        "1": P1,
+        "2": P2,
+    },
+    properties={"alternatives": [_VALUE_STR + l for l in ["K"]] if _FULL in _VALUE else []},
+)

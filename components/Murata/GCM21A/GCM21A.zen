@@ -1,0 +1,366 @@
+"""GCM21A: Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 2012M (0805), thickness 1.0 mm (code A), AEC-Q200 (GCM series).
+GENERATED from component.toml by `python3 -m lib.zen`; do not edit. Source of truth: component.toml and
+calc.py (numbers, cites, equations). DS: , 00B (2026-04).
+Checks are DC steady-state on the voltages each instance declares. They do not cover transients, overshoot,
+hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
+Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
+
+load("@stdlib/units.zen", "Capacitance", "Temperature", "Voltage")
+
+# UNCHECKED: rated_v_ds_c0g [parts GCM21A5C2E101FX01]: Rated voltage (DC) (DS p.2, Rated Value, Rated Voltage (DC 250V)); the generated rated_voltage check applies the catalog rated voltage of the selected part; this per-part row duplicates it (owner: module)
+# UNCHECKED: capacitance under DC bias, aging and AC/ripple stress: curve-based or not quantified by the datasheet; owner: module (calc.capacitance_worst_pct/_ppm exclude them)
+
+# Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
+# GND can drive them; ground-named pins are Ground.
+# pin 1 1, passive: Capacitor terminal (non-polarized)
+P1 = io(Net)
+# pin 2 2, passive: Capacitor terminal (non-polarized)
+P2 = io(Net)
+
+ambient = config(Temperature, optional=True, help="Board ambient temperature range")
+derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+value = config(Capacitance, help="Capacitance, a catalog value (see the _VALUE table)")
+rated_v = config(Voltage, help="Rated DC voltage of the part, a catalog value, for example 50V")
+dielectric = config(str, help="Dielectric as printed in the catalog, for example X7R")
+tolerance = config(
+    str,
+    default="",
+    help="Tolerance as printed, ASCII, for example +/-10%; only needed when the catalog lists several for the value",
+)
+
+_ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
+check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
+
+
+def _limit(name, fn, inputs, severity, waiver=""):
+    # Unset input: UNVERIFIED warning, never a silent pass. Waiver drops a warning to advice.
+    if waiver and severity != "warning":
+        error("only warning-level checks can be waived: " + name)
+    unset = [k for k, v in inputs.items() if v == None]
+    if unset:
+
+        def _unverified(_m):
+            error("UNVERIFIED " + name + ": no value for " + ", ".join(unset))
+
+        builtin.add_electrical_check(name=name, check_fn=_unverified, severity="advice" if _ROOT else "warning")
+    else:
+        builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
+
+
+def _range(_m, v, what, lo=None, hi=None, lo_ref=None, hi_ref=None):
+    # Worst case: v.min >= lo + lo_ref.max and v.max <= hi + hi_ref.min (narrowest window). No ref = absolute.
+    lo_b = None if lo == None else lo + (0.0 if lo_ref == None else lo_ref.max)
+    hi_b = None if hi == None else hi + (0.0 if hi_ref == None else hi_ref.min)
+    ok = (lo_b == None or v.min >= lo_b) and (hi_b == None or v.max <= hi_b)
+    lo_t = "no limit" if lo_b == None else "%s V" % lo_b
+    hi_t = "no limit" if hi_b == None else "%s V" % hi_b
+    check(ok, "%s: %s to %s V outside %s to %s" % (what, v.min, v.max, lo_t, hi_t))
+
+
+def _temp(_m, v, what, lo, hi):
+    # Temperatures are kelvin floats in Zener; messages in degC.
+    ok = v.min >= lo and v.max <= hi
+    msg = "%s: %s to %s degC outside %s to %s degC"
+    check(ok, msg % (what, v.min - 273.15, v.max - 273.15, lo - 273.15, hi - 273.15))
+
+
+_AMBIENT = {
+    "C0G": (218.15, 398.15),  # op_temp_c0g
+    "X7R": (218.15, 398.15),  # op_temp_x7r
+}
+_AMBIENT_RANGE = _AMBIENT.get(dielectric, _AMBIENT["C0G"])
+
+
+# Orderable catalog value per (dielectric, femtofarad, millivolt, tolerance), generated from catalog.csv (the
+# single source; each row cites the manufacturer export there). Integer keys: float text differs between
+# Python and Zener, integers do not. The package letter is added below.
+_VALUE = {
+    ("C0G", 10000, 250000, "+/-1%"): "GCM21A5C2E100FX01",  # 10pF 250Vdc +/-1%
+    ("C0G", 10000, 250000, "+/-2%"): "GCM21A5C2E100GX01",  # 10pF 250Vdc +/-2%
+    ("C0G", 10000, 250000, "+/-5%"): "GCM21A5C2E100JX01",  # 10pF 250Vdc +/-5%
+    ("C0G", 100000, 250000, "+/-1%"): "GCM21A5C2E101FX01",  # 100pF 250Vdc +/-1%
+    ("C0G", 100000, 250000, "+/-2%"): "GCM21A5C2E101GX01",  # 100pF 250Vdc +/-2%
+    ("C0G", 100000, 250000, "+/-5%"): "GCM21A5C2E101JX01",  # 100pF 250Vdc +/-5%
+    ("C0G", 1000000, 250000, "+/-1%"): "GCM21A5C2E102FX01",  # 1,000pF 250Vdc +/-1%
+    ("C0G", 1000000, 250000, "+/-2%"): "GCM21A5C2E102GX01",  # 1,000pF 250Vdc +/-2%
+    ("C0G", 1000000, 250000, "+/-5%"): "GCM21A5C2E102JX01",  # 1,000pF 250Vdc +/-5%
+    ("C0G", 12000, 250000, "+/-1%"): "GCM21A5C2E120FX01",  # 12pF 250Vdc +/-1%
+    ("C0G", 12000, 250000, "+/-2%"): "GCM21A5C2E120GX01",  # 12pF 250Vdc +/-2%
+    ("C0G", 12000, 250000, "+/-5%"): "GCM21A5C2E120JX01",  # 12pF 250Vdc +/-5%
+    ("C0G", 120000, 250000, "+/-1%"): "GCM21A5C2E121FX01",  # 120pF 250Vdc +/-1%
+    ("C0G", 120000, 250000, "+/-2%"): "GCM21A5C2E121GX01",  # 120pF 250Vdc +/-2%
+    ("C0G", 120000, 250000, "+/-5%"): "GCM21A5C2E121JX01",  # 120pF 250Vdc +/-5%
+    ("C0G", 1200000, 250000, "+/-1%"): "GCM21A5C2E122FX01",  # 1,200pF 250Vdc +/-1%
+    ("C0G", 1200000, 250000, "+/-2%"): "GCM21A5C2E122GX01",  # 1,200pF 250Vdc +/-2%
+    ("C0G", 1200000, 250000, "+/-5%"): "GCM21A5C2E122JX01",  # 1,200pF 250Vdc +/-5%
+    ("C0G", 15000, 250000, "+/-1%"): "GCM21A5C2E150FX01",  # 15pF 250Vdc +/-1%
+    ("C0G", 15000, 250000, "+/-2%"): "GCM21A5C2E150GX01",  # 15pF 250Vdc +/-2%
+    ("C0G", 15000, 250000, "+/-5%"): "GCM21A5C2E150JX01",  # 15pF 250Vdc +/-5%
+    ("C0G", 150000, 250000, "+/-1%"): "GCM21A5C2E151FX01",  # 150pF 250Vdc +/-1%
+    ("C0G", 150000, 250000, "+/-2%"): "GCM21A5C2E151GX01",  # 150pF 250Vdc +/-2%
+    ("C0G", 150000, 250000, "+/-5%"): "GCM21A5C2E151JX01",  # 150pF 250Vdc +/-5%
+    ("C0G", 1500000, 250000, "+/-1%"): "GCM21A5C2E152FX01",  # 1,500pF 250Vdc +/-1%
+    ("C0G", 1500000, 250000, "+/-2%"): "GCM21A5C2E152GX01",  # 1,500pF 250Vdc +/-2%
+    ("C0G", 1500000, 250000, "+/-5%"): "GCM21A5C2E152JX01",  # 1,500pF 250Vdc +/-5%
+    ("C0G", 18000, 250000, "+/-1%"): "GCM21A5C2E180FX01",  # 18pF 250Vdc +/-1%
+    ("C0G", 18000, 250000, "+/-2%"): "GCM21A5C2E180GX01",  # 18pF 250Vdc +/-2%
+    ("C0G", 18000, 250000, "+/-5%"): "GCM21A5C2E180JX01",  # 18pF 250Vdc +/-5%
+    ("C0G", 180000, 250000, "+/-1%"): "GCM21A5C2E181FX01",  # 180pF 250Vdc +/-1%
+    ("C0G", 180000, 250000, "+/-2%"): "GCM21A5C2E181GX01",  # 180pF 250Vdc +/-2%
+    ("C0G", 180000, 250000, "+/-5%"): "GCM21A5C2E181JX01",  # 180pF 250Vdc +/-5%
+    ("C0G", 1800000, 250000, "+/-1%"): "GCM21A5C2E182FX01",  # 1,800pF 250Vdc +/-1%
+    ("C0G", 1800000, 250000, "+/-2%"): "GCM21A5C2E182GX01",  # 1,800pF 250Vdc +/-2%
+    ("C0G", 1800000, 250000, "+/-5%"): "GCM21A5C2E182JX01",  # 1,800pF 250Vdc +/-5%
+    ("C0G", 22000, 250000, "+/-1%"): "GCM21A5C2E220FX01",  # 22pF 250Vdc +/-1%
+    ("C0G", 22000, 250000, "+/-2%"): "GCM21A5C2E220GX01",  # 22pF 250Vdc +/-2%
+    ("C0G", 22000, 250000, "+/-5%"): "GCM21A5C2E220JX01",  # 22pF 250Vdc +/-5%
+    ("C0G", 220000, 250000, "+/-1%"): "GCM21A5C2E221FX01",  # 220pF 250Vdc +/-1%
+    ("C0G", 220000, 250000, "+/-2%"): "GCM21A5C2E221GX01",  # 220pF 250Vdc +/-2%
+    ("C0G", 220000, 250000, "+/-5%"): "GCM21A5C2E221JX01",  # 220pF 250Vdc +/-5%
+    ("C0G", 2200000, 250000, "+/-1%"): "GCM21A5C2E222FX01",  # 2,200pF 250Vdc +/-1%
+    ("C0G", 2200000, 250000, "+/-2%"): "GCM21A5C2E222GX01",  # 2,200pF 250Vdc +/-2%
+    ("C0G", 2200000, 250000, "+/-5%"): "GCM21A5C2E222JX01",  # 2,200pF 250Vdc +/-5%
+    ("C0G", 27000, 250000, "+/-1%"): "GCM21A5C2E270FX01",  # 27pF 250Vdc +/-1%
+    ("C0G", 27000, 250000, "+/-2%"): "GCM21A5C2E270GX01",  # 27pF 250Vdc +/-2%
+    ("C0G", 27000, 250000, "+/-5%"): "GCM21A5C2E270JX01",  # 27pF 250Vdc +/-5%
+    ("C0G", 270000, 250000, "+/-1%"): "GCM21A5C2E271FX01",  # 270pF 250Vdc +/-1%
+    ("C0G", 270000, 250000, "+/-2%"): "GCM21A5C2E271GX01",  # 270pF 250Vdc +/-2%
+    ("C0G", 270000, 250000, "+/-5%"): "GCM21A5C2E271JX01",  # 270pF 250Vdc +/-5%
+    ("C0G", 2700000, 250000, "+/-1%"): "GCM21A5C2E272FX01",  # 2,700pF 250Vdc +/-1%
+    ("C0G", 2700000, 250000, "+/-2%"): "GCM21A5C2E272GX01",  # 2,700pF 250Vdc +/-2%
+    ("C0G", 2700000, 250000, "+/-5%"): "GCM21A5C2E272JX01",  # 2,700pF 250Vdc +/-5%
+    ("C0G", 33000, 250000, "+/-1%"): "GCM21A5C2E330FX01",  # 33pF 250Vdc +/-1%
+    ("C0G", 33000, 250000, "+/-2%"): "GCM21A5C2E330GX01",  # 33pF 250Vdc +/-2%
+    ("C0G", 33000, 250000, "+/-5%"): "GCM21A5C2E330JX01",  # 33pF 250Vdc +/-5%
+    ("C0G", 330000, 250000, "+/-1%"): "GCM21A5C2E331FX01",  # 330pF 250Vdc +/-1%
+    ("C0G", 330000, 250000, "+/-2%"): "GCM21A5C2E331GX01",  # 330pF 250Vdc +/-2%
+    ("C0G", 330000, 250000, "+/-5%"): "GCM21A5C2E331JX01",  # 330pF 250Vdc +/-5%
+    ("C0G", 39000, 250000, "+/-1%"): "GCM21A5C2E390FX01",  # 39pF 250Vdc +/-1%
+    ("C0G", 39000, 250000, "+/-2%"): "GCM21A5C2E390GX01",  # 39pF 250Vdc +/-2%
+    ("C0G", 39000, 250000, "+/-5%"): "GCM21A5C2E390JX01",  # 39pF 250Vdc +/-5%
+    ("C0G", 390000, 250000, "+/-1%"): "GCM21A5C2E391FX01",  # 390pF 250Vdc +/-1%
+    ("C0G", 390000, 250000, "+/-2%"): "GCM21A5C2E391GX01",  # 390pF 250Vdc +/-2%
+    ("C0G", 390000, 250000, "+/-5%"): "GCM21A5C2E391JX01",  # 390pF 250Vdc +/-5%
+    ("C0G", 47000, 250000, "+/-1%"): "GCM21A5C2E470FX01",  # 47pF 250Vdc +/-1%
+    ("C0G", 47000, 250000, "+/-2%"): "GCM21A5C2E470GX01",  # 47pF 250Vdc +/-2%
+    ("C0G", 47000, 250000, "+/-5%"): "GCM21A5C2E470JX01",  # 47pF 250Vdc +/-5%
+    ("C0G", 470000, 250000, "+/-1%"): "GCM21A5C2E471FX01",  # 470pF 250Vdc +/-1%
+    ("C0G", 470000, 250000, "+/-2%"): "GCM21A5C2E471GX01",  # 470pF 250Vdc +/-2%
+    ("C0G", 470000, 250000, "+/-5%"): "GCM21A5C2E471JX01",  # 470pF 250Vdc +/-5%
+    ("C0G", 56000, 250000, "+/-1%"): "GCM21A5C2E560FX01",  # 56pF 250Vdc +/-1%
+    ("C0G", 56000, 250000, "+/-2%"): "GCM21A5C2E560GX01",  # 56pF 250Vdc +/-2%
+    ("C0G", 56000, 250000, "+/-5%"): "GCM21A5C2E560JX01",  # 56pF 250Vdc +/-5%
+    ("C0G", 560000, 250000, "+/-1%"): "GCM21A5C2E561FX01",  # 560pF 250Vdc +/-1%
+    ("C0G", 560000, 250000, "+/-2%"): "GCM21A5C2E561GX01",  # 560pF 250Vdc +/-2%
+    ("C0G", 560000, 250000, "+/-5%"): "GCM21A5C2E561JX01",  # 560pF 250Vdc +/-5%
+    ("C0G", 68000, 250000, "+/-1%"): "GCM21A5C2E680FX01",  # 68pF 250Vdc +/-1%
+    ("C0G", 68000, 250000, "+/-2%"): "GCM21A5C2E680GX01",  # 68pF 250Vdc +/-2%
+    ("C0G", 68000, 250000, "+/-5%"): "GCM21A5C2E680JX01",  # 68pF 250Vdc +/-5%
+    ("C0G", 680000, 250000, "+/-1%"): "GCM21A5C2E681FX01",  # 680pF 250Vdc +/-1%
+    ("C0G", 680000, 250000, "+/-2%"): "GCM21A5C2E681GX01",  # 680pF 250Vdc +/-2%
+    ("C0G", 680000, 250000, "+/-5%"): "GCM21A5C2E681JX01",  # 680pF 250Vdc +/-5%
+    ("C0G", 82000, 250000, "+/-1%"): "GCM21A5C2E820FX01",  # 82pF 250Vdc +/-1%
+    ("C0G", 82000, 250000, "+/-2%"): "GCM21A5C2E820GX01",  # 82pF 250Vdc +/-2%
+    ("C0G", 82000, 250000, "+/-5%"): "GCM21A5C2E820JX01",  # 82pF 250Vdc +/-5%
+    ("C0G", 820000, 250000, "+/-1%"): "GCM21A5C2E821FX01",  # 820pF 250Vdc +/-1%
+    ("C0G", 820000, 250000, "+/-2%"): "GCM21A5C2E821GX01",  # 820pF 250Vdc +/-2%
+    ("C0G", 820000, 250000, "+/-5%"): "GCM21A5C2E821JX01",  # 820pF 250Vdc +/-5%
+    ("C0G", 10000, 630000, "+/-1%"): "GCM21A5C2J100FX01",  # 10pF 630Vdc +/-1%
+    ("C0G", 10000, 630000, "+/-2%"): "GCM21A5C2J100GX01",  # 10pF 630Vdc +/-2%
+    ("C0G", 10000, 630000, "+/-5%"): "GCM21A5C2J100JX01",  # 10pF 630Vdc +/-5%
+    ("C0G", 100000, 630000, "+/-1%"): "GCM21A5C2J101FX01",  # 100pF 630Vdc +/-1%
+    ("C0G", 100000, 630000, "+/-2%"): "GCM21A5C2J101GX01",  # 100pF 630Vdc +/-2%
+    ("C0G", 100000, 630000, "+/-5%"): "GCM21A5C2J101JX01",  # 100pF 630Vdc +/-5%
+    ("C0G", 12000, 630000, "+/-1%"): "GCM21A5C2J120FX01",  # 12pF 630Vdc +/-1%
+    ("C0G", 12000, 630000, "+/-2%"): "GCM21A5C2J120GX01",  # 12pF 630Vdc +/-2%
+    ("C0G", 12000, 630000, "+/-5%"): "GCM21A5C2J120JX01",  # 12pF 630Vdc +/-5%
+    ("C0G", 120000, 630000, "+/-1%"): "GCM21A5C2J121FX01",  # 120pF 630Vdc +/-1%
+    ("C0G", 120000, 630000, "+/-2%"): "GCM21A5C2J121GX01",  # 120pF 630Vdc +/-2%
+    ("C0G", 120000, 630000, "+/-5%"): "GCM21A5C2J121JX01",  # 120pF 630Vdc +/-5%
+    ("C0G", 15000, 630000, "+/-1%"): "GCM21A5C2J150FX01",  # 15pF 630Vdc +/-1%
+    ("C0G", 15000, 630000, "+/-2%"): "GCM21A5C2J150GX01",  # 15pF 630Vdc +/-2%
+    ("C0G", 15000, 630000, "+/-5%"): "GCM21A5C2J150JX01",  # 15pF 630Vdc +/-5%
+    ("C0G", 150000, 630000, "+/-1%"): "GCM21A5C2J151FX01",  # 150pF 630Vdc +/-1%
+    ("C0G", 150000, 630000, "+/-2%"): "GCM21A5C2J151GX01",  # 150pF 630Vdc +/-2%
+    ("C0G", 150000, 630000, "+/-5%"): "GCM21A5C2J151JX01",  # 150pF 630Vdc +/-5%
+    ("C0G", 18000, 630000, "+/-1%"): "GCM21A5C2J180FX01",  # 18pF 630Vdc +/-1%
+    ("C0G", 18000, 630000, "+/-2%"): "GCM21A5C2J180GX01",  # 18pF 630Vdc +/-2%
+    ("C0G", 18000, 630000, "+/-5%"): "GCM21A5C2J180JX01",  # 18pF 630Vdc +/-5%
+    ("C0G", 180000, 630000, "+/-1%"): "GCM21A5C2J181FX01",  # 180pF 630Vdc +/-1%
+    ("C0G", 180000, 630000, "+/-2%"): "GCM21A5C2J181GX01",  # 180pF 630Vdc +/-2%
+    ("C0G", 180000, 630000, "+/-5%"): "GCM21A5C2J181JX01",  # 180pF 630Vdc +/-5%
+    ("C0G", 22000, 630000, "+/-1%"): "GCM21A5C2J220FX01",  # 22pF 630Vdc +/-1%
+    ("C0G", 22000, 630000, "+/-2%"): "GCM21A5C2J220GX01",  # 22pF 630Vdc +/-2%
+    ("C0G", 22000, 630000, "+/-5%"): "GCM21A5C2J220JX01",  # 22pF 630Vdc +/-5%
+    ("C0G", 220000, 630000, "+/-1%"): "GCM21A5C2J221FX01",  # 220pF 630Vdc +/-1%
+    ("C0G", 220000, 630000, "+/-2%"): "GCM21A5C2J221GX01",  # 220pF 630Vdc +/-2%
+    ("C0G", 220000, 630000, "+/-5%"): "GCM21A5C2J221JX01",  # 220pF 630Vdc +/-5%
+    ("C0G", 27000, 630000, "+/-1%"): "GCM21A5C2J270FX01",  # 27pF 630Vdc +/-1%
+    ("C0G", 27000, 630000, "+/-2%"): "GCM21A5C2J270GX01",  # 27pF 630Vdc +/-2%
+    ("C0G", 27000, 630000, "+/-5%"): "GCM21A5C2J270JX01",  # 27pF 630Vdc +/-5%
+    ("C0G", 270000, 630000, "+/-1%"): "GCM21A5C2J271FX01",  # 270pF 630Vdc +/-1%
+    ("C0G", 270000, 630000, "+/-2%"): "GCM21A5C2J271GX01",  # 270pF 630Vdc +/-2%
+    ("C0G", 270000, 630000, "+/-5%"): "GCM21A5C2J271JX01",  # 270pF 630Vdc +/-5%
+    ("C0G", 33000, 630000, "+/-1%"): "GCM21A5C2J330FX01",  # 33pF 630Vdc +/-1%
+    ("C0G", 33000, 630000, "+/-2%"): "GCM21A5C2J330GX01",  # 33pF 630Vdc +/-2%
+    ("C0G", 33000, 630000, "+/-5%"): "GCM21A5C2J330JX01",  # 33pF 630Vdc +/-5%
+    ("C0G", 330000, 630000, "+/-1%"): "GCM21A5C2J331FX01",  # 330pF 630Vdc +/-1%
+    ("C0G", 330000, 630000, "+/-2%"): "GCM21A5C2J331GX01",  # 330pF 630Vdc +/-2%
+    ("C0G", 330000, 630000, "+/-5%"): "GCM21A5C2J331JX01",  # 330pF 630Vdc +/-5%
+    ("C0G", 39000, 630000, "+/-1%"): "GCM21A5C2J390FX01",  # 39pF 630Vdc +/-1%
+    ("C0G", 39000, 630000, "+/-2%"): "GCM21A5C2J390GX01",  # 39pF 630Vdc +/-2%
+    ("C0G", 39000, 630000, "+/-5%"): "GCM21A5C2J390JX01",  # 39pF 630Vdc +/-5%
+    ("C0G", 390000, 630000, "+/-1%"): "GCM21A5C2J391FX01",  # 390pF 630Vdc +/-1%
+    ("C0G", 390000, 630000, "+/-2%"): "GCM21A5C2J391GX01",  # 390pF 630Vdc +/-2%
+    ("C0G", 390000, 630000, "+/-5%"): "GCM21A5C2J391JX01",  # 390pF 630Vdc +/-5%
+    ("C0G", 47000, 630000, "+/-1%"): "GCM21A5C2J470FX01",  # 47pF 630Vdc +/-1%
+    ("C0G", 47000, 630000, "+/-2%"): "GCM21A5C2J470GX01",  # 47pF 630Vdc +/-2%
+    ("C0G", 47000, 630000, "+/-5%"): "GCM21A5C2J470JX01",  # 47pF 630Vdc +/-5%
+    ("C0G", 470000, 630000, "+/-1%"): "GCM21A5C2J471FX01",  # 470pF 630Vdc +/-1%
+    ("C0G", 470000, 630000, "+/-2%"): "GCM21A5C2J471GX01",  # 470pF 630Vdc +/-2%
+    ("C0G", 470000, 630000, "+/-5%"): "GCM21A5C2J471JX01",  # 470pF 630Vdc +/-5%
+    ("C0G", 56000, 630000, "+/-1%"): "GCM21A5C2J560FX01",  # 56pF 630Vdc +/-1%
+    ("C0G", 56000, 630000, "+/-2%"): "GCM21A5C2J560GX01",  # 56pF 630Vdc +/-2%
+    ("C0G", 56000, 630000, "+/-5%"): "GCM21A5C2J560JX01",  # 56pF 630Vdc +/-5%
+    ("C0G", 560000, 630000, "+/-1%"): "GCM21A5C2J561FX01",  # 560pF 630Vdc +/-1%
+    ("C0G", 560000, 630000, "+/-2%"): "GCM21A5C2J561GX01",  # 560pF 630Vdc +/-2%
+    ("C0G", 560000, 630000, "+/-5%"): "GCM21A5C2J561JX01",  # 560pF 630Vdc +/-5%
+    ("C0G", 68000, 630000, "+/-1%"): "GCM21A5C2J680FX01",  # 68pF 630Vdc +/-1%
+    ("C0G", 68000, 630000, "+/-2%"): "GCM21A5C2J680GX01",  # 68pF 630Vdc +/-2%
+    ("C0G", 68000, 630000, "+/-5%"): "GCM21A5C2J680JX01",  # 68pF 630Vdc +/-5%
+    ("C0G", 82000, 630000, "+/-1%"): "GCM21A5C2J820FX01",  # 82pF 630Vdc +/-1%
+    ("C0G", 82000, 630000, "+/-2%"): "GCM21A5C2J820GX01",  # 82pF 630Vdc +/-2%
+    ("C0G", 82000, 630000, "+/-5%"): "GCM21A5C2J820JX01",  # 82pF 630Vdc +/-5%
+    ("X7R", 1000000, 250000, "+/-10%"): "GCM21AR72E102KWB1",  # 1,000pF 250Vdc +/-10%
+    ("X7R", 1200000, 250000, "+/-10%"): "GCM21AR72E122KWB1",  # 1,200pF 250Vdc +/-10%
+    ("X7R", 1500000, 250000, "+/-10%"): "GCM21AR72E152KWB1",  # 1,500pF 250Vdc +/-10%
+    ("X7R", 2200000, 250000, "+/-10%"): "GCM21AR72E222KWB1",  # 2,200pF 250Vdc +/-10%
+    ("X7R", 3300000, 250000, "+/-10%"): "GCM21AR72E332KWB1",  # 3,300pF 250Vdc +/-10%
+    ("X7R", 4700000, 250000, "+/-10%"): "GCM21AR72E472KWB1",  # 4,700pF 250Vdc +/-10%
+    ("X7R", 6800000, 250000, "+/-10%"): "GCM21AR72E682KWB1",  # 6,800pF 250Vdc +/-10%
+}
+# Tolerances the catalog lists for one (dielectric, femtofarad, millivolt): needed when there are several.
+_TOLS = {
+    ("C0G", 10000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 100000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 1000000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 12000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 120000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 1200000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 15000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 150000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 1500000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 18000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 180000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 1800000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 22000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 220000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 2200000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 27000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 270000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 2700000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 33000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 330000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 39000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 390000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 47000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 470000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 56000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 560000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 68000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 680000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 82000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 820000, 250000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 10000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 100000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 12000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 120000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 15000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 150000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 18000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 180000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 22000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 220000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 27000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 270000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 33000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 330000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 39000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 390000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 47000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 470000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 56000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 560000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 68000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("C0G", 82000, 630000): ["+/-1%", "+/-2%", "+/-5%"],
+    ("X7R", 1000000, 250000): ["+/-10%"],
+    ("X7R", 1200000, 250000): ["+/-10%"],
+    ("X7R", 1500000, 250000): ["+/-10%"],
+    ("X7R", 2200000, 250000): ["+/-10%"],
+    ("X7R", 3300000, 250000): ["+/-10%"],
+    ("X7R", 4700000, 250000): ["+/-10%"],
+    ("X7R", 6800000, 250000): ["+/-10%"],
+}
+_KEY = (dielectric, int(value.value * 1e15 + 0.5), int(rated_v.value * 1e3 + 0.5))
+_AVAILABLE = _TOLS.get(_KEY, [])
+_FULL = _KEY + (tolerance if tolerance != "" or len(_AVAILABLE) != 1 else _AVAILABLE[0],)
+# Catalog value for the configured part. An unorderable combination gets the sentinel MPN UNORDERABLE (never a
+# real but wrong part number) and fails part_orderable.
+_VALUE_STR = _VALUE.get(_FULL, "UNORDERABLE")
+_MPN_STR = _VALUE_STR + "D" if _FULL in _VALUE else "UNORDERABLE"  # default package letter; the others are alternates
+
+
+def _orderable(_m, found, what, key, available):
+    why = "no catalog part for (dielectric, fF, mV, tolerance) = %s" % (key,)
+    if len(available) > 0:
+        why += "; the catalog lists these tolerances for it: %s (set tolerance)" % available
+    check(found, "%s: %s" % (what, why))
+
+
+_ORDERABLE_SEVERITY = "advice" if _ROOT else "error"  # standalone build: the configs are unset
+builtin.add_electrical_check(
+    name="part_orderable",
+    check_fn=_orderable,
+    inputs={"found": _FULL in _VALUE, "what": "part_orderable", "key": _FULL, "available": _AVAILABLE},
+    severity=_ORDERABLE_SEVERITY,
+)
+
+
+def _rated_voltage(_m, v1, v2, what, vr, derate):
+    # Worst case |V(P1) - V(P2)| over both nets' ranges against derate x the rated voltage (non-polarized).
+    vmax = max(v1.max - v2.min, v2.max - v1.min)
+    msg = "%s: up to %s V across the part > derate x rated voltage = %s x %s V"
+    check(vmax <= vr * derate, msg % (what, vmax, derate, vr))
+
+
+# rated_voltage: voltage across the part within derate x the rated voltage of the configured catalog part
+#   Rated voltage = the rated_v config (it selects the catalog part; part_orderable fails if it is not listed).
+#   Source of the rating: the catalog row (manufacturer export cited there). Error: the rating is exceeded.
+#   Not checked: DC-bias capacitance loss, ripple/AC peak and self-heating (owner: module).
+_limit(
+    "rated_voltage",
+    _rated_voltage,
+    {"v1": P1.voltage, "v2": P2.voltage, "what": "rated_voltage", "vr": rated_v.value, "derate": derate},
+    "error",
+)
+
+# ambient_range: board ambient inside the operating range of the configured dielectric
+#   C0G: op_temp_c0g: Operating temperature range (DS p.2, Rated Value, Operating Temp. Range (-55 to 125 degC))
+#   X7R: op_temp_x7r: Operating temperature range (DS p.2 (X7R sheet of GCM21B), Rated Value, Operating Temp. Range (-55 to 125 degC))
+_limit(
+    "ambient_range",
+    _temp,
+    {"v": ambient, "what": "ambient_range", "lo": _AMBIENT_RANGE[0], "hi": _AMBIENT_RANGE[1]},
+    "error",
+)
+
+Component(
+    name="GCM21A",
+    symbol=Symbol(library="./GCM21A.kicad_sym"),
+    part=Part(mpn=_MPN_STR, manufacturer="Murata"),
+    pins={
+        "1": P1,
+        "2": P2,
+    },
+    properties={"alternatives": [_VALUE_STR + l for l in ["J"]] if _FULL in _VALUE else []},
+)
