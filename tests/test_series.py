@@ -117,6 +117,66 @@ class TestCheck(unittest.TestCase):
         self.assertIn("only 'resistor' and 'capacitor' are supported", self.run_edit([('series = "resistor"', 'series = "cap"')]))
 
 
+# RSER1 with E24 + E96 where E96 starts at 100 ohm (47.5 ohm is E96 only; 47 ohm is E24).
+E96_MIN = [('e_series = ["E24"]', 'e_series = ["E24", "E96"]\nseries_eseries_min = { E96 = 100 }')]
+
+
+class TestEseriesMin(unittest.TestCase):
+    def test_allowed_values_function(self):
+        values = allowed_values(["E24", "E96"], 10, 1e3, {"E96": 100})
+        self.assertNotIn(47.5, values)  # E96 only, below the E96 minimum
+        self.assertNotIn(97.6, values)  # just below 100
+        self.assertIn(47.0, values)  # E24, stays allowed below the E96 minimum
+        self.assertIn(100.0, values)  # the minimum itself
+        self.assertIn(102.0, values)  # just above, E96
+        self.assertIn(110.0, values)  # E24 and E96
+        self.assertEqual(allowed_values(["E24", "E96"], 10, 1e3), allowed_values(["E24", "E96"], 10, 1e3, {}))
+        self.assertIn(47.5, allowed_values(["E24", "E96"], 10, 1e3))
+
+    def test_part_values_mpn_and_check(self):
+        with tempfile.TemporaryDirectory() as d:
+            copy = edited(d, E96_MIN)
+            self.assertEqual(messages(copy), [])
+            part = load(str(copy))
+            values = part.values()
+            for ok in (47.0, 100.0, 102.0, 1000.0):
+                self.assertIn(ok, values)
+                self.assertTrue(part.mpn(ok))
+            for bad in (47.5, 97.6):
+                self.assertNotIn(bad, values)
+                for call in (part.mpn, part.series_value):
+                    with self.assertRaises(ValueError) as cm:
+                        call(bad)
+                    self.assertIn("not an allowed value", str(cm.exception))
+
+    def test_check_rejects_bad_field(self):
+        with tempfile.TemporaryDirectory() as d:
+            copy = edited(d, [('e_series = ["E24"]', 'e_series = ["E24"]\nseries_eseries_min = { E96 = 100 }')])
+            self.assertIn("series_eseries_min must map names from e_series", "\n".join(messages(copy)))
+
+    def test_wrapper_table_excludes_value(self):
+        with tempfile.TemporaryDirectory() as d:
+            text, problems = generate(edited(d, E96_MIN))
+        self.assertEqual(problems, [])
+        self.assertIn("47000000: ", text)  # 47 ohm (E24)
+        self.assertNotIn("47500000: ", text)  # 47.5 ohm (E96 below minimum)
+        self.assertIn("(E96 only from 100 ohm)", text)  # in the value_allowed message
+
+    def test_new_panasonic_directories_have_an_mpn_for_every_value(self):
+        root = Path(__file__).parent.parent / "components" / "Panasonic"
+        for name in ("ERA-2AEB", "ERA-3AEB", "ERA-6AEB", "ERJ-6ENF", "ERJ-8ENF"):
+            with self.subTest(part=name):
+                part = load(str(root / name))
+                values = part.values()
+                self.assertTrue(values)
+                mpns = [part.mpn(v) for v in values]  # raises ValueError for a value without a printed code
+                self.assertEqual(len(set(mpns)), len(mpns))
+                if name.startswith("ERA"):
+                    self.assertNotIn(47.5, values)
+                    self.assertIn(47.0, values)
+                    self.assertIn(102.0, values)
+
+
 class TestZen(unittest.TestCase):
     def test_io_names_numeric_pins(self):
         self.assertEqual([io_name("1"), io_name("2")], ["P1", "P2"])
@@ -203,6 +263,25 @@ class TestBuild(unittest.TestCase):
     def test_wrapper_builds_standalone(self):
         rc, out = self.build(str(self.dir / "RSER1.zen"))
         self.assertEqual(rc, 0, out)
+
+    def test_excluded_e96_value_refused(self):
+        """A wrapper generated with E96 from 100 ohm refuses 47.5 ohm and accepts 47 ohm (E24) and 102 ohm."""
+        from tests.test_zen import outcome
+        work = Path(self.tmp.name) / "RSER1E96"
+        work.mkdir()
+        copy = edited(work, E96_MIN)
+        text, problems = generate(copy)
+        assert not problems, problems
+        (copy / "RSER1.zen").write_text(text)
+        (copy / "pcb.toml").write_text("")
+        subprocess.run(["pcb", "fmt", str(copy)], check=True, capture_output=True)
+        shutil.copy(HARNESS, copy / "_harness.zen")
+        for value, expect in (("47ohm", "pass"), ("102ohm", "pass"), ("47.5ohm", "error"), ("97.6ohm", "error")):
+            rc, out = self.build(str(copy / "_harness.zen"), f"--config=value={value}", "--config=va=1V 1%")
+            with self.subTest(value=value):
+                self.assertEqual(outcome(rc, out), expect, out)
+                if expect == "error":
+                    self.assertIn("not an allowed value", out)
 
     def test_harness_cases(self):
         from tests.test_zen import outcome

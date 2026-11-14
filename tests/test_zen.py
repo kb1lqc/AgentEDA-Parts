@@ -117,6 +117,42 @@ CASES = [
     ("Panasonic/ERJ-2RKF", "ambient_out", ["ta=-40°C to 160°C"], "error", "category_temp_ambient"),
     ("Panasonic/ERJ-2RKF", "reversed_polarity", ["value=1kohm", "va=0V", "vb=12V"], "error", "rated_voltage"),  # |V| > 10 V
     ("Panasonic/ERJ-2RKF", "both_nets_spread", ["va=5V 5%", "vb=5V 5%"], "pass", ""),  # worst |V| 0.5 V << 31.6 V
+    ("Panasonic/ERJ-6ENF", "nominal", [], "pass", ""),
+    ("Panasonic/ERJ-6ENF", "r_decimal_value", ["value=49.9ohm", "va=1V"], "pass", ""),  # 49R9 code; rated sqrt(0.125 x 49.9) = 2.5 V
+    ("Panasonic/ERJ-6ENF", "power_limited", ["value=1kohm", "va=12V"], "error", "rated_voltage"),  # > sqrt(0.125 x 1k) = 11.2 V
+    ("Panasonic/ERJ-6ENF", "vlimit_limited", ["value=2.2Mohm", "va=155V"], "error", "rated_voltage"),  # > 150 V limit
+    ("Panasonic/ERJ-6ENF", "value_not_allowed", ["value=1.01kohm"], "error", "value_allowed"),
+    ("Panasonic/ERJ-6ENF", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Panasonic/ERJ-6ENF", "ambient_out", ["ta=-40°C to 160°C"], "error", "category_temp_ambient"),
+    ("Panasonic/ERJ-8ENF", "nominal", [], "pass", ""),
+    ("Panasonic/ERJ-8ENF", "power_limited", ["value=1kohm", "va=17V"], "error", "rated_voltage"),  # > sqrt(0.25 x 1k) = 15.8 V
+    ("Panasonic/ERJ-8ENF", "vlimit_limited", ["value=2.2Mohm", "va=205V"], "error", "rated_voltage"),  # > 200 V limit
+    ("Panasonic/ERJ-8ENF", "value_not_allowed", ["value=1.01kohm"], "error", "value_allowed"),
+    ("Panasonic/ERJ-8ENF", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Panasonic/ERJ-8ENF", "ambient_out", ["ta=-40°C to 160°C"], "error", "category_temp_ambient"),
+    ("Panasonic/ERA-2AEB", "nominal", [], "pass", ""),
+    ("Panasonic/ERA-2AEB", "e24_low_value", ["value=47ohm", "va=1V"], "pass", ""),  # E24 at the range minimum
+    ("Panasonic/ERA-2AEB", "e96_below_min", ["value=47.5ohm", "va=1V"], "error", "value_allowed"),  # E96 only from 100 ohm
+    ("Panasonic/ERA-2AEB", "e96_allowed", ["value=1.05kohm", "va=1V"], "pass", ""),  # 1051 code
+    ("Panasonic/ERA-2AEB", "power_limited", ["value=1kohm", "va=9V"], "error", "rated_voltage"),  # > sqrt(0.063 x 1k) = 7.9 V
+    ("Panasonic/ERA-2AEB", "vlimit_limited", ["value=100kohm", "va=52V"], "error", "rated_voltage"),  # > 50 V limit
+    ("Panasonic/ERA-2AEB", "out_of_range", ["value=150kohm"], "error", "value_allowed"),  # range 47 ohm to 100 kohm
+    ("Panasonic/ERA-2AEB", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Panasonic/ERA-2AEB", "ambient_out", ["ta=-40°C to 160°C"], "error", "category_temp_ambient"),
+    ("Panasonic/ERA-3AEB", "nominal", [], "pass", ""),
+    ("Panasonic/ERA-3AEB", "e96_below_min", ["value=47.5ohm", "va=1V"], "error", "value_allowed"),  # E96 only from 100 ohm
+    ("Panasonic/ERA-3AEB", "power_limited", ["value=1kohm", "va=11V"], "error", "rated_voltage"),  # > sqrt(0.1 x 1k) = 10 V
+    ("Panasonic/ERA-3AEB", "vlimit_limited", ["value=330kohm", "va=77V"], "error", "rated_voltage"),  # > 75 V limit
+    ("Panasonic/ERA-3AEB", "out_of_range", ["value=390kohm"], "error", "value_allowed"),  # range to 330 kohm
+    ("Panasonic/ERA-3AEB", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Panasonic/ERA-3AEB", "ambient_out", ["ta=-40°C to 160°C"], "error", "category_temp_ambient"),
+    ("Panasonic/ERA-6AEB", "nominal", [], "pass", ""),
+    ("Panasonic/ERA-6AEB", "e96_below_min", ["value=47.5ohm", "va=1V"], "error", "value_allowed"),
+    ("Panasonic/ERA-6AEB", "power_limited", ["value=1kohm", "va=12V"], "error", "rated_voltage"),  # > sqrt(0.125 x 1k) = 11.2 V
+    ("Panasonic/ERA-6AEB", "vlimit_limited", ["value=1Mohm", "va=102V"], "error", "rated_voltage"),  # > 100 V limit
+    ("Panasonic/ERA-6AEB", "out_of_range", ["value=1.5Mohm"], "error", "value_allowed"),  # range to 1 Mohm (1.5 M is E24)
+    ("Panasonic/ERA-6AEB", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Panasonic/ERA-6AEB", "ambient_out", ["ta=-40°C to 160°C"], "error", "category_temp_ambient"),
     ("Panasonic/ERJ-3EKF", "nominal", [], "pass", ""),
     ("Panasonic/ERJ-3EKF", "r_decimal_value", ["value=49.9ohm", "va=1V"], "pass", ""),  # 49R9 code; rated sqrt(0.1 x 49.9) = 2.2 V
     ("Panasonic/ERJ-3EKF", "power_limited", ["value=1kohm", "va=12V"], "error", "rated_voltage"),  # > sqrt(0.1 x 1k) = 10 V

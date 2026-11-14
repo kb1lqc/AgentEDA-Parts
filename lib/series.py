@@ -20,17 +20,22 @@ def series_keys(part):
     return {part[f] for f in ("value_param", "series_power", "series_vlimit", "series_tol") if f in part}
 
 
-def allowed_values(e_series, low, high):
+def allowed_values(e_series, low, high, eseries_min=None):
     """Sorted unique values (ohm) of the named E-series with low <= value <= high (a 1e-9 relative slack on the ends).
+
+    eseries_min ({"E96": 100}, optional) raises the lower end for one E-series only: its values below that are
+    left out, but the same value stays allowed when another listed series (E24) contains it.
 
     Each value is the float nearest to its printed decimal (2.61 x 10^3 -> 2610.0, the same float 2.61e3 gives).
     """
     found = set()
+    eseries_min = eseries_min or {}
     for name in e_series:
+        lo = max(low, eseries_min.get(name, low))
         for exponent in range(math.floor(math.log10(low)) - 1, math.ceil(math.log10(high)) + 2):
             for mantissa in E_SERIES[name]:
                 value = float(f"{mantissa}e{exponent}")
-                if low * (1 - 1e-9) <= value <= high * (1 + 1e-9):
+                if lo * (1 - 1e-9) <= value <= high * (1 + 1e-9):
                     found.add(value)
     return sorted(found)
 

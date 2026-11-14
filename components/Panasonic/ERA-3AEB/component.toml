@@ -1,0 +1,386 @@
+# Series component: the resistance VALUE is a design input (47 to 330 k ohm, E24/E96), not fixed.
+# Source: Panasonic Fixed Resistors catalog 2026.5 (docs/datasheets/panasonic-fixed-resistors-catalog-2026-05.pdf),
+# "Metal Film (Thin Film) Chip Resistors, High Reliability Type", ERA A type, EB grade (+/-0.1 %, T.C.R. +/-25 ppm/degC).
+# The catalog prints no Absolute Maximum Ratings table for this type. Its ratings are the Ratings table (rec_op,
+# printed p.20) and the Performance table (electrical, printed p.21). Rating rows are value-dependent and checked per series wrapper.
+#
+# Part-number decode (DS p.19, Explanation of part numbers, E24 and E96 blocks), size 0603:
+#   1-3  E R A   thin film chip resistor (product code)
+#   4-5  size code (DS p.19 Size, Power rating table); power rating 0.1 W at 85 degC
+#   6    E       T.C.R. code E = +/-25 ppm/degC (DS p.19)
+#   7    B       resistance tolerance code B = +/-0.1 % (DS p.19)
+#   8-10 E24: three figures, first two significant, third = number of zeros (470 = 47 ohm, 102 = 1 kohm)
+#        E96: four figures, first three significant, fourth = number of zeros (1051 = 1.05 kohm)
+#   last V      packaging: Punched carrier taping, 4 mm pitch, 5,000 pcs (code V, ERA3A row)
+# DS note *5: a value that is also an E24 value follows the E24 part number (three-digit code).
+# E192 values are 'available, please contact us' (DS note *4): not in this format (open item).
+# mpn is CONSTRUCTED from this rule; the catalog prints no example for this size's EB part.
+# series_eseries_min: E96 is allowed from 100 ohm only. DS p.19 (Explanation of part numbers): E96 code = three
+# significant figures + number of zeros; no decimal-point ("R") rule is printed, so E96 values below 100 ohm that are
+# not E24 values (47.5 to 97.6 ohm) have no printed code and are excluded (open item). E24 values from 47 ohm stay.
+
+[part]
+value          = "ERA-3AEB"
+series          = "resistor"                 # value is a design input; calc.mpn(value) gives the part number
+value_param     = "res_range"
+series_eseries_min = { E96 = 100 }            # DS p.19: E96 code = 3 significant figures + zeros; no decimal-point rule printed, so E96 below 100 ohm is excluded (open item)
+e_series        = ["E24", "E96"]              # DS p.20 Ratings, resistance range '(E24,E96)'; E192 by request only
+series_power    = "p85"
+series_vlimit   = "v_limit"
+series_tol      = "tol"
+alternates      = []                          # DS packaging table lists this size's EB part under one code only
+manufacturer    = "Panasonic"                 # printed on every catalog page header (Panasonic Industry)
+description    = "0603 (1608 metric) 0.1 W +/-0.1 % +/-25 ppm/degC thin film chip resistor, ERA-3AEB (47 to 330 k ohm, E24/E96)"
+category       = "resistor_thin_film"
+package        = "0603 (1608 metric)"
+datasheet_url  = ""                         # open item: the catalog prints no datasheet URL; datasheet_file is the source
+datasheet_file = "docs/datasheets/panasonic-fixed-resistors-catalog-2026-05.pdf"
+datasheet_rev  = "Catalog 2026.5 (ERA A pages: footer 24-Apr-24, printed pp.19-21)"
+datasheet_date = "2026-05"                 # from the catalog file name; no date is printed on the pages
+temp_grade     = "-55 to 155 degC"           # informational; the number lives in param category_temp (DS p.20)
+kicad_symbol    = "ERA-3AEB.kicad_sym"          # vendor (Ultra Librarian) symbol, fixed up
+kicad_footprint = "ERA-3AEB.kicad_mod"          # vendor N footprint, pads from DMM0000COL17 (middle of each land range)
+step            = "ERA-3AEB.step"               # Panasonic model via Ultra Librarian (0.559 mm height vs DS T 0.45 +/-0.10: visual only)
+
+[[pin]]
+number   = "1"
+name     = "1"
+type     = "passive"
+function = "Resistor terminal"
+cite     = "DS p.21, Construction (figure; no pin drawing or pin table in this catalog)"
+
+[[pin]]
+number   = "2"
+name     = "2"
+type     = "passive"
+function = "Resistor terminal"
+cite     = "DS p.21, Construction (figure; no pin drawing or pin table in this catalog)"
+
+# ---- Ratings: ERA3AEB row of the Ratings table (DS p.20). ----
+
+[param.p85]
+name       = "Power rating at 85 degC"
+symbol     = "P85"
+kind       = "rec_op"
+scope      = "na"
+max        = 0.1
+unit       = "W"
+conditions = "Ambient 85 degC; use on the condition that the case temperature is below the upper category temperature (footnote *1)"
+cite       = "DS p.20, Ratings, Power rating (85 degC) (W), ERA3AEB row"
+note       = "Printed 0.1 W for this size (DS p.20). Printed with no MIN/TYP/MAX label: stored as max (Defaults table). Derated above 85 degC (derate_knee, derate_zero)."
+unchecked  = "series_power: used by the wrapper rated_voltage check (85 degC rating, optimistic above 85 degC ambient)"
+
+[param.v_limit]
+name       = "Limiting element voltage"
+symbol     = "V limit"
+kind       = "rec_op"
+scope      = "na"
+max        = 75
+unit       = "V"
+conditions = ""
+cite       = "DS p.20, Ratings, Limiting element voltage (V), ERA3AEB row"
+note       = "Upper limit on RCWV (footnote *2): RCWV = sqrt(Power rating x Resistance value) or this limit, whichever is less. See rcwv_rule."
+unchecked  = "series_vlimit: used by the wrapper rated_voltage check"
+
+[param.v_overload]
+name       = "Maximum overload voltage"
+symbol     = "V overload"
+kind       = "rec_op"
+scope      = "na"
+max        = 150
+unit       = "V"
+conditions = ""
+cite       = "DS p.20, Ratings, Maximum overload voltage (V), ERA3AEB row"
+note       = "Upper limit on the overload test voltage (footnote *3): OTV = 2.5 x RCWV or this limit, whichever is less. The Performance table (p.21) prints the overload test as rated voltage x 2.5, 5 s."
+unchecked  = "overload test voltage (short-time test condition), not an operating limit; owner: module"
+
+[param.rcwv_rule]
+name       = "Rated continuous working voltage, RCWV"
+symbol     = "RCWV"
+kind       = "rec_op"
+scope      = "na"
+text       = "sqrt(Power rating x Resistance value), or limiting element voltage, whichever less"
+unit       = "V"
+conditions = ""
+cite       = "DS p.20, Ratings, footnote *2"
+note       = "Formula, not a number. calc.py rated_voltage implements it."
+unchecked  = "formula rating; owner: module (calc.rated_voltage)"
+
+[param.category_temp]
+name       = "Category temperature range"
+symbol     = "T category"
+kind       = "rec_op"
+scope      = "na"
+min        = -55
+max        = 155
+unit       = "degC"
+conditions = ""
+cite       = "DS p.20, Ratings, Category temperature range (degC), all rows of the table (also DS p.19 Features)"
+note       = "Read as ambient, the axis of the derating figure (DS p.20). Ratings are for the case temperature below this limit (footnote *1)."
+check_ambient = true
+
+[param.derate_knee]
+name       = "Derating knee: full rated power up to"
+symbol     = "TA knee"
+kind       = "rec_op"
+scope      = "na"
+typ        = 85
+unit       = "degC"
+conditions = ""
+cite       = "DS p.20, Power derating curve (text: 'above 85 degC, power rating shall be derated')"
+note       = "Printed in the text, not read off the graph. Used by calc.rated_power."
+unchecked  = "derating knee (printed in text, not a limit); used by calc.rated_power"
+
+[param.derate_zero]
+name       = "Derating: 0 % rated power at"
+symbol     = "TA zero"
+kind       = "rec_op"
+scope      = "na"
+typ        = 155
+unit       = "degC"
+conditions = ""
+cite       = "DS p.20, Power derating curve (figure: the derating line reaches 0 % at the 155 degC label)"
+curve      = true
+note       = "Read off the graph (no printed number). Linear between knee and zero (graph shape). Curve-based estimate; reading uncertainty not quantified (open item)."
+unchecked  = "curve value; used by calc.rated_power"
+
+# ---- Resistance and T.C.R. (DS p.20 Ratings; DS p.19 part-number decode) ----
+
+[param.tol]
+name       = "Resistance tolerance, code B"
+symbol     = "TOL"
+kind       = "electrical"
+scope      = "na"
+min        = -0.1
+max        = 0.1
+unit       = "%"
+conditions = "Resistance measured at 20 degC (DS p.21, Performance, Resistance row)"
+cite       = "DS p.20, Ratings, Resistance tolerance (%), ERA3AEB row; DS p.19, tolerance code B = +/-0.1 %"
+note       = "Printed +/-0.1 %."
+
+[param.res_range]
+name       = "Resistance range (E24, E96)"
+kind       = "electrical"
+scope      = "na"
+min        = 47
+max        = 330000
+unit       = "ohm"
+conditions = "E24, E96 values (E192 on request, not in this format)"
+cite       = "DS p.20, Ratings, Resistance range (ohm), ERA3AEB row '47 to 330 k (E24,E96)'"
+note       = "The printed range for this size's EB grade, as printed (the range differs by size). Printed in k and M: written out in ohm. Duplicate values follow the E24 part number (DS note *5). Values in E96 below 100 ohm have no printed code (calc.mpn raises)."
+
+[param.tcr_25]
+name       = "Temperature coefficient of resistance, +/-25 ppm/degC"
+symbol     = "TCR"
+kind       = "electrical"
+scope      = "na"
+min        = -25
+max        = 25
+unit       = "ppm/degC"
+conditions = "T.C.R. test at +25 degC / +125 degC (DS p.21, Performance)"
+cite       = "DS p.20, Ratings, T.C.R. (x10-6/K), ERA3AED, AEC, AEB group, +/-25 (the printed x10^-6/K unit is ppm/degC)"
+note       = "Printed +/-25 x10^-6/K for this size's range (one value for the printed resistance range). Stored as min = -25, max = 25. The DS does not state the reference temperature for the T.C.R.; the Performance test runs from +25 degC."
+
+# ---- Performance test limits (DS p.21). Rows print 'R>=47 ohm: +/-0.1 %'; this part's range starts at 47 ohm, so the R<47 ohm row (+/-0.5 %) is not stored. ----
+
+[param.perf_overload]
+name       = "Resistance change, overload"
+kind       = "electrical"
+scope      = "na"
+min        = -0.1
+max        = 0.1
+unit       = "%"
+conditions = "Rated voltage x 2.5, 5 s"
+cite       = "DS p.21, Performance, Overload, R>=47 ohm: +/-0.1 %"
+note       = "Printed +/-0.1 % (R>=47 ohm row)."
+
+[param.perf_soldering_heat]
+name       = "Resistance change, resistance to soldering heat"
+kind       = "electrical"
+scope      = "na"
+min        = -0.1
+max        = 0.1
+unit       = "%"
+conditions = "270 degC, 10 s"
+cite       = "DS p.21, Performance, Resistance to soldering heat, R>=47 ohm: +/-0.1 %"
+note       = "Printed +/-0.1 % (R>=47 ohm row)."
+
+[param.perf_rapid_change]
+name       = "Resistance change, rapid change of temperature"
+kind       = "electrical"
+scope      = "na"
+min        = -0.1
+max        = 0.1
+unit       = "%"
+conditions = "ERA3A, 6A, 8A: -55 degC (30 min) / +155 degC (30 min), 1000 cycles"
+cite       = "DS p.21, Performance, Rapid change of temperature, R>=47 ohm: +/-0.1 %"
+note       = "Printed +/-0.1 % (R>=47 ohm row)."
+
+[param.perf_high_temp_exposure]
+name       = "Resistance change, high temperature exposure"
+kind       = "electrical"
+scope      = "na"
+min        = -0.1
+max        = 0.1
+unit       = "%"
+conditions = "+155 degC, 1000 h"
+cite       = "DS p.21, Performance, High temperature exposure, R>=47 ohm: +/-0.1 %"
+note       = "Printed +/-0.1 % (R>=47 ohm row)."
+
+[param.perf_damp_heat]
+name       = "Resistance change, damp heat, steady state"
+kind       = "electrical"
+scope      = "na"
+min        = -0.1
+max        = 0.1
+unit       = "%"
+conditions = "85 degC, 85 %RH, 1000 h"
+cite       = "DS p.21, Performance, Damp heat, steady state, R>=47 ohm: +/-0.1 %"
+note       = "Printed +/-0.1 % (R>=47 ohm row)."
+
+[param.perf_load_life_humidity]
+name       = "Resistance change, load life in humidity"
+kind       = "electrical"
+scope      = "na"
+min        = -0.1
+max        = 0.1
+unit       = "%"
+conditions = "85 degC, 85 %RH, 10 % rated power, 1.5 h ON / 0.5 h OFF, 1000 h; max test voltage 23.7 V (this size)"
+cite       = "DS p.21, Performance, Load life in humidity, R>=47 ohm: +/-0.1 %"
+note       = "Printed +/-0.1 % (R>=47 ohm row)."
+
+[param.perf_endurance_85c]
+name       = "Resistance change, endurance at 85 degC"
+kind       = "electrical"
+scope      = "na"
+min        = -0.1
+max        = 0.1
+unit       = "%"
+conditions = "85 degC, rated voltage, 1.5 h ON / 0.5 h OFF, 1000 h"
+cite       = "DS p.21, Performance, Endurance at 85 degC, R>=47 ohm: +/-0.1 %"
+note       = "Printed +/-0.1 % (R>=47 ohm row)."
+
+[param.aec_grade]
+name       = "AEC-Q200 grade"
+kind       = "electrical"
+scope      = "na"
+text       = "Grade 0"
+unit       = ""
+conditions = ""
+cite       = "DS p.20, Ratings, AEC-Q200 Grade column, ERA3AE row group"
+note       = "Informational. DS p.19 Features: AEC-Q200 compliant."
+
+# ---- Mechanical (DS p.21, Dimensions table, row ERA3A). mm. Printed +/-X: min = nominal - X, max = nominal + X. ----
+
+[param.dim_l]
+name       = "Body length"
+symbol     = "L"
+kind       = "mechanical"
+scope      = "na"
+min        = 1.40
+typ        = 1.60
+max        = 1.80
+unit       = "mm"
+conditions = ""
+cite       = "DS p.21, Dimensions (mm) table, row ERA3A, column L"
+note       = "Printed 1.60+/-0.20 mm (DS p.21)."
+
+[param.dim_w]
+name       = "Body width"
+symbol     = "W"
+kind       = "mechanical"
+scope      = "na"
+min        = 0.60
+typ        = 0.80
+max        = 1.00
+unit       = "mm"
+conditions = ""
+cite       = "DS p.21, Dimensions (mm) table, row ERA3A, column W"
+note       = "Printed 0.80+/-0.20 mm (DS p.21)."
+
+[param.dim_a]
+name       = "Terminal width, a"
+symbol     = "a"
+kind       = "mechanical"
+scope      = "na"
+min        = 0.10
+typ        = 0.30
+max        = 0.50
+unit       = "mm"
+conditions = ""
+cite       = "DS p.21, Dimensions (mm) table, row ERA3A, column a"
+note       = "Printed 0.30+/-0.20 mm (DS p.21)."
+
+[param.dim_b]
+name       = "Terminal width, b"
+symbol     = "b"
+kind       = "mechanical"
+scope      = "na"
+min        = 0.10
+typ        = 0.30
+max        = 0.50
+unit       = "mm"
+conditions = ""
+cite       = "DS p.21, Dimensions (mm) table, row ERA3A, column b"
+note       = "Printed 0.30+/-0.20 mm (DS p.21)."
+
+[param.dim_t]
+name       = "Terminal thickness, T"
+symbol     = "T"
+kind       = "mechanical"
+scope      = "na"
+min        = 0.35
+typ        = 0.45
+max        = 0.55
+unit       = "mm"
+conditions = ""
+cite       = "DS p.21, Dimensions (mm) table, row ERA3A, column T"
+note       = "Printed 0.45+/-0.10 mm (DS p.21)."
+
+[param.mass]
+name       = "Mass (reference)"
+kind       = "mechanical"
+scope      = "na"
+typ        = 2
+unit       = "mg"
+conditions = "Reference value, per part"
+cite       = "DS p.21, Dimensions (mm) table, row ERA3A, Mass (Weight) (Reference) (g/1000 pcs) = 2"
+note       = "2 g per 1000 pcs = 2 mg per part (per-part value in mg keeps the printed digits). Reference only, not a bound."
+
+# ---- Land pattern (DS: Panasonic DMM0000COL17, p.1 'Recommended land pattern', rectangular type, 'High precision type (ERA, ERJPC/PB)' category, row 'mm (inch)' 0603 (1608)). Ranges as printed, mm. ----
+
+[param.land_a]
+name       = "Land pattern dimension a (DS land pattern table, rectangular type)"
+symbol     = "a"
+kind       = "mechanical"
+scope      = "na"
+min        = 0.7
+max        = 0.9
+unit       = "mm"
+conditions = "Recommended land pattern (not a tolerance on the body)"
+cite       = "DS PDF p.1, DMM0000COL17 (Panasonic land-pattern document), Recommended land pattern, 'High precision type (ERA, ERJPC/PB)' key, row 0603 (1608), column a"
+note       = "Printed as a range. The land table is one table for the listed categories; the ERA key line is printed above it. The footprint uses the middle of the range (pads 0.65 x 0.9 mm at +/-0.725 mm)."
+
+[param.land_b]
+name       = "Land pattern dimension b (DS land pattern table, rectangular type)"
+symbol     = "b"
+kind       = "mechanical"
+scope      = "na"
+min        = 2.0
+max        = 2.2
+unit       = "mm"
+conditions = "Recommended land pattern (not a tolerance on the body)"
+cite       = "DS PDF p.1, DMM0000COL17 (Panasonic land-pattern document), Recommended land pattern, 'High precision type (ERA, ERJPC/PB)' key, row 0603 (1608), column b"
+note       = "Printed as a range. The land table is one table for the listed categories; the ERA key line is printed above it. The footprint uses the middle of the range (pads 0.65 x 0.9 mm at +/-0.725 mm)."
+
+[param.land_c]
+name       = "Land pattern dimension c (DS land pattern table, rectangular type)"
+symbol     = "c"
+kind       = "mechanical"
+scope      = "na"
+min        = 0.8
+max        = 1.0
+unit       = "mm"
+conditions = "Recommended land pattern (not a tolerance on the body)"
+cite       = "DS PDF p.1, DMM0000COL17 (Panasonic land-pattern document), Recommended land pattern, 'High precision type (ERA, ERJPC/PB)' key, row 0603 (1608), column c"
+note       = "Printed as a range. The land table is one table for the listed categories; the ERA key line is printed above it. The footprint uses the middle of the range (pads 0.65 x 0.9 mm at +/-0.725 mm)."

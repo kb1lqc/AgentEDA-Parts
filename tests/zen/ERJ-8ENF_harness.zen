@@ -1,0 +1,18 @@
+# Test harness for the generated ERJ-8ENF series wrapper (tests/test_zen.py copies it next to ERJ-8ENF.zen and builds it).
+# Defaults: 10 kohm (E24/E96), 5 V +/-1 % across the part (worst case 5.05 V); rated voltage
+#   min(sqrt(0.25 W x 10 kohm) = 50 V, limiting element voltage 200 V) = 50 V, so it passes.
+#   Ambient -40 degC to 85 degC, inside the -55 degC to 155 degC category range.
+U = Module("./ERJ-8ENF.zen")
+
+value = config(str, default="10kohm")
+va = config(str, default="5V 1%")  # P1 voltage
+vb = config(str, default="0V")  # P2 voltage
+ta = config(str, default="-40°C to 85°C")
+
+U(
+    name="R1",
+    value=value,
+    P1=Net("A") if va == "unset" else Power("A", voltage=va),
+    P2=Power("B", voltage=vb),
+    **({} if ta == "unset" else {"ambient": ta}),
+)

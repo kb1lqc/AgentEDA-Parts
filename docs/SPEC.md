@@ -185,6 +185,7 @@ e_series       = ["E24", "E96"]          # allowed values: these IEC 60063 serie
 series_power   = "p70"                   # param row: power rating at 70 degC (W, max)
 series_vlimit  = "v_limit"               # param row: limiting element voltage (V, max)
 series_tol     = "tol"                   # param row: tolerance (%, min and max, e.g. -1 / 1)
+series_eseries_min = { E96 = 100 }       # optional: lowest value (ohm) taken from one E-series (here E96)
 ```
 
 - `calc.py` must define `mpn(value)` (value in ohm, returns the orderable MPN text). It is the single source of
@@ -192,6 +193,10 @@ series_tol     = "tol"                   # param row: tolerance (%, min and max,
 - The allowed values are every `E24` / `E96` mantissa (literal lists in `lib/series.py`, 24 and 96 values per decade)
   times a power of ten that falls in the `value_param` range, sorted and unique (E24 has values E96 lacks, for
   example 2.7). Each is the float nearest its printed decimal: 2.61 x 10^3 is `2610.0`, the same float `2.61e3` gives.
+- `series_eseries_min` (optional, keys from `e_series`, positive ohm) drops that E-series' values below its minimum
+  (use it where the catalog prints no part-number code for them); a value that another listed series contains stays
+  allowed (E24 47 ohm with `E96 = 100`; E96 47.5 ohm is out). `lib.check`, `part.values()` and the wrapper's
+  `value_allowed` all use the reduced set.
 - `lib.check` (series) ERRORs on: a missing `[part]` key or an unknown row key, `mpn` present, a series that does not
   have exactly 2 pins, an unknown E-series name, a range or tolerance row without min/max (and ohm / % units),
   missing `calc.mpn`, and, over every allowed value, `calc.mpn` raising or two values giving the same MPN. The
