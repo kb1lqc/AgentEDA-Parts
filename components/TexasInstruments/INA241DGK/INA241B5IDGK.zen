@@ -1,0 +1,215 @@
+"""INA241B5IDGK: INA241B5 gain 200 V/V, VSSOP-8 (DGK), -40 to 125 degC.
+GENERATED from component.toml by `python3 -m lib.zen`; do not edit. Source of truth: component.toml and
+calc.py (numbers, cites, equations). DS: https://www.ti.com/lit/ds/symlink/ina241a.pdf, SBOSA30D (2024-12).
+Checks are DC steady-state on the voltages each instance declares. They do not cover transients, overshoot,
+hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
+Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
+
+load("@stdlib/units.zen", "Temperature")
+
+# UNCHECKED: vs_abs: Supply voltage (DS p.4, 6.1 Absolute Maximum Ratings, Supply voltage (VS)); covered by vs_rec (2.7 V to 20 V, checked, error), which is stricter
+# UNCHECKED: vcm_abs: Analog inputs, common-mode voltage (DS p.4, 6.1 Absolute Maximum Ratings, Analog inputs VIN+, VIN-, Common-mode); covered by vcm_rec (-5 V to 110 V, checked, error), which is stricter
+# UNCHECKED: vout_abs: Output pin (DS p.4, 6.1 Absolute Maximum Ratings, Output); OUT is driven by the part; owner: module
+# UNCHECKED: ta_abs: Operating temperature (DS p.4, 6.1 Absolute Maximum Ratings, Operating temperature, TA); covered by ta_rec (-40 degC to 125 degC, check_ambient, error), which is stricter
+# UNCHECKED: tj_abs: Junction temperature (DS p.4, 6.1 Absolute Maximum Ratings, Junction temperature, TJ); needs dissipation x RthetaJA; owner: module
+# UNCHECKED: tstg_abs: Storage temperature (DS p.4, 6.1 Absolute Maximum Ratings, Storage temperature, Tstg); owner: assembly
+# UNCHECKED: esd_hbm: Electrostatic discharge, human body model (DS p.4, 6.2 ESD Ratings, Human body model (HBM)); owner: assembly
+# UNCHECKED: esd_cdm: Electrostatic discharge, charged device model (DS p.4, 6.2 ESD Ratings, Charged device model (CDM)); owner: assembly
+
+# Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
+# GND can drive them; ground-named pins are Ground.
+# pin 1 IN-, input: Current-sense amplifier negative input. High-side: connect to load side of sense resistor. Low-side: connect to ground side of sense resistor
+IN_N = io(Net)
+# pin 2 GND, power_in: Ground
+# pin 4 GND, power_in: DS name NC: 'Reserved. Connect to ground.' (DS TYPE column: Ground). Named GND here so the wrapper ties it to ground: pcb lint symbol.pin.nc_type rejects a pin named NC that is not no_connect, and a no_connect pin cannot follow the DS instruction. Same rule as an exposed pad that must connect to a net (CLAUDE.md Defaults).
+GND = io(Ground)
+# pin 3 REF2, input: Reference 2 voltage. Connect to voltage potential from 0 V to VS; see Adjusting the Output With the Reference Pins
+REF2 = io(Net)
+# pin 5 OUT, output: Output voltage
+OUT = io(Net)
+# pin 6 VS, power_in: Power supply, 2.7 V to 20 V
+VS = io(Net)
+# pin 7 REF1, input: Reference 1 voltage. Connect to voltage potential from 0 V to VS; see Adjusting the Output With the Reference Pins
+REF1 = io(Net)
+# pin 8 IN+, input: Current-sense amplifier positive input. High-side: connect to bus-voltage side of sense resistor. Low-side: connect to load side of sense resistor
+IN_P = io(Net)
+
+ambient = config(Temperature, optional=True, help="Board ambient temperature range")
+derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+waive_vref_range_25c = config(str, default="", help="Rationale with a cite for violating vref_range_25c")
+
+_ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
+check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
+
+
+def _limit(name, fn, inputs, severity, waiver=""):
+    # Unset input: UNVERIFIED warning, never a silent pass. Waiver drops a warning to advice.
+    if waiver and severity != "warning":
+        error("only warning-level checks can be waived: " + name)
+    unset = [k for k, v in inputs.items() if v == None]
+    if unset:
+
+        def _unverified(_m):
+            error("UNVERIFIED " + name + ": no value for " + ", ".join(unset))
+
+        builtin.add_electrical_check(name=name, check_fn=_unverified, severity="advice" if _ROOT else "warning")
+    else:
+        builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
+
+
+def _range(_m, v, what, lo=None, hi=None, lo_ref=None, hi_ref=None):
+    # Worst case: v.min >= lo + lo_ref.max and v.max <= hi + hi_ref.min (narrowest window). No ref = absolute.
+    lo_b = None if lo == None else lo + (0.0 if lo_ref == None else lo_ref.max)
+    hi_b = None if hi == None else hi + (0.0 if hi_ref == None else hi_ref.min)
+    ok = (lo_b == None or v.min >= lo_b) and (hi_b == None or v.max <= hi_b)
+    lo_t = "no limit" if lo_b == None else "%s V" % lo_b
+    hi_t = "no limit" if hi_b == None else "%s V" % hi_b
+    check(ok, "%s: %s to %s V outside %s to %s" % (what, v.min, v.max, lo_t, hi_t))
+
+
+def _temp(_m, v, what, lo, hi):
+    # Temperatures are kelvin floats in Zener; messages in degC.
+    ok = v.min >= lo and v.max <= hi
+    msg = "%s: %s to %s degC outside %s to %s degC"
+    check(ok, msg % (what, v.min - 273.15, v.max - 273.15, lo - 273.15, hi - 273.15))
+
+
+# vdiff_abs_IN_P: pin IN+ (IN_P) within the limit, x derate
+#   Analog inputs, differential voltage: min -30 / max 30 V (min_ref rel. IN-) (max_ref rel. IN-)
+#   DS p.4, 6.1 Absolute Maximum Ratings, Analog inputs VIN+, VIN-, Differential (VIN+) - (VIN-)
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: abs_max violated
+_limit(
+    "vdiff_abs_IN_P",
+    _range,
+    {
+        "v": IN_P.voltage,
+        "what": "vdiff_abs_IN_P",
+        "lo": -30.0 * derate,
+        "lo_ref": IN_N.voltage,
+        "hi": 30.0 * derate,
+        "hi_ref": IN_N.voltage,
+    },
+    "error",
+)
+
+# vref_abs_REF1: pin REF1 (REF1) within the limit, x derate
+#   REF1, REF2, NC inputs: min -0.3 / max 0.3 V (min_ref rel. GND) (max_ref rel. VS)
+#   DS p.4, 6.1 Absolute Maximum Ratings, REF1, REF2, NC inputs
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: abs_max violated
+_limit(
+    "vref_abs_REF1",
+    _range,
+    {
+        "v": REF1.voltage,
+        "what": "vref_abs_REF1",
+        "lo": -0.3 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 0.3 * derate,
+        "hi_ref": VS.voltage,
+    },
+    "error",
+)
+
+# vref_abs_REF2: pin REF2 (REF2) within the limit, x derate
+#   REF1, REF2, NC inputs: min -0.3 / max 0.3 V (min_ref rel. GND) (max_ref rel. VS)
+#   DS p.4, 6.1 Absolute Maximum Ratings, REF1, REF2, NC inputs
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: abs_max violated
+_limit(
+    "vref_abs_REF2",
+    _range,
+    {
+        "v": REF2.voltage,
+        "what": "vref_abs_REF2",
+        "lo": -0.3 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 0.3 * derate,
+        "hi_ref": VS.voltage,
+    },
+    "error",
+)
+
+# vcm_rec_IN_P: pin IN+ (IN_P) within the limit
+#   Common-mode input range: min -5 / typ 48 / max 110 V
+#   DS p.4, 6.3 Recommended Operating Conditions, Common-mode input range, VCM
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: rec_op violated
+_limit("vcm_rec_IN_P", _range, {"v": IN_P.voltage, "what": "vcm_rec_IN_P", "lo": -5.0, "hi": 110.0}, "error")
+
+# vcm_rec_IN_N: pin IN- (IN_N) within the limit
+#   Common-mode input range: min -5 / typ 48 / max 110 V
+#   DS p.4, 6.3 Recommended Operating Conditions, Common-mode input range, VCM
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: rec_op violated
+_limit("vcm_rec_IN_N", _range, {"v": IN_N.voltage, "what": "vcm_rec_IN_N", "lo": -5.0, "hi": 110.0}, "error")
+
+# vs_rec_VS: pin VS (VS) within the limit
+#   Operating supply range: min 2.7 / typ 5 / max 20 V
+#   DS p.4, 6.3 Recommended Operating Conditions, Operating supply range, VS
+#   Conditions: over operating free-air temperature range (unless otherwise noted)
+#   Severity error: rec_op violated
+_limit("vs_rec_VS", _range, {"v": VS.voltage, "what": "vs_rec_VS", "lo": 2.7, "hi": 20.0}, "error")
+
+# ta_rec_ambient: board ambient range inside this range
+#   Ambient temperature: min -40 / max 125 degC
+#   DS p.4, 6.3 Recommended Operating Conditions, Ambient temperature, TA
+#   Conditions: over operating free-air temperature range
+#   Severity error: rec_op violated
+_limit("ta_rec_ambient", _temp, {"v": ambient, "what": "ta_rec_ambient", "lo": 233.15, "hi": 398.15}, "error")
+
+# vref_range_25c_REF1: pin REF1 (REF1) within the limit
+#   Reference input range: min 0 / max 0 V (min_ref rel. GND) (max_ref rel. VS)
+#   DS p.5, 6.5 Electrical Characteristics, INPUT, Reference input range
+#   Severity warning: limit holds only at 25C (waivable with waive_<check>)
+_limit(
+    "vref_range_25c_REF1",
+    _range,
+    {
+        "v": REF1.voltage,
+        "what": "vref_range_25c_REF1",
+        "lo": 0.0,
+        "lo_ref": GND.voltage,
+        "hi": 0.0,
+        "hi_ref": VS.voltage,
+    },
+    "warning",
+    waive_vref_range_25c,
+)
+
+# vref_range_25c_REF2: pin REF2 (REF2) within the limit
+#   Reference input range: min 0 / max 0 V (min_ref rel. GND) (max_ref rel. VS)
+#   DS p.5, 6.5 Electrical Characteristics, INPUT, Reference input range
+#   Severity warning: limit holds only at 25C (waivable with waive_<check>)
+_limit(
+    "vref_range_25c_REF2",
+    _range,
+    {
+        "v": REF2.voltage,
+        "what": "vref_range_25c_REF2",
+        "lo": 0.0,
+        "lo_ref": GND.voltage,
+        "hi": 0.0,
+        "hi_ref": VS.voltage,
+    },
+    "warning",
+    waive_vref_range_25c,
+)
+
+Component(
+    name="INA241B5IDGK",
+    symbol=Symbol(library="./INA241DGK.kicad_sym"),
+    part=Part(
+        mpn="INA241B5IDGKR", manufacturer="Texas Instruments", datasheet="https://www.ti.com/lit/ds/symlink/ina241a.pdf"
+    ),
+    pins={
+        "IN-": IN_N,
+        "GND": GND,
+        "REF2": REF2,
+        "OUT": OUT,
+        "VS": Power(VS, voltage=VS.voltage),
+        "REF1": REF1,
+        "IN+": IN_P,
+    },
+)

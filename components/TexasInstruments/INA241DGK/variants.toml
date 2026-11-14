@@ -1,0 +1,458 @@
+# INA241 family, VSSOP-8 (DGK): ten orderables (version A and B x gain 10/20/50/100/200 V/V), listed here.
+# Each variant sets its mpn (= Value + R reel suffix), alternates (none: DS Addendum-Page 1-2 (PDF p.28-29) lists only the R reel for DGK) and
+# temp_grade (-40 to 125 degC, DS p.4 TA rec-op and Addendum-Page 2 (PDF p.29) Op temp). The B devices share their values with the shared rows
+# in component.toml (restricted with `variants`); the A devices get their own rows here.
+# Gain (G, DS p.5 OUTPUT, Gain row: A1,B1 10; A2,B2 20; A3,B3 50; A4,B4 100; A5,B5 200 V/V) is per variant (every variant
+# has its own `gain` row). The A device gain-error, drift, Vos and Vos drift rows are per variant (DS p.5-6).
+
+[variant."INA241A1IDGK"]
+mpn         = "INA241A1IDGKR"
+alternates  = []
+temp_grade  = "-40 to 125 degC"
+description = "INA241A1 gain 10 V/V, VSSOP-8 (DGK), -40 to 125 degC"
+
+[variant."INA241A1IDGK".param.gain]
+name       = "Gain"
+symbol     = "G"
+kind       = "electrical"
+scope      = "25C"
+typ        = 10
+unit       = ""
+conditions = "VS = 5 V, VSENSE = VIN+ - VIN-, VCM = VIN- = 48 V, VREF1 = VREF2 = VS / 2 (TA = 25 degC)"
+cite       = "DS p.5, 6.5 Electrical Characteristics, OUTPUT, Gain, A1, B1 Devices row"
+note       = "Typical only (no MIN or MAX printed for gain). Per-variant row: the gain is set by the device version."
+
+[variant."INA241A1IDGK".param.gain_err_25c]
+name       = "Gain error"
+symbol     = "GERR"
+kind       = "electrical"
+scope      = "25C"
+typ        = 0.002
+typ_pm     = true
+min        = -0.01
+max        = 0.01
+unit       = "%"
+conditions = "(GND + 50 mV) < VOUT < (VS - 200 mV), TA = 25 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, OUTPUT, GERR, Gain error, INA241A1, INA241A2, INA241A3"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A1IDGK".param.gain_drift_full]
+name       = "Gain error drift"
+symbol     = "GERR drift"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.05
+typ_pm     = true
+min        = -1
+max        = 1
+unit       = "ppm/degC"
+conditions = "TA = -40 degC to 125 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, OUTPUT, GERR, Gain error drift, INA241A1, INA241A2, INA241A3"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A1IDGK".param.vos_25c]
+name       = "Offset voltage, input-referred"
+symbol     = "VOS"
+kind       = "electrical"
+scope      = "25C"
+typ        = 5
+typ_pm     = true
+min        = -20
+max        = 20
+unit       = "uV"
+conditions = "VSENSE = 0 mV (TA = 25 degC)"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Offset voltage, input-referred, INA241A1"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A1IDGK".param.vos_drift_full]
+name       = "Offset voltage drift, input-referred"
+symbol     = "dVOS/dT"
+kind       = "electrical"
+scope      = "full"
+typ        = 50
+typ_pm     = true
+min        = -250
+max        = 250
+unit       = "nV/degC"
+conditions = "TA = -40 degC to 125 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Offset voltage drift, input-referred, INA241A1"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A2IDGK"]
+mpn         = "INA241A2IDGKR"
+alternates  = []
+temp_grade  = "-40 to 125 degC"
+description = "INA241A2 gain 20 V/V, VSSOP-8 (DGK), -40 to 125 degC"
+
+[variant."INA241A2IDGK".param.gain]
+name       = "Gain"
+symbol     = "G"
+kind       = "electrical"
+scope      = "25C"
+typ        = 20
+unit       = ""
+conditions = "VS = 5 V, VSENSE = VIN+ - VIN-, VCM = VIN- = 48 V, VREF1 = VREF2 = VS / 2 (TA = 25 degC)"
+cite       = "DS p.5, 6.5 Electrical Characteristics, OUTPUT, Gain, A2, B2 Devices row"
+note       = "Typical only (no MIN or MAX printed for gain). Per-variant row: the gain is set by the device version."
+
+[variant."INA241A2IDGK".param.gain_err_25c]
+name       = "Gain error"
+symbol     = "GERR"
+kind       = "electrical"
+scope      = "25C"
+typ        = 0.002
+typ_pm     = true
+min        = -0.01
+max        = 0.01
+unit       = "%"
+conditions = "(GND + 50 mV) < VOUT < (VS - 200 mV), TA = 25 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, OUTPUT, GERR, Gain error, INA241A1, INA241A2, INA241A3"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A2IDGK".param.gain_drift_full]
+name       = "Gain error drift"
+symbol     = "GERR drift"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.05
+typ_pm     = true
+min        = -1
+max        = 1
+unit       = "ppm/degC"
+conditions = "TA = -40 degC to 125 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, OUTPUT, GERR, Gain error drift, INA241A1, INA241A2, INA241A3"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A2IDGK".param.vos_25c]
+name       = "Offset voltage, input-referred"
+symbol     = "VOS"
+kind       = "electrical"
+scope      = "25C"
+typ        = 3
+typ_pm     = true
+min        = -15
+max        = 15
+unit       = "uV"
+conditions = "VSENSE = 0 mV (TA = 25 degC)"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Offset voltage, input-referred, INA241A2"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A2IDGK".param.vos_drift_full]
+name       = "Offset voltage drift, input-referred"
+symbol     = "dVOS/dT"
+kind       = "electrical"
+scope      = "full"
+typ        = 30
+typ_pm     = true
+min        = -150
+max        = 150
+unit       = "nV/degC"
+conditions = "TA = -40 degC to 125 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Offset voltage drift, input-referred, INA241A2"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A3IDGK"]
+mpn         = "INA241A3IDGKR"
+alternates  = []
+temp_grade  = "-40 to 125 degC"
+description = "INA241A3 gain 50 V/V, VSSOP-8 (DGK), -40 to 125 degC"
+
+[variant."INA241A3IDGK".param.gain]
+name       = "Gain"
+symbol     = "G"
+kind       = "electrical"
+scope      = "25C"
+typ        = 50
+unit       = ""
+conditions = "VS = 5 V, VSENSE = VIN+ - VIN-, VCM = VIN- = 48 V, VREF1 = VREF2 = VS / 2 (TA = 25 degC)"
+cite       = "DS p.5, 6.5 Electrical Characteristics, OUTPUT, Gain, A3, B3 Devices row"
+note       = "Typical only (no MIN or MAX printed for gain). Per-variant row: the gain is set by the device version."
+
+[variant."INA241A3IDGK".param.gain_err_25c]
+name       = "Gain error"
+symbol     = "GERR"
+kind       = "electrical"
+scope      = "25C"
+typ        = 0.002
+typ_pm     = true
+min        = -0.01
+max        = 0.01
+unit       = "%"
+conditions = "(GND + 50 mV) < VOUT < (VS - 200 mV), TA = 25 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, OUTPUT, GERR, Gain error, INA241A1, INA241A2, INA241A3"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A3IDGK".param.gain_drift_full]
+name       = "Gain error drift"
+symbol     = "GERR drift"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.05
+typ_pm     = true
+min        = -1
+max        = 1
+unit       = "ppm/degC"
+conditions = "TA = -40 degC to 125 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, OUTPUT, GERR, Gain error drift, INA241A1, INA241A2, INA241A3"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A3IDGK".param.vos_25c]
+name       = "Offset voltage, input-referred"
+symbol     = "VOS"
+kind       = "electrical"
+scope      = "25C"
+typ        = 3
+typ_pm     = true
+min        = -10
+max        = 10
+unit       = "uV"
+conditions = "VSENSE = 0 mV (TA = 25 degC)"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Offset voltage, input-referred, INA241A3, INA241A4"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A3IDGK".param.vos_drift_full]
+name       = "Offset voltage drift, input-referred"
+symbol     = "dVOS/dT"
+kind       = "electrical"
+scope      = "full"
+typ        = 20
+typ_pm     = true
+min        = -100
+max        = 100
+unit       = "nV/degC"
+conditions = "TA = -40 degC to 125 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Offset voltage drift, input-referred, INA241A3, INA241A4, INA241A5"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A4IDGK"]
+mpn         = "INA241A4IDGKR"
+alternates  = []
+temp_grade  = "-40 to 125 degC"
+description = "INA241A4 gain 100 V/V, VSSOP-8 (DGK), -40 to 125 degC"
+
+[variant."INA241A4IDGK".param.gain]
+name       = "Gain"
+symbol     = "G"
+kind       = "electrical"
+scope      = "25C"
+typ        = 100
+unit       = ""
+conditions = "VS = 5 V, VSENSE = VIN+ - VIN-, VCM = VIN- = 48 V, VREF1 = VREF2 = VS / 2 (TA = 25 degC)"
+cite       = "DS p.5, 6.5 Electrical Characteristics, OUTPUT, Gain, A4, B4 Devices row"
+note       = "Typical only (no MIN or MAX printed for gain). Per-variant row: the gain is set by the device version."
+
+[variant."INA241A4IDGK".param.gain_err_25c]
+name       = "Gain error"
+symbol     = "GERR"
+kind       = "electrical"
+scope      = "25C"
+typ        = 0.003
+typ_pm     = true
+min        = -0.015
+max        = 0.015
+unit       = "%"
+conditions = "(GND + 50 mV) < VOUT < (VS - 200 mV), TA = 25 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, OUTPUT, GERR, Gain error, INA241A4, INA241A5"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A4IDGK".param.gain_drift_full]
+name       = "Gain error drift"
+symbol     = "GERR drift"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.1
+typ_pm     = true
+min        = -2
+max        = 2
+unit       = "ppm/degC"
+conditions = "TA = -40 degC to 125 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, OUTPUT, GERR, Gain error drift, INA241A4, INA241A5"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A4IDGK".param.vos_25c]
+name       = "Offset voltage, input-referred"
+symbol     = "VOS"
+kind       = "electrical"
+scope      = "25C"
+typ        = 3
+typ_pm     = true
+min        = -10
+max        = 10
+unit       = "uV"
+conditions = "VSENSE = 0 mV (TA = 25 degC)"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Offset voltage, input-referred, INA241A3, INA241A4"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A4IDGK".param.vos_drift_full]
+name       = "Offset voltage drift, input-referred"
+symbol     = "dVOS/dT"
+kind       = "electrical"
+scope      = "full"
+typ        = 20
+typ_pm     = true
+min        = -100
+max        = 100
+unit       = "nV/degC"
+conditions = "TA = -40 degC to 125 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Offset voltage drift, input-referred, INA241A3, INA241A4, INA241A5"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A5IDGK"]
+mpn         = "INA241A5IDGKR"
+alternates  = []
+temp_grade  = "-40 to 125 degC"
+description = "INA241A5 gain 200 V/V, VSSOP-8 (DGK), -40 to 125 degC"
+
+[variant."INA241A5IDGK".param.gain]
+name       = "Gain"
+symbol     = "G"
+kind       = "electrical"
+scope      = "25C"
+typ        = 200
+unit       = ""
+conditions = "VS = 5 V, VSENSE = VIN+ - VIN-, VCM = VIN- = 48 V, VREF1 = VREF2 = VS / 2 (TA = 25 degC)"
+cite       = "DS p.5, 6.5 Electrical Characteristics, OUTPUT, Gain, A5, B5 Devices row"
+note       = "Typical only (no MIN or MAX printed for gain). Per-variant row: the gain is set by the device version."
+
+[variant."INA241A5IDGK".param.gain_err_25c]
+name       = "Gain error"
+symbol     = "GERR"
+kind       = "electrical"
+scope      = "25C"
+typ        = 0.003
+typ_pm     = true
+min        = -0.015
+max        = 0.015
+unit       = "%"
+conditions = "(GND + 50 mV) < VOUT < (VS - 200 mV), TA = 25 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, OUTPUT, GERR, Gain error, INA241A4, INA241A5"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A5IDGK".param.gain_drift_full]
+name       = "Gain error drift"
+symbol     = "GERR drift"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.1
+typ_pm     = true
+min        = -2
+max        = 2
+unit       = "ppm/degC"
+conditions = "TA = -40 degC to 125 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, OUTPUT, GERR, Gain error drift, INA241A4, INA241A5"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A5IDGK".param.vos_25c]
+name       = "Offset voltage, input-referred"
+symbol     = "VOS"
+kind       = "electrical"
+scope      = "25C"
+typ        = 2
+typ_pm     = true
+min        = -8
+max        = 8
+unit       = "uV"
+conditions = "VSENSE = 0 mV (TA = 25 degC)"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Offset voltage, input-referred, INA241A5"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+[variant."INA241A5IDGK".param.vos_drift_full]
+name       = "Offset voltage drift, input-referred"
+symbol     = "dVOS/dT"
+kind       = "electrical"
+scope      = "full"
+typ        = 20
+typ_pm     = true
+min        = -100
+max        = 100
+unit       = "nV/degC"
+conditions = "TA = -40 degC to 125 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Offset voltage drift, input-referred, INA241A3, INA241A4, INA241A5"
+note       = "TYP printed +/-, MAX printed +/-: typ_pm, min = -max. Per-variant row (A devices)."
+
+
+[variant."INA241B1IDGK"]
+mpn         = "INA241B1IDGKR"
+alternates  = []
+temp_grade  = "-40 to 125 degC"
+description = "INA241B1 gain 10 V/V, VSSOP-8 (DGK), -40 to 125 degC"
+
+[variant."INA241B1IDGK".param.gain]
+name       = "Gain"
+symbol     = "G"
+kind       = "electrical"
+scope      = "25C"
+typ        = 10
+unit       = ""
+conditions = "VS = 5 V, VSENSE = VIN+ - VIN-, VCM = VIN- = 48 V, VREF1 = VREF2 = VS / 2 (TA = 25 degC)"
+cite       = "DS p.5, 6.5 Electrical Characteristics, OUTPUT, Gain, A1, B1 Devices row"
+note       = "Typical only (no MIN or MAX printed for gain). Per-variant row: the gain is set by the device version."
+
+[variant."INA241B2IDGK"]
+mpn         = "INA241B2IDGKR"
+alternates  = []
+temp_grade  = "-40 to 125 degC"
+description = "INA241B2 gain 20 V/V, VSSOP-8 (DGK), -40 to 125 degC"
+
+[variant."INA241B2IDGK".param.gain]
+name       = "Gain"
+symbol     = "G"
+kind       = "electrical"
+scope      = "25C"
+typ        = 20
+unit       = ""
+conditions = "VS = 5 V, VSENSE = VIN+ - VIN-, VCM = VIN- = 48 V, VREF1 = VREF2 = VS / 2 (TA = 25 degC)"
+cite       = "DS p.5, 6.5 Electrical Characteristics, OUTPUT, Gain, A2, B2 Devices row"
+note       = "Typical only (no MIN or MAX printed for gain). Per-variant row: the gain is set by the device version."
+
+[variant."INA241B3IDGK"]
+mpn         = "INA241B3IDGKR"
+alternates  = []
+temp_grade  = "-40 to 125 degC"
+description = "INA241B3 gain 50 V/V, VSSOP-8 (DGK), -40 to 125 degC"
+
+[variant."INA241B3IDGK".param.gain]
+name       = "Gain"
+symbol     = "G"
+kind       = "electrical"
+scope      = "25C"
+typ        = 50
+unit       = ""
+conditions = "VS = 5 V, VSENSE = VIN+ - VIN-, VCM = VIN- = 48 V, VREF1 = VREF2 = VS / 2 (TA = 25 degC)"
+cite       = "DS p.5, 6.5 Electrical Characteristics, OUTPUT, Gain, A3, B3 Devices row"
+note       = "Typical only (no MIN or MAX printed for gain). Per-variant row: the gain is set by the device version."
+
+[variant."INA241B4IDGK"]
+mpn         = "INA241B4IDGKR"
+alternates  = []
+temp_grade  = "-40 to 125 degC"
+description = "INA241B4 gain 100 V/V, VSSOP-8 (DGK), -40 to 125 degC"
+
+[variant."INA241B4IDGK".param.gain]
+name       = "Gain"
+symbol     = "G"
+kind       = "electrical"
+scope      = "25C"
+typ        = 100
+unit       = ""
+conditions = "VS = 5 V, VSENSE = VIN+ - VIN-, VCM = VIN- = 48 V, VREF1 = VREF2 = VS / 2 (TA = 25 degC)"
+cite       = "DS p.5, 6.5 Electrical Characteristics, OUTPUT, Gain, A4, B4 Devices row"
+note       = "Typical only (no MIN or MAX printed for gain). Per-variant row: the gain is set by the device version."
+
+[variant."INA241B5IDGK"]
+mpn         = "INA241B5IDGKR"
+alternates  = []
+temp_grade  = "-40 to 125 degC"
+description = "INA241B5 gain 200 V/V, VSSOP-8 (DGK), -40 to 125 degC"
+
+[variant."INA241B5IDGK".param.gain]
+name       = "Gain"
+symbol     = "G"
+kind       = "electrical"
+scope      = "25C"
+typ        = 200
+unit       = ""
+conditions = "VS = 5 V, VSENSE = VIN+ - VIN-, VCM = VIN- = 48 V, VREF1 = VREF2 = VS / 2 (TA = 25 degC)"
+cite       = "DS p.5, 6.5 Electrical Characteristics, OUTPUT, Gain, A5, B5 Devices row"
+note       = "Typical only (no MIN or MAX printed for gain). Per-variant row: the gain is set by the device version."
+

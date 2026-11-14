@@ -122,6 +122,19 @@ CASES = [
     ("Panasonic/ERJ-3EKF", "ambient_out", ["ta=-40°C to 160°C"], "error", "category_temp_ambient"),
     ("Panasonic/ERJ-3EKF", "reversed_polarity", ["value=1kohm", "va=0V", "vb=12V"], "error", "rated_voltage"),  # |V| > 10 V
     ("Panasonic/ERJ-3EKF", "both_nets_spread", ["va=5V 5%", "vb=5V 5%"], "pass", ""),  # worst |V| 0.5 V << 31.6 V
+    ("TexasInstruments/INA241DGK", "nominal", [], "pass", ""),
+    ("TexasInstruments/INA241DGK", "b5_nominal", ["variant=INA241B5IDGK"], "pass", ""),
+    ("TexasInstruments/INA241DGK", "vs_rec_out", ["vs=21V"], "error", "vs_rec_VS"),  # REF 0 V still inside GND - 0.3 V
+    ("TexasInstruments/INA241DGK", "vcm_out", ["vinp=111V", "vinn=111V"], "error", "vcm_rec_IN_P"),  # both inputs moved
+    ("TexasInstruments/INA241DGK", "vdiff_out", ["vinn=10V"], "error", "vdiff_abs_IN_P"),  # 47.52 - 10 > 30 V
+    ("TexasInstruments/INA241DGK", "vref_above_vs", ["vref1=5.5V"], "error", "vref_abs_REF1"),  # > VS(min) 4.75 + 0.3 V
+    ("TexasInstruments/INA241DGK", "vref_below_gnd", ["vref2=-0.5V"], "error", "vref_abs_REF2"),
+    ("TexasInstruments/INA241DGK", "vref_range_out", ["vref2=-0.2V"], "warning", "vref_range_25c_REF2"),  # inside abs GND - 0.3 V
+    ("TexasInstruments/INA241DGK", "vref_range_waived", ["vref2=-0.2V", "waive=test rationale DS p.5"], "pass", ""),
+    ("TexasInstruments/INA241DGK", "vs_unset", ["vs=unset"], "warning", "UNVERIFIED vs_rec_VS"),
+    ("TexasInstruments/INA241DGK", "ambient_out", ["ta=-40°C to 130°C"], "error", "ta_rec_ambient"),
+    ("TexasInstruments/INA241DGK", "b3_ambient_out", ["variant=INA241B3IDGK", "ta=-40°C to 130°C"], "error", "ta_rec_ambient"),
+    ("TexasInstruments/INA241DGK", "ambient_unset", ["ta=unset"], "warning", "UNVERIFIED ta_rec_ambient"),
     ("Murata/GCM155", "nominal", [], "pass", ""),
     ("Murata/GCM155", "rated_v_out", ["va=52V"], "error", "rated_v_P1"),  # > DC 50 V
     ("Murata/GCM155", "reversed_out", ["va=0V", "vb=52V"], "error", "rated_v_P1"),  # non-polar: -52 V also fails
@@ -134,6 +147,21 @@ CASES = [
     ("Murata/GCM188", "both_nets_spread", ["va=48V 1%", "vb=0V"], "pass", ""),  # 48.48 V worst case, inside 50 V
     ("Murata/GCM188", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_v_P1"),
     ("Murata/GCM188", "ambient_out", ["ta=-40°C to 130°C"], "error", "op_temp_ambient"),
+    ("TexasInstruments/TPS48000QDGXQ1", "nominal", [], "pass", ""),
+    ("TexasInstruments/TPS48000QDGXQ1", "vs_abs_out", ["vs=101V"], "error", "abs_vs_cs_gnd_VS"),  # also fails rec_vs_VS
+    ("TexasInstruments/TPS48000QDGXQ1", "vs_rec_out", ["vs=96V"], "error", "rec_vs_VS"),  # inside abs 100 V, outside rec-op 95 V
+    ("TexasInstruments/TPS48000QDGXQ1", "vs_scp_min_out", ["vs=3.8V"], "warning", "rec_vs_scp_min_VS"),  # inside rec-op 3.5 V, below SCP 4 V
+    ("TexasInstruments/TPS48000QDGXQ1", "vs_scp_min_waived", ["vs=3.8V", "waive=SCP not used, DS p.4"], "pass", ""),
+    ("TexasInstruments/TPS48000QDGXQ1", "csp_abs_out", ["vcsp=101V", "vcsn=101V"], "error", "abs_vs_cs_gnd_CS_P"),  # both CS nets moved
+    ("TexasInstruments/TPS48000QDGXQ1", "cs_pair_out", ["vcsn=50V"], "error", "abs_cs_pair_CS_P"),  # 47.52 V < 50 - 1 V
+    ("TexasInstruments/TPS48000QDGXQ1", "en_rec_out", ["ven=66V"], "error", "rec_en_inp_cs_sel_EN_UVLO"),  # inside abs 70 V
+    ("TexasInstruments/TPS48000QDGXQ1", "ov_abs_out", ["vov=71V"], "error", "abs_input_vs_pos_OV"),
+    ("TexasInstruments/TPS48000QDGXQ1", "scp_test_out", ["vscp=6V"], "error", "abs_iscp_tmr_scp_test_SCP_TEST"),
+    ("TexasInstruments/TPS48000QDGXQ1", "flt_rec_out", ["vflt=16V"], "error", "rec_flt_FLT"),  # inside abs 20 V
+    ("TexasInstruments/TPS48000QDGXQ1", "flt_gd_abs_out", ["vfltgd=21V"], "error", "abs_flt_gnd_FLT_GD"),
+    ("TexasInstruments/TPS48000QDGXQ1", "vs_unset", ["vs=unset"], "warning", "UNVERIFIED abs_vs_cs_gnd_VS"),
+    ("TexasInstruments/TPS48000QDGXQ1", "ambient_out", ["ta=-40°C to 130°C"], "error", "ta_grade_1_ambient"),
+    ("TexasInstruments/TPS48000QDGXQ1", "ambient_unset", ["ta=unset"], "warning", "UNVERIFIED ta_grade_1_ambient"),
     ("Vishay/WSK2512R0250D", "nominal", [], "pass", ""),
     ("Vishay/WSK2512R0250D", "ambient_out", ["ta=-40°C to 180°C"], "error", "t_oper_ambient"),
     ("Vishay/WSK2512R0250D", "ambient_unset", ["ta=unset"], "warning", "UNVERIFIED t_oper_ambient"),

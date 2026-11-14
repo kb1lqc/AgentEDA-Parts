@@ -20,6 +20,8 @@ Every part here has three things a person or an AI needs to design with it and c
 |---|---|---|
 | TI INA821IDGK | Precision instrumentation amplifier, VSSOP-8 | [README](components/TexasInstruments/INA821IDGK/README.md) |
 | ADI LTC4364 MS family (6 variants: C/I/H grade x -1 latch-off / -2 auto-retry) | Surge stopper + ideal diode, MSOP-16 | [README](components/AnalogDevices/LTC4364MS/README.md) |
+| TI INA241 DGK family (10 variants: A1-A5 / B1-B5, gain 10/20/50/100/200) | -5 V to 110 V bidirectional current-sense amplifier, VSSOP-8 | [README](components/TexasInstruments/INA241DGK/README.md) |
+| TI TPS48000QDGXQ1 | Automotive 3.5-95 V high-side switch controller with short-circuit protection, VSSOP-19 | [README](components/TexasInstruments/TPS48000QDGXQ1/README.md) |
 | TI INA229AIDGS | 85 V, 20-bit power/energy/charge monitor, SPI, VSSOP-10 | [README](components/TexasInstruments/INA229AIDGS/README.md) |
 | ST VNF1248F | 12/24/48 V high-side switch controller with e-fuse, SPI, QFN32L 5x5 | [README](components/STMicroelectronics/VNF1248F/README.md) |
 | Panasonic ERJ-2RKF series | Thick film resistor, 0402, ±1 %, 10 Ω to 1 MΩ (E24/E96); value is a design input | [README](components/Panasonic/ERJ-2RKF/README.md) |
