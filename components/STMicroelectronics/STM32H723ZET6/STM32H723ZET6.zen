@@ -1,0 +1,715 @@
+"""STM32H723ZET6: Arm Cortex-M7 MCU, 550 MHz, 512 KB flash, LQFP144 (20 x 20 mm), -40 to 85 degC.
+GENERATED from component.toml by `python3 -m lib.zen`; do not edit. Source of truth: component.toml and
+calc.py (numbers, cites, equations). DS: https://www.st.com/resource/en/datasheet/stm32h723ze.pdf, DS13313 Rev 5 (2025-05).
+Checks are DC steady-state on the voltages each instance declares. They do not cover transients, overshoot,
+hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
+Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
+
+load("@stdlib/units.zen", "Temperature")
+
+# UNCHECKED: abs_vin_ft: Input voltage on FT_xxx pins (DS p.88, Table 9. Voltage characteristics, Input voltage on FT_xxx pins); GPIO: bidirectional, direction set by firmware; FT/TT limits in the data; owner: module
+# UNCHECKED: abs_vin_tt: Input voltage on TT_xx pins (DS p.88, Table 9. Voltage characteristics, Input voltage on TT_xx pins); GPIO: bidirectional, direction set by firmware; FT/TT limits in the data; owner: module
+# UNCHECKED: abs_delta_vdd: Variations between different VDDX power pins of the same domain (DS p.88, Table 9. Voltage characteristics, |DeltaVDDX|); magnitude rating between pins (board layout), not a single-pin voltage; owner: module
+# UNCHECKED: abs_delta_vss: Variations between all the different ground pins (DS p.88, Table 9. Voltage characteristics, |VSSx - VSS|); magnitude rating between ground pins (board layout), not a single-pin voltage; owner: module
+# UNCHECKED: abs_i_sum_vdd: Total current into sum of all VDD power lines (source) (DS p.89, Table 10. Current characteristics, SUM IVDD (note 1)); current rating, not a voltage check; owner: module
+# UNCHECKED: abs_i_sum_vss: Total current out of sum of all VSS ground lines (sink) (DS p.89, Table 10. Current characteristics, SUM IVSS (note 1)); current rating, not a voltage check; owner: module
+# UNCHECKED: abs_i_vdd_pin: Maximum current into each VDD power pin (source) (DS p.89, Table 10. Current characteristics, IVDD (note 1)); current rating, not a voltage check; owner: module
+# UNCHECKED: abs_i_vss_pin: Maximum current out of each VSS ground pin (sink) (DS p.89, Table 10. Current characteristics, IVSS (note 1)); current rating, not a voltage check; owner: module
+# UNCHECKED: abs_i_io: Output current sunk or sourced by any I/O and control pin, except Pxy_C (DS p.89, Table 10. Current characteristics, IIO (row 1)); current rating, not a voltage check; owner: module
+# UNCHECKED: abs_i_io_pxyc: Output current sunk or sourced by Pxy_C pins (DS p.89, Table 10. Current characteristics, IIO (row 2, Pxy_C)); current rating, not a voltage check; owner: module
+# UNCHECKED: abs_i_sum_sink: Total output current sunk by sum of all I/Os and control pins (DS p.89, Table 10. Current characteristics, SUM I(PIN) sunk (note 2)); current rating, not a voltage check; owner: module
+# UNCHECKED: abs_i_sum_source: Total output current sourced by sum of all I/Os and control pins (DS p.89, Table 10. Current characteristics, SUM I(PIN) sourced (note 2)); current rating, not a voltage check; owner: module
+# UNCHECKED: abs_i_inj_pin: Injected current on FT_xxx, TT_xx, RST and B pins except PA4, PA5 (DS p.89, Table 10. Current characteristics, IINJ(PIN) (notes 3, 4)); current rating, not a voltage check; owner: module
+# UNCHECKED: abs_i_inj_pa4_pa5: Injected current on PA4, PA5 (DS p.89, Table 10. Current characteristics, IINJ(PIN) PA4, PA5 (notes 3, 4)); current rating, not a voltage check; owner: module
+# UNCHECKED: abs_i_inj_sum: Total injected current (sum of all I/Os and control pins) (DS p.89, Table 10. Current characteristics, SUM IINJ(PIN) (note 5)); current rating, not a voltage check; owner: module
+# UNCHECKED: abs_tstg: Storage temperature range (DS p.89, Table 11. Thermal characteristics, TSTG); owner: assembly (storage)
+# UNCHECKED: abs_tj_range6: Maximum junction temperature, industrial temperature range 6 (DS p.89, Table 11. Thermal characteristics, TJ); junction temperature, not ambient: use calc.tj_max (TJ = TA + PD x theta_JA); owner: module
+# UNCHECKED: esd_hbm: Electrostatic discharge voltage, human body model (DS p.124, Table 48. ESD absolute maximum ratings, VESD(HBM)); ESD rating; owner: assembly
+# UNCHECKED: esd_cdm_lqfp: Electrostatic discharge voltage, charge device model, LQFP packages (DS p.124, Table 48. ESD absolute maximum ratings, VESD(CDM), All LQFP packages); ESD rating; owner: assembly
+# UNCHECKED: vdd_op_pdr_on: VDD minimum with the internal power-down reset enabled (DS p.90, Table 12. General operating conditions, VDD (footnote 1, DS p.91); DS p.15, Description: supply must stay above 1.71 V with the embedded power voltage detector enabled); depends on how PDR_ON is wired; the loosest case (1.62 V) is checked by vdd_op; owner: module
+# UNCHECKED: vos_cfg_vos0_ldo_vdd_min: Minimum VDD, VOS0 with LDO VCORE source (DS p.92, Table 13. Supply voltage and maximum temperature configuration, VOS0 LDO); depends on the voltage scale and VCORE source chosen in firmware; the loosest case is checked by vdd_op; owner: module
+# UNCHECKED: vos_cfg_vos0_bypass_vdd_min: Minimum VDD, VOS0 with External (Bypass) VCORE source (DS p.92, Table 13. Supply voltage and maximum temperature configuration, VOS0 External (Bypass)); depends on the voltage scale and VCORE source chosen in firmware; the loosest case is checked by vdd_op; owner: module
+# UNCHECKED: vos_cfg_vos1_ldo_vdd_min: Minimum VDD, VOS1 with LDO VCORE source (DS p.92, Table 13. Supply voltage and maximum temperature configuration, VOS1 LDO); depends on the voltage scale and VCORE source chosen in firmware; the loosest case is checked by vdd_op; owner: module
+# UNCHECKED: vos_cfg_vos23_ldo_vdd_min: Minimum VDD, VOS2 or VOS3 with LDO VCORE source (DS p.92, Table 13. Supply voltage and maximum temperature configuration, VOS2 or VOS3 LDO); depends on the voltage scale and VCORE source chosen in firmware; the loosest case is checked by vdd_op; owner: module
+# UNCHECKED: vos_cfg_svos45_ldo_125_vdd_min: Minimum VDD, SVOS4/SVOS5 with LDO VCORE source (DS p.92, Table 13. Supply voltage and maximum temperature configuration, SVOS4/SVOS5 LDO); depends on the voltage scale and VCORE source chosen in firmware; the loosest case is checked by vdd_op; owner: module
+# UNCHECKED: vos_cfg_svos45_ldo_105_vdd_min: Minimum VDD, SVOS4/SVOS5 with LDO VCORE source (DS p.92, Table 13. Supply voltage and maximum temperature configuration, SVOS4/SVOS5 LDO); depends on the voltage scale and VCORE source chosen in firmware; the loosest case is checked by vdd_op; owner: module
+# UNCHECKED: vos_cfg_svos45_bypass_vdd_min: Minimum VDD, SVOS4/SVOS5 with External (Bypass) VCORE source (DS p.92, Table 13. Supply voltage and maximum temperature configuration, SVOS4/SVOS5 External (Bypass)); depends on the voltage scale and VCORE source chosen in firmware; the loosest case is checked by vdd_op; owner: module
+# UNCHECKED: vddldo_op: Supply voltage for the internal regulator, VDDLDO (DS p.90, Table 12. General operating conditions, VDDLDO); VDDLDO is an internal domain with no package pin (DS p.90, follows VDD); owner: module
+# UNCHECKED: vdd33usb_op_usb: Standard operating voltage, USB domain, USB used (DS p.90, Table 12. General operating conditions, VDD33USB, USB used); applies only when USB is used (the minimum depends on the peripheral); owner: module
+# UNCHECKED: vdda_op_dac: Analog operating voltage, DAC used (DS p.90, Table 12. General operating conditions, VDDA, DAC used); minimum applies only when the DAC is used; owner: module (check VDDA against this row when DAC is used)
+# UNCHECKED: vdda_op_opamp: Analog operating voltage, OPAMP used (DS p.90, Table 12. General operating conditions, VDDA, OPAMP used); minimum applies only when the OPAMP is used; owner: module (check VDDA against this row when OPAMP is used)
+# UNCHECKED: vdda_op_vrefbuf: Analog operating voltage, VREFBUF used (DS p.90, Table 12. General operating conditions, VDDA, VREFBUF used); minimum applies only when the VREFBUF is used; owner: module (check VDDA against this row when VREFBUF is used)
+# UNCHECKED: vdda_op_none: Analog operating voltage, ADC, DAC, OPAMP, COMP, VREFBUF not used (DS p.90, Table 12. General operating conditions, VDDA, not used); covered by vdda_op_adc (0 V minimum is looser; the ADC row is checked on VDDA)
+# UNCHECKED: vin_tt_op: I/O input voltage, TT_xx I/O except Pxy_C (DS p.90, Table 12. General operating conditions, VIN, TT_xx I/O except Pxy_C); GPIO: bidirectional, direction set by firmware; FT/TT limits in the data; owner: module
+# UNCHECKED: vin_pxyc_op: I/O input voltage, Pxy_C I/O (DS p.90, Table 12. General operating conditions, VIN, Pxy_C I/O); GPIO: bidirectional, direction set by firmware; FT/TT limits in the data; owner: module
+# UNCHECKED: vin_boot0_op: I/O input voltage, BOOT0 (DS p.90, Table 12. General operating conditions, VIN, BOOT0); same span as abs_vin_boot0 (checked)
+# UNCHECKED: vin_other_op: I/O input voltage, all I/Os except BOOT0, TT_xx and Pxy_C (DS p.90, Table 12. General operating conditions, VIN, All I/Os except BOOT0, TT_xx and Pxy_C); GPIO: bidirectional, direction set by firmware; FT/TT limits in the data; owner: module
+# UNCHECKED: vcore_ldo_vos3: VCORE, internal regulator ON (LDO), VOS3 (DS p.90, Table 12. General operating conditions, VCORE, LDO ON, VOS3); VCORE is an internal node set by the LDO on the VCAP pins; owner: module
+# UNCHECKED: vcore_ldo_vos2: VCORE, internal regulator ON (LDO), VOS2 (DS p.90, Table 12. General operating conditions, VCORE, LDO ON, VOS2); VCORE is an internal node set by the LDO on the VCAP pins; owner: module
+# UNCHECKED: vcore_ldo_vos1: VCORE, internal regulator ON (LDO), VOS1 (DS p.90, Table 12. General operating conditions, VCORE, LDO ON, VOS1); VCORE is an internal node set by the LDO on the VCAP pins; owner: module
+# UNCHECKED: vcore_ldo_vos0: VCORE, internal regulator ON (LDO), VOS0 (DS p.90, Table 12. General operating conditions, VCORE, LDO ON, VOS0); VCORE is an internal node set by the LDO on the VCAP pins; owner: module
+# UNCHECKED: vcore_ext_vos3: VCORE, regulator OFF (external supply on VCAP), VOS3 (DS p.90, Table 12. General operating conditions, VCORE, regulator OFF, VOS3); VCORE supplied externally on VCAP pins; owner: module
+# UNCHECKED: vcore_ext_vos2: VCORE, regulator OFF (external supply on VCAP), VOS2 (DS p.90, Table 12. General operating conditions, VCORE, regulator OFF, VOS2); VCORE supplied externally on VCAP pins; owner: module
+# UNCHECKED: vcore_ext_vos1: VCORE, regulator OFF (external supply on VCAP), VOS1 (DS p.90, Table 12. General operating conditions, VCORE, regulator OFF, VOS1); VCORE supplied externally on VCAP pins; owner: module
+# UNCHECKED: vcore_ext_vos0: VCORE, regulator OFF (external supply on VCAP), VOS0 (DS p.90, Table 12. General operating conditions, VCORE, regulator OFF, VOS0); VCORE supplied externally on VCAP pins; owner: module
+# UNCHECKED: fcpu_vos3: Arm Cortex-M7 clock frequency, VOS3 (DS p.90-91, Table 12. General operating conditions, fCPU, VOS3); clock frequency limit, not a voltage or temperature check; owner: module
+# UNCHECKED: fcpu_vos2: Arm Cortex-M7 clock frequency, VOS2 (DS p.90-91, Table 12. General operating conditions, fCPU, VOS2); clock frequency limit, not a voltage or temperature check; owner: module
+# UNCHECKED: fcpu_vos1: Arm Cortex-M7 clock frequency, VOS1 (DS p.90-91, Table 12. General operating conditions, fCPU, VOS1); clock frequency limit, not a voltage or temperature check; owner: module
+# UNCHECKED: fcpu_vos0: Arm Cortex-M7 clock frequency, VOS0 (DS p.90-91, Table 12. General operating conditions, fCPU, VOS0); clock frequency limit, not a voltage or temperature check; owner: module
+# UNCHECKED: fcpu_boost: Arm Cortex-M7 clock frequency, VOS0 and CPU_FREQ_BOOST (DS p.90-91, Table 12. General operating conditions, fCPU, VOS0 and CPU_FREQ_BOOST); clock frequency limit, not a voltage or temperature check; owner: module
+# UNCHECKED: faclk_vos3: AXI clock frequency, VOS3 (DS p.90-91, Table 12. General operating conditions, fACLK, VOS3); clock frequency limit, not a voltage or temperature check; owner: module
+# UNCHECKED: faclk_vos2: AXI clock frequency, VOS2 (DS p.90-91, Table 12. General operating conditions, fACLK, VOS2); clock frequency limit, not a voltage or temperature check; owner: module
+# UNCHECKED: faclk_vos1: AXI clock frequency, VOS1 (DS p.90-91, Table 12. General operating conditions, fACLK, VOS1); clock frequency limit, not a voltage or temperature check; owner: module
+# UNCHECKED: faclk_vos0: AXI clock frequency, VOS0 (DS p.90-91, Table 12. General operating conditions, fACLK, VOS0); clock frequency limit, not a voltage or temperature check; owner: module
+# UNCHECKED: fhclk_vos3: AHB clock frequency, VOS3 (DS p.90-91, Table 12. General operating conditions, fHCLK, VOS3); clock frequency limit, not a voltage or temperature check; owner: module
+# UNCHECKED: fhclk_vos2: AHB clock frequency, VOS2 (DS p.90-91, Table 12. General operating conditions, fHCLK, VOS2); clock frequency limit, not a voltage or temperature check; owner: module
+# UNCHECKED: fhclk_vos1: AHB clock frequency, VOS1 (DS p.90-91, Table 12. General operating conditions, fHCLK, VOS1); clock frequency limit, not a voltage or temperature check; owner: module
+# UNCHECKED: fhclk_vos0: AHB clock frequency, VOS0 (DS p.90-91, Table 12. General operating conditions, fHCLK, VOS0); clock frequency limit, not a voltage or temperature check; owner: module
+# UNCHECKED: fpclk_vos3: APB clock frequency, VOS3 (DS p.90-91, Table 12. General operating conditions, fPCLK, VOS3); clock frequency limit, not a voltage or temperature check; owner: module
+# UNCHECKED: fpclk_vos2: APB clock frequency, VOS2 (DS p.90-91, Table 12. General operating conditions, fPCLK, VOS2); clock frequency limit, not a voltage or temperature check; owner: module
+# UNCHECKED: fpclk_vos1: APB clock frequency, VOS1 (DS p.90-91, Table 12. General operating conditions, fPCLK, VOS1); clock frequency limit, not a voltage or temperature check; owner: module
+# UNCHECKED: fpclk_vos0: APB clock frequency, VOS0 (DS p.90-91, Table 12. General operating conditions, fPCLK, VOS0); clock frequency limit, not a voltage or temperature check; owner: module
+# UNCHECKED: ta_range6_lowpower: Ambient temperature for temperature range 6, low-power dissipation (DS p.91, Table 12. General operating conditions, TA, temperature range 6, low-power dissipation (footnote 7)); covered by ta_range6_max_power (105 degC is looser); the low-power state is a module decision; owner: module
+# UNCHECKED: ta_range3: Ambient temperature for temperature range 3 (DS p.91, Table 12. General operating conditions, TA, temperature range 3); covered by ta_range6_max_power: range 3 is a different ordering suffix, not this part (suffix 6)
+# UNCHECKED: cext_vcap: Capacitance of external capacitor on VCAP (DS p.92, Table 14. VCAP operating conditions, CEXT (notes 1, 2, 3)); capacitor on VCAP pins, a part-driven rating; owner: module
+# UNCHECKED: esr_vcap: ESR of external capacitor on VCAP (DS p.92, Table 14. VCAP operating conditions, ESR); capacitor property, not a pin voltage; owner: module
+# UNCHECKED: tvdd_rise: VDD rise time rate (DS p.93, Table 15. Operating conditions at power-up/power-down, tVDD, rise); power-up timing; owner: module
+# UNCHECKED: tvdd_fall: VDD fall time rate (DS p.93, Table 15. Operating conditions at power-up/power-down, tVDD, fall); power-up/power-down timing; owner: module
+# UNCHECKED: tvdda_rise: VDDA rise time rate (DS p.93, Table 15. Operating conditions at power-up/power-down, tVDDA, rise); power-up timing; owner: module
+# UNCHECKED: tvdda_fall: VDDA fall time rate (DS p.93, Table 15. Operating conditions at power-up/power-down, tVDDA, fall); power-up/power-down timing; owner: module
+# UNCHECKED: tvddusb_rise: VDDUSB rise time rate (DS p.93, Table 15. Operating conditions at power-up/power-down, tVDDUSB, rise); power-up timing; owner: module
+# UNCHECKED: tvddusb_fall: VDDUSB fall time rate (DS p.93, Table 15. Operating conditions at power-up/power-down, tVDDUSB, fall); power-up/power-down timing; owner: module
+# UNCHECKED: tvcore_rise: VCORE rise time rate (external VCORE supply only) (DS p.93, Table 15. Operating conditions at power-up/power-down, tVCORE, rise (notes 1, 2)); power-up timing; owner: module
+# UNCHECKED: tvcore_fall: VCORE fall time rate (DS p.93, Table 15. Operating conditions at power-up/power-down, tVCORE, fall); power-up/power-down timing; owner: module
+# UNCHECKED: lu_static_class: Static latch-up class (DS p.125, 6.3.14 Absolute maximum ratings (electrical sensitivity), Table 49. Electrical sensitivities, LU); owner: assembly
+# UNCHECKED: adc16_vdda: Analog supply voltage for ADC ON (DS p.162, Table 80. 16-bit ADC characteristics, VDDA); same span as vdda_op_adc (checked, 1.62-3.6 V)
+# UNCHECKED: adc16_vref_plus_lt2: Positive reference voltage, VDDA < 2 V (DS p.162, Table 80. 16-bit ADC characteristics, VREF+ (VDDA < 2 V row)); covered by adc16_vref_plus_ge2 (same VREF+ <= VDDA bound); for VDDA < 2 V the DS requires VREF+ = VDDA (owner: module)
+# UNCHECKED: adc16_vref_minus: Negative reference voltage (DS p.162, Table 80. 16-bit ADC characteristics, VREF-); text rating (VREF- = VSSA); owner: module
+# UNCHECKED: adc16_fadc_boost11: ADC clock frequency, BOOST = 11 (DS p.163, Table 80. 16-bit ADC characteristics, fADC, BOOST = 11); not a voltage; owner: module
+# UNCHECKED: adc16_fadc_boost10: ADC clock frequency, BOOST = 10 (DS p.163, Table 80. 16-bit ADC characteristics, fADC, BOOST = 10); not a voltage; owner: module
+# UNCHECKED: adc16_fadc_boost01: ADC clock frequency, BOOST = 01 (DS p.163, Table 80. 16-bit ADC characteristics, fADC, BOOST = 01); not a voltage; owner: module
+# UNCHECKED: adc16_fadc_boost00: ADC clock frequency, BOOST = 00 (DS p.163, Table 80. 16-bit ADC characteristics, fADC, BOOST = 00); not a voltage; owner: module
+# UNCHECKED: adc16_vain: Conversion voltage range (DS p.163, Table 80. 16-bit ADC characteristics, VAIN, Conversion voltage range); GPIO analog input: pin assignment set by firmware; owner: module
+# UNCHECKED: adc16_vcmiv: Common mode input voltage (DS p.163, Table 80. 16-bit ADC characteristics, VCMIV, Common mode input voltage); GPIO analog input: pin assignment set by firmware; owner: module
+# UNCHECKED: adc12_vdda: Analog power supply for ADC ON (DS p.171, Table 83. 12-bit ADC characteristics, VDDA); same span as vdda_op_adc (checked, 1.62-3.6 V)
+# UNCHECKED: adc12_vref_plus: Positive reference voltage (DS p.171, Table 83. 12-bit ADC characteristics, VREF+); covered by adc16_vref_plus_ge2 (same limits)
+# UNCHECKED: adc12_vref_minus: Negative reference voltage (DS p.171, Table 83. 12-bit ADC characteristics, VREF-); text rating (VREF- = VSSA); owner: module
+# UNCHECKED: adc12_fadc: ADC clock frequency (adc_ker_ck) (DS p.171, Table 83. 12-bit ADC characteristics, fADC, ADC clock frequency); not a voltage; owner: module
+# UNCHECKED: adc12_vain: Conversion voltage range (DS p.172, Table 83. 12-bit ADC characteristics, VAIN, Conversion voltage range); GPIO analog input: pin assignment set by firmware; owner: module
+# UNCHECKED: adc12_vcmiv: Common mode input voltage (DS p.172, Table 83. 12-bit ADC characteristics, VCMIV, Common mode input voltage); GPIO analog input: pin assignment set by firmware; owner: module
+# UNCHECKED: vrefbuf_vdda_normal_v000: VREFBUF input VDDA range, normal mode, VSCALE = 000 (DS p.181, Table 88. VREFBUF characteristics, VDDA, Normal mode, VSCALE = 000); range set by VSCALE (firmware); owner: module
+# UNCHECKED: vrefbuf_vdda_normal_v001: VREFBUF input VDDA range, normal mode, VSCALE = 001 (DS p.181, Table 88. VREFBUF characteristics, VDDA, Normal mode, VSCALE = 001); range set by VSCALE (firmware); owner: module
+# UNCHECKED: vrefbuf_vdda_normal_v010: VREFBUF input VDDA range, normal mode, VSCALE = 010 (DS p.181, Table 88. VREFBUF characteristics, VDDA, Normal mode, VSCALE = 010); range set by VSCALE (firmware); owner: module
+# UNCHECKED: vrefbuf_vdda_normal_v011: VREFBUF input VDDA range, normal mode, VSCALE = 011 (DS p.181, Table 88. VREFBUF characteristics, VDDA, Normal mode, VSCALE = 011); range set by VSCALE (firmware); owner: module
+# UNCHECKED: vrefbuf_vdda_degraded_v000: VREFBUF input VDDA range, degraded mode, VSCALE = 000 (DS p.181, Table 88. VREFBUF characteristics, VDDA, Degraded mode, VSCALE = 000); range set by VSCALE (firmware); owner: module
+# UNCHECKED: vrefbuf_vdda_degraded_v001: VREFBUF input VDDA range, degraded mode, VSCALE = 001 (DS p.181, Table 88. VREFBUF characteristics, VDDA, Degraded mode, VSCALE = 001); range set by VSCALE (firmware); owner: module
+# UNCHECKED: vrefbuf_vdda_degraded_v010: VREFBUF input VDDA range, degraded mode, VSCALE = 010 (DS p.181, Table 88. VREFBUF characteristics, VDDA, Degraded mode, VSCALE = 010); range set by VSCALE (firmware); owner: module
+# UNCHECKED: vrefbuf_vdda_degraded_v011: VREFBUF input VDDA range, degraded mode, VSCALE = 011 (DS p.181, Table 88. VREFBUF characteristics, VDDA, Degraded mode, VSCALE = 011); range set by VSCALE (firmware); owner: module
+
+# Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
+# GND can drive them; ground-named pins are Ground.
+# pin 1 PE2, bidirectional: I/O structure FT_h. TRACECLK, SAI1_CK1, ETH_MII_TXD3, FMC_A23
+PE2 = io(Net)
+# pin 2 PE3, bidirectional: I/O structure FT_h
+PE3 = io(Net)
+# pin 3 PE4, bidirectional: I/O structure FT_h. DCMI_D4/PSSI_D4, LCD_B0
+PE4 = io(Net)
+# pin 4 PE5, bidirectional: I/O structure FT_h. DCMI_D6/PSSI_D6, LCD_G0
+PE5 = io(Net)
+# pin 5 PE6, bidirectional: I/O structure FT_h. DCMI_D7/PSSI_D7, LCD_G1
+PE6 = io(Net)
+# pin 6 VBAT, power_in: Backup domain supply, 1.2 V to 3.6 V (Table 12 note 2: min 0 V if VDD present)
+VBAT = io(Net)
+# pin 7 PC13, bidirectional: I/O structure FT. RTC_TAMP1/RTC_TS, WKUP4. Errata 2.2.6 (LSE disturbed by PC13 transitions)
+PC13 = io(Net)
+# pin 8 PC14-OSC32_IN, bidirectional: I/O structure FT. OSC32_IN (LSE oscillator input, function after reset is GPIO)
+PC14_OSC32_IN = io(Net)
+# pin 9 PC15-OSC32_OUT, bidirectional: I/O structure FT. OSC32_OUT (LSE oscillator output, function after reset is GPIO)
+PC15_OSC32_OUT = io(Net)
+# pin 10 PF0, bidirectional: I/O structure FT_fh. I2C2_SDA, OCTOSPIM_P2_IO0
+PF0 = io(Net)
+# pin 11 PF1, bidirectional: I/O structure FT_fh. I2C2_SCL, OCTOSPIM_P2_IO1
+PF1 = io(Net)
+# pin 12 PF2, bidirectional: I/O structure FT_h. I2C2_SMBA
+PF2 = io(Net)
+# pin 13 PF3, bidirectional: I/O structure FT_ha. ADC3_INP5
+PF3 = io(Net)
+# pin 14 PF4, bidirectional: I/O structure FT_ha. ADC3_INN5, ADC3_INP9
+PF4 = io(Net)
+# pin 15 PF5, bidirectional: I/O structure FT_ha. ADC3_INP4
+PF5 = io(Net)
+# pin 16 VSS, power_in: Ground
+# pin 38 VSS, power_in: Ground
+# pin 51 VSS, power_in: Ground
+# pin 61 VSS, power_in: Ground
+# pin 83 VSS, power_in: Ground
+# pin 94 VSS, power_in: Ground
+# pin 107 VSS, power_in: Ground
+# pin 120 VSS, power_in: Ground
+# pin 130 VSS, power_in: Ground
+VSS = io(Ground)
+# pin 17 VDD, power_in: Digital supply, 1.62 V to 3.6 V (Table 12)
+# pin 30 VDD, power_in: Digital supply
+# pin 39 VDD, power_in: Digital supply
+# pin 52 VDD, power_in: Digital supply
+# pin 62 VDD, power_in: Digital supply
+# pin 72 VDD, power_in: Digital supply
+# pin 84 VDD, power_in: Digital supply
+# pin 108 VDD, power_in: Digital supply
+# pin 121 VDD, power_in: Digital supply
+# pin 131 VDD, power_in: Digital supply
+# pin 144 VDD, power_in: Digital supply
+VDD = io(Net)
+# pin 18 PF6, bidirectional: I/O structure FT_ha. ADC3_INN4, ADC3_INP8
+PF6 = io(Net)
+# pin 19 PF7, bidirectional: I/O structure FT_ha. ADC3_INP3
+PF7 = io(Net)
+# pin 20 PF8, bidirectional: I/O structure FT_ha. ADC3_INN3, ADC3_INP7
+PF8 = io(Net)
+# pin 21 PF9, bidirectional: I/O structure FT_ha. ADC3_INP2
+PF9 = io(Net)
+# pin 22 PF10, bidirectional: I/O structure FT_ha. ADC3_INN2, ADC3_INP6
+PF10 = io(Net)
+# pin 23 PH0-OSC_IN, bidirectional: I/O structure FT. OSC_IN (HSE oscillator input, function after reset is GPIO)
+PH0_OSC_IN = io(Net)
+# pin 24 PH1-OSC_OUT, bidirectional: I/O structure FT. OSC_OUT (HSE oscillator output, function after reset is GPIO)
+PH1_OSC_OUT = io(Net)
+# pin 25 NRST, bidirectional: I/O structure RST. Reset input, active low (DS Table 7, I/O structure RST); bidirectional (open-drain reset output)
+NRST = io(Net)
+# pin 26 PC0, bidirectional: I/O structure FT_ha. ADC123_INP10
+PC0 = io(Net)
+# pin 27 PC1, bidirectional: I/O structure FT_ha. ADC123_INN10, ADC123_INP11, RTC_TAMP3, WKUP6
+PC1 = io(Net)
+# pin 28 PC2_C, bidirectional: I/O structure TT_a. Pxy_C analog-switch pin (DS note 1): DS pin type ANA, I/O structure TT_a. ADC3_INN1, ADC3_INP0
+PC2_C = io(Net)
+# pin 29 PC3_C, bidirectional: I/O structure TT_a. Pxy_C analog-switch pin (DS note 1): DS pin type ANA, I/O structure TT_a. ADC3_INP1
+PC3_C = io(Net)
+# pin 31 VSSA, power_in: Analog ground
+VSSA = io(Ground)
+# pin 32 VREF+, power_in: Analog reference positive, VREF+ (ADC/DAC reference)
+VREF_P = io(Net)
+# pin 33 VDDA, power_in: Analog supply
+VDDA = io(Net)
+# pin 34 PA0, bidirectional: I/O structure FT_ha. ADC1_INP16, WKUP1
+PA0 = io(Net)
+# pin 35 PA1, bidirectional: I/O structure FT_ha. ADC1_INN16, ADC1_INP17
+PA1 = io(Net)
+# pin 36 PA2, bidirectional: I/O structure FT_ha. ADC12_INP14, WKUP2
+PA2 = io(Net)
+# pin 37 PA3, bidirectional: I/O structure FT_ha. ADC12_INP15
+PA3 = io(Net)
+# pin 40 PA4, bidirectional: I/O structure TT_ha. ADC12_INP18, DAC1_OUT1
+PA4 = io(Net)
+# pin 41 PA5, bidirectional: I/O structure TT_ha. ADC12_INN18, ADC12_INP19, DAC1_OUT2
+PA5 = io(Net)
+# pin 42 PA6, bidirectional: I/O structure FT_ha. ADC12_INP3
+PA6 = io(Net)
+# pin 43 PA7, bidirectional: I/O structure TT_ha. ADC12_INN3, ADC12_INP7, OPAMP1_VINM
+PA7 = io(Net)
+# pin 44 PC4, bidirectional: I/O structure TT_ha. ADC12_INP4, OPAMP1_VOUT, COMP1_INM
+PC4 = io(Net)
+# pin 45 PC5, bidirectional: I/O structure TT_ha. ADC12_INN4, ADC12_INP8, OPAMP1_VINM, COMP1_OUT
+PC5 = io(Net)
+# pin 46 PB0, bidirectional: I/O structure TT_ha. ADC12_INN5, ADC12_INP9, OPAMP1_VINP, COMP1_INP
+PB0 = io(Net)
+# pin 47 PB1, bidirectional: I/O structure FT_ha. ADC12_INP5, COMP1_INM
+PB1 = io(Net)
+# pin 48 PB2, bidirectional: I/O structure FT_ha. COMP1_INP
+PB2 = io(Net)
+# pin 49 PF11, bidirectional: I/O structure FT_ha. ADC1_INP2
+PF11 = io(Net)
+# pin 50 PF12, bidirectional: I/O structure FT_ha. ADC1_INN2, ADC1_INP6
+PF12 = io(Net)
+# pin 53 PF13, bidirectional: I/O structure FT_ha. ADC2_INP2
+PF13 = io(Net)
+# pin 54 PF14, bidirectional: I/O structure FT_fha. ADC2_INN2, ADC2_INP6
+PF14 = io(Net)
+# pin 55 PF15, bidirectional: I/O structure FT_fh
+PF15 = io(Net)
+# pin 56 PG0, bidirectional: I/O structure FT_h
+PG0 = io(Net)
+# pin 57 PG1, bidirectional: I/O structure TT_h. OPAMP2_VINM
+PG1 = io(Net)
+# pin 58 PE7, bidirectional: I/O structure TT_ha. OPAMP2_VOUT, COMP2_INM
+PE7 = io(Net)
+# pin 59 PE8, bidirectional: I/O structure TT_ha. OPAMP2_VINM, COMP2_OUT
+PE8 = io(Net)
+# pin 60 PE9, bidirectional: I/O structure TT_ha. OPAMP2_VINP, COMP2_INP
+PE9 = io(Net)
+# pin 63 PE10, bidirectional: I/O structure FT_ha. COMP2_INM
+PE10 = io(Net)
+# pin 64 PE11, bidirectional: I/O structure FT_ha. COMP2_INP
+PE11 = io(Net)
+# pin 65 PE12, bidirectional: I/O structure FT_h
+PE12 = io(Net)
+# pin 66 PE13, bidirectional: I/O structure FT_h. COMP2_OUT
+PE13 = io(Net)
+# pin 67 PE14, bidirectional: I/O structure FT_h
+PE14 = io(Net)
+# pin 68 PE15, bidirectional: I/O structure FT_h
+PE15 = io(Net)
+# pin 69 PB10, bidirectional: I/O structure FT_fh
+PB10 = io(Net)
+# pin 70 PB11, bidirectional: I/O structure FT_f
+PB11 = io(Net)
+# pin 71 VCAP, passive: Regulator capacitor pin. Core regulator output; external 2.2 uF capacitor (Table 14). Pin 71 and pin 106 are both VCAP (DS note 3: connect all VCAP pins)
+# pin 106 VCAP, passive: Regulator capacitor pin. Core regulator output; second VCAP pin, see pin 71
+VCAP = io(Net)
+# pin 73 PB12, bidirectional: I/O structure FT_h
+PB12 = io(Net)
+# pin 74 PB13, bidirectional: I/O structure FT_h
+PB13 = io(Net)
+# pin 75 PB14, bidirectional: I/O structure FT_h
+PB14 = io(Net)
+# pin 76 PB15, bidirectional: I/O structure FT_h. RTC_REFIN
+PB15 = io(Net)
+# pin 77 PD8, bidirectional: I/O structure FT_h
+PD8 = io(Net)
+# pin 78 PD9, bidirectional: I/O structure FT_h
+PD9 = io(Net)
+# pin 79 PD10, bidirectional: I/O structure FT_h
+PD10 = io(Net)
+# pin 80 PD11, bidirectional: I/O structure FT_h
+PD11 = io(Net)
+# pin 81 PD12, bidirectional: I/O structure FT_fh
+PD12 = io(Net)
+# pin 82 PD13, bidirectional: I/O structure FT_fh
+PD13 = io(Net)
+# pin 85 PD14, bidirectional: I/O structure FT_h
+PD14 = io(Net)
+# pin 86 PD15, bidirectional: I/O structure FT_h
+PD15 = io(Net)
+# pin 87 PG2, bidirectional: I/O structure FT_h
+PG2 = io(Net)
+# pin 88 PG3, bidirectional: I/O structure FT_h
+PG3 = io(Net)
+# pin 89 PG4, bidirectional: I/O structure FT_h
+PG4 = io(Net)
+# pin 90 PG5, bidirectional: I/O structure FT_h
+PG5 = io(Net)
+# pin 91 PG6, bidirectional: I/O structure FT_h
+PG6 = io(Net)
+# pin 92 PG7, bidirectional: I/O structure FT_h
+PG7 = io(Net)
+# pin 93 PG8, bidirectional: I/O structure FT_h
+PG8 = io(Net)
+# pin 95 VDD33USB, power_in: USB supply, 3.0 V to 3.6 V when USB is used; 0 V to 3.6 V when not used (Table 12)
+VDD33USB = io(Net)
+# pin 96 PC6, bidirectional: I/O structure FT_h. SWPMI_IO
+PC6 = io(Net)
+# pin 97 PC7, bidirectional: I/O structure FT_h
+PC7 = io(Net)
+# pin 98 PC8, bidirectional: I/O structure FT_h
+PC8 = io(Net)
+# pin 99 PC9, bidirectional: I/O structure FT_fh
+PC9 = io(Net)
+# pin 100 PA8, bidirectional: I/O structure FT_fh
+PA8 = io(Net)
+# pin 101 PA9, bidirectional: I/O structure FT_u. OTG_HS_VBUS
+PA9 = io(Net)
+# pin 102 PA10, bidirectional: I/O structure FT_u
+PA10 = io(Net)
+# pin 103 PA11, bidirectional: I/O structure FT_u. OTG_HS_DM (boot)
+PA11 = io(Net)
+# pin 104 PA12, bidirectional: I/O structure FT_u. OTG_HS_DP (boot)
+PA12 = io(Net)
+# pin 105 PA13, bidirectional: I/O structure FT. JTMS/SWDIO
+PA13 = io(Net)
+# pin 109 PA14, bidirectional: I/O structure FT. JTCK/SWCLK
+PA14 = io(Net)
+# pin 110 PA15, bidirectional: I/O structure FT. JTDI
+PA15 = io(Net)
+# pin 111 PC10, bidirectional: I/O structure FT_fh
+PC10 = io(Net)
+# pin 112 PC11, bidirectional: I/O structure FT_fh
+PC11 = io(Net)
+# pin 113 PC12, bidirectional: I/O structure FT_h
+PC12 = io(Net)
+# pin 114 PD0, bidirectional: I/O structure FT_h
+PD0 = io(Net)
+# pin 115 PD1, bidirectional: I/O structure FT_h
+PD1 = io(Net)
+# pin 116 PD2, bidirectional: I/O structure FT_h
+PD2 = io(Net)
+# pin 117 PD3, bidirectional: I/O structure FT_h
+PD3 = io(Net)
+# pin 118 PD4, bidirectional: I/O structure FT_h
+PD4 = io(Net)
+# pin 119 PD5, bidirectional: I/O structure FT_h
+PD5 = io(Net)
+# pin 122 PD6, bidirectional: I/O structure FT_h
+PD6 = io(Net)
+# pin 123 PD7, bidirectional: I/O structure FT_h
+PD7 = io(Net)
+# pin 124 PG9, bidirectional: I/O structure FT_h
+PG9 = io(Net)
+# pin 125 PG10, bidirectional: I/O structure FT_h
+PG10 = io(Net)
+# pin 126 PG11, bidirectional: I/O structure FT_h
+PG11 = io(Net)
+# pin 127 PG12, bidirectional: I/O structure FT_h
+PG12 = io(Net)
+# pin 128 PG13, bidirectional: I/O structure FT_h
+PG13 = io(Net)
+# pin 129 PG14, bidirectional: I/O structure FT_h
+PG14 = io(Net)
+# pin 132 PG15, bidirectional: I/O structure FT_h
+PG15 = io(Net)
+# pin 133 PB3, bidirectional: I/O structure FT_h. JTDO/TRACESWO
+PB3 = io(Net)
+# pin 134 PB4, bidirectional: I/O structure FT_h. NJTRST
+PB4 = io(Net)
+# pin 135 PB5, bidirectional: I/O structure FT_h
+PB5 = io(Net)
+# pin 136 PB6, bidirectional: I/O structure FT_fh
+PB6 = io(Net)
+# pin 137 PB7, bidirectional: I/O structure FT_fa. PVD_IN
+PB7 = io(Net)
+# pin 138 BOOT0, input: I/O structure B. Boot mode select input; VPP (Table 7 additional functions)
+BOOT0 = io(Net)
+# pin 139 PB8, bidirectional: I/O structure FT_fh
+PB8 = io(Net)
+# pin 140 PB9, bidirectional: I/O structure FT_fh
+PB9 = io(Net)
+# pin 141 PE0, bidirectional: I/O structure FT_h
+PE0 = io(Net)
+# pin 142 PE1, bidirectional: I/O structure FT_h
+PE1 = io(Net)
+# pin 143 PDR_ON, input: I/O structure S. Power-down reset disable input (DS Table 7 pin type S); configuration pin tied to VDD or VSS
+PDR_ON = io(Net)
+
+ambient = config(Temperature, optional=True, help="Board ambient temperature range")
+derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+waive_vbat_op = config(str, default="", help="Rationale with a cite for violating vbat_op")
+waive_adc16_vref_plus_ge2 = config(str, default="", help="Rationale with a cite for violating adc16_vref_plus_ge2")
+
+_ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
+check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
+
+
+def _limit(name, fn, inputs, severity, waiver=""):
+    # Unset input: UNVERIFIED warning, never a silent pass. Waiver drops a warning to advice.
+    if waiver and severity != "warning":
+        error("only warning-level checks can be waived: " + name)
+    unset = [k for k, v in inputs.items() if v == None]
+    if unset:
+
+        def _unverified(_m):
+            error("UNVERIFIED " + name + ": no value for " + ", ".join(unset))
+
+        builtin.add_electrical_check(name=name, check_fn=_unverified, severity="advice" if _ROOT else "warning")
+    else:
+        builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
+
+
+def _range(_m, v, what, lo=None, hi=None, lo_ref=None, hi_ref=None):
+    # Worst case: v.min >= lo + lo_ref.max and v.max <= hi + hi_ref.min (narrowest window). No ref = absolute.
+    lo_b = None if lo == None else lo + (0.0 if lo_ref == None else lo_ref.max)
+    hi_b = None if hi == None else hi + (0.0 if hi_ref == None else hi_ref.min)
+    ok = (lo_b == None or v.min >= lo_b) and (hi_b == None or v.max <= hi_b)
+    lo_t = "no limit" if lo_b == None else "%s V" % lo_b
+    hi_t = "no limit" if hi_b == None else "%s V" % hi_b
+    check(ok, "%s: %s to %s V outside %s to %s" % (what, v.min, v.max, lo_t, hi_t))
+
+
+def _temp(_m, v, what, lo, hi):
+    # Temperatures are kelvin floats in Zener; messages in degC.
+    ok = v.min >= lo and v.max <= hi
+    msg = "%s: %s to %s degC outside %s to %s degC"
+    check(ok, msg % (what, v.min - 273.15, v.max - 273.15, lo - 273.15, hi - 273.15))
+
+
+# abs_vddx_vss_VBAT: pin VBAT (VBAT) within the limit, x derate
+#   External main supply voltage (VDD, VDDLDO, VDDA, VDD33USB, VBAT): min -0.3 / max 4.0 V (min_ref rel. VSS) (max_ref rel. VSS)
+#   DS p.88, Table 9. Voltage characteristics, VDDX - VSS (note 1)
+#   Severity error: abs_max violated
+_limit(
+    "abs_vddx_vss_VBAT",
+    _range,
+    {
+        "v": VBAT.voltage,
+        "what": "abs_vddx_vss_VBAT",
+        "lo": -0.3 * derate,
+        "lo_ref": VSS.voltage,
+        "hi": 4.0 * derate,
+        "hi_ref": VSS.voltage,
+    },
+    "error",
+)
+
+# abs_vin_boot0_BOOT0: pin BOOT0 (BOOT0) within the limit, x derate
+#   Input voltage on BOOT0 pin: min 0 / max 9.0 V (min_ref rel. VSS) (max_ref rel. VSS)
+#   DS p.88, Table 9. Voltage characteristics, Input voltage on BOOT0 pin
+#   Severity error: abs_max violated
+_limit(
+    "abs_vin_boot0_BOOT0",
+    _range,
+    {
+        "v": BOOT0.voltage,
+        "what": "abs_vin_boot0_BOOT0",
+        "lo": 0.0,
+        "lo_ref": VSS.voltage,
+        "hi": 9.0 * derate,
+        "hi_ref": VSS.voltage,
+    },
+    "error",
+)
+
+# abs_vin_other_NRST: pin NRST (NRST) within the limit, x derate
+#   Input voltage on any other pins (NRST, PDR_ON and others not in the rows above): min -0.3 / max 4.0 V (min_ref rel. VSS) (max_ref rel. VSS)
+#   DS p.88, Table 9. Voltage characteristics, Input voltage on any other pins
+#   Severity error: abs_max violated
+_limit(
+    "abs_vin_other_NRST",
+    _range,
+    {
+        "v": NRST.voltage,
+        "what": "abs_vin_other_NRST",
+        "lo": -0.3 * derate,
+        "lo_ref": VSS.voltage,
+        "hi": 4.0 * derate,
+        "hi_ref": VSS.voltage,
+    },
+    "error",
+)
+
+# abs_vin_other_PDR_ON: pin PDR_ON (PDR_ON) within the limit, x derate
+#   Input voltage on any other pins (NRST, PDR_ON and others not in the rows above): min -0.3 / max 4.0 V (min_ref rel. VSS) (max_ref rel. VSS)
+#   DS p.88, Table 9. Voltage characteristics, Input voltage on any other pins
+#   Severity error: abs_max violated
+_limit(
+    "abs_vin_other_PDR_ON",
+    _range,
+    {
+        "v": PDR_ON.voltage,
+        "what": "abs_vin_other_PDR_ON",
+        "lo": -0.3 * derate,
+        "lo_ref": VSS.voltage,
+        "hi": 4.0 * derate,
+        "hi_ref": VSS.voltage,
+    },
+    "error",
+)
+
+# vdd_op_VDD: pin VDD (VDD) within the limit
+#   Standard operating voltage, VDD: min 1.62 / max 3.6 V (min_ref rel. VSS) (max_ref rel. VSS)
+#   DS p.90, Table 12. General operating conditions, VDD
+#   Severity error: rec_op violated
+_limit(
+    "vdd_op_VDD",
+    _range,
+    {"v": VDD.voltage, "what": "vdd_op_VDD", "lo": 1.62, "lo_ref": VSS.voltage, "hi": 3.6, "hi_ref": VSS.voltage},
+    "error",
+)
+
+# vdd33usb_op_nousb_VDD33USB: pin VDD33USB (VDD33USB) within the limit
+#   Standard operating voltage, USB domain, USB not used: min 0 / max 3.6 V (min_ref rel. VSS) (max_ref rel. VSS)
+#   DS p.90, Table 12. General operating conditions, VDD33USB, USB not used
+#   Conditions: USB not used
+#   Severity error: rec_op violated
+_limit(
+    "vdd33usb_op_nousb_VDD33USB",
+    _range,
+    {
+        "v": VDD33USB.voltage,
+        "what": "vdd33usb_op_nousb_VDD33USB",
+        "lo": 0.0,
+        "lo_ref": VSS.voltage,
+        "hi": 3.6,
+        "hi_ref": VSS.voltage,
+    },
+    "error",
+)
+
+# vdda_op_adc_VDDA: pin VDDA (VDDA) within the limit
+#   Analog operating voltage, ADC or COMP used: min 1.62 / max 3.6 V (min_ref rel. VSSA) (max_ref rel. VSSA)
+#   DS p.90, Table 12. General operating conditions, VDDA, ADC or COMP used
+#   Conditions: ADC or COMP used
+#   Severity error: rec_op violated
+_limit(
+    "vdda_op_adc_VDDA",
+    _range,
+    {
+        "v": VDDA.voltage,
+        "what": "vdda_op_adc_VDDA",
+        "lo": 1.62,
+        "lo_ref": VSSA.voltage,
+        "hi": 3.6,
+        "hi_ref": VSSA.voltage,
+    },
+    "error",
+)
+
+# vbat_op_VBAT: pin VBAT (VBAT) within the limit
+#   Supply voltage for Backup domain: min 1.2 / max 3.6 V (min_ref rel. VSS) (max_ref rel. VSS)
+#   DS p.90, Table 12. General operating conditions, VBAT (footnote 2)
+#   Severity warning: limit holds only at partial (waivable with waive_<check>)
+_limit(
+    "vbat_op_VBAT",
+    _range,
+    {"v": VBAT.voltage, "what": "vbat_op_VBAT", "lo": 1.2, "lo_ref": VSS.voltage, "hi": 3.6, "hi_ref": VSS.voltage},
+    "warning",
+    waive_vbat_op,
+)
+
+# ta_range6_max_power_ambient: board ambient range inside this range
+#   Ambient temperature for temperature range 6, maximum power dissipation: min -40 / max 85 degC
+#   DS p.91, Table 12. General operating conditions, TA, temperature range 6, maximum power dissipation
+#   Conditions: Temperature range 6 (suffix 6), maximum power dissipation
+#   Severity error: rec_op violated
+_limit(
+    "ta_range6_max_power_ambient",
+    _temp,
+    {"v": ambient, "what": "ta_range6_max_power_ambient", "lo": 233.15, "hi": 358.15},
+    "error",
+)
+
+# adc16_vref_plus_ge2_VREF_P: pin VREF+ (VREF_P) within the limit
+#   Positive reference voltage, VDDA >= 2 V: min 1.62 / max 0 V (max_ref rel. VDDA)
+#   DS p.162, Table 80. 16-bit ADC characteristics, VREF+ (VDDA >= 2 V row)
+#   Conditions: VDDA >= 2 V
+#   Severity warning: limit holds only at partial (waivable with waive_<check>)
+_limit(
+    "adc16_vref_plus_ge2_VREF_P",
+    _range,
+    {"v": VREF_P.voltage, "what": "adc16_vref_plus_ge2_VREF_P", "lo": 1.62, "hi": 0.0, "hi_ref": VDDA.voltage},
+    "warning",
+    waive_adc16_vref_plus_ge2,
+)
+
+Component(
+    name="STM32H723ZET6",
+    symbol=Symbol(library="./STM32H723ZET6.kicad_sym"),
+    part=Part(
+        mpn="STM32H723ZET6",
+        manufacturer="STMicroelectronics",
+        datasheet="https://www.st.com/resource/en/datasheet/stm32h723ze.pdf",
+    ),
+    pins={
+        "PE2": PE2,
+        "PE3": PE3,
+        "PE4": PE4,
+        "PE5": PE5,
+        "PE6": PE6,
+        "VBAT": Power(VBAT, voltage=VBAT.voltage),
+        "PC13": PC13,
+        "PC14-OSC32_IN": PC14_OSC32_IN,
+        "PC15-OSC32_OUT": PC15_OSC32_OUT,
+        "PF0": PF0,
+        "PF1": PF1,
+        "PF2": PF2,
+        "PF3": PF3,
+        "PF4": PF4,
+        "PF5": PF5,
+        "VSS": VSS,
+        "VDD": Power(VDD, voltage=VDD.voltage),
+        "PF6": PF6,
+        "PF7": PF7,
+        "PF8": PF8,
+        "PF9": PF9,
+        "PF10": PF10,
+        "PH0-OSC_IN": PH0_OSC_IN,
+        "PH1-OSC_OUT": PH1_OSC_OUT,
+        "NRST": NRST,
+        "PC0": PC0,
+        "PC1": PC1,
+        "PC2_C": PC2_C,
+        "PC3_C": PC3_C,
+        "VSSA": VSSA,
+        "VREF+": Power(VREF_P, voltage=VREF_P.voltage),
+        "VDDA": Power(VDDA, voltage=VDDA.voltage),
+        "PA0": PA0,
+        "PA1": PA1,
+        "PA2": PA2,
+        "PA3": PA3,
+        "PA4": PA4,
+        "PA5": PA5,
+        "PA6": PA6,
+        "PA7": PA7,
+        "PC4": PC4,
+        "PC5": PC5,
+        "PB0": PB0,
+        "PB1": PB1,
+        "PB2": PB2,
+        "PF11": PF11,
+        "PF12": PF12,
+        "PF13": PF13,
+        "PF14": PF14,
+        "PF15": PF15,
+        "PG0": PG0,
+        "PG1": PG1,
+        "PE7": PE7,
+        "PE8": PE8,
+        "PE9": PE9,
+        "PE10": PE10,
+        "PE11": PE11,
+        "PE12": PE12,
+        "PE13": PE13,
+        "PE14": PE14,
+        "PE15": PE15,
+        "PB10": PB10,
+        "PB11": PB11,
+        "VCAP": VCAP,
+        "PB12": PB12,
+        "PB13": PB13,
+        "PB14": PB14,
+        "PB15": PB15,
+        "PD8": PD8,
+        "PD9": PD9,
+        "PD10": PD10,
+        "PD11": PD11,
+        "PD12": PD12,
+        "PD13": PD13,
+        "PD14": PD14,
+        "PD15": PD15,
+        "PG2": PG2,
+        "PG3": PG3,
+        "PG4": PG4,
+        "PG5": PG5,
+        "PG6": PG6,
+        "PG7": PG7,
+        "PG8": PG8,
+        "VDD33USB": Power(VDD33USB, voltage=VDD33USB.voltage),
+        "PC6": PC6,
+        "PC7": PC7,
+        "PC8": PC8,
+        "PC9": PC9,
+        "PA8": PA8,
+        "PA9": PA9,
+        "PA10": PA10,
+        "PA11": PA11,
+        "PA12": PA12,
+        "PA13": PA13,
+        "PA14": PA14,
+        "PA15": PA15,
+        "PC10": PC10,
+        "PC11": PC11,
+        "PC12": PC12,
+        "PD0": PD0,
+        "PD1": PD1,
+        "PD2": PD2,
+        "PD3": PD3,
+        "PD4": PD4,
+        "PD5": PD5,
+        "PD6": PD6,
+        "PD7": PD7,
+        "PG9": PG9,
+        "PG10": PG10,
+        "PG11": PG11,
+        "PG12": PG12,
+        "PG13": PG13,
+        "PG14": PG14,
+        "PG15": PG15,
+        "PB3": PB3,
+        "PB4": PB4,
+        "PB5": PB5,
+        "PB6": PB6,
+        "PB7": PB7,
+        "BOOT0": BOOT0,
+        "PB8": PB8,
+        "PB9": PB9,
+        "PE0": PE0,
+        "PE1": PE1,
+        "PDR_ON": PDR_ON,
+    },
+)

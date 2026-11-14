@@ -39,7 +39,7 @@ class TestUnits(unittest.TestCase):
         self.assertEqual(to_si(35, "ppm"), (35e-6, "1"))
         self.assertEqual(to_si(50, "ppm/degC"), (50e-6, "1/degC"))
 
-    def test_suffixes(self):
+    def test_suffixes_more(self):  # was a second test_suffixes, which shadowed the first
         self.assertEqual(to_si(10, "nV/rtHz"), (1e-8, "V/rtHz"))
         self.assertEqual(to_si(2, "uVpp"), (2e-6, "Vpp"))
         self.assertEqual(to_si(3, "fA/rtHz"), (3e-15, "A/rtHz"))
@@ -50,6 +50,37 @@ class TestUnits(unittest.TestCase):
         self.assertAlmostEqual(to_si(2, "m%")[0], 2e-5)
         self.assertEqual(to_si(7.8125, "mdegC"), (0.0078125, "degC"))
         self.assertEqual(to_si(20, "bits"), (20.0, "bits"))
+
+    def test_per_mhz(self):
+        value, base = to_si(23.4, "uA/MHz")
+        self.assertAlmostEqual(value, 2.34e-11, delta=1e-23)
+        self.assertEqual(base, "A/Hz")
+        value, base = to_si(1.5, "mA/MHz")
+        self.assertAlmostEqual(value, 1.5e-9, delta=1e-21)
+        self.assertEqual(base, "A/Hz")
+
+    def test_per_volt(self):
+        self.assertEqual(to_si(2, "mA/V"), (0.002, "A/V"))
+        self.assertEqual(to_si(5, "uA/V"), (5e-6, "A/V"))
+        self.assertEqual(to_si(100, "us/V"), (1e-4, "s/V"))
+
+    def test_ppm_per_volt(self):
+        self.assertEqual(to_si(50, "ppm/V"), (50e-6, "1/V"))
+
+    def test_uv_per_v_regression(self):
+        self.assertEqual(to_si(1, "uV/V"), (1e-6, "1"))
+        self.assertEqual(to_si(2, "mV/V"), (2e-3, "1"))
+
+    def test_cycles_years(self):
+        self.assertEqual(to_si(10, "cycles"), (10.0, "cycles"))
+        self.assertEqual(to_si(10, "kcycles"), (10000.0, "cycles"))
+        self.assertEqual(to_si(20, "years"), (20.0, "years"))
+
+    def test_eng_new_units(self):
+        self.assertEqual(eng(2.34e-11, "A/Hz"), "23.4 pA/Hz")
+        self.assertEqual(eng(0.002, "A/V"), "2 mA/V")
+        self.assertEqual(eng(1500, "cycles"), "1500 cycles")
+        self.assertEqual(eng(20, "years"), "20 years")
 
     def test_unknown(self):
         for bad in ("furlong", "kohm/rtHz/degC", "Kohm", "kdegC", "pp"):

@@ -1,0 +1,441 @@
+"""TPS48000QDGXQ1: 100 V automotive low-IQ high-side driver with reverse polarity, short-circuit protection and diagnostics, VSSOP-19 (DGX), TPS4800-Q1 data sheet.
+GENERATED from component.toml by `python3 -m lib.zen`; do not edit. Source of truth: component.toml and
+calc.py (numbers, cites, equations). DS: https://www.ti.com/lit/ds/symlink/tps4800-q1.pdf, SLUSEZ1B Rev. B (2026-03).
+Checks are DC steady-state on the voltages each instance declares. They do not cover transients, overshoot,
+hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
+Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
+
+load("@stdlib/units.zen", "Temperature")
+
+# UNCHECKED: abs_src_gnd: SRC voltage to GND (DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, SRC to GND); SRC is the external FET source node; its voltage is set by the external MOSFET and load; owner: module
+# UNCHECKED: abs_gate_bst_src: PU, PD, BST voltage to SRC (DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, PU, PD, BST to SRC); PU, PD and BST are driven by the part (gate driver and charge pump); owner: module
+# UNCHECKED: abs_input_vs_neg: EN/UVLO, OV, INP, CS_SEL voltage (V(VS) <= 0 V) (DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, EN/UVLO, OV, INP, CS_SEL, V(VS) <= 0 V (V(VS) to (70 + V(VS)))); Reverse-polarity condition (V(VS) <= 0 V) is not the normal operating point; the module must keep the input pins within V(VS)..V(VS)+70 V; owner: module
+# UNCHECKED: abs_i_flt_sink: FLT sink current (DS p.5, 5.1 Absolute Maximum Ratings, Sink current, I(FLT)); Current rating, not a voltage check; module must keep V(pull-up) / R(pull-up) < 10 mA; owner: module
+# UNCHECKED: abs_i_cs_1ms: CS+, CS- current, 1 ms (DS p.5, 5.1 Absolute Maximum Ratings, Sink current, I(CS+), I(CS-), 1 msec); Current rating over 1 ms, not a voltage check; owner: module
+# UNCHECKED: abs_gate_out_gnd: PU, PD, G2, BST voltage to GND (DS p.5, 5.1 Absolute Maximum Ratings, Output Pins, PU, PD, G2, BST to GND); PU, PD and BST are driven by the part (see abs_gate_bst_src); owner: module
+# UNCHECKED: tj_abs: Operating junction temperature, Tj (absolute maximum) (DS p.5, 5.1 Absolute Maximum Ratings, Operating junction temperature, Tj); TJ rating; needs dissipation; owner: module
+# UNCHECKED: tstg_abs: Storage temperature, Tstg (DS p.5, 5.1 Absolute Maximum Ratings, Storage temperature, Tstg); Storage temperature; owner: assembly
+# UNCHECKED: esd_hbm: ESD, human body model (DS p.5, 5.2 ESD Ratings, Human body model (HBM), per AEC Q100-002); ESD rating; owner: assembly
+# UNCHECKED: esd_cdm_corner: ESD, charged device model, corner pins (DS p.5, 5.2 ESD Ratings, Charged device model (CDM), Corner pins (EN/UVLO, VS, SCP_TEST)); ESD rating; owner: assembly
+# UNCHECKED: esd_cdm_other: ESD, charged device model, other pins (DS p.5, 5.2 ESD Ratings, Charged device model (CDM), Other pins); ESD rating; owner: assembly
+# UNCHECKED: rec_iscp_bias: External bias voltage on ISCP, maximum (DS p.17, 7.3.3 Short-Circuit Protection, text under the V(SCP_BIAS) equation: 'External bias voltage on ISCP pin should not exceed 3V.'); applies only to an externally biased ISCP; with RISCP the part sets the pin voltage; owner: module
+# UNCHECKED: rec_cap_vs_src: External capacitor, VS and SRC to GND (DS p.5, 5.3 Recommended Operating Conditions, External Capacitor, VS, SRC to GND); Capacitance requirement, not a voltage check; owner: module
+# UNCHECKED: rec_cap_bst_src: External capacitor, BST to SRC (DS p.5, 5.3 Recommended Operating Conditions, External Capacitor, BST to SRC); Capacitance requirement, not a voltage check; owner: module
+# UNCHECKED: rec_tj: Operating junction temperature, Tj (recommended) (DS p.5, 5.3 Recommended Operating Conditions, Tj Operating Junction temperature); TJ rating; needs dissipation; owner: module
+
+# Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
+# GND can drive them; ground-named pins are Ground.
+# pin 1 EN/UVLO, input: Condensed from DS Table 4-1: EN/UVLO input. A voltage higher than 1 V enables normal operation. Below 0.3 V shuts down the device; optionally connect to the input supply through a resistive divider to set the UVLO. Floating: internal pull-down keeps the device in shutdown.
+EN_UVLO = io(Net)
+# pin 2 OV, input: Condensed from DS Table 4-1: Adjustable overvoltage threshold input. Resistor ladder from input supply, OV to GND. Must be connected to GND when not used (internal pull-down holds PU to BST when floating).
+OV = io(Net)
+# pin 3 INP, input: Condensed from DS Table 4-1: Input signal for external discharge FET control. CMOS compatible input referenced to GND that sets the state of PD and PU. Internal weak pull-down to GND.
+INP = io(Net)
+# pin 4 FLT_GD, open_collector: Condensed from DS Table 4-1: Open drain fault output for gate drive UVLO. Asserts low when gate drive across PD to SRC is above 7 V (typ.).
+FLT_GD = io(Net)
+# pin 5 FLT, open_collector: Condensed from DS Table 4-1: Open drain fault output. Asserts low during short circuit fault, input UVLO, overvoltage and during SCP comparator diagnosis. Connect to GND if FLT feature not desired.
+FLT = io(Net)
+# pin 6 GND, power_in: Condensed from DS Table 4-1: Connect GND to system ground. (DS type G, ground)
+GND = io(Ground)
+# pin 7 CS_SEL, input: Condensed from DS Table 4-1: Current sense select input. Connect to ground for high side current sense. Drive above 1.58 V for low side current sensing. Internal weak pull-down to GND.
+CS_SEL = io(Net)
+# pin 8 ISCP, passive: Condensed from DS Table 4-1: Short circuit detection setting. A resistor across ISCP to GND sets the short circuit current comparator threshold (external bias on ISCP is the alternative, DS p.17). Connect ISCP and TMR to GND if short-circuit protection is not desired. DS type I; passive because an external resistor or bias sets the node.
+ISCP = io(Net)
+# pin 9 TMR, passive: Condensed from DS Table 4-1: Fault timer input. A capacitor across TMR to GND sets the times for fault turn-off. Leave open for fastest setting. DS type I; passive because the external capacitor sets the node.
+TMR = io(Net)
+# pin 10 SCP_TEST, input: Condensed from DS Table 4-1: Internal short circuit comparator (SCP) diagnosis input. Driven low to high with INP high checks the SCP comparator; FLT goes low and PD is pulled to SRC if the comparator is functional. Connect to GND if not used. Internal weak pull-down to GND.
+SCP_TEST = io(Net)
+# pin 12 BST, passive: Condensed from DS Table 4-1: High side bootstrapped supply. External capacitor (minimum > Qg(tot) of the external FET) between BST and SRC. DS type O; a charge-pump capacitor node, so passive for schematic capture.
+BST = io(Net)
+# pin 13 SRC, passive: Condensed from DS Table 4-1: Source connection of the external FET. DS type O; the external FET source node, so passive for schematic capture.
+SRC = io(Net)
+# pin 14 PD, passive: Condensed from DS Table 4-1: High current gate driver pull-down. Pulls down to SRC. Tie directly to the gate of the external high side MOSFET for fastest turn-off. DS type O; passive because PU and PD are normally tied together (an output-output pair fails KiCad ERC).
+PD = io(Net)
+# pin 15 PU, passive: Condensed from DS Table 4-1: High current gate driver pull-up. Pulls up to BST. Connect to PD for maximum transition speed. A resistor from PU to the gate controls turn-on inrush. DS type O; passive because PU and PD are normally tied together (an output-output pair fails KiCad ERC).
+PU = io(Net)
+# pin 17 CS-, input: Condensed from DS Table 4-1: Current sense negative input.
+CS_N = io(Net)
+# pin 18 CS+, input: Condensed from DS Table 4-1: Current sense positive input.
+CS_P = io(Net)
+# pin 20 VS, power_in: Condensed from DS Table 4-1: Supply pin of the controller (DS type P, power).
+VS = io(Net)
+# No-connect pins omitted (auto NotConnected): 11 N.C, 19 N.C.
+
+ambient = config(Temperature, optional=True, help="Board ambient temperature range")
+derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+waive_rec_vs_scp_min = config(str, default="", help="Rationale with a cite for violating rec_vs_scp_min")
+
+_ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
+check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
+
+
+def _limit(name, fn, inputs, severity, waiver=""):
+    # Unset input: UNVERIFIED warning, never a silent pass. Waiver drops a warning to advice.
+    if waiver and severity != "warning":
+        error("only warning-level checks can be waived: " + name)
+    unset = [k for k, v in inputs.items() if v == None]
+    if unset:
+
+        def _unverified(_m):
+            error("UNVERIFIED " + name + ": no value for " + ", ".join(unset))
+
+        builtin.add_electrical_check(name=name, check_fn=_unverified, severity="advice" if _ROOT else "warning")
+    else:
+        builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
+
+
+def _range(_m, v, what, lo=None, hi=None, lo_ref=None, hi_ref=None):
+    # Worst case: v.min >= lo + lo_ref.max and v.max <= hi + hi_ref.min (narrowest window). No ref = absolute.
+    lo_b = None if lo == None else lo + (0.0 if lo_ref == None else lo_ref.max)
+    hi_b = None if hi == None else hi + (0.0 if hi_ref == None else hi_ref.min)
+    ok = (lo_b == None or v.min >= lo_b) and (hi_b == None or v.max <= hi_b)
+    lo_t = "no limit" if lo_b == None else "%s V" % lo_b
+    hi_t = "no limit" if hi_b == None else "%s V" % hi_b
+    check(ok, "%s: %s to %s V outside %s to %s" % (what, v.min, v.max, lo_t, hi_t))
+
+
+def _temp(_m, v, what, lo, hi):
+    # Temperatures are kelvin floats in Zener; messages in degC.
+    ok = v.min >= lo and v.max <= hi
+    msg = "%s: %s to %s degC outside %s to %s degC"
+    check(ok, msg % (what, v.min - 273.15, v.max - 273.15, lo - 273.15, hi - 273.15))
+
+
+# abs_vs_cs_gnd_VS: pin VS (VS) within the limit, x derate
+#   VS, CS+, CS- voltage to GND: min -65 / max 100 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, VS, CS+, CS- to GND
+#   Conditions: Absolute maximum, referenced to GND
+#   Severity error: abs_max violated
+_limit(
+    "abs_vs_cs_gnd_VS",
+    _range,
+    {
+        "v": VS.voltage,
+        "what": "abs_vs_cs_gnd_VS",
+        "lo": -65.0 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 100.0 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# abs_vs_cs_gnd_CS_P: pin CS+ (CS_P) within the limit, x derate
+#   VS, CS+, CS- voltage to GND: min -65 / max 100 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, VS, CS+, CS- to GND
+#   Conditions: Absolute maximum, referenced to GND
+#   Severity error: abs_max violated
+_limit(
+    "abs_vs_cs_gnd_CS_P",
+    _range,
+    {
+        "v": CS_P.voltage,
+        "what": "abs_vs_cs_gnd_CS_P",
+        "lo": -65.0 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 100.0 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# abs_vs_cs_gnd_CS_N: pin CS- (CS_N) within the limit, x derate
+#   VS, CS+, CS- voltage to GND: min -65 / max 100 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, VS, CS+, CS- to GND
+#   Conditions: Absolute maximum, referenced to GND
+#   Severity error: abs_max violated
+_limit(
+    "abs_vs_cs_gnd_CS_N",
+    _range,
+    {
+        "v": CS_N.voltage,
+        "what": "abs_vs_cs_gnd_CS_N",
+        "lo": -65.0 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 100.0 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# abs_iscp_tmr_scp_test_SCP_TEST: pin SCP_TEST (SCP_TEST) within the limit, x derate
+#   ISCP, TMR, SCP_TEST voltage to GND: min -0.3 / max 5.5 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, ISCP, TMR, SCP_TEST to GND
+#   Conditions: Absolute maximum, referenced to GND
+#   Severity error: abs_max violated
+_limit(
+    "abs_iscp_tmr_scp_test_SCP_TEST",
+    _range,
+    {
+        "v": SCP_TEST.voltage,
+        "what": "abs_iscp_tmr_scp_test_SCP_TEST",
+        "lo": -0.3 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 5.5 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# abs_input_vs_pos_EN_UVLO: pin EN/UVLO (EN_UVLO) within the limit, x derate
+#   EN/UVLO, OV, INP, CS_SEL voltage (V(VS) > 0 V): min -1 / max 70 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, EN/UVLO, OV, INP, CS_SEL, V(VS) > 0 V
+#   Conditions: V(VS) > 0 V
+#   Severity error: abs_max violated
+_limit(
+    "abs_input_vs_pos_EN_UVLO",
+    _range,
+    {
+        "v": EN_UVLO.voltage,
+        "what": "abs_input_vs_pos_EN_UVLO",
+        "lo": -1.0 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 70.0 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# abs_input_vs_pos_OV: pin OV (OV) within the limit, x derate
+#   EN/UVLO, OV, INP, CS_SEL voltage (V(VS) > 0 V): min -1 / max 70 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, EN/UVLO, OV, INP, CS_SEL, V(VS) > 0 V
+#   Conditions: V(VS) > 0 V
+#   Severity error: abs_max violated
+_limit(
+    "abs_input_vs_pos_OV",
+    _range,
+    {
+        "v": OV.voltage,
+        "what": "abs_input_vs_pos_OV",
+        "lo": -1.0 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 70.0 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# abs_input_vs_pos_INP: pin INP (INP) within the limit, x derate
+#   EN/UVLO, OV, INP, CS_SEL voltage (V(VS) > 0 V): min -1 / max 70 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, EN/UVLO, OV, INP, CS_SEL, V(VS) > 0 V
+#   Conditions: V(VS) > 0 V
+#   Severity error: abs_max violated
+_limit(
+    "abs_input_vs_pos_INP",
+    _range,
+    {
+        "v": INP.voltage,
+        "what": "abs_input_vs_pos_INP",
+        "lo": -1.0 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 70.0 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# abs_input_vs_pos_CS_SEL: pin CS_SEL (CS_SEL) within the limit, x derate
+#   EN/UVLO, OV, INP, CS_SEL voltage (V(VS) > 0 V): min -1 / max 70 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, EN/UVLO, OV, INP, CS_SEL, V(VS) > 0 V
+#   Conditions: V(VS) > 0 V
+#   Severity error: abs_max violated
+_limit(
+    "abs_input_vs_pos_CS_SEL",
+    _range,
+    {
+        "v": CS_SEL.voltage,
+        "what": "abs_input_vs_pos_CS_SEL",
+        "lo": -1.0 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 70.0 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# abs_cs_pair_CS_P: pin CS+ (CS_P) within the limit, x derate
+#   CS+ to CS- voltage: min -1 / max 100 V (min_ref rel. CS-) (max_ref rel. CS-)
+#   DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, CS+ to CS-
+#   Conditions: Absolute maximum, pin pair
+#   Severity error: abs_max violated
+_limit(
+    "abs_cs_pair_CS_P",
+    _range,
+    {
+        "v": CS_P.voltage,
+        "what": "abs_cs_pair_CS_P",
+        "lo": -1.0 * derate,
+        "lo_ref": CS_N.voltage,
+        "hi": 100.0 * derate,
+        "hi_ref": CS_N.voltage,
+    },
+    "error",
+)
+
+# abs_flt_gnd_FLT: pin FLT (FLT) within the limit, x derate
+#   FLT, FLT_GD voltage to GND: min -1 / max 20 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, FLT, FLT_GD to GND
+#   Conditions: Absolute maximum, referenced to GND
+#   Severity error: abs_max violated
+_limit(
+    "abs_flt_gnd_FLT",
+    _range,
+    {
+        "v": FLT.voltage,
+        "what": "abs_flt_gnd_FLT",
+        "lo": -1.0 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 20.0 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# abs_flt_gnd_FLT_GD: pin FLT_GD (FLT_GD) within the limit, x derate
+#   FLT, FLT_GD voltage to GND: min -1 / max 20 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, FLT, FLT_GD to GND
+#   Conditions: Absolute maximum, referenced to GND
+#   Severity error: abs_max violated
+_limit(
+    "abs_flt_gnd_FLT_GD",
+    _range,
+    {
+        "v": FLT_GD.voltage,
+        "what": "abs_flt_gnd_FLT_GD",
+        "lo": -1.0 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 20.0 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# rec_vs_VS: pin VS (VS) within the limit
+#   VS voltage to GND, operating: min 3.5 / max 95 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.5, 5.3 Recommended Operating Conditions, Input Pins, VS to GND
+#   Conditions: Recommended operating, to GND
+#   Severity error: rec_op violated
+_limit(
+    "rec_vs_VS",
+    _range,
+    {"v": VS.voltage, "what": "rec_vs_VS", "lo": 3.5, "lo_ref": GND.voltage, "hi": 95.0, "hi_ref": GND.voltage},
+    "error",
+)
+
+# rec_vs_scp_min_VS: pin VS (VS) within the limit
+#   VS minimum for short-circuit protection: min 4 V (min_ref rel. GND)
+#   DS p.5, 5.3 Recommended Operating Conditions, Input Pins, Minimum voltage on VS pin for Short Circuit Protection
+#   Conditions: Minimum voltage on the VS pin for short circuit protection
+#   Severity warning: limit holds only at partial (waivable with waive_<check>)
+_limit(
+    "rec_vs_scp_min_VS",
+    _range,
+    {"v": VS.voltage, "what": "rec_vs_scp_min_VS", "lo": 4.0, "lo_ref": GND.voltage},
+    "warning",
+    waive_rec_vs_scp_min,
+)
+
+# rec_en_inp_cs_sel_EN_UVLO: pin EN/UVLO (EN_UVLO) within the limit
+#   EN/UVLO, INP, CS_SEL voltage to GND, operating: min 0 / max 65 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.5, 5.3 Recommended Operating Conditions, Input Pins, EN/UVLO, INP, CS_SEL to GND
+#   Conditions: Recommended operating, to GND
+#   Severity error: rec_op violated
+_limit(
+    "rec_en_inp_cs_sel_EN_UVLO",
+    _range,
+    {
+        "v": EN_UVLO.voltage,
+        "what": "rec_en_inp_cs_sel_EN_UVLO",
+        "lo": 0.0,
+        "lo_ref": GND.voltage,
+        "hi": 65.0,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# rec_en_inp_cs_sel_INP: pin INP (INP) within the limit
+#   EN/UVLO, INP, CS_SEL voltage to GND, operating: min 0 / max 65 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.5, 5.3 Recommended Operating Conditions, Input Pins, EN/UVLO, INP, CS_SEL to GND
+#   Conditions: Recommended operating, to GND
+#   Severity error: rec_op violated
+_limit(
+    "rec_en_inp_cs_sel_INP",
+    _range,
+    {
+        "v": INP.voltage,
+        "what": "rec_en_inp_cs_sel_INP",
+        "lo": 0.0,
+        "lo_ref": GND.voltage,
+        "hi": 65.0,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# rec_en_inp_cs_sel_CS_SEL: pin CS_SEL (CS_SEL) within the limit
+#   EN/UVLO, INP, CS_SEL voltage to GND, operating: min 0 / max 65 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.5, 5.3 Recommended Operating Conditions, Input Pins, EN/UVLO, INP, CS_SEL to GND
+#   Conditions: Recommended operating, to GND
+#   Severity error: rec_op violated
+_limit(
+    "rec_en_inp_cs_sel_CS_SEL",
+    _range,
+    {
+        "v": CS_SEL.voltage,
+        "what": "rec_en_inp_cs_sel_CS_SEL",
+        "lo": 0.0,
+        "lo_ref": GND.voltage,
+        "hi": 65.0,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# rec_flt_FLT: pin FLT (FLT) within the limit
+#   FLT voltage to GND, operating: min 0 / max 15 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.5, 5.3 Recommended Operating Conditions, Output Pins, FLT to GND
+#   Conditions: Recommended operating, to GND
+#   Severity error: rec_op violated
+_limit(
+    "rec_flt_FLT",
+    _range,
+    {"v": FLT.voltage, "what": "rec_flt_FLT", "lo": 0.0, "lo_ref": GND.voltage, "hi": 15.0, "hi_ref": GND.voltage},
+    "error",
+)
+
+# ta_grade_1_ambient: board ambient range inside this range
+#   Operating ambient temperature range, grade 1: min -40 / max 125 degC
+#   DS p.1, Features, AEC-Q100 bullet 'Device temperature grade 1: -40 degC to +125 degC ambient operating temperature range'
+#   Conditions: Device temperature grade 1, ambient operating temperature range
+#   Severity error: rec_op violated
+_limit("ta_grade_1_ambient", _temp, {"v": ambient, "what": "ta_grade_1_ambient", "lo": 233.15, "hi": 398.15}, "error")
+
+Component(
+    name="TPS48000QDGXQ1",
+    symbol=Symbol(library="./TPS48000QDGXQ1.kicad_sym"),
+    part=Part(
+        mpn="TPS48000QDGXRQ1",
+        manufacturer="Texas Instruments",
+        datasheet="https://www.ti.com/lit/ds/symlink/tps4800-q1.pdf",
+    ),
+    pins={
+        "EN/UVLO": EN_UVLO,
+        "OV": OV,
+        "INP": INP,
+        "FLT_GD": FLT_GD,
+        "FLT": FLT,
+        "GND": GND,
+        "CS_SEL": CS_SEL,
+        "ISCP": ISCP,
+        "TMR": TMR,
+        "SCP_TEST": SCP_TEST,
+        "BST": BST,
+        "SRC": SRC,
+        "PD": PD,
+        "PU": PU,
+        "CS-": CS_N,
+        "CS+": CS_P,
+        "VS": Power(VS, voltage=VS.voltage),
+    },
+)

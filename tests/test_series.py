@@ -114,7 +114,7 @@ class TestCheck(unittest.TestCase):
         self.assertIn("e_series must list names from", self.run_edit([('["E24"]', '["E12"]')]))
         self.assertIn("series_tol = 'nope' is not a param key", self.run_edit([('series_tol = "tol"', 'series_tol = "nope"')]))
         self.assertIn("[part] mpn must be absent", self.run_edit([('series = "resistor"', 'series = "resistor"\nmpn = "X"')]))
-        self.assertIn("only 'resistor' is supported", self.run_edit([('series = "resistor"', 'series = "cap"')]))
+        self.assertIn("only 'resistor' and 'capacitor' are supported", self.run_edit([('series = "resistor"', 'series = "cap"')]))
 
 
 class TestZen(unittest.TestCase):

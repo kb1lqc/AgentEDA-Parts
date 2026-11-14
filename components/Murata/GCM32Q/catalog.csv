@@ -1,0 +1,5 @@
+value,dielectric,capacitance,tolerance,rated_voltage,thickness,source
+GCM32QR72E154KWB1,X7R,0.15μF,±10%,250Vdc,1.5mm +0mm/-0.3mm,"Murata product list export gcm-series-product-list-2026-11-14.csv, row GCM32QR72E154KWB1#"
+GCM32QR72E683KWB1,X7R,"68,000pF",±10%,250Vdc,1.5mm +0mm/-0.3mm,"Murata product list export gcm-series-product-list-2026-11-14.csv, row GCM32QR72E683KWB1#"
+GCM32QR72J103KWB1,X7R,"10,000pF",±10%,630Vdc,1.5mm +0mm/-0.3mm,"Murata product list export gcm-series-product-list-2026-11-14.csv, row GCM32QR72J103KWB1#"
+GCM32QR72J682KWB1,X7R,"6,800pF",±10%,630Vdc,1.5mm +0mm/-0.3mm,"Murata product list export gcm-series-product-list-2026-11-14.csv, row GCM32QR72J682KWB1#"

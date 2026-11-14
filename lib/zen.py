@@ -16,10 +16,10 @@ import subprocess
 import sys
 from pathlib import Path
 
-from . import series
-from .component import ROOT, load_calc, merge_variant, to_param, variants_of
+from . import capacitor, series
+from .component import ROOT, load_calc, merge_variant, restriction, to_param, variants_of
 
-GROUND_NAMES = {"GND", "AGND", "DGND", "PGND", "SGND", "VSS"}
+GROUND_NAMES = {"GND", "AGND", "DGND", "PGND", "SGND", "VSS", "VSSA"}
 
 # Verbatim template core: unset input -> UNVERIFIED warning (advice when the part is built alone); a waiver drops a
 # warning-level check to advice; errors cannot be waived.
@@ -196,6 +196,111 @@ def series_code(info, params, part_dir):
     return lines, checks, problems
 
 
+def _catalog_or_empty(part_dir, info):
+    try:
+        return capacitor.read_catalog(part_dir / info["catalog"])
+    except (ValueError, KeyError):
+        return []  # capacitor_code reports the catalog problem
+
+
+def capacitor_code(info, params, amb_keys, part_dir):
+    """(config lines, lookup lines, check lines, problems) for a capacitor series.
+
+    The lookup is generated from catalog.csv: (dielectric, femtofarad, millivolt, tolerance) -> catalog value. The
+    wrapper adds the package letter, so the catalog stays the single source of the part numbers.
+    amb_keys: {dielectric: param key of its check_ambient row}.
+    """
+    problems = []
+    try:
+        rows = capacitor.read_catalog(part_dir / info["catalog"])
+    except (ValueError, KeyError) as e:
+        return [], [], [], [f"catalog: {e}"]
+    keyed, tols = {}, {}
+    for r in rows:
+        k = (r.dielectric, *capacitor.zen_key(r.c, r.v), capacitor.ascii_text(r.tolerance))
+        if k in keyed:
+            problems.append(f"catalog values {keyed[k].value} and {r.value} share {k}: the wrapper cannot tell them apart")
+        keyed[k] = r
+        tols.setdefault(k[:3], []).append(k[3])
+    letter, alts = info["package_default"], info["package_alternates"]
+    first = next(iter(keyed))
+    ambient = {}
+    for d, key in sorted(amb_keys.items()):
+        t = params[key]
+        severity, _, waivable = severity_of(t)
+        if waivable or t.get("kind") not in ("abs_max", "rec_op"):
+            problems.append(f"{key}: a capacitor ambient row must be an error-severity abs_max/rec_op row (not 25C or partial)")
+        p = to_param(t)
+        ambient[d] = (key, p.min + 273.15, p.max + 273.15)
+    lookup = [
+        "# Orderable catalog value per (dielectric, femtofarad, millivolt, tolerance), generated from catalog.csv (the",
+        "# single source; each row cites the manufacturer export there). Integer keys: float text differs between",
+        "# Python and Zener, integers do not. The package letter is added below.",
+        "_VALUE = {",
+        *[f'    ("{k[0]}", {k[1]}, {k[2]}, "{k[3]}"): "{r.value}",  # {capacitor.ascii_text(r.capacitance)} '
+          f'{r.rated_voltage} {capacitor.ascii_text(r.tolerance)}' for k, r in keyed.items()],
+        "}",
+        "# Tolerances the catalog lists for one (dielectric, femtofarad, millivolt): needed when there are several.",
+        "_TOLS = {",
+        *[f'    ("{k[0]}", {k[1]}, {k[2]}): {sorted(v)!r},'.replace("'", '"') for k, v in tols.items()],
+        "}",
+        "_KEY = (dielectric, int(value.value * 1e15 + 0.5), int(rated_v.value * 1e3 + 0.5))",
+        "_AVAILABLE = _TOLS.get(_KEY, [])",
+        '_FULL = _KEY + (tolerance if tolerance != "" or len(_AVAILABLE) != 1 else _AVAILABLE[0],)',
+        "# Catalog value for the configured part. An unorderable combination gets the sentinel MPN UNORDERABLE (never a",
+        "# real but wrong part number) and fails part_orderable.",
+        '_VALUE_STR = _VALUE.get(_FULL, "UNORDERABLE")',
+        f'_MPN_STR = _VALUE_STR + "{letter}" if _FULL in _VALUE else "UNORDERABLE"  # default package letter; the others are alternates',
+        "",
+        "",
+        "def _orderable(_m, found, what, key, available):",
+        '    why = "no catalog part for (dielectric, fF, mV, tolerance) = %s" % (key,)',
+        "    if len(available) > 0:",
+        '        why += "; the catalog lists these tolerances for it: %s (set tolerance)" % available',
+        '    check(found, "%s: %s" % (what, why))',
+        "",
+        "",
+        '_ORDERABLE_SEVERITY = "advice" if _ROOT else "error"  # standalone build: the configs are unset',
+        'builtin.add_electrical_check(name="part_orderable", check_fn=_orderable, inputs={"found": _FULL in _VALUE, '
+        '"what": "part_orderable", "key": _FULL, "available": _AVAILABLE}, severity=_ORDERABLE_SEVERITY)',
+        "",
+        "",
+        "def _rated_voltage(_m, v1, v2, what, vr, derate):",
+        "    # Worst case |V(P1) - V(P2)| over both nets' ranges against derate x the rated voltage (non-polarized).",
+        "    vmax = max(v1.max - v2.min, v2.max - v1.min)",
+        '    msg = "%s: up to %s V across the part > derate x rated voltage = %s x %s V"',
+        "    check(vmax <= vr * derate, msg % (what, vmax, derate, vr))",
+    ]
+    amb_lines = ["_AMBIENT = {"]
+    amb_lines += [f'    "{d}": ({num(lo)}, {num(hi)}),  # {key}' for d, (key, lo, hi) in ambient.items()]
+    amb_lines += ["}", f'_AMBIENT_RANGE = _AMBIENT.get(dielectric, _AMBIENT["{first[0]}"])', "", ""]
+    checks = [
+        "# rated_voltage: voltage across the part within derate x the rated voltage of the configured catalog part",
+        "#   Rated voltage = the rated_v config (it selects the catalog part; part_orderable fails if it is not listed).",
+        "#   Source of the rating: the catalog row (manufacturer export cited there). Error: the rating is exceeded.",
+        "#   Not checked: DC-bias capacitance loss, ripple/AC peak and self-heating (owner: module).",
+        '_limit("rated_voltage", _rated_voltage, {"v1": P1.voltage, "v2": P2.voltage, "what": "rated_voltage", '
+        '"vr": rated_v.value, "derate": derate}, "error")',
+        "",
+    ]
+    if ambient:
+        checks += [
+            "# ambient_range: board ambient inside the operating range of the configured dielectric",
+            *[f"#   {d}: {key}: {params[key].get('name', '')} ({params[key].get('cite', '')})" for d, (key, _, _) in ambient.items()],
+            '_limit("ambient_range", _temp, {"v": ambient, "what": "ambient_range", "lo": _AMBIENT_RANGE[0], '
+            '"hi": _AMBIENT_RANGE[1]}, "error")',
+            "",
+        ]
+    configs = [
+        'value = config(Capacitance, help="Capacitance, a catalog value (see the _VALUE table)")',
+        'rated_v = config(Voltage, help="Rated DC voltage of the part, a catalog value, for example 50V")',
+        'dielectric = config(str, help="Dielectric as printed in the catalog, for example X7R")',
+        'tolerance = config(str, default="", help="Tolerance as printed, ASCII, for example +/-10%; only needed when the '
+        'catalog lists several for the value")',
+    ]
+    return configs, amb_lines + lookup, checks, problems
+
+
 def generate(part_dir, variant=None):
     """Return (zen_text, problems). problems is a list of strings; empty means the wrapper is complete.
 
@@ -231,17 +336,31 @@ def generate(part_dir, variant=None):
         "",
     ]
     checks, unchecked, configs, uses_ambient = [], [], [], False
-    is_series = bool(info.get("series"))
+    is_series = info.get("series") == "resistor"
+    is_cap = info.get("series") == "capacitor"
+    if info.get("series") not in (None, "resistor", "capacitor"):
+        problems.append(f"unknown [part] series '{info.get('series')}'")
     series_rows = series.series_keys(info)
+    amb_keys = {}  # capacitor: dielectric -> key of its check_ambient row
 
     for key, t in params.items():
+        if is_cap and t.get("check_ambient"):
+            dielectrics = [t["dielectric"]] if "dielectric" in t else sorted({r.dielectric for r in _catalog_or_empty(part_dir, info)})
+            for d in dielectrics:
+                amb_keys.setdefault(d, key)
+            continue
+        if is_cap and (t.get("check_pins") or "parts" in t) and not t.get("unchecked"):
+            if t.get("kind") in ("abs_max", "rec_op"):
+                problems.append(f"{key}: a capacitor-series row needs unchecked (check_pins is not supported)")
+            continue
         if is_series and key in series_rows and not (t.get("check_pins") or t.get("check_ambient")):
             continue  # read by the series check below, not an unchecked rating
         if t.get("kind") not in ("abs_max", "rec_op") and not (t.get("check_pins") or t.get("check_ambient")):
             continue
         if not (t.get("check_pins") or t.get("check_ambient")):
             reason = t.get("unchecked", "no check_pins / check_ambient in component.toml")
-            unchecked.append(f"# UNCHECKED: {key}: {t.get('name', '')} ({t.get('cite', '')}); {reason}")
+            scope = f" [{restriction(t)}]" if is_cap and restriction(t) else ""
+            unchecked.append(f"# UNCHECKED: {key}{scope}: {t.get('name', '')} ({t.get('cite', '')}); {reason}")
             continue
         if t.get("curve") or "text" in t:
             problems.append(f"{key}: curve or text rows cannot be checks")
@@ -287,6 +406,14 @@ def generate(part_dir, variant=None):
             checks.append("")
 
     lookup = []
+    if is_cap:
+        cap_configs, lookup, cap_checks, cap_problems = capacitor_code(info, params, amb_keys, part_dir)
+        problems += cap_problems
+        configs += cap_configs
+        checks += cap_checks
+        uses_ambient = bool(amb_keys)
+        unchecked.append("# UNCHECKED: capacitance under DC bias, aging and AC/ripple stress: curve-based or not quantified "
+                         "by the datasheet; owner: module (calc.capacitance_worst_pct/_ppm exclude them)")
     if is_series:
         lookup, series_checks, series_problems = series_code(info, params, part_dir)
         problems += series_problems
@@ -294,7 +421,8 @@ def generate(part_dir, variant=None):
         unchecked.append("# UNCHECKED: power derating above 70 degC: curve-based, depends on the dissipation; "
                          "owner: module (calc.rated_power). rated_voltage below uses the 70 degC power rating at")
         unchecked.append("#   every ambient, so above 70 degC ambient it is OPTIMISTIC (0 W at the derating zero).")
-    units = (["Resistance"] if is_series else []) + (["Temperature"] if uses_ambient else [])
+    units = (["Resistance"] if is_series else []) + (["Capacitance"] if is_cap else []) + \
+        (["Temperature"] if uses_ambient else []) + (["Voltage"] if is_cap else [])
     if units:
         out += [f'load("@stdlib/units.zen", {", ".join('"' + u + '"' for u in units)})', ""]
     out += unchecked + ([""] if unchecked else [])
@@ -329,13 +457,16 @@ def generate(part_dir, variant=None):
         "Component(",
         f'    name="{value}",',
         f'    symbol=Symbol(library="./{info["kicad_symbol"]}"),',
-        f'    part=Part(mpn={"_MPN_STR" if is_series else chr(34) + info["mpn"] + chr(34)}, manufacturer="{info["manufacturer"]}"'
+        f'    part=Part(mpn={"_MPN_STR" if is_series or is_cap else chr(34) + info["mpn"] + chr(34)}, manufacturer="{info["manufacturer"]}"'
         + (f', datasheet="{info["datasheet_url"]}"),' if info.get("datasheet_url") else "),"),  # Part() rejects an empty URL
         "    pins={",
         *pin_map,
         "    },",
     ]
-    if alts:
+    if is_cap:
+        letters = ", ".join(f'"{x}"' for x in info["package_alternates"])
+        out.append(f'    properties={{"alternatives": [_VALUE_STR + l for l in [{letters}]] if _FULL in _VALUE else []}},')
+    elif alts:
         out.append(f"    properties={{\"alternatives\": {alts!r}}},".replace("'", '"'))
     out += [")", ""]
     return "\n".join(out), problems

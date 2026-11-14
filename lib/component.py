@@ -3,9 +3,10 @@
 import dataclasses
 import importlib.util
 import tomllib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
+from . import capacitor as _cap
 from . import series as _series
 from .param import Param
 from .units import to_si
@@ -27,11 +28,13 @@ class Part:
     raw: dict  # the whole TOML as printed (printed units); for a variant, merged with its overrides
     variant: str = None  # variant Value for a family part, None for a plain component
     family_path: Path = None  # family directory (same as path) for a variant, None for a plain component
+    hidden: dict = field(default_factory=dict)  # capacitor series: key -> restriction text of rows not loaded here
 
     def param(self, key):
         """Param for one TOML key, in SI. KeyError names the unknown key."""
         if key not in self.params:
-            raise KeyError(f"{self.info.get('value')}: no parameter '{key}'")
+            why = f" (the row exists but is restricted to {self.hidden[key]}: use part.select(...).part)" if key in self.hidden else ""
+            raise KeyError(f"{self.info.get('value')}: no parameter '{key}'{why}")
         return self.params[key]
 
     def inputs(self, function):
@@ -60,8 +63,8 @@ class Part:
 
     def values(self):
         """Allowed values (ohm) of a series component, sorted: the E-series values inside its value_param range."""
-        if not self.info.get("series"):
-            raise ValueError(f"{self.info.get('value')} is not a series component")
+        if self.info.get("series") != "resistor":
+            raise ValueError(f"{self.info.get('value')} is not a resistor series component")
         r = self.param(self.info["value_param"])
         return _series.allowed_values(self.info["e_series"], r.min, r.max)
 
@@ -84,6 +87,33 @@ class Part:
         self._check_allowed(value)
         tol = self.param(self.info["series_tol"])
         return Param(min=value * (1 + tol.min), typ=value, max=value * (1 + tol.max), unit="ohm")
+
+    def catalog(self):
+        """Catalog rows (lib.capacitor.CatalogRow) of a capacitor series: one per orderable value."""
+        if self.info.get("series") != "capacitor":
+            raise ValueError(f"{self.info.get('value')} is not a capacitor series component")
+        return _cap.read_catalog(self.path / self.info["catalog"])
+
+    def dielectrics(self):
+        """Sorted dielectric names in the catalog of a capacitor series ('C0G', 'X7R')."""
+        return sorted({r.dielectric for r in self.catalog()})
+
+    def select(self, capacitance, rated_voltage, dielectric, tolerance=None):
+        """Pick one catalog part: returns a Selection (MPN, Params, and a Part holding the rows that apply to it).
+
+        capacitance in F and rated_voltage in V (or printed text '0.1uF', '50Vdc'); dielectric as printed in the catalog
+        ('X7R'); tolerance as printed ('+/-10%', optional: needed only when the catalog has several for that value).
+        ValueError for no match or an ambiguous match. sel.part.param("tc") is the dielectric's temperature
+        characteristic row; sel.part.inputs("capacitance_worst_pct") feeds calc.capacitance_worst_pct (X7R), the _ppm twin serves C0G.
+        """
+        row = _cap.choose(self.catalog(), capacitance, rated_voltage, dielectric, tolerance)
+        params, _ = _applicable(self.raw.get("param", {}), dielectric, row.value)
+        cap, tol, rated = _cap.selection_params(row)
+        params.update(capacitance=cap, tolerance=tol, rated_v=rated, tc=params[self.info["tc_param"][dielectric]])
+        letter, alts = self.info["package_default"], self.info["package_alternates"]
+        return Selection(row=row, value=row.value, mpn=row.value + letter, alternates=[row.value + a for a in alts],
+                         dielectric=dielectric, tolerance=row.tolerance, thickness=row.thickness, capacitance=cap,
+                         rated_voltage=rated, part=dataclasses.replace(self, params=params, hidden={}))
 
     def resolve(self, key, rails):
         """Param with absolute min/max for a param stated relative to pins (min_ref / max_ref).
@@ -114,6 +144,22 @@ class Part:
         return dataclasses.replace(p, min=lo, max=hi, typ=typ, min_ref=None, max_ref=None, typ_ref=None)
 
 
+@dataclass
+class Selection:
+    """One catalog part of a capacitor series (Part.select)."""
+
+    row: object  # lib.capacitor.CatalogRow
+    value: str  # MPN without the package letter
+    mpn: str  # value + the default package letter
+    alternates: list  # value + each alternate package letter (same part, other packaging)
+    dielectric: str
+    tolerance: str  # as printed
+    thickness: str  # as printed
+    capacitance: Param  # F, min/typ/max from the printed tolerance
+    rated_voltage: Param  # V, min = -rating, max = rating (non-polarized)
+    part: Part  # rows that apply to this part, plus capacitance, tolerance, rated_v and tc (the dielectric's row)
+
+
 def _rail(key, rails, pin, bounds=True):
     """Rail for `pin` as a Param (floats become exact). ValueError if missing."""
     if pin not in rails:
@@ -124,6 +170,36 @@ def _rail(key, rails, pin, bounds=True):
     if bounds and (rail.min is None or rail.max is None):
         raise ValueError(f"resolve {key}: rail '{pin}' needs both min and max")
     return rail
+
+
+def restriction(table):
+    """Text of a capacitor-series row's restriction ('dielectric X7R', 'parts A, B'), or None if it applies to all."""
+    if "dielectric" in table:
+        return f"dielectric {table['dielectric']}"
+    if "parts" in table:
+        return "parts " + ", ".join(table["parts"])
+    return None
+
+
+def _applicable(tables, dielectric=None, value=None):
+    """({key: Param}, {key: restriction text of the rows left out}) for a capacitor series.
+
+    A row with `dielectric` applies to parts of that dielectric, a row with `parts` to those catalog values; a row with
+    neither applies to all. With dielectric=None and value=None only the unrestricted rows are returned.
+    """
+    params, hidden = {}, {}
+    for key, table in tables.items():
+        if "dielectric" in table:
+            applies = table["dielectric"] == dielectric
+        elif "parts" in table:
+            applies = value in table["parts"]
+        else:
+            applies = True
+        if applies:
+            params[key] = to_param(table)
+        else:
+            hidden[key] = restriction(table)
+    return params, hidden
 
 
 def to_param(table):
@@ -215,11 +291,14 @@ def load(name, root=None, variant=None):
         raw = merge_variant(raw, variants, variant)
     elif variant is not None:
         raise ValueError(f"{path.name} has no variants.toml, so variant='{variant}' is unknown")
-    params = {k: to_param(t) for k, t in raw.get("param", {}).items()}
+    if raw.get("part", {}).get("series") == "capacitor":
+        params, hidden = _applicable(raw.get("param", {}))
+    else:
+        params, hidden = {k: to_param(t) for k, t in raw.get("param", {}).items()}, {}
     calc_file = path / "calc.py"
     calc = load_calc(calc_file) if calc_file.exists() else None
     return Part(path, raw.get("part", {}), raw.get("pin", []), params, calc, raw,
-                variant=variant, family_path=path if variants else None)
+                variant=variant, family_path=path if variants else None, hidden=hidden)
 
 
 def run_example(calc, row):

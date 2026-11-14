@@ -1,0 +1,37 @@
+# Test harness for the generated INA241DGK family wrappers (tests/test_zen.py copies it next to the wrappers and
+# builds it); `variant` selects which <Variant>.zen is instantiated. All ten variants share the same check rows.
+# Defaults are a nominal passing 48 V high-side current sense, GND = Ground (0 V):
+#   VS 5 V 5 % (4.75-5.25 V), inside rec-op 2.7-20 V.
+#   IN+ and IN- 48 V 1 % (47.52-48.48 V): inside rec-op VCM -5-110 V. IN+ - IN- worst case +/-0.96 V, inside abs
+#   +/-30 V (each net's range is independent; the real shunt drop is mV).
+#   REF1 and REF2 0 V: inside the 0 V to VS electrical range (25 degC row: warning) and GND - 0.3 V to
+#   VS(min) + 0.3 V = 5.05 V abs max.
+#   Ambient -40 degC to 85 degC, inside the -40 degC to 125 degC specified range.
+variant = config(str, default="INA241A1IDGK")  # which generated variant wrapper to test (CASES override it)
+U = Module("./" + variant + ".zen")
+
+vs = config(str, default="5V 5%")
+vinp = config(str, default="48V 1%")
+vinn = config(str, default="48V 1%")
+vref1 = config(str, default="0V")
+vref2 = config(str, default="0V")
+ta = config(str, default="-40°C to 85°C")
+waive = config(str, default="")  # rationale for waive_vref_range_25c (CASES set it)
+
+
+def _net(name, v):  # "unset" = a net with no voltage, which must report UNVERIFIED
+    return Net(name) if v == "unset" else Net(name, voltage=v)
+
+
+U(
+    name="U1",
+    VS=_net("VS", vs),
+    GND=Ground("GND"),
+    IN_P=_net("INP", vinp),
+    IN_N=_net("INN", vinn),
+    REF1=_net("REF1", vref1),
+    REF2=_net("REF2", vref2),
+    OUT=Net("VOUT"),
+    waive_vref_range_25c=waive,
+    **({} if ta == "unset" else {"ambient": ta}),
+)

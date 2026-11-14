@@ -1,17 +1,27 @@
-# Test harness for the generated Murata GCM188 family wrappers (tests/test_zen.py copies it into the family directory
-# and builds it); `variant` selects which <Variant>.zen is instantiated.
-# Defaults: 12 V +/-5 % across the part (worst case 12.6 V, inside the DC 50 V rating, either polarity);
-# ambient -40 degC to 85 degC, inside the -55 degC to 125 degC operating range.
-variant = config(str, default="GCM188R71H104KA57")
-U = Module("./" + variant + ".zen")
+# Test harness for the generated Murata GCM188 capacitor series wrapper (tests/test_zen.py copies it next to GCM188.zen and
+# builds it).
+# Defaults: GCM188R71H104KA57 (0.1 uF, 50 V, X7R, +/-10 %), the only 0.1 uF 50 V X7R part in the catalog, so no tolerance is needed,
+#   12 V +/-5 % across the part (worst case 12.6 V, inside the 50 V rating, either polarity); derate 1.0;
+#   ambient -40 degC to 85 degC, inside the -55 degC to 125 degC X7R operating range.
+U = Module("./GCM188.zen")
 
+value = config(str, default="0.1uF")  # catalog capacitance
+rated = config(str, default="50V")  # catalog rated DC voltage
+dielectric = config(str, default="X7R")  # catalog dielectric: X7R or C0G (both listed)
+tolerance = config(str, default="")  # printed tolerance, ASCII; "" lets the wrapper choose when it is unique
 va = config(str, default="12V 5%")  # P1 voltage
 vb = config(str, default="0V")  # P2 voltage
 ta = config(str, default="-40°C to 85°C")
+derate = config(float, default=1.0)
 
 U(
     name="C1",
+    value=value,
+    rated_v=rated,
+    dielectric=dielectric,
+    tolerance=tolerance,
     P1=Net("A") if va == "unset" else Power("A", voltage=va),
     P2=Power("B", voltage=vb),
+    derate=derate,
     **({} if ta == "unset" else {"ambient": ta}),
 )

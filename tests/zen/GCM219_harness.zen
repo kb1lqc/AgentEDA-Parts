@@ -1,0 +1,27 @@
+# Test harness for the generated Murata GCM219 capacitor series wrapper (tests/test_zen.py copies it next to GCM219.zen and
+# builds it).
+# Defaults: GCM2195C1K153FA16 (15,000pF, 80Vdc, C0G, ±1%), a mid-catalog part; tolerance given so
+#   the selection is unique. 12V 5% across the part (worst case 12.6 V, inside 80 V, either polarity); derate 1.0;
+#   ambient -40 degC to 85 degC, inside the -55 degC to 125 degC operating range.
+U = Module("./GCM219.zen")
+
+value = config(str, default="15nF")  # catalog capacitance
+rated = config(str, default="80V")  # catalog rated DC voltage
+dielectric = config(str, default="C0G")  # catalog dielectric: X7R or C0G (both listed)
+tolerance = config(str, default="+/-1%")  # printed tolerance, ASCII; "" lets the wrapper choose when it is unique
+va = config(str, default="12V 5%")  # P1 voltage
+vb = config(str, default="0V")  # P2 voltage
+ta = config(str, default="-40°C to 85°C")
+derate = config(float, default=1.0)
+
+U(
+    name="C1",
+    value=value,
+    rated_v=rated,
+    dielectric=dielectric,
+    tolerance=tolerance,
+    P1=Net("A") if va == "unset" else Power("A", voltage=va),
+    P2=Power("B", voltage=vb),
+    derate=derate,
+    **({} if ta == "unset" else {"ambient": ta}),
+)

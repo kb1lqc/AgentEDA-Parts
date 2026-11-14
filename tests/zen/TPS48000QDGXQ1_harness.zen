@@ -1,0 +1,56 @@
+# Test harness for the generated TPS48000QDGXQ1 wrapper (tests/test_zen.py copies it next to the wrapper and builds it).
+# Defaults are a nominal passing 48 V high-side switch, GND = Ground (0 V):
+#   VS 48 V 5 % (45.6-50.4 V): inside rec-op 3.5-95 V, abs -65-100 V and the 4 V short-circuit-protection
+#   minimum (partial row: a waivable warning).
+#   CS+ and CS- 48 V 1 % (47.52-48.48 V): inside abs -65-100 V. CS+ - CS- worst case 47.52 - 48.48 = -0.96 V, inside
+#   abs -1 V. They are declared 1 %, not 5 %, because each net's range is independent: the real sense drop is mV, but
+#   two independent 5 % ranges would give -9.6 V (correlated nets are not modelled).
+#   EN/UVLO 0-5 V, INP and CS_SEL 0-3.3 V: inside rec-op 0-65 V and abs -1-70 V. OV 0-1.3 V: inside abs -1-70 V.
+#   SCP_TEST 0 V: inside abs -0.3-5.5 V.
+#   FLT and FLT_GD pulled up to 0-5 V (open drain): inside rec-op FLT 0-15 V and abs -1-20 V.
+#   ISCP, TMR, BST, SRC, PU, PD are part-driven or set by external parts: no voltage declared.
+#   Ambient -40 degC to 85 degC, inside the -40 degC to 125 degC grade-1 range.
+U = Module("./TPS48000QDGXQ1.zen")
+
+vs = config(str, default="48V 5%")
+vcsp = config(str, default="48V 1%")
+vcsn = config(str, default="48V 1%")
+ven = config(str, default="0V to 5V")
+vov = config(str, default="0V to 1.3V")
+vinp = config(str, default="0V to 3.3V")
+vcssel = config(str, default="0V to 3.3V")
+vscp = config(str, default="0V")
+vflt = config(str, default="0V to 5V")
+vfltgd = config(str, default="0V to 5V")
+ta = config(str, default="-40°C to 85°C")
+waive = config(str, default="")  # rationale for waive_rec_vs_scp_min (CASES set it)
+
+
+def _net(name, v):  # "unset" = a net with no voltage, which must report UNVERIFIED
+    return Net(name) if v == "unset" else Net(name, voltage=v)
+
+
+gate = Net("GATE")
+
+U(
+    name="U1",
+    VS=_net("VS", vs),
+    GND=Ground("GND"),
+    CS_P=_net("CSP", vcsp),
+    CS_N=_net("CSN", vcsn),
+    EN_UVLO=_net("EN_UVLO", ven),
+    OV=_net("OV", vov),
+    INP=_net("INP", vinp),
+    CS_SEL=_net("CS_SEL", vcssel),
+    SCP_TEST=_net("SCP_TEST", vscp),
+    ISCP=Net("ISCP"),
+    TMR=Net("TMR"),
+    BST=Net("BST"),
+    SRC=Net("SRC"),
+    PU=gate,  # DS: PU and PD tie together to the FET gate
+    PD=gate,
+    FLT=_net("FLT", vflt),
+    FLT_GD=_net("FLT_GD", vfltgd),
+    waive_rec_vs_scp_min=waive,
+    **({} if ta == "unset" else {"ambient": ta}),
+)

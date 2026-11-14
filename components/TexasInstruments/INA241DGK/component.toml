@@ -1,0 +1,818 @@
+# INA241 family, VSSOP-8 (DGK) package: 10 orderables (version A/B x gain 10/20/50/100/200 V/V), listed in variants.toml.
+# Raw datasheet values in printed units (docs/SPEC.md). DS = TI INA241A/INA241B datasheet, SBOSA30D (Rev. D, Dec 2024),
+# printed page numbers. Package addendum cites are "DS Addendum-Page 1-2 (PDF p.28-29)": the addendum pages carry no main printed number.
+# Rows that differ per variant are either restricted with `variants` here (B group where the B devices share a value),
+# or given per variant in variants.toml (A devices, and every gain row). The calc INPUTS keys exist for every variant.
+
+[part]
+value           = "INA241DGK"
+manufacturer    = "Texas Instruments"
+description     = "Bidirectional current-sense amplifier, -5 V to 110 V common mode, 2.7 V to 20 V supply, VSSOP-8 (DGK)"
+category        = "current_sense_amplifier"
+package         = "VSSOP-8 (DGK0008A)"
+datasheet_url   = "https://www.ti.com/lit/ds/symlink/ina241a.pdf"
+datasheet_file  = "docs/datasheets/ina241a.pdf"
+datasheet_rev   = "SBOSA30D"
+datasheet_date  = "2024-12"                # DS p.26, 10 Revision History; cover "Revised December 2024"
+kicad_symbol    = "INA241DGK.kicad_sym"
+kicad_footprint = "INA241DGK.kicad_mod"
+step            = "INA241DGK.step"
+
+# Ordering: DS Addendum-Page 1-2 (PDF p.28-29), Package Option Addendum, DGK rows (VSSOP (DGK) | 8, 2500 | LARGE T&R, Active, Production,
+#   lead finish NIPDAU, MSL Level-2-260C-1 YEAR, Op temp -40 to 125). Every DGK orderable is only the "R" reel
+#   (no DGKT or tube); the ".B" rows (INA241A1IDGKR.B) are the same orderable and are not alternates.
+# Other qualified versions: INA241A-Q1, INA241B-Q1 (DS p.30): automotive grade, a different part; not an alternate.
+# Lifecycle, revision currency, errata, PCN: not checked (no web access).
+
+# ---------------------------------------------------------------- pins
+# DS p.2, 5 Pin Configuration and Functions, Table 5-1 Pin Functions: D, DDF and DGK Packages (pins 1-8; the table
+# continues on DS p.3). Figure 5-2 (DS p.2) gives the DGK pin positions: 1 IN-, 2 GND, 3 REF2, 4 NC on the left;
+# 5 OUT, 6 VS, 7 REF1, 8 IN+ on the right. Names verbatim; the DS en dash in IN- is ASCII "-".
+# VS: the DS prints the subscript V(S) in Table 5-1 and "Vs" in Figure 5-2; "VS" is used.
+# NC (pin 4): the DS TYPE column says Ground and the description says "Reserved. Connect to ground." The symbol type is
+#   power_in (set by the coordinator, matching the symbol). The pin is named NC, so the Zener wrapper treats it as a net.
+# No exposed pad on DGK (DS p.2 figure, 8 pins; DS p.37-38 DGK land pattern has no thermal pad).
+
+[[pin]]
+number   = "1"
+name     = "IN-"
+type     = "input"
+function = "Current-sense amplifier negative input. High-side: connect to load side of sense resistor. Low-side: connect to ground side of sense resistor"
+cite     = "DS p.2, Table 5-1 Pin Functions: D, DDF and DGK Packages, IN- (pin 1)"
+
+[[pin]]
+number   = "2"
+name     = "GND"
+type     = "power_in"
+function = "Ground"
+cite     = "DS p.2, Table 5-1 Pin Functions: D, DDF and DGK Packages, GND (pin 2)"
+
+[[pin]]
+number   = "3"
+name     = "REF2"
+type     = "input"
+function = "Reference 2 voltage. Connect to voltage potential from 0 V to VS; see Adjusting the Output With the Reference Pins"
+cite     = "DS p.3, Table 5-1 Pin Functions: D, DDF and DGK Packages (continued), REF2 (pin 3)"
+
+[[pin]]
+number   = "4"
+name     = "GND"
+type     = "power_in"
+function = "DS name NC: 'Reserved. Connect to ground.' (DS TYPE column: Ground). Named GND here so the wrapper ties it to ground: pcb lint symbol.pin.nc_type rejects a pin named NC that is not no_connect, and a no_connect pin cannot follow the DS instruction. Same rule as an exposed pad that must connect to a net (CLAUDE.md Defaults)."
+cite     = "DS p.2, Table 5-1 Pin Functions: D, DDF and DGK Packages, NC (pin 4)"
+
+[[pin]]
+number   = "5"
+name     = "OUT"
+type     = "output"
+function = "Output voltage"
+cite     = "DS p.2, Table 5-1 Pin Functions: D, DDF and DGK Packages, OUT (pin 5)"
+
+[[pin]]
+number   = "6"
+name     = "VS"
+type     = "power_in"
+function = "Power supply, 2.7 V to 20 V"
+cite     = "DS p.3, Table 5-1 Pin Functions: D, DDF and DGK Packages (continued), VS (pin 6)"
+
+[[pin]]
+number   = "7"
+name     = "REF1"
+type     = "input"
+function = "Reference 1 voltage. Connect to voltage potential from 0 V to VS; see Adjusting the Output With the Reference Pins"
+cite     = "DS p.3, Table 5-1 Pin Functions: D, DDF and DGK Packages (continued), REF1 (pin 7)"
+
+[[pin]]
+number   = "8"
+name     = "IN+"
+type     = "input"
+function = "Current-sense amplifier positive input. High-side: connect to bus-voltage side of sense resistor. Low-side: connect to load side of sense resistor"
+cite     = "DS p.2, Table 5-1 Pin Functions: D, DDF and DGK Packages, IN+ (pin 8)"
+
+# ---------------------------------------------------------------- absolute maximum ratings
+# DS p.4, 6.1 Absolute Maximum Ratings, over operating free-air temperature range (unless otherwise noted), footnote (1).
+# Printed in MIN and MAX columns. Rows with a printed reference (GND) are checked against that pin; rows without a
+# printed reference are absolute volts (= vs system 0 V, GND). Scope na (abs max).
+
+[param.vs_abs]
+name       = "Supply voltage"
+symbol     = "VS"
+kind       = "abs_max"
+scope      = "na"
+max        = 22
+unit       = "V"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.4, 6.1 Absolute Maximum Ratings, Supply voltage (VS)"
+note       = "Only a MAX is printed (MIN column blank). No reference pin is printed for this row; applied as VS vs GND."
+unchecked  = "covered by vs_rec (2.7 V to 20 V, checked, error), which is stricter"
+
+[param.vdiff_abs]
+name       = "Analog inputs, differential voltage"
+symbol     = "V(IN+) - V(IN-)"
+kind       = "abs_max"
+scope      = "na"
+min        = -30
+max        = 30
+unit       = "V"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.4, 6.1 Absolute Maximum Ratings, Analog inputs VIN+, VIN-, Differential (VIN+) - (VIN-)"
+note       = "Pin-pair row: IN+ relative to IN- (footnote 2: VIN+ and VIN- are the voltages at the IN+ and IN- pins). The second pin is the reference (SPEC pin-pair rule)."
+check_pins = ["IN+"]
+min_ref    = "IN-"
+max_ref    = "IN-"
+
+[param.vcm_abs]
+name       = "Analog inputs, common-mode voltage"
+symbol     = "VIN+, VIN-"
+kind       = "abs_max"
+scope      = "na"
+min        = -20
+max        = 120
+unit       = "V"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.4, 6.1 Absolute Maximum Ratings, Analog inputs VIN+, VIN-, Common-mode"
+note       = "Each input pin voltage. No reference pin is printed; applied as each pin vs GND (system 0 V)."
+unchecked  = "covered by vcm_rec (-5 V to 110 V, checked, error), which is stricter"
+
+[param.vref_abs]
+name       = "REF1, REF2, NC inputs"
+symbol     = "VREF1, VREF2, VNC"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+min_ref    = "GND"
+max        = 0.3
+max_ref    = "VS"
+unit       = "V"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.4, 6.1 Absolute Maximum Ratings, REF1, REF2, NC inputs"
+note       = "Printed GND - 0.3 V to VS + 0.3 V: the DS states the reference is GND, so min_ref = GND and max_ref = VS (SPEC rule). The NC pin (symbol name GND, pin 4) is not checked separately: it is tied to GND, the reference of this row."
+check_pins = ["REF1", "REF2"]
+
+[param.vout_abs]
+name       = "Output pin"
+symbol     = "VOUT"
+kind       = "abs_max"
+scope      = "na"
+min        = -0.3
+min_ref    = "GND"
+max        = 0.3
+max_ref    = "VS"
+unit       = "V"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.4, 6.1 Absolute Maximum Ratings, Output"
+note       = "Printed GND - 0.3 V to VS + 0.3 V; reference GND as printed in the row."
+unchecked  = "OUT is driven by the part; owner: module"
+
+[param.ta_abs]
+name       = "Operating temperature"
+symbol     = "TA"
+kind       = "abs_max"
+scope      = "na"
+min        = -55
+max        = 150
+unit       = "degC"
+conditions = "operating temperature"
+cite       = "DS p.4, 6.1 Absolute Maximum Ratings, Operating temperature, TA"
+unchecked  = "covered by ta_rec (-40 degC to 125 degC, check_ambient, error), which is stricter"
+
+[param.tj_abs]
+name       = "Junction temperature"
+symbol     = "TJ"
+kind       = "abs_max"
+scope      = "na"
+max        = 150
+unit       = "degC"
+conditions = ""
+cite       = "DS p.4, 6.1 Absolute Maximum Ratings, Junction temperature, TJ"
+unchecked  = "needs dissipation x RthetaJA; owner: module"
+
+[param.tstg_abs]
+name       = "Storage temperature"
+symbol     = "Tstg"
+kind       = "abs_max"
+scope      = "na"
+min        = -65
+max        = 150
+unit       = "degC"
+conditions = ""
+cite       = "DS p.4, 6.1 Absolute Maximum Ratings, Storage temperature, Tstg"
+unchecked  = "owner: assembly"
+
+# ---------------------------------------------------------------- ESD ratings
+# DS p.4, 6.2 ESD Ratings. Printed +/- values: min = -X, max = X. SPEC has no ESD kind: stored as abs_max (as INA821).
+
+[param.esd_hbm]
+name       = "Electrostatic discharge, human body model"
+symbol     = "V(ESD)"
+kind       = "abs_max"
+scope      = "na"
+min        = -2000
+max        = 2000
+unit       = "V"
+conditions = "HBM per ANSI/ESDA/JEDEC JS-001, all pins"
+cite       = "DS p.4, 6.2 ESD Ratings, Human body model (HBM)"
+note       = "Printed +/-2000 V (footnote 1: JEP155, 500 V HBM is safe in standard ESD control)."
+unchecked  = "owner: assembly"
+
+[param.esd_cdm]
+name       = "Electrostatic discharge, charged device model"
+symbol     = "V(ESD)"
+kind       = "abs_max"
+scope      = "na"
+min        = -1000
+max        = 1000
+unit       = "V"
+conditions = "CDM per ANSI/ESDA/JEDEC JS-002, all pins"
+cite       = "DS p.4, 6.2 ESD Ratings, Charged device model (CDM)"
+note       = "Printed +/-1000 V (footnote 2: JEP157, 250 V CDM)."
+unchecked  = "owner: assembly"
+
+# ---------------------------------------------------------------- recommended operating conditions
+# DS p.4, 6.3 Recommended Operating Conditions, over operating free-air temperature range (unless otherwise noted).
+# Printed MIN, NOM, MAX. NOM is stored as typ (SPEC typical).
+
+[param.vcm_rec]
+name       = "Common-mode input range"
+symbol     = "VCM"
+kind       = "rec_op"
+scope      = "na"
+min        = -5
+typ        = 48
+max        = 110
+unit       = "V"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.4, 6.3 Recommended Operating Conditions, Common-mode input range, VCM"
+note       = "NOM 48 V stored as typ. Common-mode voltage at both VIN+ and VIN- (DS p.7, footnote 1)."
+check_pins = ["IN+", "IN-"]
+
+[param.vs_rec]
+name       = "Operating supply range"
+symbol     = "VS"
+kind       = "rec_op"
+scope      = "na"
+min        = 2.7
+typ        = 5
+max        = 20
+unit       = "V"
+conditions = "over operating free-air temperature range (unless otherwise noted)"
+cite       = "DS p.4, 6.3 Recommended Operating Conditions, Operating supply range, VS"
+note       = "NOM 5 V stored as typ. No reference pin printed; applied as VS vs GND."
+check_pins = ["VS"]
+
+[param.ta_rec]
+name       = "Ambient temperature"
+symbol     = "TA"
+kind       = "rec_op"
+scope      = "na"
+min        = -40
+max        = 125
+unit       = "degC"
+conditions = "over operating free-air temperature range"
+cite       = "DS p.4, 6.3 Recommended Operating Conditions, Ambient temperature, TA"
+check_ambient = true
+
+# ---------------------------------------------------------------- thermal information (DGK column only)
+# DS p.4, 6.4 Thermal Information, DGK (VSSOP) 8 PINS column. Single printed value per row: stored as typ.
+# RthetaJC(bot) is not printed in the table and is not stored.
+
+[param.rtheta_ja]
+name       = "Junction-to-ambient thermal resistance"
+symbol     = "RthetaJA"
+kind       = "thermal"
+scope      = "na"
+typ        = 167.2
+unit       = "degC/W"
+conditions = "DGK (VSSOP), 8 pins"
+cite       = "DS p.4, 6.4 Thermal Information, Junction-to-ambient thermal resistance, DGK column"
+note       = "Single printed value, stored as typ."
+
+[param.rtheta_jc_top]
+name       = "Junction-to-case (top) thermal resistance"
+symbol     = "RthetaJC(top)"
+kind       = "thermal"
+scope      = "na"
+typ        = 58.9
+unit       = "degC/W"
+conditions = "DGK (VSSOP), 8 pins"
+cite       = "DS p.4, 6.4 Thermal Information, Junction-to-case (top) thermal resistance, DGK column"
+note       = "Single printed value, stored as typ."
+
+[param.rtheta_jb]
+name       = "Junction-to-board thermal resistance"
+symbol     = "RthetaJB"
+kind       = "thermal"
+scope      = "na"
+typ        = 88.9
+unit       = "degC/W"
+conditions = "DGK (VSSOP), 8 pins"
+cite       = "DS p.4, 6.4 Thermal Information, Junction-to-board thermal resistance, DGK column"
+note       = "Single printed value, stored as typ."
+
+[param.psi_jt]
+name       = "Junction-to-top characterization parameter"
+symbol     = "PsiJT"
+kind       = "thermal"
+scope      = "na"
+typ        = 8.1
+unit       = "degC/W"
+conditions = "DGK (VSSOP), 8 pins"
+cite       = "DS p.4, 6.4 Thermal Information, Junction-to-top characterization parameter, DGK column"
+note       = "Single printed value, stored as typ."
+
+[param.psi_jb]
+name       = "Junction-to-board characterization parameter"
+symbol     = "PsiJB"
+kind       = "thermal"
+scope      = "na"
+typ        = 87.4
+unit       = "degC/W"
+conditions = "DGK (VSSOP), 8 pins"
+cite       = "DS p.4, 6.4 Thermal Information, Junction-to-board characterization parameter, DGK column"
+note       = "Single printed value, stored as typ."
+
+# ---------------------------------------------------------------- electrical characteristics
+# DS p.5-7, 6.5 Electrical Characteristics. Header: TA = 25 degC, VS = 5 V, VSENSE = VIN+ - VIN-, VCM = VIN- = 48 V,
+# VREF1 = VREF2 = VS/2 (unless otherwise noted). Rows with a printed TA = -40 degC to 125 degC are scope full; rows
+# without one are scope 25C. Rows labelled per variant use `variants` (B devices) or the variant overrides (A devices,
+# and every gain row, in variants.toml).
+
+[param.vcm_full]
+name       = "Common-mode input range"
+symbol     = "VCM"
+kind       = "electrical"
+scope      = "full"
+min        = -5
+max        = 110
+unit       = "V"
+conditions = "VIN+, VIN- = -5 V to 110 V, VSENSE = 0 mV, TA = -40 degC to 125 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Common-mode input range (footnote 1)"
+note       = "Same range as vcm_rec. Footnote 1: common-mode voltage at both VIN+ and VIN- must not exceed the range."
+
+[param.cmrr_a_full]
+name       = "Common-mode rejection ratio, input-referred"
+symbol     = "CMRR"
+kind       = "electrical"
+scope      = "full"
+min        = 150
+typ        = 166
+unit       = "dB"
+conditions = "VIN+, VIN- = -5 V to 110 V, VSENSE = 0 mV, TA = -40 degC to 125 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Common-mode rejection ratio, input-referred, INA241A"
+variants   = ["INA241A1IDGK", "INA241A2IDGK", "INA241A3IDGK", "INA241A4IDGK", "INA241A5IDGK"]
+note       = "Printed for INA241A (all A devices). No MAX printed."
+
+[param.cmrr_b_full]
+name       = "Common-mode rejection ratio, input-referred"
+symbol     = "CMRR"
+kind       = "electrical"
+scope      = "full"
+min        = 120
+typ        = 130
+unit       = "dB"
+conditions = "VIN+, VIN- = -5 V to 110 V, VSENSE = 0 mV, TA = -40 degC to 125 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Common-mode rejection ratio, input-referred, INA241B"
+variants   = ["INA241B1IDGK", "INA241B2IDGK", "INA241B3IDGK", "INA241B4IDGK", "INA241B5IDGK"]
+note       = "Printed for INA241B (all B devices). No MAX printed."
+
+[param.cmrr_50khz_25c]
+name       = "Common-mode rejection ratio, input-referred, f = 50 kHz"
+symbol     = "CMRR"
+kind       = "electrical"
+scope      = "25C"
+typ        = 105
+unit       = "dB"
+conditions = "f = 50 kHz (TA = 25 degC)"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Common-mode rejection ratio, input-referred, f = 50kHz"
+note       = "The row has no version label, so it is read as all 10 devices. Ambiguity: the DS does not say; open item."
+
+[param.ib_25c]
+name       = "Input bias current"
+symbol     = "IB"
+kind       = "electrical"
+scope      = "25C"
+min        = 25
+typ        = 35
+max        = 45
+unit       = "uA"
+conditions = "IB+, IB-, VSENSE = 0 mV"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Input bias current, IB"
+note       = "Printed as positive magnitudes per input pin; stored as printed (not a +/- row)."
+
+[param.vref_range_25c]
+name       = "Reference input range"
+kind       = "electrical"
+scope      = "25C"
+min        = 0
+min_ref    = "GND"
+max        = 0
+max_ref    = "VS"
+unit       = "V"
+conditions = ""
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Reference input range"
+note       = "Printed 0 V to VS: rail-relative, min = 0 vs GND and max = 0 vs VS (users call part.resolve())."
+check_pins = ["REF1", "REF2"]  # rec-op-like EC row (SPEC Zener wrapper): REF pins are set by the circuit (DS p.3 Table 5-1)
+
+[param.psrr_a1_full]
+name       = "Power-supply rejection ratio, input-referred"
+symbol     = "PSRR"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.2
+typ_pm     = true
+min        = -1
+max        = 1
+unit       = "uV/V"
+conditions = "VS = 2.7 V to 20 V, VSENSE = 0 mV, VREF1 = VREF2 = 1 V, TA = -40 degC to 125 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Power-supply rejection ratio, input-referred, INA241A1"
+variants   = ["INA241A1IDGK"]
+note       = "TYP printed +/-0.2, MAX +/-1: stored as typ_pm with min = -max, max = max (SPEC +/- rule)."
+
+[param.psrr_a2_full]
+name       = "Power-supply rejection ratio, input-referred"
+symbol     = "PSRR"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.1
+typ_pm     = true
+min        = -0.75
+max        = 0.75
+unit       = "uV/V"
+conditions = "VS = 2.7 V to 20 V, VSENSE = 0 mV, VREF1 = VREF2 = 1 V, TA = -40 degC to 125 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Power-supply rejection ratio, input-referred, INA241A2"
+variants   = ["INA241A2IDGK"]
+note       = "TYP printed +/-0.1, MAX +/-0.75: typ_pm, min = -max."
+
+[param.psrr_a345_full]
+name       = "Power-supply rejection ratio, input-referred"
+symbol     = "PSRR"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.06
+typ_pm     = true
+min        = -0.5
+max        = 0.5
+unit       = "uV/V"
+conditions = "VS = 2.7 V to 20 V, VSENSE = 0 mV, VREF1 = VREF2 = 1 V, TA = -40 degC to 125 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Power-supply rejection ratio, input-referred, INA241A3, INA241A4, INA241A5"
+variants   = ["INA241A3IDGK", "INA241A4IDGK", "INA241A5IDGK"]
+note       = "TYP printed +/-0.06, MAX +/-0.5: typ_pm, min = -max."
+
+[param.psrr_b_full]
+name       = "Power-supply rejection ratio, input-referred"
+symbol     = "PSRR"
+kind       = "electrical"
+scope      = "full"
+typ        = 1
+typ_pm     = true
+min        = -10
+max        = 10
+unit       = "uV/V"
+conditions = "VS = 2.7 V to 20 V, VSENSE = 0 mV, VREF1 = VREF2 = 1 V, TA = -40 degC to 125 degC"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Power-supply rejection ratio, input-referred, INA241B"
+variants   = ["INA241B1IDGK", "INA241B2IDGK", "INA241B3IDGK", "INA241B4IDGK", "INA241B5IDGK"]
+note       = "TYP printed +/-1, MAX +/-10: typ_pm, min = -max."
+
+[param.rvrr_a1_full]
+name       = "Reference voltage rejection ratio, input-referred"
+symbol     = "RVRR"
+kind       = "electrical"
+scope      = "full"
+typ        = 1
+typ_pm     = true
+min        = -2.5
+max        = 2.5
+unit       = "uV/V"
+conditions = "VREF1 = VREF2 = 0.5 V to 4.5 V, TA = -40 degC to 125 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, REFERENCE INPUT, Reference voltage rejection ratio, input-referred, INA241A1"
+variants   = ["INA241A1IDGK"]
+note       = "TYP printed +/-1, MAX +/-2.5: typ_pm, min = -max."
+
+[param.rvrr_a2to5_full]
+name       = "Reference voltage rejection ratio, input-referred"
+symbol     = "RVRR"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.5
+typ_pm     = true
+min        = -1.5
+max        = 1.5
+unit       = "uV/V"
+conditions = "VREF1 = VREF2 = 0.5 V to 4.5 V, TA = -40 degC to 125 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, REFERENCE INPUT, Reference voltage rejection ratio, input-referred, INA241A2 to INA241A5"
+variants   = ["INA241A2IDGK", "INA241A3IDGK", "INA241A4IDGK", "INA241A5IDGK"]
+note       = "TYP printed +/-0.5, MAX +/-1.5: typ_pm, min = -max."
+
+[param.rvrr_b_full]
+name       = "Reference voltage rejection ratio, input-referred"
+symbol     = "RVRR"
+kind       = "electrical"
+scope      = "full"
+typ        = 10
+typ_pm     = true
+min        = -20
+max        = 20
+unit       = "uV/V"
+conditions = "VREF1 = VREF2 = 0.5 V to 4.5 V, TA = -40 degC to 125 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, REFERENCE INPUT, Reference voltage rejection ratio, input-referred, INA241B"
+variants   = ["INA241B1IDGK", "INA241B2IDGK", "INA241B3IDGK", "INA241B4IDGK", "INA241B5IDGK"]
+note       = "TYP printed +/-10, MAX +/-20: typ_pm, min = -max."
+
+[param.refdiv_a12_full]
+name       = "Reference divider accuracy"
+symbol     = "VOUT"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.002
+typ_pm     = true
+min        = -0.005
+max        = 0.005
+unit       = "%"
+conditions = "VOUT = |(VREF1 + VREF2)| / 2 at VSENSE = 0 mV, VREF1 = VS / VREF2 = GND and VREF1 = GND / VREF2 = VS, TA = -40 degC to 125 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, REFERENCE INPUT, Reference divider accuracy, INA241A1, INA241A2"
+variants   = ["INA241A1IDGK", "INA241A2IDGK"]
+note       = "TYP printed +/-0.002 %, MAX +/-0.005 %: typ_pm, min = -max. Percent, loader converts to a fraction."
+
+[param.refdiv_a345_full]
+name       = "Reference divider accuracy"
+symbol     = "VOUT"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.002
+typ_pm     = true
+min        = -0.01
+max        = 0.01
+unit       = "%"
+conditions = "VOUT = |(VREF1 + VREF2)| / 2 at VSENSE = 0 mV, VREF1 = VS / VREF2 = GND and VREF1 = GND / VREF2 = VS, TA = -40 degC to 125 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, REFERENCE INPUT, Reference divider accuracy, INA241A3, INA241A4, INA241A5"
+variants   = ["INA241A3IDGK", "INA241A4IDGK", "INA241A5IDGK"]
+note       = "TYP printed +/-0.002 %, MAX +/-0.01 %: typ_pm, min = -max."
+
+[param.refdiv_b_full]
+name       = "Reference divider accuracy"
+symbol     = "VOUT"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.02
+typ_pm     = true
+min        = -0.15
+max        = 0.15
+unit       = "%"
+conditions = "VOUT = |(VREF1 + VREF2)| / 2 at VSENSE = 0 mV, VREF1 = VS / VREF2 = GND and VREF1 = GND / VREF2 = VS, TA = -40 degC to 125 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, REFERENCE INPUT, Reference divider accuracy, INA241B"
+variants   = ["INA241B1IDGK", "INA241B2IDGK", "INA241B3IDGK", "INA241B4IDGK", "INA241B5IDGK"]
+note       = "TYP printed +/-0.02 %, MAX +/-0.15 %: typ_pm, min = -max."
+
+[param.nonlin_25c]
+name       = "Non-linearity error"
+kind       = "electrical"
+scope      = "25C"
+typ        = 0.001
+typ_pm     = true
+unit       = "%"
+conditions = ""
+cite       = "DS p.6, 6.5 Electrical Characteristics, GERR, Non-linearity error"
+note       = "Printed +/-0.001 % in the TYP column, no MAX: typ_pm, typ = 0 with spread 0.001 (loader)."
+
+[param.cload_25c]
+name       = "Maximum capacitive load"
+kind       = "electrical"
+scope      = "25C"
+typ        = 1
+unit       = "nF"
+conditions = "no sustained oscillations, no isolation resistor"
+cite       = "DS p.6, 6.5 Electrical Characteristics, GERR, Maximum capacitive load"
+note       = "Printed in the TYP column (1 nF); stored as typ."
+
+[param.vos_25c]
+name       = "Offset voltage, input-referred"
+symbol     = "VOS"
+kind       = "electrical"
+scope      = "25C"
+typ        = 25
+typ_pm     = true
+min        = -150
+max        = 150
+unit       = "uV"
+conditions = "VSENSE = 0 mV, INA241B (TA = 25 degC)"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Offset voltage, input-referred, INA241B"
+variants   = ["INA241B1IDGK", "INA241B2IDGK", "INA241B3IDGK", "INA241B4IDGK", "INA241B5IDGK"]
+note       = "TYP printed +/-25, MAX +/-150: typ_pm, min = -max. A devices: per-variant rows in variants.toml. Used by calc.current_error (INPUTS 'vos')."
+
+[param.vos_drift_full]
+name       = "Offset voltage drift, input-referred"
+symbol     = "dVOS/dT"
+kind       = "electrical"
+scope      = "full"
+typ        = 100
+typ_pm     = true
+min        = -500
+max        = 500
+unit       = "nV/degC"
+conditions = "TA = -40 degC to 125 degC, INA241B"
+cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Offset voltage drift, input-referred, INA241B"
+variants   = ["INA241B1IDGK", "INA241B2IDGK", "INA241B3IDGK", "INA241B4IDGK", "INA241B5IDGK"]
+note       = "TYP printed +/-100, MAX +/-500: typ_pm, min = -max. A devices: per-variant rows in variants.toml. Used by calc.current_error (INPUTS 'vos_drift')."
+
+[param.gain_err_25c]
+name       = "Gain error"
+symbol     = "GERR"
+kind       = "electrical"
+scope      = "25C"
+typ        = 0.02
+typ_pm     = true
+min        = -0.1
+max        = 0.1
+unit       = "%"
+conditions = "(GND + 50 mV) < VOUT < (VS - 200 mV), INA241B (TA = 25 degC)"
+cite       = "DS p.6, 6.5 Electrical Characteristics, OUTPUT, GERR, Gain error, INA241B"
+variants   = ["INA241B1IDGK", "INA241B2IDGK", "INA241B3IDGK", "INA241B4IDGK", "INA241B5IDGK"]
+note       = "TYP printed +/-0.02 %, MAX +/-0.1 %: typ_pm, min = -max. A devices: per-variant rows in variants.toml. Used by calc.current_error (INPUTS 'gain_err')."
+
+[param.gain_drift_full]
+name       = "Gain error drift"
+symbol     = "GERR drift"
+kind       = "electrical"
+scope      = "full"
+typ        = 0.2
+typ_pm     = true
+min        = -5
+max        = 5
+unit       = "ppm/degC"
+conditions = "TA = -40 degC to 125 degC, INA241B"
+cite       = "DS p.6, 6.5 Electrical Characteristics, OUTPUT, GERR, Gain error drift, INA241B"
+variants   = ["INA241B1IDGK", "INA241B2IDGK", "INA241B3IDGK", "INA241B4IDGK", "INA241B5IDGK"]
+note       = "TYP printed +/-0.2, MAX +/-5 ppm/degC: typ_pm, min = -max. A devices: per-variant rows in variants.toml. Used by calc.current_error (INPUTS 'gain_drift')."
+
+[param.swing_vs_full]
+name       = "Swing to VS power supply rail"
+kind       = "electrical"
+scope      = "full"
+min        = -0.2
+min_ref    = "VS"
+typ        = -0.07
+typ_ref    = "VS"
+unit       = "V"
+conditions = "RL = 10 kohm to GND, TA = -40 degC to 125 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, VOLTAGE OUTPUT, Swing to VS power supply rail"
+note       = "Printed TYP VS - 0.07 V, MAX VS - 0.2 V (magnitude order: the MAX swing from the rail is the lowest output high level). Stored numerically: printed MAX -> min = -0.2 V, min_ref = VS; output high reaches at least VS - 0.2 V."
+
+[param.swing_gnd_full]
+name       = "Swing to ground"
+kind       = "electrical"
+scope      = "full"
+typ        = 8
+max        = 20
+unit       = "mV"
+conditions = "RL = 10 kohm to GND, VSENSE = 0 mV, VREF1 = VREF2 = 0 V, TA = -40 degC to 125 degC"
+cite       = "DS p.6, 6.5 Electrical Characteristics, VOLTAGE OUTPUT, Swing to ground"
+
+[param.bw_25c]
+name       = "Bandwidth"
+kind       = "electrical"
+scope      = "25C"
+typ        = 1.1
+unit       = "MHz"
+conditions = "all gains, -3 dB bandwidth"
+cite       = "DS p.6, 6.5 Electrical Characteristics, FREQUENCY RESPONSE, Bandwidth, BW"
+
+[param.settle_0p5pct_25c]
+name       = "Settling time to 0.5 %"
+kind       = "electrical"
+scope      = "25C"
+typ        = 1.5
+unit       = "us"
+conditions = "VIN+, VIN- = 48 V, VOUT = 0.5 V to 4.5 V, output settles to 0.5 %"
+cite       = "DS p.6, 6.5 Electrical Characteristics, FREQUENCY RESPONSE, Settling time, settles to 0.5 %"
+
+[param.settle_1pct_25c]
+name       = "Settling time to 1 %"
+kind       = "electrical"
+scope      = "25C"
+typ        = 1
+unit       = "us"
+conditions = "VIN+, VIN- = 48 V, VOUT = 0.5 V to 4.5 V, output settles to 1 %"
+cite       = "DS p.6, 6.5 Electrical Characteristics, FREQUENCY RESPONSE, Settling time, settles to 1 %"
+
+[param.settle_5pct_25c]
+name       = "Settling time to 5 %"
+kind       = "electrical"
+scope      = "25C"
+typ        = 0.5
+unit       = "us"
+conditions = "VIN+, VIN- = 48 V, VOUT = 0.5 V to 4.5 V, output settles to 5 %"
+cite       = "DS p.6, 6.5 Electrical Characteristics, FREQUENCY RESPONSE, Settling time, settles to 5 %"
+
+[param.slew_rate_25c]
+name       = "Slew rate, rising"
+symbol     = "SR"
+kind       = "electrical"
+scope      = "25C"
+typ        = 8
+unit       = "V/us"
+conditions = "rising"
+cite       = "DS p.6, 6.5 Electrical Characteristics, FREQUENCY RESPONSE, Slew rate, SR"
+
+[param.en_g10_25c]
+name       = "Voltage noise density, input-referred, gain 10 V/V"
+symbol     = "eN"
+kind       = "electrical"
+scope      = "25C"
+typ        = 62
+unit       = "nV/rtHz"
+conditions = "input referred, TA = 25 degC"
+cite       = "DS p.7, 6.5 Electrical Characteristics, NOISE (Input referred), Voltage noise density, A1, B1 devices"
+variants   = ["INA241A1IDGK", "INA241B1IDGK"]
+note       = "Typical only (no MIN/MAX printed). Not a bound."
+
+[param.en_g20_25c]
+name       = "Voltage noise density, input-referred, gain 20 V/V"
+symbol     = "eN"
+kind       = "electrical"
+scope      = "25C"
+typ        = 49
+unit       = "nV/rtHz"
+conditions = "input referred, TA = 25 degC"
+cite       = "DS p.7, 6.5 Electrical Characteristics, NOISE (Input referred), Voltage noise density, A2, B2 devices"
+variants   = ["INA241A2IDGK", "INA241B2IDGK"]
+note       = "Typical only. Not a bound."
+
+[param.en_g50_25c]
+name       = "Voltage noise density, input-referred, gain 50 V/V"
+symbol     = "eN"
+kind       = "electrical"
+scope      = "25C"
+typ        = 39
+unit       = "nV/rtHz"
+conditions = "input referred, TA = 25 degC"
+cite       = "DS p.7, 6.5 Electrical Characteristics, NOISE (Input referred), Voltage noise density, A3, B3 devices"
+variants   = ["INA241A3IDGK", "INA241B3IDGK"]
+note       = "Typical only. Not a bound."
+
+[param.en_g100_25c]
+name       = "Voltage noise density, input-referred, gain 100 V/V"
+symbol     = "eN"
+kind       = "electrical"
+scope      = "25C"
+typ        = 36
+unit       = "nV/rtHz"
+conditions = "input referred, TA = 25 degC"
+cite       = "DS p.7, 6.5 Electrical Characteristics, NOISE (Input referred), Voltage noise density, A4, B4 devices"
+variants   = ["INA241A4IDGK", "INA241B4IDGK"]
+note       = "Typical only. Not a bound."
+
+[param.en_g200_25c]
+name       = "Voltage noise density, input-referred, gain 200 V/V"
+symbol     = "eN"
+kind       = "electrical"
+scope      = "25C"
+typ        = 28
+unit       = "nV/rtHz"
+conditions = "input referred, TA = 25 degC"
+cite       = "DS p.7, 6.5 Electrical Characteristics, NOISE (Input referred), Voltage noise density, A5, B5 devices"
+variants   = ["INA241A5IDGK", "INA241B5IDGK"]
+note       = "Typical only. Not a bound."
+
+[param.vs_elec_25c]
+name       = "Supply voltage"
+symbol     = "VS"
+kind       = "electrical"
+scope      = "25C"
+min        = 2.7
+max        = 20
+unit       = "V"
+conditions = ""
+cite       = "DS p.7, 6.5 Electrical Characteristics, POWER SUPPLY, Supply voltage, VS"
+
+[param.iq_25c]
+name       = "Quiescent current"
+symbol     = "IQ"
+kind       = "electrical"
+scope      = "25C"
+typ        = 2.5
+max        = 3
+unit       = "mA"
+conditions = "VSENSE = 0 mV"
+cite       = "DS p.7, 6.5 Electrical Characteristics, POWER SUPPLY, Quiescent current, VSENSE = 0 mV"
+
+[param.iq_full]
+name       = "Quiescent current"
+symbol     = "IQ"
+kind       = "electrical"
+scope      = "full"
+max        = 3.2
+unit       = "mA"
+conditions = "VSENSE = 0 mV, TA = -40 degC to +125 degC"
+cite       = "DS p.7, 6.5 Electrical Characteristics, POWER SUPPLY, Quiescent current, TA = -40 degC to +125 degC"
+note       = "Only MAX printed for the full range."
+
+[param.ta_spec]
+name       = "Specified range"
+symbol     = "TA"
+kind       = "electrical"
+scope      = "na"
+min        = -40
+max        = 125
+unit       = "degC"
+conditions = "specified range"
+cite       = "DS p.7, 6.5 Electrical Characteristics, TEMPERATURE, Specified range, TA"

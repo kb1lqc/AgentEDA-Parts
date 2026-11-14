@@ -1,0 +1,25 @@
+# Test harness for the CSER1 fixture capacitor series wrapper (tests/test_capacitor.py builds it in its own workspace).
+# Defaults: 0.1 uF, 16 V, X7R (one tolerance in the catalog, so none is set), 12 V +/-5 % across the part (worst case
+# 12.6 V, inside 16 V); ambient -40 degC to 85 degC, inside the X7R range -55 to 125 degC (C0G: -55 to 150 degC).
+U = Module("./CSER1.zen")
+
+value = config(str, default="0.1uF")
+rated = config(str, default="16V")
+dielectric = config(str, default="X7R")
+tolerance = config(str, default="")
+va = config(str, default="12V 5%")  # P1 voltage
+vb = config(str, default="0V")  # P2 voltage
+ta = config(str, default="-40°C to 85°C")
+derate = config(float, default=1.0)
+
+U(
+    name="C1",
+    value=value,
+    rated_v=rated,
+    dielectric=dielectric,
+    tolerance=tolerance,
+    P1=Net("A") if va == "unset" else Power("A", voltage=va),
+    P2=Power("B", voltage=vb),
+    derate=derate,
+    **({} if ta == "unset" else {"ambient": ta}),
+)

@@ -52,6 +52,14 @@ Families (a directory with `variants.toml`): `lib.zen` writes one wrapper per va
 family directory with one `pcb.toml`; each uses that variant's merged rows (its own ambient check, its own
 restricted rows). Check fields go on the shared or overridden rows like any other row.
 
+Capacitor series (`[part] series = "capacitor"`, docs/SPEC.md "Capacitor series", "Capacitor wrapper"): one wrapper per
+directory, `P1`/`P2`, required configs `value` (Capacitance), `rated_v` (Voltage) and `dielectric` (str), optional
+`tolerance` (str, ASCII as printed), a `_VALUE` lookup generated from `catalog.csv` (integer fF / mV keys; the wrapper adds
+the package letter), and errors `part_orderable`, `rated_voltage` (x derate) and `ambient_range` (one `check_ambient` row
+per dielectric, in `_AMBIENT`). Rows with `parts = [...]` or `dielectric = "..."` are restrictions, not checks; part rows
+are listed `# UNCHECKED`. Harness: `tests/zen/GCM155_harness.zen` (real) and `tests/zen/Capacitor_harness.zen` (fixture, two
+dielectrics, built by `tests/test_capacitor.py`). `pcb build` takes one directory per call.
+
 Series components (`[part] series = "resistor"`, docs/SPEC.md "Series components"): one wrapper per directory with a
 required `value = config(Resistance)`, pins `P1`/`P2`, a generated `_MPN` table (integer micro-ohm keys, from
 `calc.mpn`), and two errors: `value_allowed` and `rated_voltage` (voltage across the part vs

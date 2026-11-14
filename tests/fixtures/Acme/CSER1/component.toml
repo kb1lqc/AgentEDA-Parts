@@ -1,0 +1,100 @@
+[part]
+value = "CSER1"
+manufacturer = "Acme"
+description = "Test capacitor series, 0402, X7R and C0G"
+category = "capacitor_mlcc"
+package = "0402"
+datasheet_url = "https://example.com/cser1.pdf"
+datasheet_rev = "A"
+datasheet_date = "2020-01"
+kicad_symbol = "CSER1.kicad_sym"
+kicad_footprint = "CSER1.kicad_mod"
+step = "none"
+series = "capacitor"
+catalog = "catalog.csv"
+tc_param = { X7R = "tc_x7r", C0G = "tc_c0g" }
+package_default = "T"
+package_alternates = ["R"]
+
+[[pin]]
+number = "1"
+name = "1"
+type = "passive"
+function = "Terminal 1"
+cite = "DS p.2, Dimensions, terminal 1"
+
+[[pin]]
+number = "2"
+name = "2"
+type = "passive"
+function = "Terminal 2"
+cite = "DS p.2, Dimensions, terminal 2"
+
+[param.tc_x7r]
+dielectric = "X7R"
+name = "Temperature characteristic, X7R"
+kind = "electrical"
+scope = "full"
+min = -15
+max = 15
+unit = "%"
+conditions = "-55 to 125 degC, ref 25 degC"
+cite = "DS p.1, Ratings, X7R temperature characteristic"
+
+[param.tc_c0g]
+dielectric = "C0G"
+name = "Temperature coefficient, C0G"
+kind = "electrical"
+scope = "full"
+min = -30
+typ = 0
+max = 30
+unit = "ppm/degC"
+conditions = "-55 to 125 degC, ref 25 degC"
+cite = "DS p.1, Ratings, C0G temperature characteristic"
+
+[param.op_temp_x7r]
+dielectric = "X7R"
+name = "Operating temperature, X7R"
+kind = "rec_op"
+scope = "na"
+min = -55
+max = 125
+unit = "degC"
+conditions = ""
+cite = "DS p.1, Ratings, Operating temperature"
+check_ambient = true
+
+[param.op_temp_c0g]
+dielectric = "C0G"
+name = "Operating temperature, C0G"
+kind = "rec_op"
+scope = "na"
+min = -55
+max = 150
+unit = "degC"
+conditions = ""
+cite = "DS p.1, Ratings, Operating temperature"
+check_ambient = true
+
+[param.thickness]
+parts = ["CSER1-X104K"]
+name = "Thickness"
+kind = "mechanical"
+scope = "na"
+min = 0.45
+max = 0.55
+unit = "mm"
+conditions = ""
+cite = "DS p.2, Dimensions, T"
+
+[param.self_heating]
+parts = ["CSER1-X104K"]
+name = "Self-heating"
+kind = "rec_op"
+scope = "na"
+max = 20
+unit = "degC"
+conditions = ""
+cite = "DS p.3, Ratings, self-heating"
+unchecked = "depends on AC current; owner: module"
