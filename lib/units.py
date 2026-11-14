@@ -1,17 +1,20 @@
 """Unit strings from component.toml -> SI numbers, and engineering-prefix formatting.
 
 A unit is [prefix]base[suffix]: prefix f p n u m k M G, base V A ohm W F H Hz s,
-suffix pp /rtHz /degC /us. A few units are converted (mm, g, mg, %, ppm, ppm/degC)
-and a few are kept as printed (degC, degC/W, dB, "").
+suffix pp /rtHz /degC /us /MHz /V (/MHz -> /Hz: 23.4 uA/MHz -> 2.34e-11 A/Hz; /V is
+transconductance, mA/V -> A/V; uV/V and mV/V are converted first, to fractions). A few units
+are converted (mm, g, mg, %, ppm, ppm/degC, ppm/V, kcycles -> cycles) and a few are kept as printed
+(degC, degC/W, dB, bits, LSB, cycles, years, ""). The SI base A/Hz also takes prefixes (pA/Hz).
 """
 
 SCALABLE = {"V", "A", "ohm", "W", "F", "H", "Hz", "s"}
-SUFFIXES = ["pp", "/rtHz", "/degC", "/us"]
-UNSCALED = {"", "dB", "degC", "degC/W", "bits", "LSB"}
+SUFFIXES = ["pp", "/rtHz", "/degC", "/us", "/MHz", "/V", "/Hz"]  # "/Hz" only so eng() can prefix A/Hz
+UNSCALED = {"", "dB", "degC", "degC/W", "bits", "LSB", "cycles", "years"}
 # Printed unit -> (power of ten, SI base unit) for units that are converted.
 CONVERTED = {"mm": (-3, "m"), "g": (-3, "kg"), "mg": (-6, "kg"),
-             "%": (-2, "1"), "m%": (-5, "1"), "ppm": (-6, "1"), "ppm/degC": (-6, "1/degC"),
-             "uV/V": (-6, "1"), "mV/V": (-3, "1"), "mdegC": (-3, "degC")}
+             "%": (-2, "1"), "m%": (-5, "1"), "ppm": (-6, "1"), "ppm/degC": (-6, "1/degC"), "ppm/V": (-6, "1/V"),
+             "uV/V": (-6, "1"), "mV/V": (-3, "1"), "mdegC": (-3, "degC"),
+             "kcycles": (3, "cycles")}
 PREFIX_POWER = {"f": -15, "p": -12, "n": -9, "u": -6, "m": -3, "k": 3, "M": 6, "G": 9}
 
 
@@ -45,6 +48,8 @@ def to_si(value, unit):
         power, base = PREFIX_POWER.get(prefix, 0), core + suffix
         if suffix == "/us":  # per microsecond -> per second, so slew rates are SI (V/s)
             power, base = power + 6, core + "/s"
+        elif suffix == "/MHz":  # per megahertz -> per hertz (uA/MHz -> A/Hz)
+            power, base = power - 6, core + "/Hz"
     # Divide by an integer power of ten for small prefixes: 80/10**6 rounds better than 80*1e-6.
     scaled = value * 10**power if power >= 0 else value / 10**-power
     return float(scaled), base

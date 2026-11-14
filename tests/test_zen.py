@@ -23,6 +23,10 @@ class TestGenerator(unittest.TestCase):
     def test_io_names(self):
         self.assertEqual([io_name(n) for n in ("+IN", "-VS", "V+", "NC3", "RG1")], ["IN_P", "VS_N", "V_P", "NC3", "RG1"])
 
+    def test_ground_names(self):
+        from lib.zen import GROUND_NAMES
+        self.assertIn("VSSA", GROUND_NAMES)  # analog ground (STM32 VSSA) is io(Ground), like VSS
+
     def test_fixture_wrapper(self):
         text, problems = generate(FIX / "LDO1")
         self.assertEqual(problems, [])
@@ -135,6 +139,22 @@ CASES = [
     ("TexasInstruments/INA241DGK", "ambient_out", ["ta=-40°C to 130°C"], "error", "ta_rec_ambient"),
     ("TexasInstruments/INA241DGK", "b3_ambient_out", ["variant=INA241B3IDGK", "ta=-40°C to 130°C"], "error", "ta_rec_ambient"),
     ("TexasInstruments/INA241DGK", "ambient_unset", ["ta=unset"], "warning", "UNVERIFIED ta_rec_ambient"),
+    ("STMicroelectronics/STM32H723ZET6", "nominal", [], "pass", ""),
+    ("STMicroelectronics/STM32H723ZET6", "vdd_out", ["vdd=3.7V"], "error", "vdd_op_VDD"),
+    ("STMicroelectronics/STM32H723ZET6", "vdda_low", ["vdda=1.5V", "vref=1.4V"], "error", "vdda_op_adc_VDDA"),  # VREF+ moved below VDDA too
+    ("STMicroelectronics/STM32H723ZET6", "vref_above_vdda", ["vref=3.2V"], "warning", "adc16_vref_plus_ge2_VREF_P"),  # > VDDA(min) 3.135 V
+    ("STMicroelectronics/STM32H723ZET6", "vref_tied_waived", ["vref=3.3V 5%", "waive_vref=VREF+ tied to VDDA, DS p.162 Table 80"], "pass", ""),
+    ("STMicroelectronics/STM32H723ZET6", "vref_low", ["vref=1.5V"], "warning", "adc16_vref_plus_ge2_VREF_P"),
+    ("STMicroelectronics/STM32H723ZET6", "vbat_low", ["vbat=1.0V"], "warning", "vbat_op_VBAT"),
+    ("STMicroelectronics/STM32H723ZET6", "vbat_waived", ["vbat=1.0V", "waive=VBAT low with VDD present, DS p.91 footnote 2"], "pass", ""),
+    ("STMicroelectronics/STM32H723ZET6", "vbat_abs_out", ["vbat=4.2V"], "error", "abs_vddx_vss_VBAT"),  # also the vbat_op warning
+    ("STMicroelectronics/STM32H723ZET6", "vusb_out", ["vusb=3.8V"], "error", "vdd33usb_op_nousb_VDD33USB"),
+    ("STMicroelectronics/STM32H723ZET6", "boot0_out", ["boot0=9.5V"], "error", "abs_vin_boot0_BOOT0"),
+    ("STMicroelectronics/STM32H723ZET6", "nrst_out", ["nrst=4.2V"], "error", "abs_vin_other_NRST"),
+    ("STMicroelectronics/STM32H723ZET6", "pdron_out", ["pdron=4.2V"], "error", "abs_vin_other_PDR_ON"),
+    ("STMicroelectronics/STM32H723ZET6", "vdd_unset", ["vdd=unset"], "warning", "UNVERIFIED vdd_op_VDD"),
+    ("STMicroelectronics/STM32H723ZET6", "ambient_out", ["ta=-40°C to 105°C"], "error", "ta_range6_max_power_ambient"),
+    ("STMicroelectronics/STM32H723ZET6", "ambient_unset", ["ta=unset"], "warning", "UNVERIFIED ta_range6_max_power_ambient"),
     ("Murata/GCM155", "nominal", [], "pass", ""),
     ("Murata/GCM155", "rated_v_out", ["va=52V"], "error", "rated_v_P1"),  # > DC 50 V
     ("Murata/GCM155", "reversed_out", ["va=0V", "vb=52V"], "error", "rated_v_P1"),  # non-polar: -52 V also fails

@@ -19,7 +19,7 @@ from pathlib import Path
 from . import series
 from .component import ROOT, load_calc, merge_variant, to_param, variants_of
 
-GROUND_NAMES = {"GND", "AGND", "DGND", "PGND", "SGND", "VSS"}
+GROUND_NAMES = {"GND", "AGND", "DGND", "PGND", "SGND", "VSS", "VSSA"}
 
 # Verbatim template core: unset input -> UNVERIFIED warning (advice when the part is built alone); a waiver drops a
 # warning-level check to advice; errors cannot be waived.

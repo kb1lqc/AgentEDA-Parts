@@ -76,7 +76,7 @@ note       = "Specified by characterization (DS note 3)"   # optional
 | `name` | yes | Plain-English parameter name |
 | `symbol` | if DS has one | Symbol exactly as printed |
 | `kind` | yes | `abs_max`, `rec_op`, `electrical`, `thermal`, `mechanical` |
-| `scope` | yes | `25C` = only at 25 °C; `full` = over the grade's full temperature range; `partial` = over only part of the grade's range (say which in `conditions`; do not use for worst case over the full range); `na` = anything else (abs max, mechanical, or a single stated temperature such as "at 70 °C", which then goes in `conditions`) |
+| `scope` | yes | `25C` = only at 25 °C; `full` = over the grade's full temperature range; `partial` = over only part of the grade's range (say which in `conditions`; do not use for worst case over the full range); also used, with a note saying why, for a rec-op row that applies only under a condition the independent-net check cannot see (a feature in use, a pin wired a certain way, two pins on the same net), so its Zener check is a waivable warning; `na` = anything else (abs max, mechanical, or a single stated temperature such as "at 70 °C", which then goes in `conditions`) |
 | `min` / `typ` / `max` | one of these or `text` | Numbers exactly as printed. A `±X` limit is `min = -X, max = X` |
 | `text` | if no number | A rating the DS states in words or as a formula ("Continuous", "(P x R)^1/2"). Use only when there is no number |
 | `unit` | yes | See units. Use `""` for unitless (gain V/V, ratio) |
@@ -114,10 +114,10 @@ If one parameter has rows for 25 °C and full temperature, make two keys: `vosi_
 
 Write the unit as printed, using ASCII. Per-part values: a datasheet that prints "63.6 g / 1000 pieces" is stored as
 the per-part value in a unit that keeps the printed digits (63.6 mg) with the printed wording in `conditions`. A unit is `[prefix]base[suffix]` with prefix `f p n u m k M G`, base
-`V A ohm W F H Hz s`, and optional suffix `pp` (peak-to-peak), `/rtHz`, `/degC`, `/us`. Examples: `V mV uV nV A mA uA nA pA ohm mohm kohm Mohm W mW F uF nF pF H uH Hz kHz
-MHz s ms us ns uVpp nV/rtHz fA/rtHz uV/degC V/us`. Converted: `mm` -> m, `g mg` -> kg, `uV/V mV/V m%` -> fraction, `mdegC` -> degC, `%` -> fraction
-(0.5 % -> 0.005, unit `1`), `ppm` -> fraction (35 ppm -> 35e-6, unit `1`), `ppm/degC` -> 1/degC (unit `1/degC`). `/us` -> `/s` (2.5 V/us -> 2.5e6 V/s).
-Unscaled: `degC degC/W dB bits LSB` and `""`. So every value a calc function receives is SI or a plain fraction; README
+`V A ohm W F H Hz s`, and optional suffix `pp` (peak-to-peak), `/rtHz`, `/degC`, `/us`, `/MHz`, `/V` (transconductance). Examples: `V mV uV nV A mA uA nA pA ohm mohm kohm Mohm W mW F uF nF pF H uH Hz kHz
+MHz s ms us ns uVpp nV/rtHz fA/rtHz uV/degC V/us uA/MHz mA/V us/V`. Converted: `mm` -> m, `g mg` -> kg, `uV/V mV/V m%` -> fraction, `mdegC` -> degC, `kcycles` -> cycles (10 kcycles -> 10000), `%` -> fraction
+(0.5 % -> 0.005, unit `1`), `ppm` -> fraction (35 ppm -> 35e-6, unit `1`), `ppm/degC` -> 1/degC (unit `1/degC`), `ppm/V` -> 1/V (unit `1/V`). `/us` -> `/s` (2.5 V/us -> 2.5e6 V/s). `/MHz` -> `/Hz` (23.4 uA/MHz -> 2.34e-11 A/Hz). `uV/V` and `mV/V` stay fractions, never `/V` transconductance.
+Unscaled: `degC degC/W dB bits LSB cycles years` and `""`. So every value a calc function receives is SI or a plain fraction; README
 tables still show the printed units. The loader rejects any unit it does not know.
 
 ### Pin types (KiCad)
@@ -263,7 +263,7 @@ Two layers, one source of truth:
 
 What the generator emits, so a reviewer can predict the file from the TOML:
 - One `io()` per connected `[[pin]]`, named from the pin name (`+IN` -> `IN_P`, `-VS` -> `VS_N`, `V+` -> `V_P`).
-  Ground-named pins (`GND AGND DGND PGND SGND VSS`) are `io(Ground)`; every other pin is `io(Net)`. `power_in`
+  Ground-named pins (`GND AGND DGND PGND SGND VSS VSSA`) are `io(Ground)`; every other pin is `io(Net)`. `power_in`
   and `power_out` pins are cast to `Power(net, voltage=net.voltage)` at the component, so a negative rail or GND can drive them.
   `no_connect` pins are omitted (auto NotConnected). Same-name pins (two GND pins, an exposed pad named GND) are
   one node: one `io()` and one `pins={}` entry.
