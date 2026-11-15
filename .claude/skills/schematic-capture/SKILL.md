@@ -60,6 +60,13 @@ and how to use agents. Every rule here came from rework that cost real tokens.
      matched to an accepted class
    - text-overlap check (script, see Tooling) reports nothing
    - hand-added notes, boxes and titles all survive apply (count top-level `text` / `rectangle` items)
+   - **sync check (mandatory, also before every commit):** the schematic must match the code source of truth.
+     `pcb build -Dwarnings` proves connectivity equivalence, but it does NOT see part values, MPNs or other fields
+     edited in KiCad; so also run `pcb apply schematic --no-open` on a throwaway copy of the repo and require
+     `schematic unchanged`. Wrap both in a board script (e.g. `tools/schematic/check_sync.sh`) and enforce it with a
+     versioned pre-commit hook (`git config core.hooksPath tools/git`) that runs when `.zen`, `pcb.toml` or
+     `eda/*.kicad_sch` are staged. Humans review in KiCad and may change presentation only; circuit changes go in
+     the `.zen`.
 6. **Adversarial review (independent, read-only).** A fresh agent that did not draw the sheet reviews the renders
    (full sheet plus zoomed crops) against the `schematic-style` review checklist and the phase-0 decisions, and
    returns defects only: `sheet | location | rule broken | evidence | fix`. It also re-checks any claim the drafter
