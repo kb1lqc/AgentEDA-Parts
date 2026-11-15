@@ -20,6 +20,9 @@ PIN_TYPES = {"input", "output", "bidirectional", "tri_state", "passive", "free",
 KINDS = {"abs_max", "rec_op", "electrical", "thermal", "mechanical"}
 SCOPES = {"25C", "full", "partial", "na"}
 CITE_STARTS = ("DS p.", "DS PDF p.")
+# KiCad 10 symbol format. `pcb apply schematic` (pcb 0.4.102) rejects older symbol libraries. Upgrade with
+# `kicad-cli sym upgrade --force` (docs/KICAD.md, Symbol). Footprints are not checked for this.
+KICAD_SYMBOL_MIN_VERSION = 20251024
 
 
 SERIES_FIELDS = ["value_param", "e_series", "series_power"]  # plus series_tol or series_tolerances; series_vlimit is optional
@@ -339,6 +342,11 @@ def check_kicad(pins, part, folder):
     out = []
     sym, fp = folder / part.get("kicad_symbol", ""), folder / part.get("kicad_footprint", "")
     if part.get("kicad_symbol") and sym.exists():
+        version = kicad.symbol_format_version(sym)
+        if version is None or version < KICAD_SYMBOL_MIN_VERSION:
+            found = "no integer (version N) in its header" if version is None else f"format version {version}"
+            out.append(("ERROR", f"{part['kicad_symbol']}: {found}; KiCad 10 format ({KICAD_SYMBOL_MIN_VERSION} or newer) "
+                                 f"is required by pcb apply. Fix: kicad-cli sym upgrade --force {sym} (docs/KICAD.md, Symbol)"))
         symbol = {num: (name, typ) for num, name, typ in kicad.symbol_pins(sym)}
         toml = {str(p.get("number")): (p.get("name"), p.get("type")) for p in pins}
         for num in sorted(toml.keys() - symbol.keys()):

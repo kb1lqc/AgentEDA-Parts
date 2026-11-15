@@ -25,7 +25,7 @@ belongs to, or the copper has no net.
 - Every pin on the 2.54 mm grid; body roughly centred on the origin.
 - `[[pin]]` in `component.toml` must match the symbol exactly; `python3 -m lib.check` enforces it.
 - Format: KiCad 10 symbol format, `(version 20251024)` or newer, because `pcb apply` rejects older files. Upgrade in
-  place with `$K sym upgrade --force <Value>.kicad_sym` (`-o` writes a copy), then check the pins and properties are unchanged.
+  place with `$K sym upgrade --force <Value>.kicad_sym` (`-o` writes a copy), then check the pins and properties are unchanged. Enforced by `python3 -m lib.check`.
 
 ## Footprint (`<Value>.kicad_mod`)
 - Pads equal the datasheet's recommended land pattern (size, position, corner radius). If the datasheet has no land

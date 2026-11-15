@@ -117,6 +117,44 @@ class TestNewChecks(unittest.TestCase):
         self.assertIn("field must be min, typ or max", bad)
 
 
+class TestSymbolFormat(unittest.TestCase):
+    """The symbol must be KiCad 10 format (version 20251024 or newer): pcb apply rejects older libraries."""
+    HEADER = "(kicad_symbol_lib (version 20251024)"
+
+    def run_header(self, new_header):
+        with tempfile.TemporaryDirectory() as d:
+            copy = Path(d) / "LDO1"
+            copytree(FIX / "LDO1", copy)
+            sym = copy / "LDO1.kicad_sym"
+            text = sym.read_text()
+            assert self.HEADER in text
+            sym.write_text(text.replace(self.HEADER, new_header, 1))
+            return messages(copy)
+
+    def test_kicad6_symbol_is_error(self):
+        out = self.run_header("(kicad_symbol_lib (version 20211014)")
+        self.assertEqual(len(out), 1)
+        self.assertIn("ERROR: LDO1.kicad_sym: format version 20211014; KiCad 10 format (20251024 or newer)", out[0])
+        self.assertIn("kicad-cli sym upgrade --force", out[0])
+
+    def test_kicad10_symbol_is_clean(self):
+        self.assertEqual(messages(FIX / "LDO1"), [])
+        self.assertEqual(self.run_header(self.HEADER), [])
+
+    def test_missing_version_is_error(self):
+        out = self.run_header("(kicad_symbol_lib")
+        self.assertEqual(len(out), 1)
+        self.assertIn("ERROR: LDO1.kicad_sym: no integer (version N) in its header", out[0])
+
+    def test_footprint_is_not_checked_for_version(self):
+        with tempfile.TemporaryDirectory() as d:
+            copy = Path(d) / "LDO1"
+            copytree(FIX / "LDO1", copy)
+            fp = copy / "LDO1.kicad_mod"
+            fp.write_text(fp.read_text().replace("(version 20241229)", "(version 20211014)", 1))
+            self.assertEqual(messages(copy), [])
+
+
 class TestExampleTolerance(unittest.TestCase):
     def test_relative_and_absolute(self):
         from lib.component import run_example

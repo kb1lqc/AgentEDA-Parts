@@ -36,6 +36,8 @@ metadata; do not check downloaded PDFs into the package.
 
 - Functional silicon variants need distinct symbols; ordering-only variants
   such as tape/reel, temperature grade, or RoHS suffixes do not.
+- Symbols must be KiCad 10 format (`(version 20251024)` or newer; `pcb apply` rejects older). Upgrade vendor files with
+  `kicad-cli sym upgrade --force`, then verify pins and curated properties (restore Description); `python3 -m lib.check` enforces it.
 - An MPN match or resemblance to a reference footprint does not establish
   footprint correctness. Requested creation or repair includes replacing an
   incorrect candidate or generating one from authoritative evidence; ask only

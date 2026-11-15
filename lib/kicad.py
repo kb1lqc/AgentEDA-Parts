@@ -63,3 +63,14 @@ def footprint_pads(path):
         if len(pad) > 1 and pad[1] != "":
             numbers.add(pad[1])
     return numbers
+
+
+def symbol_format_version(path):
+    """N of the header `(kicad_symbol_lib (version N) ...)` of a .kicad_sym file, or None if it is missing or not an integer."""
+    root = read(path)
+    if not (isinstance(root, list) and root and root[0] == "kicad_symbol_lib"):
+        return None
+    for child in root:
+        if isinstance(child, list) and child and child[0] == "version" and len(child) > 1:
+            return int(child[1]) if child[1].isdigit() else None
+    return None

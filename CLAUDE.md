@@ -78,7 +78,10 @@ me; they return evidence.
    MLCC series: catalog from the vendor export, one directory per size+thickness code (`python3 -m lib.catalog`, SPEC
    "Capacitor series"); no family, per-dielectric rows use `dielectric = ...`, per-part rows `parts = [...]`.
 2. **KiCad files** (docs/KICAD.md). Vendor files come in L/N/M densities: use N. Copy symbol and footprint into
-   `components/<Manufacturer>/<Value>/<Value>.kicad_sym` / `.kicad_mod` and fix them up by editing the S-expressions:
+   `components/<Manufacturer>/<Value>/<Value>.kicad_sym` / `.kicad_mod`. If the copied symbol's `(version ...)` is below
+   20251024 (KiCad 6/7 exports always are), upgrade it with `kicad-cli sym upgrade --force` BEFORE the fix-ups, then
+   confirm pins and properties are unchanged and that Description and other curated properties survived (the upgrade
+   can overwrite Description from ki_description: restore it). Fix them up by editing the S-expressions:
    properties (Value, MPN, Manufacturer, Datasheet URL, Description, Footprint link), pin names verbatim from the DS,
    pin electrical types from the DS function text, same-name pins that are separate nodes renamed apart (RG1/RG2),
    pads equal to the DS land pattern, courtyard, pin-1 marker. Never hand-draw a symbol or footprint. Copy the STEP
@@ -142,13 +145,14 @@ Apply the default, add a Decision Log row, add the open item, continue.
 | Storage, lead/solder temperature, ESD | `unchecked = "owner: assembly"` |
 | Alternates | Only the same part in other packaging (reel/tube). Other grades, tolerances or second sources: open item |
 | Revision currency, errata, PCN, lifecycle, lead finish / MSL missing | Open item "not checked (no web access)" / "no data in DS" |
+| Vendor symbol older than KiCad 10 format | upgrade with kicad-cli, verify pins/properties, restore curated Description |
 
 **Stop** (ask me) only for: missing datasheet; unnamed package/grade/option choice; mirrored/rotated/mismatched
 footprint; pin count or position conflict in the DS; missing NC/EP wording; two defaults that conflict; anything
 unsafe.
 
 ## Done: evidence to show
-1. Pin table (number, name, type, function, cite) and confirmation it matches the symbol (lib.check).
+1. Pin table (number, name, type, function, cite) and confirmation it matches the symbol (lib.check); symbol format version (KiCad 10).
 2. Footprint: DS land pattern vs footprint pads per dimension; courtyard; pin-1 marker; STEP status.
 3. Params summary: counts per kind, every judgement call, every DS ambiguity.
 4. Equations list with cites; EXAMPLES results; INPUTS present for every function.
