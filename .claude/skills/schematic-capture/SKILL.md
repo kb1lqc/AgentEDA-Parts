@@ -20,6 +20,8 @@ and how to use agents. Every rule here came from rework that cost real tokens.
 | Chasing ERC findings that are inherent or expected (KiCad label rules, incomplete board) | **Classify ERC findings** with the table in `schematic-style` before acting. |
 | A tool reporting success while silently dropping a label | **Gate on the netlist diff**, not on exit codes. |
 | Two agents (or an agent and the main session) writing the same file | **One writer per file at a time**; parallelize only independent files. |
+| Notes on the sheet, numbers in spec text and `.zen` comments typed by hand from the report, then left stale after the next design change | **Generate notes from the analysis values file** (Design-value change loop); text elsewhere cites the section or key, not the number |
+| An agent that hit a usage limit replaced by a fresh one that redoes the work | **Resume the same agent** (send it a message) and have it check its partial edits first |
 | Large outputs (full reports, many renders) pulled into the main context | **Agents return a summary plus paths**; the main session opens only the final renders, at modest resolution, and zooms into specific areas. |
 
 ## Phases
@@ -60,12 +62,34 @@ and how to use agents. Every rule here came from rework that cost real tokens.
      matched to an accepted class
    - text-overlap check (script, see Tooling) reports nothing
    - hand-added notes, boxes and titles all survive apply (count top-level `text` / `rectangle` items)
+   - **sync check (mandatory, also before every commit):** the schematic must match the code source of truth.
+     `pcb build -Dwarnings` proves connectivity equivalence, but it does NOT see part values, MPNs or other fields
+     edited in KiCad; so also run `pcb apply schematic --no-open` on a throwaway copy of the repo and require
+     `schematic unchanged`. Wrap both in a board script (e.g. `tools/schematic/check_sync.sh`) and enforce it with a
+     versioned pre-commit hook (`git config core.hooksPath tools/git`) that runs when `.zen`, `pcb.toml` or
+     `eda/*.kicad_sch` are staged. Humans review in KiCad and may change presentation only; circuit changes go in
+     the `.zen`.
 6. **Adversarial review (independent, read-only).** A fresh agent that did not draw the sheet reviews the renders
    (full sheet plus zoomed crops) against the `schematic-style` review checklist and the phase-0 decisions, and
    returns defects only: `sheet | location | rule broken | evidence | fix`. It also re-checks any claim the drafter
    made about tool limits, and checks every number in the notes against the spec and the worst-case report. The drafter fixes in one pass; re-review only what changed.
 7. **Present** to the designer with the renders, the gate results, the accepted ERC exceptions, and any open
    items. Record new preferences in the board's style notes; promote generic ones to `schematic-style`.
+
+## Design-value change loop (after the schematic exists)
+A changed requirement or part changes numbers, not placement. Run, judging by exit code:
+1. Edit the analysis inputs and/or the `.zen` configs (never the sheet).
+2. Run the analysis: it regenerates the datasheet, charts and the values file.
+3. Run the notes script (board `tools/schematic/update_notes.py` pattern): each note line is found by one regex
+   that must match exactly once, or nothing is written. If the WORDING of a note changes (a new quantity, e.g.
+   calibrated and uncalibrated error), edit that note's text in the `.kicad_sch` once, keeping its line count so
+   the box still fits, then extend the rule; the script maintains it from then on. Run it twice: the second run
+   changes nothing.
+4. `pcb apply schematic --no-open` twice (second unchanged), netlist diff, `pcb build -Dwarnings`, classified ERC,
+   sync check.
+5. grep the `.zen` comments, spec and README for the old numbers; replace copies with cites.
+The main session hand-checks the top two or three contributors of any changed result with a back-of-envelope
+calculation before presenting it (e.g. TCR x temperature span, drift x temperature span).
 
 ## Agents: which model does what
 | Job | Model | Why |
@@ -74,6 +98,7 @@ and how to use agents. Every rule here came from rework that cost real tokens.
 | Zener code changes, library data, tests, toolchain probes, file renames, spec text | cheapest (Haiku) | well-specified, checkable by build and tests |
 | Pin-geometry pre-flight and the placement generator script | mid (Sonnet) | spatial reasoning; a cheap model produced partial layouts |
 | Adversarial review | a fresh agent, cheap or mid, never the drafter | independence matters more than size; checklist-driven |
+| Analysis script changes (new error terms, stack-ups, charts) | cheapest (Haiku), with the exact model, inputs and outputs specified | checkable by running it; the main session verifies the top terms by hand |
 Brief every agent with absolute paths, the files it may write, the skills to read, the gates that define done,
 and the scratch directory; ask for a summary plus artifact paths, not full logs.
 
@@ -88,6 +113,14 @@ scratch each time:
   automatic gate.
 - `place`: helpers for the placement script: pin endpoint for a symbol at (x, y, rotation, mirror), grid snap,
   wire/label emitters with correct label anchor, angle and justify.
+
+## Reused blocks on a board
+A board built from reusable blocks (see `reusable-blocks`) gets one child sheet per instance, generated fresh in the
+board's own `eda/`; the block repository's arranged reference sheet is not picked up automatically
+(`schematic-style`, toolchain facts). Stamp the reference sheet into the board per instance with the blocks repository's `stamp_block.py`
+(`reusable-blocks`, Schematic reuse), then run the normal gates. Arrange only the
+board's top-level block diagram by hand; never re-arrange a block's internals on a board (fix them in the block
+repository and re-stamp).
 
 ## Before reporting a limitation
 State what was tried, on a fresh generation, with what evidence (file snippet, exact error). Check the tool's

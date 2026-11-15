@@ -33,6 +33,9 @@ presentation is the `schematic-style` skill; part data and equations come from t
   designer to choose. Lifecycle, PCN and lead time not available offline are open items to verify with the
   manufacturer or distributors before release. `MATCH_FAILED` in a BOM lookup means "not in that service's
   sources", not "unobtainable".
+- **Compute, never reason out numbers.** Every number comes from a script run (the analysis, or a scratch script
+  for an option study), not from a model's arithmetic. Scripts are cheap to re-run and reviewable; hand-carried
+  numbers go stale.
 - **Narrow the operating range instead of adding protection, when that is acceptable,** and record the residual
   risk as an open item (e.g. capping a bus voltage so an abs-max is never exceeded rather than adding a TVS).
   Ask before choosing between the two.
@@ -58,6 +61,42 @@ presentation is the `schematic-style` skill; part data and equations come from t
   ambient and derating; transients (hot-plug, shorts, inductive kickback) are called out even when DC checks
   pass.
 
+## Accuracy and thermal analysis (learned on a shunt current-sense block; applies to any measured or regulated quantity)
+- **Self-heating is solved, not assumed.** Any part whose parameters depend on its own dissipation (shunt TCR,
+  MOSFET Rds(on), regulator dropout, LED forward voltage) runs at a temperature found self-consistently:
+  x = theta x P(T_ambient + x), iterated to a stated residual, with P at the worst-case parameter for that
+  temperature. Evaluate the part's temperature-dependent parameters at that element or junction temperature;
+  other parts stay at their own temperature (ambient, or their own junction). A thermal resistance read off a
+  derating curve is an ESTIMATE, and an element temperature limit not stated in the datasheet is an ASSUMPTION;
+  label both, and mark every result that depends on them.
+- **Beginning-of-life (BOL) shifts are part of every accuracy result.** Read the part's PERFORMANCE / reliability
+  table (resistance to solder heat, thermal shock, rapid temperature change) in full, including fixed terms such
+  as "+/-(0.5 % + 0.0005 ohm)": on low-value parts the fixed term dominates (0.5 mohm is 5 % of a 10 mohm shunt).
+  Test limits are bounds, not typicals; a typical shift the datasheet does not state cannot be used. Check BOL
+  terms during part selection, before committing to a part. End-of-life drift (load life, humidity, aging) is a
+  separate case: in or out of scope by the designer's decision, and listed as an open item when out.
+- **Report uncalibrated and calibrated, and say which one is judged.** When a requirement can only be met with
+  calibration, the calibration becomes a production requirement in the spec (operating point, ambient, reference
+  accuracy). Model it explicitly (a gain calibration is a ratio: k = I_ref(1 + e_ref) / reading_cal, error =
+  k x reading_op / I_true - 1), and list what it removes (fixed gain terms: tolerance, assembly shift, gain error,
+  register rounding) and what remains (temperature coefficients between the operating and the calibration
+  temperature, including the element's own self-heated temperature at the calibration point; drift relative to
+  the calibration ambient; reference accuracy; offset away from the calibration point; quantisation). Compute
+  which calibration actually helps (gain vs offset) before proposing one.
+- **Every accuracy result has an error stack-up.** A table per case (uncalibrated / calibrated, full scale / low
+  end): each contributor isolated, with its cite or design input, min/max, the corner and sign that gives its
+  worst case, sorted largest first; plus a bar chart of the same. The judged total is the worst case over all
+  corners of all inputs together, not the linear sum (cross products add) and not RSS (report RSS as information
+  only). For a function that is not multilinear (ratios, quadratic in temperature), add a sampling check that the
+  random draws stay inside the corner bounds.
+- **Margin is part of the answer.** Report result, limit and margin. A pass whose margin is thin before BOL or
+  calibration effects are added is flagged to the designer, not just marked PASS.
+- **Check unit conventions of library data** (e.g. percent limits stored as fractions) with a known-value
+  assertion in the analysis; a double scaling is silent otherwise.
+- **Pushing an operating limit** (maximum current, range): sweep it in a scratch script, report the largest value
+  that still meets the requirement worst case, and let the designer pick a round value. The chosen value then
+  becomes a design input with its basis.
+
 ## Reusable blocks
 - Build reusable circuits as modules with role-named ports, the sense or support parts inside the block, and
   design-intent configs (value, tolerance, DNP choices) set by each board from its own analysis.
@@ -65,6 +104,8 @@ presentation is the `schematic-style` skill; part data and equations come from t
 - Keep topology config-independent: configs change values and DNP, never add, remove or reconnect parts.
 - Each block has a worst-case analysis script and a report: inputs with cites, results with margins, plots where
   a quantity varies over an operating range (e.g. error vs current), and a "limits of this analysis" section.
+- How blocks are packaged, versioned, analysed per instance and pulled into larger boards (repository layout,
+  standard ports, per-instance sheets and notes): the `reusable-blocks` skill.
 
 ## When to stop and ask the designer
 - A requirement is missing or ambiguous (range, accuracy, ambient, interface).
@@ -76,6 +117,13 @@ Present the options with numbers and a recommendation; record the decision.
 ## Deliverables for any block or board
 - **Sources of truth are code:** the Zener `.zen` files and the Python analysis. Everything else (design-analysis
   datasheet, spec numbers, schematic notes) is generated from or quotes them.
+- **Numbers flow one way:** analysis -> machine-readable values file (e.g. `values.json`) -> generated datasheet
+  and schematic notes (a script with one exact-match pattern per note line that refuses to write on any miss).
+  Spec text and `.zen` comments cite the analysis section or values key instead of copying a number; a copied
+  number goes stale the next time the design changes.
+- **The design-analysis datasheet is pure analysis of the design as it is:** no options, alternatives,
+  candidate comparisons or worked examples. Option studies happen before the decision (scratch scripts, presented
+  to the designer); the chosen design is what the datasheet analyses.
 - **Design-analysis datasheet:** a Python script in jupytext percent format (`# %%` cells: opens as a notebook,
   diffs as plain Python) that regenerates a committed Markdown datasheet plus PNG charts in `docs/` with one
   command. Not a raw `.ipynb` (hidden state, unreadable diffs) and never hand-written numbers. Contents: a summary

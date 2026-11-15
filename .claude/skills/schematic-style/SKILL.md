@@ -73,6 +73,14 @@ started.
   hierarchical labels connected through sheet pins; global power symbols appear only on the top-level sheet, where
   the board rails are defined. The block then makes no assumption about which rail it sits on. Power symbols
   pointing up/down still apply on the top level and on non-reusable sheets.
+- **A board built from blocks reads as a block diagram.** The top-level sheet holds only sheet symbols, the
+  board's connectors and anything not yet worth a block. Blocks sit left to right in power and signal order
+  (input connector -> protection / switch -> monitor -> load connector; sensors -> controller -> interfaces),
+  joined by labelled wires; rails as power symbols on top edges, ground on bottom edges. Each block instance has
+  its DESIGN VALUES box beside it.
+- **Same sheet-symbol geometry across blocks.** Power-path ports (`BUS_IN` left, `BUS_OUT` right) sit at the same
+  offset from the top of every block's sheet symbol, rails on top, ground on the bottom, interfaces below the
+  path on the right edge, so chained blocks join with straight wires and no jogs.
 - **Interfaces as harnesses** (a bus group carrying SPI, I2C, ...) are preferred where the toolchain keeps them;
   otherwise one sheet pin per member, grouped together on the sheet edge.
 
@@ -85,7 +93,10 @@ started.
   so). Never type a value from memory.
 - **Instance values on the parent, block notes on the reusable sheet.** The parent sheet carries this board's
   numbers next to the block (with a boxed design-values summary); the reusable sheet carries notes about the block
-  itself and only the values its configs set.
+  itself. Block-sheet notes must be true for every instance: limits and facts of the block (ADC range, abs-max
+  reasons, what a termination is for), not an instance's full scale or error. A number set by an instance config
+  (shunt value, full-scale current) goes on the parent, or is filled per instance by the notes script when the
+  sheet is stamped.
 - **Group with titled boxes.** Draw rectangles (one stroke style per meaning, e.g. dashed = functional group) around
   functional areas and note groups, each with a short title at the top-left inside the edge (e.g. POWER PATH /
   CURRENT SENSE, LOGIC SUPPLY, SPI / ALERT, DESIGN VALUES). Boxes never cut through symbols or text; a net leaving a
@@ -143,6 +154,15 @@ sheet contains. A printed sheet must identify itself.
     root's new sheet pins, power symbols and their `lib_symbols` entries by script, then place them by hand.
   - For a ground label pointing down (angle 270) use `justify right`; `justify left` folds the text back over the
     wire.
+- **Child sheets are per instance and per board** (probed 2026-11-15): each instance becomes `<instance>.kicad_sch`
+  in the board's own `eda/`, generated fresh. The module's `Project(path=...)` does not act as a template: an
+  arranged sheet placed at that path was ignored. Copying an arranged sheet into another board's `eda/` as
+  `<instance>.kicad_sch` (same instance name) before `pcb apply` keeps its placement, notes and boxes (apply
+  reports updated, then unchanged), but the root's rail sheet pins still need the transplant described above
+  (otherwise `hier_label_mismatch`). A second copy of the same file for another instance fails ("generated net
+  symbol UUID ... is already used"), and its internal labels carry the first instance's prefix (`INA.SENSE_P`):
+  each stamped copy needs pcb's own refdes, part and file UUIDs for that instance, the new prefix and new
+  UUIDs elsewhere (done by the blocks repository's `stamp_block.py`, verified for two chained instances).
 - **Internal net names** are always `<instance>.<net>`, even for an explicitly named `Net()`. A `Net("X")` assigned
   to a variable `X` only triggers a `style.redundant_name` advice; write `X = Net(...)`.
 - **Interfaces** (stdlib `Spi`, `I2c`, ...) become one hierarchical label and sheet pin per member (`SPI.CS`, ...).
