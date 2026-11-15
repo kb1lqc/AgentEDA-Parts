@@ -161,7 +161,8 @@ sheet contains. A printed sheet must identify itself.
   reports updated, then unchanged), but the root's rail sheet pins still need the transplant described above
   (otherwise `hier_label_mismatch`). A second copy of the same file for another instance fails ("generated net
   symbol UUID ... is already used"), and its internal labels carry the first instance's prefix (`INA.SENSE_P`):
-  each stamped copy needs new UUIDs and the new prefix. Not yet verified end to end for a renamed instance.
+  each stamped copy needs pcb's own refdes, part and file UUIDs for that instance, the new prefix and new
+  UUIDs elsewhere (done by the blocks repository's `stamp_block.py`, verified for two chained instances).
 - **Internal net names** are always `<instance>.<net>`, even for an explicitly named `Net()`. A `Net("X")` assigned
   to a variable `X` only triggers a `style.redundant_name` advice; write `X = Net(...)`.
 - **Interfaces** (stdlib `Spi`, `I2c`, ...) become one hierarchical label and sheet pin per member (`SPI.CS`, ...).

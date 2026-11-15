@@ -117,8 +117,8 @@ scratch each time:
 ## Reused blocks on a board
 A board built from reusable blocks (see `reusable-blocks`) gets one child sheet per instance, generated fresh in the
 board's own `eda/`; the block repository's arranged reference sheet is not picked up automatically
-(`schematic-style`, toolchain facts). Stamp the reference sheet into the board per instance (copy, rename the
-instance prefix, new UUIDs, transplant the root's sheet pins), then run the normal gates. Arrange only the
+(`schematic-style`, toolchain facts). Stamp the reference sheet into the board per instance with the blocks repository's `stamp_block.py`
+(`reusable-blocks`, Schematic reuse), then run the normal gates. Arrange only the
 board's top-level block diagram by hand; never re-arrange a block's internals on a board (fix them in the block
 repository and re-stamp).
 
