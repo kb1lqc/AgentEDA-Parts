@@ -205,7 +205,8 @@ def series_section(folder):
         text += (f"- **Rated voltage**: sqrt(P70 x R), P70 = {eng(power.max, 'W')} (`{info['series_power']}`); the "
                  f"datasheet prints no limiting element voltage\n")
     p1, p2 = info.get("series_pins", ["P1", "P2"])
-    text += (f"- **Zener wrapper**: config `value`{' and `tolerance` (a code)' if options else ''}; checks `value_allowed` and "
+    text += (f"- **Zener wrapper**: config `value`{' and `tolerance` (a code)' if options else ''}, optional `v_across` (the module's "
+             f"worst-case voltage across the part; replaces the net ranges in `rated_voltage` when set); checks `value_allowed` and "
              f"`rated_voltage` (|V({p1}) - V({p2})| <= derate x rated voltage). It uses the 70 degC power rating at every "
              f"ambient, so above 70 degC it is optimistic: use `calc.rated_power` (curve-based) for hot designs\n"
              f"- **Worst-case resistance**: `wca(calc.resistance_worst, r0=<value>, tol={"part.tolerance(<code>)" if options else "part.param('tol')"}, tcr={"part.tcr(<value>)" if series.tcr_rows(info) else "..."}, ...)` "

@@ -456,7 +456,15 @@ A resistor series component (see "Series components") gets one wrapper, `<Value>
   part, max(P1.max - P2.min, P2.max - P1.min), is at most `derate x min(sqrt(P x R), Vlimit)`, with P from
   `series_power`, Vlimit from `series_vlimit` (their `max`) and R the configured value. Zener has no sqrt, so the
   generated code compares squares. Both rows are generated literals, like every other limit. Without `series_vlimit`
-  the limit is `derate x sqrt(P x R)`.
+  the limit is `derate x sqrt(P x R)`. The voltage is the declared `v_across` when it is set (below); otherwise the
+  net-range expression above.
+- Optional config `v_across = config(Voltage, optional=True)`: the declared worst-case voltage across the part, a
+  point value or a range, signed or not (the check uses the magnitude, max(|min|, |max|)). The module supplies it from
+  its own analysis, for example I_max x worst-case R for a current shunt, or the worst-case drop for a termination
+  between two logic nets. It replaces the independent net ranges in `rated_voltage`, so the two nets may stay
+  undeclared without an UNVERIFIED for that check. When unset, `rated_voltage` is unchanged. The module owns the
+  number and must justify it in a comment at the instance (design analysis; it is not a datasheet value and is not
+  in component.toml). The check severity is unchanged: an error, not waivable, and `derate` still shrinks the limit.
 - Power derating above 70 degC is a curve (`calc.rated_power`) and is not checked in Zener; the wrapper lists it as
   `# UNCHECKED ... owner: module`. The four series rows are not listed as UNCHECKED (the series check reads them).
 - The ambient check comes from the normal `check_ambient` row.

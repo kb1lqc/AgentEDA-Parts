@@ -5,7 +5,7 @@ Checks are DC steady-state on the voltages each instance declares. They do not c
 hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
 Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
 
-load("@stdlib/units.zen", "Resistance", "Temperature")
+load("@stdlib/units.zen", "Resistance", "Temperature", "Voltage")
 
 # UNCHECKED: max_working_voltage: Maximum working voltage (DS p.2, Technical Specifications, Maximum working voltage, (P x R)^1/2); formula rating; owner: module (calc.max_working_voltage)
 # UNCHECKED: derate_knee: Derating knee: 100 % rated power up to (DS p.3, Figure: DERATING graph (unnumbered; rated power vs ambient, 100 % line ends at 70 degC); coincides with DS p.1 P70 degC); curve value; used by calc.rated_power
@@ -27,6 +27,11 @@ I1 = io(Net)
 value = config(Resistance, help="Resistance, an allowed E-series value (see the _MPN table)")
 tolerance = config(
     str, default="", help="Tolerance code, one of B, D, F; needed when more than one code allows the value"
+)
+v_across = config(
+    Voltage,
+    optional=True,
+    help="Declared worst-case voltage across the part from the module's analysis; replaces the independent net ranges when set",
 )
 ambient = config(Temperature, optional=True, help="Board ambient temperature range")
 derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
@@ -657,13 +662,29 @@ builtin.add_electrical_check(
 )
 
 
-def _rated_voltage(_m, v1, v2, what, r, p, derate):
-    # Worst case |V(P1) - V(P2)| over both nets' ranges. Zener has no sqrt, so compare squares:
+def _rated_voltage(_m, what, r, p, derate, v1=None, v2=None, va=None):
+    # Worst case |V across the part|: v_across (the module's analysis) when set, else the two nets' ranges taken
+    # as independent: max(v1.max - v2.min, v2.max - v1.min). Zener has no sqrt, so compare squares:
     # vmax <= derate x sqrt(P x R)  <=>  vmax^2 <= derate^2 x P x R. The datasheet prints no Vlimit.
-    vmax = max(v1.max - v2.min, v2.max - v1.min)
+    if va == None:
+        vmax = max(v1.max - v2.min, v2.max - v1.min)
+        src = "net ranges"
+    else:
+        vmax = max(abs(va.min), abs(va.max))
+        src = "v_across"
     limit2 = p * r * derate * derate
-    msg = "%s: up to %s V across the part, (V across)^2 = %s V^2 > %s V^2 = derate^2 x P x R with R = %s ohm, P = %s W"
-    check(vmax * vmax <= limit2, msg % (what, vmax, vmax * vmax, limit2, r, p))
+    msg = "%s: up to %s V across the part (from %s), (V across)^2 = %s V^2 > %s V^2 = derate^2 x P x R with R = %s ohm, P = %s W"
+    check(vmax * vmax <= limit2, msg % (what, vmax, src, vmax * vmax, limit2, r, p))
+
+
+def _rated_inputs(va):
+    inputs = {"what": "rated_voltage", "r": value.value, "p": 1.0, "derate": derate}
+    if va == None:
+        inputs["v1"] = I1.voltage
+        inputs["v2"] = I2.voltage
+    else:
+        inputs["va"] = va
+    return inputs
 
 
 # t_oper_ambient: board ambient range inside this range
@@ -675,15 +696,11 @@ _limit("t_oper_ambient", _temp, {"v": ambient, "what": "t_oper_ambient", "lo": 2
 # rated_voltage: voltage across the part within sqrt(P x R), x derate
 #   Power rating p70: Power rating at 70 degC ambient: max 1.0 W (DS p.1, Standard Electrical Specifications, POWER RATING P70 degC, W, 1.0)
 #   No limiting element voltage: the datasheet prints none.
-#   Evaluated for the configured value. Error: a rated part voltage is exceeded.
+#   Voltage across: v_across (config, the module's worst-case analysis) when set; otherwise the two nets' ranges,
+#   taken as independent. Evaluated for the configured value. Error: a rated part voltage is exceeded.
 #   Not checked here: power derating above 70 degC (curve) is the module's job, calc.rated_power;
 #   above 70 degC ambient this check is optimistic.
-_limit(
-    "rated_voltage",
-    _rated_voltage,
-    {"v1": I1.voltage, "v2": I2.voltage, "what": "rated_voltage", "r": value.value, "p": 1.0, "derate": derate},
-    "error",
-)
+_limit("rated_voltage", _rated_voltage, _rated_inputs(v_across), "error")
 
 Component(
     name="WSK2512",

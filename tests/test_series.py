@@ -193,11 +193,14 @@ class TestZen(unittest.TestCase):
         self.assertIn("_MPN_STR = _MPN.get(_KEY,", text)
         self.assertIn('part=Part(mpn=_MPN_STR, manufacturer="Acme"', text)
         self.assertIn("value_allowed", text)
-        self.assertIn('"r": value.value, "p": 0.1, "vlim": 50.0, "derate": derate}, "error")', text)  # derated rating
+        self.assertIn('"what": "rated_voltage", "r": value.value, "p": 0.1, "vlim": 50.0, "derate": derate}', text)  # derated
+        self.assertIn('_limit("rated_voltage", _rated_voltage, _rated_inputs(v_across), "error")', text)
+        self.assertIn('v_across = config(Voltage, optional=True', text)
+        self.assertIn("vmax = max(abs(va.min), abs(va.max))", text)  # v_across branch, magnitude
         self.assertIn("limit2 = min(p * r, vlim * vlim) * derate * derate", text)
         self.assertIn("# UNCHECKED: power derating above 70 degC", text)
         self.assertNotIn("# UNCHECKED: p70", text)  # read by the series check, not an unchecked rating
-        self.assertIn('load("@stdlib/units.zen", "Resistance", "Temperature")', text)
+        self.assertIn('load("@stdlib/units.zen", "Resistance", "Temperature", "Voltage")', text)  # Voltage: v_across
         self.assertIn("t_oper_ambient", text)  # the normal ambient check
 
     def test_duplicate_mpn_is_a_problem(self):

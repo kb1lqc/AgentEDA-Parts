@@ -6,8 +6,20 @@ value = config(str, default="0.025ohm")
 tolerance = config(str, default="D")
 va = config(str, default="0.15V 1%")  # I1 voltage; worst case 0.1515 V
 vb = config(str, default="0V")  # I2 voltage
+vacross = config(str, default="unset")  # v_across: the module's worst-case voltage across the part; unset = none
 ta = config(str, default="-40°C to 85°C")  # inside the -65 to 170 degC range
 derate = config(float, default=1.0)
+
+
+def _optional():
+    # Optional wrapper configs: an unset one is left out, so the wrapper sees None (Starlark allows one ** per call).
+    kw = {}
+    if ta != "unset":
+        kw["ambient"] = ta
+    if vacross != "unset":
+        kw["v_across"] = vacross
+    return kw
+
 
 U(
     name="R1",
@@ -15,8 +27,8 @@ U(
     tolerance=tolerance,
     derate=derate,
     I1=Net("A") if va == "unset" else Power("A", voltage=va),
-    I2=Power("B", voltage=vb),
+    I2=Net("B") if vb == "unset" else Power("B", voltage=vb),
     E1=Net("E1"),
     E2=Net("E2"),
-    **({} if ta == "unset" else {"ambient": ta}),
+    **_optional(),
 )
