@@ -179,6 +179,8 @@ sheet contains. A printed sheet must identify itself.
 - **KiCad 10 symbols** (format 20251024+) are required by `pcb apply`; `python3 -m lib.check` enforces it for
   library parts.
 - **Close KiCad** (no `*.lck` next to the schematic) before running `pcb apply`, or a KiCad save can overwrite it.
+  Always pass `--no-open` to `pcb apply`: without it, `pcb apply` launches KiCad on the schematic, which then holds
+  lock files and an in-memory copy that a later save can write over newer edits.
   `kicad-cli` run on files inside the project folder can leave stale `.lck` files too: run it on copies.
 
 ## Procedure

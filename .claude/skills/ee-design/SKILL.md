@@ -1,6 +1,6 @@
 ---
 name: ee-design
-description: How this designer engineers any circuit or board - requirements bounded by worst-case analysis, fewest components, BOM line-item reuse, 0603+ passives, stocked parts, decoupling at every power pin, source-terminated controlled-impedance digital lines, rating margins checked, and when to stop and ask. Use when designing, sizing, choosing parts for, or reviewing any circuit, module or board, including choosing values from datasheet equations.
+description: How this designer engineers any circuit or board - requirements bounded by worst-case analysis, fewest components, BOM line-item reuse, 0603+ passives, long-term part availability, decoupling at every power pin, source-terminated controlled-impedance digital lines, rating margins checked, and when to stop and ask. Use when designing, sizing, choosing parts for, or reviewing any circuit, module or board, including choosing values from datasheet equations.
 ---
 
 # EE design approach
@@ -24,10 +24,15 @@ presentation is the `schematic-style` skill; part data and equations come from t
   value already in the design meets the worst-case bound, and reuse it. Report the BOM line count and every value
   used in only one place, with the reason. Accuracy-critical parts (shunts, precision dividers) may be unique;
   say why.
-- **Stocked parts.** Check availability (e.g. `pcb bom -f json` sourcing) before committing to a value. When the
-  worst-case-optimal part is not stocked, rank the stocked alternatives by worst-case performance and headroom and
-  present the trade-off (what accuracy or margin is lost) for the designer to choose. Record the stock snapshot
-  date.
+- **Long-term availability over today's stock.** Choose parts that will stay buildable for the product's life:
+  active lifecycle (no NRND/EOL/last-time-buy), manufacturer standard values and tolerances, listed by several
+  authorized distributors (or multi-sourced), mainstream packages. Today's stock (e.g. `pcb bom -f json` offers) is
+  an informational snapshot with its date, never the deciding factor; a zero-stock standard part from an active
+  family beats an in-stock oddball. Rank candidates by worst-case performance against the requirement first, then
+  by an availability rating (state the rule and which indicators are proxies), and present the trade-off for the
+  designer to choose. Lifecycle, PCN and lead time not available offline are open items to verify with the
+  manufacturer or distributors before release. `MATCH_FAILED` in a BOM lookup means "not in that service's
+  sources", not "unobtainable".
 - **Narrow the operating range instead of adding protection, when that is acceptable,** and record the residual
   risk as an open item (e.g. capping a bus voltage so an abs-max is never exceeded rather than adding a TVS).
   Ask before choosing between the two.
@@ -69,6 +74,18 @@ presentation is the `schematic-style` skill; part data and equations come from t
 Present the options with numbers and a recommendation; record the decision.
 
 ## Deliverables for any block or board
+- **Sources of truth are code:** the Zener `.zen` files and the Python analysis. Everything else (design-analysis
+  datasheet, spec numbers, schematic notes) is generated from or quotes them.
+- **Design-analysis datasheet:** a Python script in jupytext percent format (`# %%` cells: opens as a notebook,
+  diffs as plain Python) that regenerates a committed Markdown datasheet plus PNG charts in `docs/` with one
+  command. Not a raw `.ipynb` (hidden state, unreadable diffs) and never hand-written numbers. Contents: a summary
+  table (result, limit, margin, PASS/FAIL/ESTIMATE); operating conditions and assumptions; worst-case performance
+  of every measured or regulated quantity over its range, with charts (error vs operating point bands, contributor
+  breakdown); thermal: dissipation vs rating over current and ambient (derating curve), self-heating and its effect
+  on accuracy (temperature coefficients at the self-heated temperature), junction temperatures; quiescent current
+  and power budget per supply (active and shutdown); ratings and abs-max margins; firmware constants; limits of
+  the analysis. Curve-derived values (e.g. a thermal resistance estimated from a derating curve) are labelled
+  estimates.
 - Spec: purpose, operating conditions, block definition (ports, configs), part table with the basis for each
   choice, worst-case results, interfaces, open questions, open items.
 - Worst-case analysis report with plots, and the BOM line count.
