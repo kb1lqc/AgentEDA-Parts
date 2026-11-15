@@ -164,6 +164,7 @@ unsafe.
 ## Zener modules (hierarchical circuits)
 - Design modules and boards with the `ee-design` skill (worst-case analysis, part and value choices, default
   design rules) and draw and review their schematics with the `schematic-style` skill.
+- Run schematic generation and arrangement (and any agent delegation for it) with the `schematic-capture` skill.
 - Build from the generated wrappers: `Module("github.com/kb1lqc/zener-library/components/<Mfr>/<Value>/<Value>.zen")`
   (relative paths that leave a package fail), then `pcb sync`.
 - Give every checked net a voltage range with tolerance (`Power("V15", voltage="15V 5%")`); an undeclared voltage
