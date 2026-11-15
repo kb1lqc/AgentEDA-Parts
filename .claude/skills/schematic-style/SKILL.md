@@ -69,6 +69,31 @@ started.
 - **Interfaces as harnesses** (a bus group carrying SPI, I2C, ...) are preferred where the toolchain keeps them;
   otherwise one sheet pin per member, grouped together on the sheet edge.
 
+## Engineering notes and grouping boxes
+- **Minimal, high-impact notes** at the power path input and output, at each rail and at key parts: expected
+  voltage range, rail voltage and tolerance, design maximum current, worst-case full-scale error, scaling (A per V,
+  A per count, LSB), key limits and why (e.g. a cap set by an abs max). Short lines with units, no prose. Drop any
+  note that only repeats a label, unless the designer asks to keep it.
+- **Every number comes from the spec or the worst-case analysis report**; only unit conversions are derived (say
+  so). Never type a value from memory.
+- **Instance values on the parent, block notes on the reusable sheet.** The parent sheet carries this board's
+  numbers next to the block (with a boxed design-values summary); the reusable sheet carries notes about the block
+  itself and only the values its configs set.
+- **Group with titled boxes.** Draw rectangles (one stroke style per meaning, e.g. dashed = functional group) around
+  functional areas and note groups, each with a short title at the top-left inside the edge (e.g. POWER PATH /
+  CURRENT SENSE, LOGIC SUPPLY, SPI / ALERT, DESIGN VALUES). Boxes never cut through symbols or text; a net leaving a
+  group crosses the edge at a right angle. Even margins (>= 2.54 mm) between edge and contents.
+  - Plan box edges from the real text extents (pin names and numbers, rotated label text, reference/value,
+    symbol body), not from pin and wire geometry: keep >= 2.5 mm clearance. Estimate text at about 1.08 mm per
+    character for 1.27 mm font, then confirm in a render.
+  - Groups whose parts interleave (one group's symbol above another's stubs) cannot each get a clean rectangle
+    without moving parts: merge them into one box and let a note name the sub-function.
+  - Adjacent boxes need a channel of >= 2.5 mm between them.
+  - Use a dashed rectangle plus a separate bold title (about 1.524 mm) and plain text rather than a KiCad
+    `text_box`, so one stroke style keeps one meaning and titles can be larger than notes.
+- Notes sit on the free side of what they describe, never touching a wire, pin, symbol, label or other text.
+  Plain `text` with embedded line breaks gives clean multi-line notes; right-justify notes placed left of a part.
+
 ## Title block (every sheet)
 Title, revision, date, company, author, the repo URL plus git short hash, and a one-line description of what the
 sheet contains. A printed sheet must identify itself.
@@ -137,7 +162,10 @@ sheet contains. A printed sheet must identify itself.
    `power_pin_not_driven` (no regulator, input connector or PWR_FLAG on the rail yet). `lib_symbol_issues` means
    KiCad's ERC has no symbol library table for the parts: a project-configuration notice, not a circuit error.
    Review each render against every rule before showing it.
-6. **Diff the netlist after every apply**, not just its exit code: `pcb apply` has been seen to drop a hand-placed
+6. **Count your hand-added items after every apply** (top-level `(text`, `(text_box`, `(rectangle`): an item
+   inserted inside a `lib_symbols` entry (e.g. found by searching for a nested `(embedded_fonts`) is silently
+   dropped by `pcb apply` with exit 0. Insert top-level items before the file's final `)`.
+7. **Diff the netlist after every apply**, not just its exit code: `pcb apply` has been seen to drop a hand-placed
    label silently (net gone, still "updated", exit 0). Export with
    `kicad-cli sch export netlist --output <scratch>/n.net <root>.kicad_sch` before and after, and compare nets.
 
