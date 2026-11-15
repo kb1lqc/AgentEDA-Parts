@@ -224,31 +224,57 @@ def series_code(info, params, part_dir):
         ]
     if vlim is not None:
         lines += [
-            "def _rated_voltage(_m, v1, v2, what, r, p, vlim, derate):",
-            "    # Worst case |V(P1) - V(P2)| over both nets' ranges. Zener has no sqrt, so compare squares:",
+            "def _rated_voltage(_m, what, r, p, vlim, derate, v1=None, v2=None, va=None):",
+            "    # Worst case |V across the part|: v_across (the module's analysis) when set, else the two nets' ranges taken",
+            "    # as independent: max(v1.max - v2.min, v2.max - v1.min). Zener has no sqrt, so compare squares:",
             "    # vmax <= derate x min(sqrt(P x R), vlim)  <=>  vmax^2 <= derate^2 x min(P x R, vlim^2).",
-            "    vmax = max(v1.max - v2.min, v2.max - v1.min)",
+            "    if va == None:",
+            "        vmax = max(v1.max - v2.min, v2.max - v1.min)",
+            '        src = "net ranges"',
+            "    else:",
+            "        vmax = max(abs(va.min), abs(va.max))",
+            '        src = "v_across"',
             "    limit2 = min(p * r, vlim * vlim) * derate * derate",
-            '    msg = "%s: up to %s V across the part, (V across)^2 = %s V^2 > %s V^2 = derate^2 x min(P x R, Vlimit^2) '
+            '    msg = "%s: up to %s V across the part (from %s), (V across)^2 = %s V^2 > %s V^2 = derate^2 x min(P x R, Vlimit^2) '
             'with R = %s ohm, P = %s W, Vlimit = %s V"',
-            "    check(vmax * vmax <= limit2, msg % (what, vmax, vmax * vmax, limit2, r, p, vlim))",
+            "    check(vmax * vmax <= limit2, msg % (what, vmax, src, vmax * vmax, limit2, r, p, vlim))",
         ]
     else:
         lines += [
-            "def _rated_voltage(_m, v1, v2, what, r, p, derate):",
-            "    # Worst case |V(P1) - V(P2)| over both nets' ranges. Zener has no sqrt, so compare squares:",
+            "def _rated_voltage(_m, what, r, p, derate, v1=None, v2=None, va=None):",
+            "    # Worst case |V across the part|: v_across (the module's analysis) when set, else the two nets' ranges taken",
+            "    # as independent: max(v1.max - v2.min, v2.max - v1.min). Zener has no sqrt, so compare squares:",
             "    # vmax <= derate x sqrt(P x R)  <=>  vmax^2 <= derate^2 x P x R. The datasheet prints no Vlimit.",
-            "    vmax = max(v1.max - v2.min, v2.max - v1.min)",
+            "    if va == None:",
+            "        vmax = max(v1.max - v2.min, v2.max - v1.min)",
+            '        src = "net ranges"',
+            "    else:",
+            "        vmax = max(abs(va.min), abs(va.max))",
+            '        src = "v_across"',
             "    limit2 = p * r * derate * derate",
-            '    msg = "%s: up to %s V across the part, (V across)^2 = %s V^2 > %s V^2 = derate^2 x P x R '
+            '    msg = "%s: up to %s V across the part (from %s), (V across)^2 = %s V^2 > %s V^2 = derate^2 x P x R '
             'with R = %s ohm, P = %s W"',
-            "    check(vmax * vmax <= limit2, msg % (what, vmax, vmax * vmax, limit2, r, p))",
+            "    check(vmax * vmax <= limit2, msg % (what, vmax, src, vmax * vmax, limit2, r, p))",
         ]
     name = "rated_voltage"
     n1, n2 = (io_name(x) for x in info.get("series_pins", ["1", "2"]))  # the nets the voltage across the part is taken between
-    limit_line = (f'_limit("{name}", _rated_voltage, {{"v1": {n1}.voltage, "v2": {n2}.voltage, "what": "{name}", '
-                  f'"r": value.value, "p": {num(power.max)}, ' + (f'"vlim": {num(vlim.max)}, ' if vlim is not None else "")
-                  + '"derate": derate}, "error")')
+    vl = f'"vlim": {num(vlim.max)}, ' if vlim is not None else ""
+    # _limit reports UNVERIFIED for any None input, so the net ranges are in the inputs only when v_across is unset:
+    # a set v_across then needs no declared net. v_across itself is None when unset.
+    # v_across is passed in as an argument: Zener rejects `== None` on an optional Voltage config read inside a function.
+    lines += [
+        "def _rated_inputs(va):",
+        "    inputs = {" + f'"what": "{name}", "r": value.value, "p": {num(power.max)}, ' + vl + '"derate": derate}',
+        "    if va == None:",
+        f'        inputs["v1"] = {n1}.voltage',
+        f'        inputs["v2"] = {n2}.voltage',
+        "    else:",
+        '        inputs["va"] = va',
+        "    return inputs",
+        "",
+        "",
+    ]
+    limit_line = f'_limit("{name}", _rated_voltage, _rated_inputs(v_across), "error")'
     checks = [
         f"# {name}: voltage across the part within " + ("min(sqrt(P x R), Vlimit)" if vlim is not None else "sqrt(P x R)")
         + ", x derate",
@@ -256,7 +282,8 @@ def series_code(info, params, part_dir):
         f"({t.get('cite', '')})",
         *([f"#   Voltage limit {vkey}: {tv.get('name', '')}: max {tv.get('max')} {tv.get('unit', '')} "
            f"({tv.get('cite', '')})"] if vlim is not None else ["#   No limiting element voltage: the datasheet prints none."]),
-        "#   Evaluated for the configured value. Error: a rated part voltage is exceeded.",
+        "#   Voltage across: v_across (config, the module's worst-case analysis) when set; otherwise the two nets' ranges,",
+        "#   taken as independent. Evaluated for the configured value. Error: a rated part voltage is exceeded.",
         "#   Not checked here: power derating above 70 degC (curve) is the module's job, calc.rated_power;",
         "#   above 70 degC ambient this check is optimistic.",
         limit_line,
@@ -491,7 +518,7 @@ def generate(part_dir, variant=None):
                          "owner: module (calc.rated_power). rated_voltage below uses the 70 degC power rating at")
         unchecked.append("#   every ambient, so above 70 degC ambient it is OPTIMISTIC (0 W at the derating zero).")
     units = (["Resistance"] if is_series else []) + (["Capacitance"] if is_cap else []) + \
-        (["Temperature"] if uses_ambient else []) + (["Voltage"] if is_cap else [])
+        (["Temperature"] if uses_ambient else []) + (["Voltage"] if is_cap or is_series else [])
     if units:
         out += [f'load("@stdlib/units.zen", {", ".join('"' + u + '"' for u in units)})', ""]
     out += unchecked + ([""] if unchecked else [])
@@ -512,6 +539,8 @@ def generate(part_dir, variant=None):
             codes = ", ".join(c for c, _, _ in series.options(info))
             out.append(f'tolerance = config(str, default="", help="Tolerance code, one of {codes}; needed when more than '
                        f'one code allows the value")')
+        out.append('v_across = config(Voltage, optional=True, help="Declared worst-case voltage across the part from the '
+                   'module\'s analysis; replaces the independent net ranges when set")')
     if uses_ambient:
         out.append('ambient = config(Temperature, optional=True, help="Board ambient temperature range")')
     out.append('derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")')

@@ -28,7 +28,7 @@
 - **MPN rule**: `calc.mpn(value, tol_code)`; examples: 1 mohm D -> `WSK25121L000DEA`, 3 mohm D -> `WSK25123L000DEA`, 4.9 mohm F -> `WSK25124L900FEA`
 - **TCR by value** (`Part.tcr(value)` returns the row whose range holds the value): `tcr_500u_990u` for 500 uohm to 990 uohm, `tcr_1m_2m9` for 1 mohm to 2.9 mohm, `tcr_3m_4m9` for 3 mohm to 4.9 mohm
 - **Rated voltage**: sqrt(P70 x R), P70 = 1 W (`p70`); the datasheet prints no limiting element voltage
-- **Zener wrapper**: config `value` and `tolerance` (a code); checks `value_allowed` and `rated_voltage` (|V(I1) - V(I2)| <= derate x rated voltage). It uses the 70 degC power rating at every ambient, so above 70 degC it is optimistic: use `calc.rated_power` (curve-based) for hot designs
+- **Zener wrapper**: config `value` and `tolerance` (a code), optional `v_across` (the module's worst-case voltage across the part; replaces the net ranges in `rated_voltage` when set); checks `value_allowed` and `rated_voltage` (|V(I1) - V(I2)| <= derate x rated voltage). It uses the 70 degC power rating at every ambient, so above 70 degC it is optimistic: use `calc.rated_power` (curve-based) for hot designs
 - **Worst-case resistance**: `wca(calc.resistance_worst, r0=<value>, tol=part.tolerance(<code>), tcr=part.tcr(<value>), ...)` with the plain value as r0; `Part.series_value(value)` already includes the tolerance, so do not pass it as r0 together with tol (that counts the tolerance twice)
 
 Rated voltage at decade values, computed from `p70` and the formula above:

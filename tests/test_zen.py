@@ -337,6 +337,13 @@ CASES = [
     ("Vishay/WSK2512", "not_decade", ["value=0.0255ohm"], "error", "value_allowed"),  # 3 significant digits
     ("Vishay/WSK2512", "over_voltage", ["va=0.17V"], "error", "rated_voltage"),  # > sqrt(1 W x 0.025) = 0.158 V
     ("Vishay/WSK2512", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    # v_across: a 32 mohm 1 W current shunt between two 12-40 V nets. The nets alone give 28 V (error); the module's
+    # analysis gives I x R = 5 A x 32 mohm = 0.16 V, below sqrt(1 W x 32 mohm) = 0.179 V.
+    ("Vishay/WSK2512", "shunt_nets_spread", ["value=0.032ohm", "va=12V to 40V", "vb=12V to 40V"], "error", "rated_voltage"),
+    ("Vishay/WSK2512", "shunt_v_across_pass", ["value=0.032ohm", "va=12V to 40V", "vb=12V to 40V", "vacross=0.16V"], "pass", ""),
+    ("Vishay/WSK2512", "shunt_v_across_over", ["value=0.032ohm", "vacross=0.19V"], "error", "rated_voltage"),  # > 0.179 V
+    ("Vishay/WSK2512", "shunt_v_across_nets_unset", ["value=0.032ohm", "va=unset", "vb=unset", "vacross=0.16V"], "pass", ""),
+    ("Vishay/WSK2512", "shunt_v_across_signed", ["value=0.032ohm", "vacross=-0.16V"], "pass", ""),  # the magnitude is checked
     ("Vishay/WSK2512", "ambient_out", ["ta=-40°C to 175°C"], "error", "t_oper_ambient"),  # range -65 to 170 degC
     ("Vishay/WSK2512-LOW", "nominal", [], "pass", ""),  # 0.002 ohm D = WSK25122L000DEA
     ("Vishay/WSK2512-LOW", "f_low_edge", ["value=0.001ohm", "tolerance=F", "va=0.02V"], "pass", ""),  # directory starts at 1 mohm

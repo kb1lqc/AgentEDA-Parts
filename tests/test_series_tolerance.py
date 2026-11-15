@@ -197,10 +197,12 @@ class TestToleranceZen(unittest.TestCase):
         self.assertIn('(4700000, "D"): "RSER2-4.7D",  # 4.7 ohm, tolerance D', text)
         self.assertIn('4700000: ["D", "F"],', text)  # the codes that allow 4.7 ohm
         self.assertIn('_MPN_STR = _MPN.get((_KEY, _CODE), "UNORDERABLE")', text)
-        self.assertIn("def _rated_voltage(_m, v1, v2, what, r, p, derate):", text)  # no Vlimit
+        self.assertIn("def _rated_voltage(_m, what, r, p, derate, v1=None, v2=None, va=None):", text)  # no Vlimit
         self.assertNotIn("vlim", text)
         self.assertIn("limit2 = p * r * derate * derate", text)
-        self.assertIn('{"v1": P1.voltage, "v2": P2.voltage, "what": "rated_voltage", "r": value.value, "p": 0.1, "derate": derate}', text)
+        self.assertIn('{"what": "rated_voltage", "r": value.value, "p": 0.1, "derate": derate}', text)
+        self.assertIn('inputs["v1"] = P1.voltage', text)  # net ranges, unless v_across is set
+        self.assertIn('v_across = config(Voltage, optional=True', text)
         self.assertEqual(len(re.findall(r'(?m)^    \(\d+, "[BDF]"\): "RSER2-', text)), 91 + 121 + 101)
 
     def test_series_wrapper_unchanged_without_options(self):
@@ -291,7 +293,8 @@ class TestWskSeries(unittest.TestCase):
     def test_wrapper_text(self):
         text, problems = generate(VISHAY / "WSK2512")
         self.assertEqual(problems, [])
-        self.assertIn('{"v1": I1.voltage, "v2": I2.voltage, "what": "rated_voltage"', text)
+        self.assertIn('inputs["v1"] = I1.voltage', text)
+        self.assertIn('inputs["va"] = va', text)  # v_across, when set, replaces the net ranges
         self.assertIn('(25000, "D"): "WSK2512R0250DEA",  # 0.025 ohm, tolerance D', text)
         self.assertIn("B 0.01 to 0.2 ohm, D 0.005 to 0.2 ohm, F 0.005 to 0.2 ohm", text)
         self.assertEqual(len(re.findall(r'(?m)^    \(\d+, "[BDF]"\): "WSK2512', text)), 403)

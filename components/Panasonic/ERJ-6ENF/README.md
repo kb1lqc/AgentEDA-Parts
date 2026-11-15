@@ -25,7 +25,7 @@
 - **Tolerance**: 1 % (`tol`), used by `Part.series_value`
 - **MPN rule**: `calc.mpn(value)`; examples: 10 ohm -> `ERJ6ENF10R0V`, 4.64 kohm -> `ERJ6ENF4641V`, 2.2 Mohm -> `ERJ6ENF2204V`
 - **Rated voltage**: min(sqrt(P70 x R), Vlimit), P70 = 125 mW (`p70`), Vlimit = 150 V (`v_limit`)
-- **Zener wrapper**: config `value`; checks `value_allowed` and `rated_voltage` (|V(P1) - V(P2)| <= derate x rated voltage). It uses the 70 degC power rating at every ambient, so above 70 degC it is optimistic: use `calc.rated_power` (curve-based) for hot designs
+- **Zener wrapper**: config `value`, optional `v_across` (the module's worst-case voltage across the part; replaces the net ranges in `rated_voltage` when set); checks `value_allowed` and `rated_voltage` (|V(P1) - V(P2)| <= derate x rated voltage). It uses the 70 degC power rating at every ambient, so above 70 degC it is optimistic: use `calc.rated_power` (curve-based) for hot designs
 - **Worst-case resistance**: `wca(calc.resistance_worst, r0=<value>, tol=part.param('tol'), tcr=..., ...)` with the plain value as r0; `Part.series_value(value)` already includes the tolerance, so do not pass it as r0 together with tol (that counts the tolerance twice)
 
 Rated voltage at decade values, computed from `p70`, `v_limit` and the formula above:
