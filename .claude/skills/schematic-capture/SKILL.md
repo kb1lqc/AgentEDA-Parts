@@ -30,6 +30,8 @@ and how to use agents. Every rule here came from rework that cost real tokens.
    - hierarchy: which modules are sub-sheets
    - label convention for board-level nets (local vs global) and accepted ERC exceptions
    - title block fields
+   - which engineering notes each sheet carries (the `schematic-style` annotation checklist) and the functional
+     groups that get titled boxes; confirm the spec and worst-case report contain every number the notes need
    Anything not decided here becomes a mid-arrangement round trip.
 1. **Code freeze.** Implement in Zener; `pcb build -Dwarnings` exit 0. Review names and net types against phase 0.
    Then regenerate fresh once (delete the `.kicad_sch` files, apply twice, second unchanged). No placement yet.
@@ -42,18 +44,25 @@ and how to use agents. Every rule here came from rework that cost real tokens.
 3. **Placement by generator script.** Encode the plan as a re-runnable script that computes every coordinate from
    the symbol pin geometry and writes the `.kicad_sch` (never hand-nudge coordinates by trial). A re-run after a
    correction is cheap; a trial-and-error edit loop is not.
-4. **Automatic gates (no human or model judgment needed).** All must pass before review:
+4. **Annotate (required, never skipped).** Add the engineering notes and titled group boxes per `schematic-style`
+   ("Engineering notes and grouping boxes" and its annotation checklist): every number copied from the spec or the
+   worst-case analysis report with its source recorded in the agent's report, instance values on the parent sheet,
+   block notes on the reusable sheet, a boxed DESIGN VALUES summary on the parent. A schematic without these is not
+   done. If a needed number is missing from the spec or report, add it there first (from the analysis), never
+   type it onto the sheet directly.
+5. **Automatic gates (no human or model judgment needed).** All must pass before review:
    - `pcb apply schematic --no-open` twice, second `unchanged`
    - netlist diff vs the phase-1 baseline: identical nets and nodes
    - `pcb build -Dwarnings` exit 0
    - ERC classified: zero dangling wires, unconnected endpoints, hierarchical mismatches; every other finding
      matched to an accepted class
    - text-overlap check (script, see Tooling) reports nothing
-5. **Adversarial review (independent, read-only).** A fresh agent that did not draw the sheet reviews the renders
+   - hand-added notes, boxes and titles all survive apply (count top-level `text` / `rectangle` items)
+6. **Adversarial review (independent, read-only).** A fresh agent that did not draw the sheet reviews the renders
    (full sheet plus zoomed crops) against the `schematic-style` review checklist and the phase-0 decisions, and
    returns defects only: `sheet | location | rule broken | evidence | fix`. It also re-checks any claim the drafter
-   made about tool limits. The drafter fixes in one pass; re-review only what changed.
-6. **Present** to the designer with the renders, the gate results, the accepted ERC exceptions, and any open
+   made about tool limits, and checks every number in the notes against the spec and the worst-case report. The drafter fixes in one pass; re-review only what changed.
+7. **Present** to the designer with the renders, the gate results, the accepted ERC exceptions, and any open
    items. Record new preferences in the board's style notes; promote generic ones to `schematic-style`.
 
 ## Agents: which model does what

@@ -94,6 +94,20 @@ started.
 - Notes sit on the free side of what they describe, never touching a wire, pin, symbol, label or other text.
   Plain `text` with embedded line breaks gives clean multi-line notes; right-justify notes placed left of a part.
 
+### Annotation checklist (what each kind of circuit should state)
+Show only the items that apply; every value from the spec or the worst-case report.
+| Where | Note content |
+|---|---|
+| Power input | voltage range (min-max, AC/DC), polarity or side (high/low), max current, transient or abs-max limit and its reason |
+| Power output / load side | what it feeds, max current, what is measured or switched there |
+| Each rail | nominal and tolerance, accepted range of the parts on it, decoupling at which pin |
+| Regulator / converter | input range, output setpoint and worst-case accuracy, max load, efficiency or dissipation if it drives thermal design |
+| Current / voltage sense | sense element value and tolerance, full-scale value, headroom to the ADC range, scaling (A/V, A/count, V/count, LSB), worst-case error at full scale and at the low end, calibration constants |
+| Divider / feedback | ratio, worst-case output range, what sets it |
+| Digital interface | bus and line impedance, where terminations are and their values (placeholders flagged), logic level, active-low and open-drain notes |
+| Protection | what it protects against, clamp/trip levels, and any residual risk |
+| Parent sheet | a boxed DESIGN VALUES summary of the block instance: operating conditions, key part choices, scaling, worst-case results, dissipation |
+
 ## Title block (every sheet)
 Title, revision, date, company, author, the repo URL plus git short hash, and a one-line description of what the
 sheet contains. A printed sheet must identify itself.

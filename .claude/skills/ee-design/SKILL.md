@@ -72,4 +72,9 @@ Present the options with numbers and a recommendation; record the decision.
 - Spec: purpose, operating conditions, block definition (ports, configs), part table with the basis for each
   choice, worst-case results, interfaces, open questions, open items.
 - Worst-case analysis report with plots, and the BOM line count.
-- Schematic per `schematic-style`; strict build passing; every waiver and open item listed.
+- Schematic per `schematic-style` and `schematic-capture`, annotated with engineering notes and titled group boxes;
+  strict build passing; every waiver and open item listed.
+- The spec and the worst-case report are the single source for every number on the schematic. They must state, for
+  each block: input/output voltage ranges, rail voltages and tolerances, design maximum current, worst-case
+  full-scale and low-end error, scaling (A/V, A/count, V/count, LSB), headroom to ADC or rating limits, dissipation
+  vs rating, and the reason for each hard limit. Missing values are produced by the analysis before annotation.
