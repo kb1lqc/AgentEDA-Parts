@@ -18,6 +18,9 @@ Every part here has three things a person or an AI needs to design with it and c
 
 | Part | What | README |
 |---|---|---|
+| Infineon BSC040N10NS5 | 100 V N-channel OptiMOS 5 MOSFET, 4.0 mΩ max, PG-TDSON-8 (SuperSO8) | [README](components/Infineon/BSC040N10NS5/README.md) |
+| Infineon ISC035N10NM5LF2 | 100 V N-channel OptiMOS 5 Linear FET 2 (wide SOA), 3.5 mΩ max, PG-TDSON-8 | [README](components/Infineon/ISC035N10NM5LF2/README.md) |
+| Infineon ISC750P10LM | -100 V P-channel MOSFET, 75 mΩ max, PG-TDSON-8 (SuperSO8) | [README](components/Infineon/ISC750P10LM/README.md) |
 | TI INA821IDGK | Precision instrumentation amplifier, VSSOP-8 | [README](components/TexasInstruments/INA821IDGK/README.md) |
 | ADI LTC4364 MS family (6 variants: C/I/H grade x -1 latch-off / -2 auto-retry) | Surge stopper + ideal diode, MSOP-16 | [README](components/AnalogDevices/LTC4364MS/README.md) |
 | TI INA241 DGK family (10 variants: A1-A5 / B1-B5, gain 10/20/50/100/200) | -5 V to 110 V bidirectional current-sense amplifier, VSSOP-8 | [README](components/TexasInstruments/INA241DGK/README.md) |
@@ -46,6 +49,8 @@ Every part here has three things a person or an AI needs to design with it and c
 | Murata GCM32D series (1210, 2.0 mm) | Automotive X7R and C0G MLCC, 41 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM32D/README.md) |
 | Murata GCM32E series (1210, 2.5 mm) | Automotive X7R and C0G MLCC, 43 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM32E/README.md) |
 | Murata GCM32Q series (1210, 1.5 mm) | Automotive X7R MLCC, 4 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM32Q/README.md) |
+| Vishay Dale WSK2512 series | 4-terminal current-sense resistor, 2512, 5-200 mΩ, ±0.1/0.5/1 %, Vishay decade values; value and tolerance are design inputs | [README](components/Vishay/WSK2512/README.md) |
+| Vishay Dale WSK2512-LOW series | 4-terminal current-sense resistor, 2512, 1-4.9 mΩ, ±0.5/1 % (sub-1 mΩ excluded: no printed code) | [README](components/Vishay/WSK2512-LOW/README.md) |
 | Vishay Dale WSK2512R0250D | 25 mohm ±0.5 % 4-terminal current-sense resistor | [README](components/Vishay/WSK2512R0250D/README.md) |
 
 ## Use it

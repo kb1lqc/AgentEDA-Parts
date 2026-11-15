@@ -1,0 +1,163 @@
+[part]
+value = "RSER2"
+manufacturer = "Acme"
+description = "Test resistor series with tolerance options, 0402"
+category = "resistor"
+package = "0402"
+datasheet_url = "https://example.com/rser2.pdf"
+datasheet_rev = "A"
+datasheet_date = "2020-01"
+kicad_symbol = "RSER2.kicad_sym"
+kicad_footprint = "RSER2.kicad_mod"
+step = "none"
+series = "resistor"
+value_param = "res_range"
+e_series = ["VISHAY-DECADE"]
+series_power = "p70"
+series_tolerances = { B = { tol = "tol_b", range = "r_range_b" }, D = { tol = "tol_d", range = "r_range_d" }, F = { tol = "tol_f", range = "r_range_f" } }
+series_tcr = [{ tcr = "tcr_lo", range = "tcr_lo_range" }, { tcr = "tcr_hi", range = "tcr_hi_range" }]
+
+[[pin]]
+number = "1"
+name = "1"
+type = "passive"
+function = "Terminal 1"
+cite = "DS p.2, Dimensions, terminal 1"
+
+[[pin]]
+number = "2"
+name = "2"
+type = "passive"
+function = "Terminal 2"
+cite = "DS p.2, Dimensions, terminal 2"
+
+[param.res_range]
+name = "Resistance range"
+kind = "electrical"
+scope = "na"
+min = 1
+max = 100
+unit = "ohm"
+conditions = ""
+cite = "DS p.1, Ratings, Resistance range"
+
+[param.r_range_b]
+name = "Range B"
+kind = "electrical"
+scope = "na"
+min = 10
+max = 100
+unit = "ohm"
+conditions = ""
+cite = "DS p.1, Ratings, Range B"
+
+[param.r_range_d]
+name = "Range D"
+kind = "electrical"
+scope = "na"
+min = 2
+max = 50
+unit = "ohm"
+conditions = ""
+cite = "DS p.1, Ratings, Range D"
+
+[param.r_range_f]
+name = "Range F"
+kind = "electrical"
+scope = "na"
+min = 1
+max = 20
+unit = "ohm"
+conditions = ""
+cite = "DS p.1, Ratings, Range F"
+
+[param.tol_b]
+name = "Tolerance B"
+kind = "electrical"
+scope = "na"
+min = -0.1
+max = 0.1
+unit = "%"
+conditions = ""
+cite = "DS p.1, Ratings, Tolerance B"
+
+[param.tol_d]
+name = "Tolerance D"
+kind = "electrical"
+scope = "na"
+min = -0.5
+max = 0.5
+unit = "%"
+conditions = ""
+cite = "DS p.1, Ratings, Tolerance D"
+
+[param.tol_f]
+name = "Tolerance F"
+kind = "electrical"
+scope = "na"
+min = -1
+max = 1
+unit = "%"
+conditions = ""
+cite = "DS p.1, Ratings, Tolerance F"
+
+[param.tcr_lo]
+name = "TCR low values"
+kind = "electrical"
+scope = "na"
+min = -100
+max = 100
+unit = "ppm/degC"
+conditions = ""
+cite = "DS p.1, Ratings, TCR low values"
+
+[param.tcr_lo_range]
+name = "TCR low range"
+kind = "electrical"
+scope = "na"
+min = 1
+max = 9.9
+unit = "ohm"
+conditions = ""
+cite = "DS p.1, Ratings, TCR low range"
+
+[param.tcr_hi]
+name = "TCR high values"
+kind = "electrical"
+scope = "na"
+min = -50
+max = 50
+unit = "ppm/degC"
+conditions = ""
+cite = "DS p.1, Ratings, TCR high values"
+
+[param.tcr_hi_range]
+name = "TCR high range"
+kind = "electrical"
+scope = "na"
+min = 10
+max = 100
+unit = "ohm"
+conditions = ""
+cite = "DS p.1, Ratings, TCR high range"
+
+[param.p70]
+name = "Power rating at 70 degC"
+symbol = "P70"
+kind = "rec_op"
+scope = "na"
+max = 0.1
+unit = "W"
+conditions = "TA = 70 degC"
+cite = "DS p.1, Ratings, Power rating"
+
+[param.t_oper]
+name = "Operating temperature"
+kind = "rec_op"
+scope = "na"
+min = -55
+max = 155
+unit = "degC"
+conditions = ""
+cite = "DS p.1, Ratings, Operating temperature"
+check_ambient = true

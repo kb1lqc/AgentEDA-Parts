@@ -1,0 +1,22 @@
+# Test harness for the generated WSK2512 series wrapper (tests/test_zen.py copies it next to WSK2512.zen and builds it). Defaults: 0.025 ohm, tolerance D, 0.15 V +/-1 % across the current terminals
+# (rated sqrt(1 W x 0.025 ohm) = 0.158 V), industrial ambient.
+U = Module("./WSK2512.zen")
+
+value = config(str, default="0.025ohm")
+tolerance = config(str, default="D")
+va = config(str, default="0.15V 1%")  # I1 voltage; worst case 0.1515 V
+vb = config(str, default="0V")  # I2 voltage
+ta = config(str, default="-40°C to 85°C")  # inside the -65 to 170 degC range
+derate = config(float, default=1.0)
+
+U(
+    name="R1",
+    value=value,
+    tolerance=tolerance,
+    derate=derate,
+    I1=Net("A") if va == "unset" else Power("A", voltage=va),
+    I2=Power("B", voltage=vb),
+    E1=Net("E1"),
+    E2=Net("E2"),
+    **({} if ta == "unset" else {"ambient": ta}),
+)

@@ -1,13 +1,13 @@
 """Unit strings from component.toml -> SI numbers, and engineering-prefix formatting.
 
-A unit is [prefix]base[suffix]: prefix f p n u m k M G, base V A ohm W F H Hz s,
+A unit is [prefix]base[suffix]: prefix f p n u m k M G, base V A ohm W F H Hz s C J,
 suffix pp /rtHz /degC /us /MHz /V (/MHz -> /Hz: 23.4 uA/MHz -> 2.34e-11 A/Hz; /V is
 transconductance, mA/V -> A/V; uV/V and mV/V are converted first, to fractions). A few units
 are converted (mm, g, mg, %, ppm, ppm/degC, ppm/V, kcycles -> cycles) and a few are kept as printed
 (degC, degC/W, dB, bits, LSB, cycles, years, ""). The SI base A/Hz also takes prefixes (pA/Hz).
 """
 
-SCALABLE = {"V", "A", "ohm", "W", "F", "H", "Hz", "s"}
+SCALABLE = {"V", "A", "ohm", "W", "F", "H", "Hz", "s", "C", "J"}
 SUFFIXES = ["pp", "/rtHz", "/degC", "/us", "/MHz", "/V", "/Hz"]  # "/Hz" only so eng() can prefix A/Hz
 UNSCALED = {"", "dB", "degC", "degC/W", "bits", "LSB", "cycles", "years"}
 # Printed unit -> (power of ten, SI base unit) for units that are converted.

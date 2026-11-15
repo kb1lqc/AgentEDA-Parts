@@ -191,6 +191,20 @@ CASES = [
     ("STMicroelectronics/STM32H723ZET6", "vdd_unset", ["vdd=unset"], "warning", "UNVERIFIED vdd_op_VDD"),
     ("STMicroelectronics/STM32H723ZET6", "ambient_out", ["ta=-40°C to 105°C"], "error", "ta_range6_max_power_ambient"),
     ("STMicroelectronics/STM32H723ZET6", "ambient_unset", ["ta=unset"], "warning", "UNVERIFIED ta_range6_max_power_ambient"),
+    ("Infineon/BSC040N10NS5", "nominal", [], "pass", ""),
+    ("Infineon/BSC040N10NS5", "vds_out", ["vd=101V"], "error", "vds_rating_D"),  # > 100 V vs S
+    ("Infineon/BSC040N10NS5", "vgs_out", ["vg=21V"], "error", "vgs_G"),  # > +20 V vs S
+    ("Infineon/BSC040N10NS5", "vgs_negative_out", ["vg=-21V"], "error", "vgs_G"),  # < -20 V vs S
+    ("Infineon/BSC040N10NS5", "drain_unset", ["vd=unset"], "warning", "UNVERIFIED vds_rating_D"),
+    ("Infineon/ISC035N10NM5LF2", "nominal", [], "pass", ""),
+    ("Infineon/ISC035N10NM5LF2", "vds_out", ["vd=101V"], "error", "vds_rating_D"),  # > 100 V vs S
+    ("Infineon/ISC035N10NM5LF2", "vgs_out", ["vg=21V"], "error", "vgs_G"),  # > +20 V vs S
+    ("Infineon/ISC035N10NM5LF2", "vgs_negative_out", ["vg=-21V"], "error", "vgs_G"),  # < -20 V vs S
+    ("Infineon/ISC035N10NM5LF2", "drain_unset", ["vd=unset"], "warning", "UNVERIFIED vds_rating_D"),
+    ("Infineon/ISC750P10LM", "nominal", [], "pass", ""),
+    ("Infineon/ISC750P10LM", "vds_out", ["vs=101V", "vg=95V"], "error", "vds_rating_D"),  # D 0 V - S 101 V < -100 V (G moved to keep VGS in range)
+    ("Infineon/ISC750P10LM", "vgs_out", ["vg=20V"], "error", "vgs_G"),  # 20 - 50.4 = -30.4 V < -20 V
+    ("Infineon/ISC750P10LM", "gate_unset", ["vg=unset"], "warning", "UNVERIFIED vgs_G"),
     ("Murata/GCM155", "nominal", [], "pass", ""),  # 0.1 uF 50 V X7R
     ("Murata/GCM155", "tolerance_ambiguous", ["tolerance="], "error", "part_orderable"),  # +/-10 % and +/-20 % both exist
     ("Murata/GCM155", "tolerance_not_listed", ["tolerance=+/-5%"], "error", "part_orderable"),
@@ -316,6 +330,22 @@ CASES = [
     ("Murata/GCM32Q", "value_not_listed", ["value=1.23nF"], "error", "part_orderable"),
     ("Murata/GCM32Q", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
     ("Murata/GCM32Q", "ambient_out", ["ta=-60°C to 85°C"], "error", "ambient_range"),  # range -55 to 125 degC
+    ("Vishay/WSK2512", "nominal", [], "pass", ""),  # 0.025 ohm D = WSK2512R0250DEA
+    ("Vishay/WSK2512", "tolerance_b", ["tolerance=B"], "pass", ""),  # B covers 0.01-0.2 ohm
+    ("Vishay/WSK2512", "tolerance_ambiguous", ["tolerance="], "error", "value_allowed"),  # B, D and F all allow 0.025
+    ("Vishay/WSK2512", "b_below_range", ["value=0.005ohm", "tolerance=B", "va=0.05V"], "error", "value_allowed"),  # B from 0.01 ohm
+    ("Vishay/WSK2512", "not_decade", ["value=0.0255ohm"], "error", "value_allowed"),  # 3 significant digits
+    ("Vishay/WSK2512", "over_voltage", ["va=0.17V"], "error", "rated_voltage"),  # > sqrt(1 W x 0.025) = 0.158 V
+    ("Vishay/WSK2512", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Vishay/WSK2512", "ambient_out", ["ta=-40°C to 175°C"], "error", "t_oper_ambient"),  # range -65 to 170 degC
+    ("Vishay/WSK2512-LOW", "nominal", [], "pass", ""),  # 0.002 ohm D = WSK25122L000DEA
+    ("Vishay/WSK2512-LOW", "f_low_edge", ["value=0.001ohm", "tolerance=F", "va=0.02V"], "pass", ""),  # directory starts at 1 mohm
+    ("Vishay/WSK2512-LOW", "sub_1m_excluded", ["value=0.0005ohm", "tolerance=F", "va=0.02V"], "error", "value_allowed"),  # no printed code below 1 mohm
+    ("Vishay/WSK2512-LOW", "d_below_range", ["value=0.0009ohm", "tolerance=D", "va=0.02V"], "error", "value_allowed"),  # below 1 mohm
+    ("Vishay/WSK2512-LOW", "b_not_offered", ["tolerance=B"], "error", "value_allowed"),  # B starts at 10 mohm
+    ("Vishay/WSK2512-LOW", "over_voltage", ["va=0.05V"], "error", "rated_voltage"),  # > sqrt(1 W x 0.002) = 0.0447 V
+    ("Vishay/WSK2512-LOW", "p1_unset", ["va=unset"], "warning", "UNVERIFIED rated_voltage"),
+    ("Vishay/WSK2512-LOW", "ambient_out", ["ta=-40°C to 175°C"], "error", "t_oper_ambient"),
     ("Vishay/WSK2512R0250D", "nominal", [], "pass", ""),
     ("Vishay/WSK2512R0250D", "ambient_out", ["ta=-40°C to 180°C"], "error", "t_oper_ambient"),
     ("Vishay/WSK2512R0250D", "ambient_unset", ["ta=unset"], "warning", "UNVERIFIED t_oper_ambient"),

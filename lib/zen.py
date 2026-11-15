@@ -133,66 +133,133 @@ def micro_ohm(value):
 def series_code(info, params, part_dir):
     """(lookup lines, check lines, problems) for a series component: MPN lookup by value and the voltage-across check.
 
-    The MPN dict is generated from calc.mpn over every allowed value, so calc.py stays the single source.
+    The MPN dict is generated from calc.mpn over every allowed (value, tolerance code) pair, so calc.py stays the single
+    source. A series with tolerance options keys the dict by (micro-ohm, code) and gets a `tolerance` config.
     """
     problems = []
-    rng, power, vlim = (to_param(params[info[f]]) for f in ("value_param", "series_power", "series_vlimit"))
-    values = series.allowed_values(info["e_series"], rng.min, rng.max, info.get("series_eseries_min"))
-    rows, mpn_problems = series.mpn_table(load_calc(part_dir / "calc.py"), values)
+    rng, power = (to_param(params[info[f]]) for f in ("value_param", "series_power"))
+    vkey = info.get("series_vlimit")
+    vlim = to_param(params[vkey]) if vkey else None
+
+    def bounds(key):
+        p = to_param(params[key])
+        return p.min, p.max
+
+    pair_list = series.pairs(info, bounds)
+    values = sorted({v for v, _ in pair_list})
+    rows, mpn_problems = series.mpn_table(load_calc(part_dir / "calc.py"), pair_list)
     problems += mpn_problems
-    if power.max is None or vlim.max is None or power.unit != "W" or vlim.unit != "V":
+    if power.max is None or power.unit != "W" or (vlim is not None and (vlim.max is None or vlim.unit != "V")):
         return [], [], problems + ["series_power needs a W row with max and series_vlimit a V row with max"]
     if any(abs(micro_ohm(v) / 1e6 - v) > 1e-9 * v for v in values):
         problems.append("a series value is not a whole number of micro-ohm")
     if not rows:
         return [], [], problems + ["no allowed values"]
     t = params[info["series_power"]]
-    tv = params[info["series_vlimit"]]
+    tv = params[vkey] if vkey else None
     mins = info.get("series_eseries_min", {})
+    opts = series.options(info)
     allowed = f"{'/'.join(info['e_series'])} values from {rng.min:g} to {rng.max:g} ohm" + "".join(
         f" ({n} only from {v:g} ohm)" for n, v in mins.items())
-    lines = [
-        "# Orderable part number per value, generated from calc.mpn() over every allowed value (calc.py is the single",
-        "# source). Keys are integer micro-ohms: float text differs between Python and Zener, integers do not.",
-        "_MPN = {",
-        *[f'    {micro_ohm(v)}: "{m}",  # {v:g} ohm' for v, m in rows],
-        "}",
-        "_KEY = int(value.value * 1e6 + 0.5)",
-        "# Part number for an allowed value; any other value takes the first entry and fails value_allowed below.",
-        f"_MPN_STR = _MPN.get(_KEY, _MPN[{micro_ohm(rows[0][0])}])",
-        "",
-        "",
-        "def _allowed(_m, r, what):",
-        f'    check(_KEY in _MPN, "%s: %s ohm is not an allowed value ({allowed})" % (what, r))',
-        "",
-        "",
-        # A required config reads 0 while the module file is first loaded, so this is a check, not an error() call.
-        '_ALLOWED_SEVERITY = "advice" if _ROOT else "error"  # standalone build: value is unset',
-        'builtin.add_electrical_check(name="value_allowed", check_fn=_allowed, inputs={"r": value.value, '
-        '"what": "value_allowed"}, severity=_ALLOWED_SEVERITY)',
-        "",
-        "",
-        "def _rated_voltage(_m, v1, v2, what, r, p, vlim, derate):",
-        "    # Worst case |V(P1) - V(P2)| over both nets' ranges. Zener has no sqrt, so compare squares:",
-        "    # vmax <= derate x min(sqrt(P x R), vlim)  <=>  vmax^2 <= derate^2 x min(P x R, vlim^2).",
-        "    vmax = max(v1.max - v2.min, v2.max - v1.min)",
-        "    limit2 = min(p * r, vlim * vlim) * derate * derate",
-        '    msg = "%s: up to %s V across the part, (V across)^2 = %s V^2 > %s V^2 = derate^2 x min(P x R, Vlimit^2) '
-        'with R = %s ohm, P = %s W, Vlimit = %s V"',
-        "    check(vmax * vmax <= limit2, msg % (what, vmax, vmax * vmax, limit2, r, p, vlim))",
-    ]
+    if opts:
+        allowed = f"{'/'.join(info['e_series'])} values per tolerance code: " + ", ".join(
+            f"{c} {max(bounds(k)[0], rng.min):g} to {min(bounds(k)[1], rng.max):g} ohm" for c, _, k in opts)
+    if not opts:
+        lines = [
+            "# Orderable part number per value, generated from calc.mpn() over every allowed value (calc.py is the single",
+            "# source). Keys are integer micro-ohms: float text differs between Python and Zener, integers do not.",
+            "_MPN = {",
+            *[f'    {micro_ohm(v)}: "{m}",  # {v:g} ohm' for v, _, m in rows],
+            "}",
+            "_KEY = int(value.value * 1e6 + 0.5)",
+            "# Part number for an allowed value; any other value takes the first entry and fails value_allowed below.",
+            f"_MPN_STR = _MPN.get(_KEY, _MPN[{micro_ohm(rows[0][0])}])",
+            "",
+            "",
+            "def _allowed(_m, r, what):",
+            f'    check(_KEY in _MPN, "%s: %s ohm is not an allowed value ({allowed})" % (what, r))',
+            "",
+            "",
+            # A required config reads 0 while the module file is first loaded, so this is a check, not an error() call.
+            '_ALLOWED_SEVERITY = "advice" if _ROOT else "error"  # standalone build: value is unset',
+            'builtin.add_electrical_check(name="value_allowed", check_fn=_allowed, inputs={"r": value.value, '
+            '"what": "value_allowed"}, severity=_ALLOWED_SEVERITY)',
+            "",
+            "",
+        ]
+    else:
+        codes = {}
+        for v, c, _ in rows:
+            codes.setdefault(micro_ohm(v), []).append(c)
+        lines = [
+            "# Orderable part number per (value, tolerance code), generated from calc.mpn() over every allowed pair (calc.py",
+            "# is the single source). Keys are (integer micro-ohms, code): float text differs between Python and Zener.",
+            "_MPN = {",
+            *[f'    ({micro_ohm(v)}, "{c}"): "{m}",  # {v:g} ohm, tolerance {c}' for v, c, m in rows],
+            "}",
+            "# Tolerance codes that allow each value (micro-ohm).",
+            "_CODES = {",
+            *[f"    {k}: {v!r}," .replace("'", '"') for k, v in codes.items()],
+            "}",
+            "_KEY = int(value.value * 1e6 + 0.5)",
+            "_AVAILABLE = _CODES.get(_KEY, [])",
+            '_CODE = tolerance if tolerance != "" or len(_AVAILABLE) != 1 else _AVAILABLE[0]',
+            "# An unorderable (value, tolerance) gets the sentinel MPN UNORDERABLE (never a real but wrong part number).",
+            '_MPN_STR = _MPN.get((_KEY, _CODE), "UNORDERABLE")',
+            "",
+            "",
+            "def _allowed(_m, found, what, r, code, available):",
+            '    why = "%s: %s ohm with tolerance code %s is not orderable (' + allowed + ')"',
+            "    if len(available) > 0:",
+            '        why += "; the tolerance codes that allow this value: %s (set tolerance)" % available',
+            "    check(found, why % (what, r, code))",
+            "",
+            "",
+            '_ALLOWED_SEVERITY = "advice" if _ROOT else "error"  # standalone build: value is unset',
+            'builtin.add_electrical_check(name="value_allowed", check_fn=_allowed, inputs={"found": (_KEY, _CODE) in _MPN, '
+            '"what": "value_allowed", "r": value.value, "code": _CODE, "available": _AVAILABLE}, '
+            'severity=_ALLOWED_SEVERITY)',
+            "",
+            "",
+        ]
+    if vlim is not None:
+        lines += [
+            "def _rated_voltage(_m, v1, v2, what, r, p, vlim, derate):",
+            "    # Worst case |V(P1) - V(P2)| over both nets' ranges. Zener has no sqrt, so compare squares:",
+            "    # vmax <= derate x min(sqrt(P x R), vlim)  <=>  vmax^2 <= derate^2 x min(P x R, vlim^2).",
+            "    vmax = max(v1.max - v2.min, v2.max - v1.min)",
+            "    limit2 = min(p * r, vlim * vlim) * derate * derate",
+            '    msg = "%s: up to %s V across the part, (V across)^2 = %s V^2 > %s V^2 = derate^2 x min(P x R, Vlimit^2) '
+            'with R = %s ohm, P = %s W, Vlimit = %s V"',
+            "    check(vmax * vmax <= limit2, msg % (what, vmax, vmax * vmax, limit2, r, p, vlim))",
+        ]
+    else:
+        lines += [
+            "def _rated_voltage(_m, v1, v2, what, r, p, derate):",
+            "    # Worst case |V(P1) - V(P2)| over both nets' ranges. Zener has no sqrt, so compare squares:",
+            "    # vmax <= derate x sqrt(P x R)  <=>  vmax^2 <= derate^2 x P x R. The datasheet prints no Vlimit.",
+            "    vmax = max(v1.max - v2.min, v2.max - v1.min)",
+            "    limit2 = p * r * derate * derate",
+            '    msg = "%s: up to %s V across the part, (V across)^2 = %s V^2 > %s V^2 = derate^2 x P x R '
+            'with R = %s ohm, P = %s W"',
+            "    check(vmax * vmax <= limit2, msg % (what, vmax, vmax * vmax, limit2, r, p))",
+        ]
     name = "rated_voltage"
+    n1, n2 = (io_name(x) for x in info.get("series_pins", ["1", "2"]))  # the nets the voltage across the part is taken between
+    limit_line = (f'_limit("{name}", _rated_voltage, {{"v1": {n1}.voltage, "v2": {n2}.voltage, "what": "{name}", '
+                  f'"r": value.value, "p": {num(power.max)}, ' + (f'"vlim": {num(vlim.max)}, ' if vlim is not None else "")
+                  + '"derate": derate}, "error")')
     checks = [
-        f"# {name}: voltage across the part within min(sqrt(P x R), Vlimit), x derate",
+        f"# {name}: voltage across the part within " + ("min(sqrt(P x R), Vlimit)" if vlim is not None else "sqrt(P x R)")
+        + ", x derate",
         f"#   Power rating {info['series_power']}: {t.get('name', '')}: max {t.get('max')} {t.get('unit', '')} "
         f"({t.get('cite', '')})",
-        f"#   Voltage limit {info['series_vlimit']}: {tv.get('name', '')}: max {tv.get('max')} {tv.get('unit', '')} "
-        f"({tv.get('cite', '')})",
+        *([f"#   Voltage limit {vkey}: {tv.get('name', '')}: max {tv.get('max')} {tv.get('unit', '')} "
+           f"({tv.get('cite', '')})"] if vlim is not None else ["#   No limiting element voltage: the datasheet prints none."]),
         "#   Evaluated for the configured value. Error: a rated part voltage is exceeded.",
         "#   Not checked here: power derating above 70 degC (curve) is the module's job, calc.rated_power;",
         "#   above 70 degC ambient this check is optimistic.",
-        f'_limit("{name}", _rated_voltage, {{"v1": P1.voltage, "v2": P2.voltage, "what": "{name}", "r": value.value, '
-        f'"p": {num(power.max)}, "vlim": {num(vlim.max)}, "derate": derate}}, "error")',
+        limit_line,
         "",
     ]
     return lines, checks, problems
@@ -441,6 +508,10 @@ def generate(part_dir, variant=None):
     out.append("")
     if is_series:
         out.append('value = config(Resistance, help="Resistance, an allowed E-series value (see the _MPN table)")')
+        if info.get("series_tolerances"):
+            codes = ", ".join(c for c, _, _ in series.options(info))
+            out.append(f'tolerance = config(str, default="", help="Tolerance code, one of {codes}; needed when more than '
+                       f'one code allows the value")')
     if uses_ambient:
         out.append('ambient = config(Temperature, optional=True, help="Board ambient temperature range")')
     out.append('derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")')

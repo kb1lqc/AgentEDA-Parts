@@ -1,0 +1,698 @@
+"""WSK2512: 0.005 to 0.2 ohm (decade values) +/-0.1 % / +/-0.5 % / +/-1.0 % 1 W 4-terminal (Kelvin) Power Metal Strip current-sense resistor series, 2512.
+GENERATED from component.toml by `python3 -m lib.zen`; do not edit. Source of truth: component.toml and
+calc.py (numbers, cites, equations). DS: https://www.vishay.com/doc?30108, 11-Dec-2023 (Document 30108) (2023-12-11).
+Checks are DC steady-state on the voltages each instance declares. They do not cover transients, overshoot,
+hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
+Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
+
+load("@stdlib/units.zen", "Resistance", "Temperature")
+
+# UNCHECKED: max_working_voltage: Maximum working voltage (DS p.2, Technical Specifications, Maximum working voltage, (P x R)^1/2); formula rating; owner: module (calc.max_working_voltage)
+# UNCHECKED: derate_knee: Derating knee: 100 % rated power up to (DS p.3, Figure: DERATING graph (unnumbered; rated power vs ambient, 100 % line ends at 70 degC); coincides with DS p.1 P70 degC); curve value; used by calc.rated_power
+# UNCHECKED: derate_zero: Derating: 0 % rated power at (DS p.3, Figure: DERATING graph (unnumbered; rated power vs ambient, line reaches 0 % at 170 degC)); curve value; used by calc.rated_power
+# UNCHECKED: power derating above 70 degC: curve-based, depends on the dissipation; owner: module (calc.rated_power). rated_voltage below uses the 70 degC power rating at
+#   every ambient, so above 70 degC ambient it is OPTIMISTIC (0 W at the derating zero).
+
+# Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
+# GND can drive them; ground-named pins are Ground.
+# pin 1 I2, passive: Current connection (I2)
+I2 = io(Net)
+# pin 2 E2, passive: Voltage sense connection (E2), on the I2 terminal
+E2 = io(Net)
+# pin 3 E1, passive: Voltage sense connection (E1), on the I1 terminal
+E1 = io(Net)
+# pin 4 I1, passive: Current connection (I1)
+I1 = io(Net)
+
+value = config(Resistance, help="Resistance, an allowed E-series value (see the _MPN table)")
+tolerance = config(
+    str, default="", help="Tolerance code, one of B, D, F; needed when more than one code allows the value"
+)
+ambient = config(Temperature, optional=True, help="Board ambient temperature range")
+derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+
+_ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
+check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
+
+
+def _limit(name, fn, inputs, severity, waiver=""):
+    # Unset input: UNVERIFIED warning, never a silent pass. Waiver drops a warning to advice.
+    if waiver and severity != "warning":
+        error("only warning-level checks can be waived: " + name)
+    unset = [k for k, v in inputs.items() if v == None]
+    if unset:
+
+        def _unverified(_m):
+            error("UNVERIFIED " + name + ": no value for " + ", ".join(unset))
+
+        builtin.add_electrical_check(name=name, check_fn=_unverified, severity="advice" if _ROOT else "warning")
+    else:
+        builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
+
+
+def _range(_m, v, what, lo=None, hi=None, lo_ref=None, hi_ref=None):
+    # Worst case: v.min >= lo + lo_ref.max and v.max <= hi + hi_ref.min (narrowest window). No ref = absolute.
+    lo_b = None if lo == None else lo + (0.0 if lo_ref == None else lo_ref.max)
+    hi_b = None if hi == None else hi + (0.0 if hi_ref == None else hi_ref.min)
+    ok = (lo_b == None or v.min >= lo_b) and (hi_b == None or v.max <= hi_b)
+    lo_t = "no limit" if lo_b == None else "%s V" % lo_b
+    hi_t = "no limit" if hi_b == None else "%s V" % hi_b
+    check(ok, "%s: %s to %s V outside %s to %s" % (what, v.min, v.max, lo_t, hi_t))
+
+
+def _temp(_m, v, what, lo, hi):
+    # Temperatures are kelvin floats in Zener; messages in degC.
+    ok = v.min >= lo and v.max <= hi
+    msg = "%s: %s to %s degC outside %s to %s degC"
+    check(ok, msg % (what, v.min - 273.15, v.max - 273.15, lo - 273.15, hi - 273.15))
+
+
+# Orderable part number per (value, tolerance code), generated from calc.mpn() over every allowed pair (calc.py
+# is the single source). Keys are (integer micro-ohms, code): float text differs between Python and Zener.
+_MPN = {
+    (5000, "D"): "WSK25125L000DEA",  # 0.005 ohm, tolerance D
+    (5000, "F"): "WSK25125L000FEA",  # 0.005 ohm, tolerance F
+    (5100, "D"): "WSK25125L100DEA",  # 0.0051 ohm, tolerance D
+    (5100, "F"): "WSK25125L100FEA",  # 0.0051 ohm, tolerance F
+    (5200, "D"): "WSK25125L200DEA",  # 0.0052 ohm, tolerance D
+    (5200, "F"): "WSK25125L200FEA",  # 0.0052 ohm, tolerance F
+    (5300, "D"): "WSK25125L300DEA",  # 0.0053 ohm, tolerance D
+    (5300, "F"): "WSK25125L300FEA",  # 0.0053 ohm, tolerance F
+    (5400, "D"): "WSK25125L400DEA",  # 0.0054 ohm, tolerance D
+    (5400, "F"): "WSK25125L400FEA",  # 0.0054 ohm, tolerance F
+    (5500, "D"): "WSK25125L500DEA",  # 0.0055 ohm, tolerance D
+    (5500, "F"): "WSK25125L500FEA",  # 0.0055 ohm, tolerance F
+    (5600, "D"): "WSK25125L600DEA",  # 0.0056 ohm, tolerance D
+    (5600, "F"): "WSK25125L600FEA",  # 0.0056 ohm, tolerance F
+    (5700, "D"): "WSK25125L700DEA",  # 0.0057 ohm, tolerance D
+    (5700, "F"): "WSK25125L700FEA",  # 0.0057 ohm, tolerance F
+    (5800, "D"): "WSK25125L800DEA",  # 0.0058 ohm, tolerance D
+    (5800, "F"): "WSK25125L800FEA",  # 0.0058 ohm, tolerance F
+    (5900, "D"): "WSK25125L900DEA",  # 0.0059 ohm, tolerance D
+    (5900, "F"): "WSK25125L900FEA",  # 0.0059 ohm, tolerance F
+    (6000, "D"): "WSK25126L000DEA",  # 0.006 ohm, tolerance D
+    (6000, "F"): "WSK25126L000FEA",  # 0.006 ohm, tolerance F
+    (6100, "D"): "WSK25126L100DEA",  # 0.0061 ohm, tolerance D
+    (6100, "F"): "WSK25126L100FEA",  # 0.0061 ohm, tolerance F
+    (6200, "D"): "WSK25126L200DEA",  # 0.0062 ohm, tolerance D
+    (6200, "F"): "WSK25126L200FEA",  # 0.0062 ohm, tolerance F
+    (6300, "D"): "WSK25126L300DEA",  # 0.0063 ohm, tolerance D
+    (6300, "F"): "WSK25126L300FEA",  # 0.0063 ohm, tolerance F
+    (6400, "D"): "WSK25126L400DEA",  # 0.0064 ohm, tolerance D
+    (6400, "F"): "WSK25126L400FEA",  # 0.0064 ohm, tolerance F
+    (6500, "D"): "WSK25126L500DEA",  # 0.0065 ohm, tolerance D
+    (6500, "F"): "WSK25126L500FEA",  # 0.0065 ohm, tolerance F
+    (6600, "D"): "WSK25126L600DEA",  # 0.0066 ohm, tolerance D
+    (6600, "F"): "WSK25126L600FEA",  # 0.0066 ohm, tolerance F
+    (6700, "D"): "WSK25126L700DEA",  # 0.0067 ohm, tolerance D
+    (6700, "F"): "WSK25126L700FEA",  # 0.0067 ohm, tolerance F
+    (6800, "D"): "WSK25126L800DEA",  # 0.0068 ohm, tolerance D
+    (6800, "F"): "WSK25126L800FEA",  # 0.0068 ohm, tolerance F
+    (6900, "D"): "WSK25126L900DEA",  # 0.0069 ohm, tolerance D
+    (6900, "F"): "WSK25126L900FEA",  # 0.0069 ohm, tolerance F
+    (7000, "D"): "WSK25127L000DEA",  # 0.007 ohm, tolerance D
+    (7000, "F"): "WSK25127L000FEA",  # 0.007 ohm, tolerance F
+    (7100, "D"): "WSK25127L100DEA",  # 0.0071 ohm, tolerance D
+    (7100, "F"): "WSK25127L100FEA",  # 0.0071 ohm, tolerance F
+    (7200, "D"): "WSK25127L200DEA",  # 0.0072 ohm, tolerance D
+    (7200, "F"): "WSK25127L200FEA",  # 0.0072 ohm, tolerance F
+    (7300, "D"): "WSK25127L300DEA",  # 0.0073 ohm, tolerance D
+    (7300, "F"): "WSK25127L300FEA",  # 0.0073 ohm, tolerance F
+    (7400, "D"): "WSK25127L400DEA",  # 0.0074 ohm, tolerance D
+    (7400, "F"): "WSK25127L400FEA",  # 0.0074 ohm, tolerance F
+    (7500, "D"): "WSK25127L500DEA",  # 0.0075 ohm, tolerance D
+    (7500, "F"): "WSK25127L500FEA",  # 0.0075 ohm, tolerance F
+    (7600, "D"): "WSK25127L600DEA",  # 0.0076 ohm, tolerance D
+    (7600, "F"): "WSK25127L600FEA",  # 0.0076 ohm, tolerance F
+    (7700, "D"): "WSK25127L700DEA",  # 0.0077 ohm, tolerance D
+    (7700, "F"): "WSK25127L700FEA",  # 0.0077 ohm, tolerance F
+    (7800, "D"): "WSK25127L800DEA",  # 0.0078 ohm, tolerance D
+    (7800, "F"): "WSK25127L800FEA",  # 0.0078 ohm, tolerance F
+    (7900, "D"): "WSK25127L900DEA",  # 0.0079 ohm, tolerance D
+    (7900, "F"): "WSK25127L900FEA",  # 0.0079 ohm, tolerance F
+    (8000, "D"): "WSK25128L000DEA",  # 0.008 ohm, tolerance D
+    (8000, "F"): "WSK25128L000FEA",  # 0.008 ohm, tolerance F
+    (8100, "D"): "WSK25128L100DEA",  # 0.0081 ohm, tolerance D
+    (8100, "F"): "WSK25128L100FEA",  # 0.0081 ohm, tolerance F
+    (8200, "D"): "WSK25128L200DEA",  # 0.0082 ohm, tolerance D
+    (8200, "F"): "WSK25128L200FEA",  # 0.0082 ohm, tolerance F
+    (8300, "D"): "WSK25128L300DEA",  # 0.0083 ohm, tolerance D
+    (8300, "F"): "WSK25128L300FEA",  # 0.0083 ohm, tolerance F
+    (8400, "D"): "WSK25128L400DEA",  # 0.0084 ohm, tolerance D
+    (8400, "F"): "WSK25128L400FEA",  # 0.0084 ohm, tolerance F
+    (8500, "D"): "WSK25128L500DEA",  # 0.0085 ohm, tolerance D
+    (8500, "F"): "WSK25128L500FEA",  # 0.0085 ohm, tolerance F
+    (8600, "D"): "WSK25128L600DEA",  # 0.0086 ohm, tolerance D
+    (8600, "F"): "WSK25128L600FEA",  # 0.0086 ohm, tolerance F
+    (8700, "D"): "WSK25128L700DEA",  # 0.0087 ohm, tolerance D
+    (8700, "F"): "WSK25128L700FEA",  # 0.0087 ohm, tolerance F
+    (8800, "D"): "WSK25128L800DEA",  # 0.0088 ohm, tolerance D
+    (8800, "F"): "WSK25128L800FEA",  # 0.0088 ohm, tolerance F
+    (8900, "D"): "WSK25128L900DEA",  # 0.0089 ohm, tolerance D
+    (8900, "F"): "WSK25128L900FEA",  # 0.0089 ohm, tolerance F
+    (9000, "D"): "WSK25129L000DEA",  # 0.009 ohm, tolerance D
+    (9000, "F"): "WSK25129L000FEA",  # 0.009 ohm, tolerance F
+    (9100, "D"): "WSK25129L100DEA",  # 0.0091 ohm, tolerance D
+    (9100, "F"): "WSK25129L100FEA",  # 0.0091 ohm, tolerance F
+    (9200, "D"): "WSK25129L200DEA",  # 0.0092 ohm, tolerance D
+    (9200, "F"): "WSK25129L200FEA",  # 0.0092 ohm, tolerance F
+    (9300, "D"): "WSK25129L300DEA",  # 0.0093 ohm, tolerance D
+    (9300, "F"): "WSK25129L300FEA",  # 0.0093 ohm, tolerance F
+    (9400, "D"): "WSK25129L400DEA",  # 0.0094 ohm, tolerance D
+    (9400, "F"): "WSK25129L400FEA",  # 0.0094 ohm, tolerance F
+    (9500, "D"): "WSK25129L500DEA",  # 0.0095 ohm, tolerance D
+    (9500, "F"): "WSK25129L500FEA",  # 0.0095 ohm, tolerance F
+    (9600, "D"): "WSK25129L600DEA",  # 0.0096 ohm, tolerance D
+    (9600, "F"): "WSK25129L600FEA",  # 0.0096 ohm, tolerance F
+    (9700, "D"): "WSK25129L700DEA",  # 0.0097 ohm, tolerance D
+    (9700, "F"): "WSK25129L700FEA",  # 0.0097 ohm, tolerance F
+    (9800, "D"): "WSK25129L800DEA",  # 0.0098 ohm, tolerance D
+    (9800, "F"): "WSK25129L800FEA",  # 0.0098 ohm, tolerance F
+    (9900, "D"): "WSK25129L900DEA",  # 0.0099 ohm, tolerance D
+    (9900, "F"): "WSK25129L900FEA",  # 0.0099 ohm, tolerance F
+    (10000, "B"): "WSK2512R0100BEA",  # 0.01 ohm, tolerance B
+    (10000, "D"): "WSK2512R0100DEA",  # 0.01 ohm, tolerance D
+    (10000, "F"): "WSK2512R0100FEA",  # 0.01 ohm, tolerance F
+    (11000, "B"): "WSK2512R0110BEA",  # 0.011 ohm, tolerance B
+    (11000, "D"): "WSK2512R0110DEA",  # 0.011 ohm, tolerance D
+    (11000, "F"): "WSK2512R0110FEA",  # 0.011 ohm, tolerance F
+    (12000, "B"): "WSK2512R0120BEA",  # 0.012 ohm, tolerance B
+    (12000, "D"): "WSK2512R0120DEA",  # 0.012 ohm, tolerance D
+    (12000, "F"): "WSK2512R0120FEA",  # 0.012 ohm, tolerance F
+    (13000, "B"): "WSK2512R0130BEA",  # 0.013 ohm, tolerance B
+    (13000, "D"): "WSK2512R0130DEA",  # 0.013 ohm, tolerance D
+    (13000, "F"): "WSK2512R0130FEA",  # 0.013 ohm, tolerance F
+    (14000, "B"): "WSK2512R0140BEA",  # 0.014 ohm, tolerance B
+    (14000, "D"): "WSK2512R0140DEA",  # 0.014 ohm, tolerance D
+    (14000, "F"): "WSK2512R0140FEA",  # 0.014 ohm, tolerance F
+    (15000, "B"): "WSK2512R0150BEA",  # 0.015 ohm, tolerance B
+    (15000, "D"): "WSK2512R0150DEA",  # 0.015 ohm, tolerance D
+    (15000, "F"): "WSK2512R0150FEA",  # 0.015 ohm, tolerance F
+    (16000, "B"): "WSK2512R0160BEA",  # 0.016 ohm, tolerance B
+    (16000, "D"): "WSK2512R0160DEA",  # 0.016 ohm, tolerance D
+    (16000, "F"): "WSK2512R0160FEA",  # 0.016 ohm, tolerance F
+    (17000, "B"): "WSK2512R0170BEA",  # 0.017 ohm, tolerance B
+    (17000, "D"): "WSK2512R0170DEA",  # 0.017 ohm, tolerance D
+    (17000, "F"): "WSK2512R0170FEA",  # 0.017 ohm, tolerance F
+    (18000, "B"): "WSK2512R0180BEA",  # 0.018 ohm, tolerance B
+    (18000, "D"): "WSK2512R0180DEA",  # 0.018 ohm, tolerance D
+    (18000, "F"): "WSK2512R0180FEA",  # 0.018 ohm, tolerance F
+    (19000, "B"): "WSK2512R0190BEA",  # 0.019 ohm, tolerance B
+    (19000, "D"): "WSK2512R0190DEA",  # 0.019 ohm, tolerance D
+    (19000, "F"): "WSK2512R0190FEA",  # 0.019 ohm, tolerance F
+    (20000, "B"): "WSK2512R0200BEA",  # 0.02 ohm, tolerance B
+    (20000, "D"): "WSK2512R0200DEA",  # 0.02 ohm, tolerance D
+    (20000, "F"): "WSK2512R0200FEA",  # 0.02 ohm, tolerance F
+    (21000, "B"): "WSK2512R0210BEA",  # 0.021 ohm, tolerance B
+    (21000, "D"): "WSK2512R0210DEA",  # 0.021 ohm, tolerance D
+    (21000, "F"): "WSK2512R0210FEA",  # 0.021 ohm, tolerance F
+    (22000, "B"): "WSK2512R0220BEA",  # 0.022 ohm, tolerance B
+    (22000, "D"): "WSK2512R0220DEA",  # 0.022 ohm, tolerance D
+    (22000, "F"): "WSK2512R0220FEA",  # 0.022 ohm, tolerance F
+    (23000, "B"): "WSK2512R0230BEA",  # 0.023 ohm, tolerance B
+    (23000, "D"): "WSK2512R0230DEA",  # 0.023 ohm, tolerance D
+    (23000, "F"): "WSK2512R0230FEA",  # 0.023 ohm, tolerance F
+    (24000, "B"): "WSK2512R0240BEA",  # 0.024 ohm, tolerance B
+    (24000, "D"): "WSK2512R0240DEA",  # 0.024 ohm, tolerance D
+    (24000, "F"): "WSK2512R0240FEA",  # 0.024 ohm, tolerance F
+    (25000, "B"): "WSK2512R0250BEA",  # 0.025 ohm, tolerance B
+    (25000, "D"): "WSK2512R0250DEA",  # 0.025 ohm, tolerance D
+    (25000, "F"): "WSK2512R0250FEA",  # 0.025 ohm, tolerance F
+    (26000, "B"): "WSK2512R0260BEA",  # 0.026 ohm, tolerance B
+    (26000, "D"): "WSK2512R0260DEA",  # 0.026 ohm, tolerance D
+    (26000, "F"): "WSK2512R0260FEA",  # 0.026 ohm, tolerance F
+    (27000, "B"): "WSK2512R0270BEA",  # 0.027 ohm, tolerance B
+    (27000, "D"): "WSK2512R0270DEA",  # 0.027 ohm, tolerance D
+    (27000, "F"): "WSK2512R0270FEA",  # 0.027 ohm, tolerance F
+    (28000, "B"): "WSK2512R0280BEA",  # 0.028 ohm, tolerance B
+    (28000, "D"): "WSK2512R0280DEA",  # 0.028 ohm, tolerance D
+    (28000, "F"): "WSK2512R0280FEA",  # 0.028 ohm, tolerance F
+    (29000, "B"): "WSK2512R0290BEA",  # 0.029 ohm, tolerance B
+    (29000, "D"): "WSK2512R0290DEA",  # 0.029 ohm, tolerance D
+    (29000, "F"): "WSK2512R0290FEA",  # 0.029 ohm, tolerance F
+    (30000, "B"): "WSK2512R0300BEA",  # 0.03 ohm, tolerance B
+    (30000, "D"): "WSK2512R0300DEA",  # 0.03 ohm, tolerance D
+    (30000, "F"): "WSK2512R0300FEA",  # 0.03 ohm, tolerance F
+    (31000, "B"): "WSK2512R0310BEA",  # 0.031 ohm, tolerance B
+    (31000, "D"): "WSK2512R0310DEA",  # 0.031 ohm, tolerance D
+    (31000, "F"): "WSK2512R0310FEA",  # 0.031 ohm, tolerance F
+    (32000, "B"): "WSK2512R0320BEA",  # 0.032 ohm, tolerance B
+    (32000, "D"): "WSK2512R0320DEA",  # 0.032 ohm, tolerance D
+    (32000, "F"): "WSK2512R0320FEA",  # 0.032 ohm, tolerance F
+    (33000, "B"): "WSK2512R0330BEA",  # 0.033 ohm, tolerance B
+    (33000, "D"): "WSK2512R0330DEA",  # 0.033 ohm, tolerance D
+    (33000, "F"): "WSK2512R0330FEA",  # 0.033 ohm, tolerance F
+    (34000, "B"): "WSK2512R0340BEA",  # 0.034 ohm, tolerance B
+    (34000, "D"): "WSK2512R0340DEA",  # 0.034 ohm, tolerance D
+    (34000, "F"): "WSK2512R0340FEA",  # 0.034 ohm, tolerance F
+    (35000, "B"): "WSK2512R0350BEA",  # 0.035 ohm, tolerance B
+    (35000, "D"): "WSK2512R0350DEA",  # 0.035 ohm, tolerance D
+    (35000, "F"): "WSK2512R0350FEA",  # 0.035 ohm, tolerance F
+    (36000, "B"): "WSK2512R0360BEA",  # 0.036 ohm, tolerance B
+    (36000, "D"): "WSK2512R0360DEA",  # 0.036 ohm, tolerance D
+    (36000, "F"): "WSK2512R0360FEA",  # 0.036 ohm, tolerance F
+    (37000, "B"): "WSK2512R0370BEA",  # 0.037 ohm, tolerance B
+    (37000, "D"): "WSK2512R0370DEA",  # 0.037 ohm, tolerance D
+    (37000, "F"): "WSK2512R0370FEA",  # 0.037 ohm, tolerance F
+    (38000, "B"): "WSK2512R0380BEA",  # 0.038 ohm, tolerance B
+    (38000, "D"): "WSK2512R0380DEA",  # 0.038 ohm, tolerance D
+    (38000, "F"): "WSK2512R0380FEA",  # 0.038 ohm, tolerance F
+    (39000, "B"): "WSK2512R0390BEA",  # 0.039 ohm, tolerance B
+    (39000, "D"): "WSK2512R0390DEA",  # 0.039 ohm, tolerance D
+    (39000, "F"): "WSK2512R0390FEA",  # 0.039 ohm, tolerance F
+    (40000, "B"): "WSK2512R0400BEA",  # 0.04 ohm, tolerance B
+    (40000, "D"): "WSK2512R0400DEA",  # 0.04 ohm, tolerance D
+    (40000, "F"): "WSK2512R0400FEA",  # 0.04 ohm, tolerance F
+    (41000, "B"): "WSK2512R0410BEA",  # 0.041 ohm, tolerance B
+    (41000, "D"): "WSK2512R0410DEA",  # 0.041 ohm, tolerance D
+    (41000, "F"): "WSK2512R0410FEA",  # 0.041 ohm, tolerance F
+    (42000, "B"): "WSK2512R0420BEA",  # 0.042 ohm, tolerance B
+    (42000, "D"): "WSK2512R0420DEA",  # 0.042 ohm, tolerance D
+    (42000, "F"): "WSK2512R0420FEA",  # 0.042 ohm, tolerance F
+    (43000, "B"): "WSK2512R0430BEA",  # 0.043 ohm, tolerance B
+    (43000, "D"): "WSK2512R0430DEA",  # 0.043 ohm, tolerance D
+    (43000, "F"): "WSK2512R0430FEA",  # 0.043 ohm, tolerance F
+    (44000, "B"): "WSK2512R0440BEA",  # 0.044 ohm, tolerance B
+    (44000, "D"): "WSK2512R0440DEA",  # 0.044 ohm, tolerance D
+    (44000, "F"): "WSK2512R0440FEA",  # 0.044 ohm, tolerance F
+    (45000, "B"): "WSK2512R0450BEA",  # 0.045 ohm, tolerance B
+    (45000, "D"): "WSK2512R0450DEA",  # 0.045 ohm, tolerance D
+    (45000, "F"): "WSK2512R0450FEA",  # 0.045 ohm, tolerance F
+    (46000, "B"): "WSK2512R0460BEA",  # 0.046 ohm, tolerance B
+    (46000, "D"): "WSK2512R0460DEA",  # 0.046 ohm, tolerance D
+    (46000, "F"): "WSK2512R0460FEA",  # 0.046 ohm, tolerance F
+    (47000, "B"): "WSK2512R0470BEA",  # 0.047 ohm, tolerance B
+    (47000, "D"): "WSK2512R0470DEA",  # 0.047 ohm, tolerance D
+    (47000, "F"): "WSK2512R0470FEA",  # 0.047 ohm, tolerance F
+    (48000, "B"): "WSK2512R0480BEA",  # 0.048 ohm, tolerance B
+    (48000, "D"): "WSK2512R0480DEA",  # 0.048 ohm, tolerance D
+    (48000, "F"): "WSK2512R0480FEA",  # 0.048 ohm, tolerance F
+    (49000, "B"): "WSK2512R0490BEA",  # 0.049 ohm, tolerance B
+    (49000, "D"): "WSK2512R0490DEA",  # 0.049 ohm, tolerance D
+    (49000, "F"): "WSK2512R0490FEA",  # 0.049 ohm, tolerance F
+    (50000, "B"): "WSK2512R0500BEA",  # 0.05 ohm, tolerance B
+    (50000, "D"): "WSK2512R0500DEA",  # 0.05 ohm, tolerance D
+    (50000, "F"): "WSK2512R0500FEA",  # 0.05 ohm, tolerance F
+    (51000, "B"): "WSK2512R0510BEA",  # 0.051 ohm, tolerance B
+    (51000, "D"): "WSK2512R0510DEA",  # 0.051 ohm, tolerance D
+    (51000, "F"): "WSK2512R0510FEA",  # 0.051 ohm, tolerance F
+    (52000, "B"): "WSK2512R0520BEA",  # 0.052 ohm, tolerance B
+    (52000, "D"): "WSK2512R0520DEA",  # 0.052 ohm, tolerance D
+    (52000, "F"): "WSK2512R0520FEA",  # 0.052 ohm, tolerance F
+    (53000, "B"): "WSK2512R0530BEA",  # 0.053 ohm, tolerance B
+    (53000, "D"): "WSK2512R0530DEA",  # 0.053 ohm, tolerance D
+    (53000, "F"): "WSK2512R0530FEA",  # 0.053 ohm, tolerance F
+    (54000, "B"): "WSK2512R0540BEA",  # 0.054 ohm, tolerance B
+    (54000, "D"): "WSK2512R0540DEA",  # 0.054 ohm, tolerance D
+    (54000, "F"): "WSK2512R0540FEA",  # 0.054 ohm, tolerance F
+    (55000, "B"): "WSK2512R0550BEA",  # 0.055 ohm, tolerance B
+    (55000, "D"): "WSK2512R0550DEA",  # 0.055 ohm, tolerance D
+    (55000, "F"): "WSK2512R0550FEA",  # 0.055 ohm, tolerance F
+    (56000, "B"): "WSK2512R0560BEA",  # 0.056 ohm, tolerance B
+    (56000, "D"): "WSK2512R0560DEA",  # 0.056 ohm, tolerance D
+    (56000, "F"): "WSK2512R0560FEA",  # 0.056 ohm, tolerance F
+    (57000, "B"): "WSK2512R0570BEA",  # 0.057 ohm, tolerance B
+    (57000, "D"): "WSK2512R0570DEA",  # 0.057 ohm, tolerance D
+    (57000, "F"): "WSK2512R0570FEA",  # 0.057 ohm, tolerance F
+    (58000, "B"): "WSK2512R0580BEA",  # 0.058 ohm, tolerance B
+    (58000, "D"): "WSK2512R0580DEA",  # 0.058 ohm, tolerance D
+    (58000, "F"): "WSK2512R0580FEA",  # 0.058 ohm, tolerance F
+    (59000, "B"): "WSK2512R0590BEA",  # 0.059 ohm, tolerance B
+    (59000, "D"): "WSK2512R0590DEA",  # 0.059 ohm, tolerance D
+    (59000, "F"): "WSK2512R0590FEA",  # 0.059 ohm, tolerance F
+    (60000, "B"): "WSK2512R0600BEA",  # 0.06 ohm, tolerance B
+    (60000, "D"): "WSK2512R0600DEA",  # 0.06 ohm, tolerance D
+    (60000, "F"): "WSK2512R0600FEA",  # 0.06 ohm, tolerance F
+    (61000, "B"): "WSK2512R0610BEA",  # 0.061 ohm, tolerance B
+    (61000, "D"): "WSK2512R0610DEA",  # 0.061 ohm, tolerance D
+    (61000, "F"): "WSK2512R0610FEA",  # 0.061 ohm, tolerance F
+    (62000, "B"): "WSK2512R0620BEA",  # 0.062 ohm, tolerance B
+    (62000, "D"): "WSK2512R0620DEA",  # 0.062 ohm, tolerance D
+    (62000, "F"): "WSK2512R0620FEA",  # 0.062 ohm, tolerance F
+    (63000, "B"): "WSK2512R0630BEA",  # 0.063 ohm, tolerance B
+    (63000, "D"): "WSK2512R0630DEA",  # 0.063 ohm, tolerance D
+    (63000, "F"): "WSK2512R0630FEA",  # 0.063 ohm, tolerance F
+    (64000, "B"): "WSK2512R0640BEA",  # 0.064 ohm, tolerance B
+    (64000, "D"): "WSK2512R0640DEA",  # 0.064 ohm, tolerance D
+    (64000, "F"): "WSK2512R0640FEA",  # 0.064 ohm, tolerance F
+    (65000, "B"): "WSK2512R0650BEA",  # 0.065 ohm, tolerance B
+    (65000, "D"): "WSK2512R0650DEA",  # 0.065 ohm, tolerance D
+    (65000, "F"): "WSK2512R0650FEA",  # 0.065 ohm, tolerance F
+    (66000, "B"): "WSK2512R0660BEA",  # 0.066 ohm, tolerance B
+    (66000, "D"): "WSK2512R0660DEA",  # 0.066 ohm, tolerance D
+    (66000, "F"): "WSK2512R0660FEA",  # 0.066 ohm, tolerance F
+    (67000, "B"): "WSK2512R0670BEA",  # 0.067 ohm, tolerance B
+    (67000, "D"): "WSK2512R0670DEA",  # 0.067 ohm, tolerance D
+    (67000, "F"): "WSK2512R0670FEA",  # 0.067 ohm, tolerance F
+    (68000, "B"): "WSK2512R0680BEA",  # 0.068 ohm, tolerance B
+    (68000, "D"): "WSK2512R0680DEA",  # 0.068 ohm, tolerance D
+    (68000, "F"): "WSK2512R0680FEA",  # 0.068 ohm, tolerance F
+    (69000, "B"): "WSK2512R0690BEA",  # 0.069 ohm, tolerance B
+    (69000, "D"): "WSK2512R0690DEA",  # 0.069 ohm, tolerance D
+    (69000, "F"): "WSK2512R0690FEA",  # 0.069 ohm, tolerance F
+    (70000, "B"): "WSK2512R0700BEA",  # 0.07 ohm, tolerance B
+    (70000, "D"): "WSK2512R0700DEA",  # 0.07 ohm, tolerance D
+    (70000, "F"): "WSK2512R0700FEA",  # 0.07 ohm, tolerance F
+    (71000, "B"): "WSK2512R0710BEA",  # 0.071 ohm, tolerance B
+    (71000, "D"): "WSK2512R0710DEA",  # 0.071 ohm, tolerance D
+    (71000, "F"): "WSK2512R0710FEA",  # 0.071 ohm, tolerance F
+    (72000, "B"): "WSK2512R0720BEA",  # 0.072 ohm, tolerance B
+    (72000, "D"): "WSK2512R0720DEA",  # 0.072 ohm, tolerance D
+    (72000, "F"): "WSK2512R0720FEA",  # 0.072 ohm, tolerance F
+    (73000, "B"): "WSK2512R0730BEA",  # 0.073 ohm, tolerance B
+    (73000, "D"): "WSK2512R0730DEA",  # 0.073 ohm, tolerance D
+    (73000, "F"): "WSK2512R0730FEA",  # 0.073 ohm, tolerance F
+    (74000, "B"): "WSK2512R0740BEA",  # 0.074 ohm, tolerance B
+    (74000, "D"): "WSK2512R0740DEA",  # 0.074 ohm, tolerance D
+    (74000, "F"): "WSK2512R0740FEA",  # 0.074 ohm, tolerance F
+    (75000, "B"): "WSK2512R0750BEA",  # 0.075 ohm, tolerance B
+    (75000, "D"): "WSK2512R0750DEA",  # 0.075 ohm, tolerance D
+    (75000, "F"): "WSK2512R0750FEA",  # 0.075 ohm, tolerance F
+    (76000, "B"): "WSK2512R0760BEA",  # 0.076 ohm, tolerance B
+    (76000, "D"): "WSK2512R0760DEA",  # 0.076 ohm, tolerance D
+    (76000, "F"): "WSK2512R0760FEA",  # 0.076 ohm, tolerance F
+    (77000, "B"): "WSK2512R0770BEA",  # 0.077 ohm, tolerance B
+    (77000, "D"): "WSK2512R0770DEA",  # 0.077 ohm, tolerance D
+    (77000, "F"): "WSK2512R0770FEA",  # 0.077 ohm, tolerance F
+    (78000, "B"): "WSK2512R0780BEA",  # 0.078 ohm, tolerance B
+    (78000, "D"): "WSK2512R0780DEA",  # 0.078 ohm, tolerance D
+    (78000, "F"): "WSK2512R0780FEA",  # 0.078 ohm, tolerance F
+    (79000, "B"): "WSK2512R0790BEA",  # 0.079 ohm, tolerance B
+    (79000, "D"): "WSK2512R0790DEA",  # 0.079 ohm, tolerance D
+    (79000, "F"): "WSK2512R0790FEA",  # 0.079 ohm, tolerance F
+    (80000, "B"): "WSK2512R0800BEA",  # 0.08 ohm, tolerance B
+    (80000, "D"): "WSK2512R0800DEA",  # 0.08 ohm, tolerance D
+    (80000, "F"): "WSK2512R0800FEA",  # 0.08 ohm, tolerance F
+    (81000, "B"): "WSK2512R0810BEA",  # 0.081 ohm, tolerance B
+    (81000, "D"): "WSK2512R0810DEA",  # 0.081 ohm, tolerance D
+    (81000, "F"): "WSK2512R0810FEA",  # 0.081 ohm, tolerance F
+    (82000, "B"): "WSK2512R0820BEA",  # 0.082 ohm, tolerance B
+    (82000, "D"): "WSK2512R0820DEA",  # 0.082 ohm, tolerance D
+    (82000, "F"): "WSK2512R0820FEA",  # 0.082 ohm, tolerance F
+    (83000, "B"): "WSK2512R0830BEA",  # 0.083 ohm, tolerance B
+    (83000, "D"): "WSK2512R0830DEA",  # 0.083 ohm, tolerance D
+    (83000, "F"): "WSK2512R0830FEA",  # 0.083 ohm, tolerance F
+    (84000, "B"): "WSK2512R0840BEA",  # 0.084 ohm, tolerance B
+    (84000, "D"): "WSK2512R0840DEA",  # 0.084 ohm, tolerance D
+    (84000, "F"): "WSK2512R0840FEA",  # 0.084 ohm, tolerance F
+    (85000, "B"): "WSK2512R0850BEA",  # 0.085 ohm, tolerance B
+    (85000, "D"): "WSK2512R0850DEA",  # 0.085 ohm, tolerance D
+    (85000, "F"): "WSK2512R0850FEA",  # 0.085 ohm, tolerance F
+    (86000, "B"): "WSK2512R0860BEA",  # 0.086 ohm, tolerance B
+    (86000, "D"): "WSK2512R0860DEA",  # 0.086 ohm, tolerance D
+    (86000, "F"): "WSK2512R0860FEA",  # 0.086 ohm, tolerance F
+    (87000, "B"): "WSK2512R0870BEA",  # 0.087 ohm, tolerance B
+    (87000, "D"): "WSK2512R0870DEA",  # 0.087 ohm, tolerance D
+    (87000, "F"): "WSK2512R0870FEA",  # 0.087 ohm, tolerance F
+    (88000, "B"): "WSK2512R0880BEA",  # 0.088 ohm, tolerance B
+    (88000, "D"): "WSK2512R0880DEA",  # 0.088 ohm, tolerance D
+    (88000, "F"): "WSK2512R0880FEA",  # 0.088 ohm, tolerance F
+    (89000, "B"): "WSK2512R0890BEA",  # 0.089 ohm, tolerance B
+    (89000, "D"): "WSK2512R0890DEA",  # 0.089 ohm, tolerance D
+    (89000, "F"): "WSK2512R0890FEA",  # 0.089 ohm, tolerance F
+    (90000, "B"): "WSK2512R0900BEA",  # 0.09 ohm, tolerance B
+    (90000, "D"): "WSK2512R0900DEA",  # 0.09 ohm, tolerance D
+    (90000, "F"): "WSK2512R0900FEA",  # 0.09 ohm, tolerance F
+    (91000, "B"): "WSK2512R0910BEA",  # 0.091 ohm, tolerance B
+    (91000, "D"): "WSK2512R0910DEA",  # 0.091 ohm, tolerance D
+    (91000, "F"): "WSK2512R0910FEA",  # 0.091 ohm, tolerance F
+    (92000, "B"): "WSK2512R0920BEA",  # 0.092 ohm, tolerance B
+    (92000, "D"): "WSK2512R0920DEA",  # 0.092 ohm, tolerance D
+    (92000, "F"): "WSK2512R0920FEA",  # 0.092 ohm, tolerance F
+    (93000, "B"): "WSK2512R0930BEA",  # 0.093 ohm, tolerance B
+    (93000, "D"): "WSK2512R0930DEA",  # 0.093 ohm, tolerance D
+    (93000, "F"): "WSK2512R0930FEA",  # 0.093 ohm, tolerance F
+    (94000, "B"): "WSK2512R0940BEA",  # 0.094 ohm, tolerance B
+    (94000, "D"): "WSK2512R0940DEA",  # 0.094 ohm, tolerance D
+    (94000, "F"): "WSK2512R0940FEA",  # 0.094 ohm, tolerance F
+    (95000, "B"): "WSK2512R0950BEA",  # 0.095 ohm, tolerance B
+    (95000, "D"): "WSK2512R0950DEA",  # 0.095 ohm, tolerance D
+    (95000, "F"): "WSK2512R0950FEA",  # 0.095 ohm, tolerance F
+    (96000, "B"): "WSK2512R0960BEA",  # 0.096 ohm, tolerance B
+    (96000, "D"): "WSK2512R0960DEA",  # 0.096 ohm, tolerance D
+    (96000, "F"): "WSK2512R0960FEA",  # 0.096 ohm, tolerance F
+    (97000, "B"): "WSK2512R0970BEA",  # 0.097 ohm, tolerance B
+    (97000, "D"): "WSK2512R0970DEA",  # 0.097 ohm, tolerance D
+    (97000, "F"): "WSK2512R0970FEA",  # 0.097 ohm, tolerance F
+    (98000, "B"): "WSK2512R0980BEA",  # 0.098 ohm, tolerance B
+    (98000, "D"): "WSK2512R0980DEA",  # 0.098 ohm, tolerance D
+    (98000, "F"): "WSK2512R0980FEA",  # 0.098 ohm, tolerance F
+    (99000, "B"): "WSK2512R0990BEA",  # 0.099 ohm, tolerance B
+    (99000, "D"): "WSK2512R0990DEA",  # 0.099 ohm, tolerance D
+    (99000, "F"): "WSK2512R0990FEA",  # 0.099 ohm, tolerance F
+    (100000, "B"): "WSK2512R1000BEA",  # 0.1 ohm, tolerance B
+    (100000, "D"): "WSK2512R1000DEA",  # 0.1 ohm, tolerance D
+    (100000, "F"): "WSK2512R1000FEA",  # 0.1 ohm, tolerance F
+    (110000, "B"): "WSK2512R1100BEA",  # 0.11 ohm, tolerance B
+    (110000, "D"): "WSK2512R1100DEA",  # 0.11 ohm, tolerance D
+    (110000, "F"): "WSK2512R1100FEA",  # 0.11 ohm, tolerance F
+    (120000, "B"): "WSK2512R1200BEA",  # 0.12 ohm, tolerance B
+    (120000, "D"): "WSK2512R1200DEA",  # 0.12 ohm, tolerance D
+    (120000, "F"): "WSK2512R1200FEA",  # 0.12 ohm, tolerance F
+    (130000, "B"): "WSK2512R1300BEA",  # 0.13 ohm, tolerance B
+    (130000, "D"): "WSK2512R1300DEA",  # 0.13 ohm, tolerance D
+    (130000, "F"): "WSK2512R1300FEA",  # 0.13 ohm, tolerance F
+    (140000, "B"): "WSK2512R1400BEA",  # 0.14 ohm, tolerance B
+    (140000, "D"): "WSK2512R1400DEA",  # 0.14 ohm, tolerance D
+    (140000, "F"): "WSK2512R1400FEA",  # 0.14 ohm, tolerance F
+    (150000, "B"): "WSK2512R1500BEA",  # 0.15 ohm, tolerance B
+    (150000, "D"): "WSK2512R1500DEA",  # 0.15 ohm, tolerance D
+    (150000, "F"): "WSK2512R1500FEA",  # 0.15 ohm, tolerance F
+    (160000, "B"): "WSK2512R1600BEA",  # 0.16 ohm, tolerance B
+    (160000, "D"): "WSK2512R1600DEA",  # 0.16 ohm, tolerance D
+    (160000, "F"): "WSK2512R1600FEA",  # 0.16 ohm, tolerance F
+    (170000, "B"): "WSK2512R1700BEA",  # 0.17 ohm, tolerance B
+    (170000, "D"): "WSK2512R1700DEA",  # 0.17 ohm, tolerance D
+    (170000, "F"): "WSK2512R1700FEA",  # 0.17 ohm, tolerance F
+    (180000, "B"): "WSK2512R1800BEA",  # 0.18 ohm, tolerance B
+    (180000, "D"): "WSK2512R1800DEA",  # 0.18 ohm, tolerance D
+    (180000, "F"): "WSK2512R1800FEA",  # 0.18 ohm, tolerance F
+    (190000, "B"): "WSK2512R1900BEA",  # 0.19 ohm, tolerance B
+    (190000, "D"): "WSK2512R1900DEA",  # 0.19 ohm, tolerance D
+    (190000, "F"): "WSK2512R1900FEA",  # 0.19 ohm, tolerance F
+    (200000, "B"): "WSK2512R2000BEA",  # 0.2 ohm, tolerance B
+    (200000, "D"): "WSK2512R2000DEA",  # 0.2 ohm, tolerance D
+    (200000, "F"): "WSK2512R2000FEA",  # 0.2 ohm, tolerance F
+}
+# Tolerance codes that allow each value (micro-ohm).
+_CODES = {
+    5000: ["D", "F"],
+    5100: ["D", "F"],
+    5200: ["D", "F"],
+    5300: ["D", "F"],
+    5400: ["D", "F"],
+    5500: ["D", "F"],
+    5600: ["D", "F"],
+    5700: ["D", "F"],
+    5800: ["D", "F"],
+    5900: ["D", "F"],
+    6000: ["D", "F"],
+    6100: ["D", "F"],
+    6200: ["D", "F"],
+    6300: ["D", "F"],
+    6400: ["D", "F"],
+    6500: ["D", "F"],
+    6600: ["D", "F"],
+    6700: ["D", "F"],
+    6800: ["D", "F"],
+    6900: ["D", "F"],
+    7000: ["D", "F"],
+    7100: ["D", "F"],
+    7200: ["D", "F"],
+    7300: ["D", "F"],
+    7400: ["D", "F"],
+    7500: ["D", "F"],
+    7600: ["D", "F"],
+    7700: ["D", "F"],
+    7800: ["D", "F"],
+    7900: ["D", "F"],
+    8000: ["D", "F"],
+    8100: ["D", "F"],
+    8200: ["D", "F"],
+    8300: ["D", "F"],
+    8400: ["D", "F"],
+    8500: ["D", "F"],
+    8600: ["D", "F"],
+    8700: ["D", "F"],
+    8800: ["D", "F"],
+    8900: ["D", "F"],
+    9000: ["D", "F"],
+    9100: ["D", "F"],
+    9200: ["D", "F"],
+    9300: ["D", "F"],
+    9400: ["D", "F"],
+    9500: ["D", "F"],
+    9600: ["D", "F"],
+    9700: ["D", "F"],
+    9800: ["D", "F"],
+    9900: ["D", "F"],
+    10000: ["B", "D", "F"],
+    11000: ["B", "D", "F"],
+    12000: ["B", "D", "F"],
+    13000: ["B", "D", "F"],
+    14000: ["B", "D", "F"],
+    15000: ["B", "D", "F"],
+    16000: ["B", "D", "F"],
+    17000: ["B", "D", "F"],
+    18000: ["B", "D", "F"],
+    19000: ["B", "D", "F"],
+    20000: ["B", "D", "F"],
+    21000: ["B", "D", "F"],
+    22000: ["B", "D", "F"],
+    23000: ["B", "D", "F"],
+    24000: ["B", "D", "F"],
+    25000: ["B", "D", "F"],
+    26000: ["B", "D", "F"],
+    27000: ["B", "D", "F"],
+    28000: ["B", "D", "F"],
+    29000: ["B", "D", "F"],
+    30000: ["B", "D", "F"],
+    31000: ["B", "D", "F"],
+    32000: ["B", "D", "F"],
+    33000: ["B", "D", "F"],
+    34000: ["B", "D", "F"],
+    35000: ["B", "D", "F"],
+    36000: ["B", "D", "F"],
+    37000: ["B", "D", "F"],
+    38000: ["B", "D", "F"],
+    39000: ["B", "D", "F"],
+    40000: ["B", "D", "F"],
+    41000: ["B", "D", "F"],
+    42000: ["B", "D", "F"],
+    43000: ["B", "D", "F"],
+    44000: ["B", "D", "F"],
+    45000: ["B", "D", "F"],
+    46000: ["B", "D", "F"],
+    47000: ["B", "D", "F"],
+    48000: ["B", "D", "F"],
+    49000: ["B", "D", "F"],
+    50000: ["B", "D", "F"],
+    51000: ["B", "D", "F"],
+    52000: ["B", "D", "F"],
+    53000: ["B", "D", "F"],
+    54000: ["B", "D", "F"],
+    55000: ["B", "D", "F"],
+    56000: ["B", "D", "F"],
+    57000: ["B", "D", "F"],
+    58000: ["B", "D", "F"],
+    59000: ["B", "D", "F"],
+    60000: ["B", "D", "F"],
+    61000: ["B", "D", "F"],
+    62000: ["B", "D", "F"],
+    63000: ["B", "D", "F"],
+    64000: ["B", "D", "F"],
+    65000: ["B", "D", "F"],
+    66000: ["B", "D", "F"],
+    67000: ["B", "D", "F"],
+    68000: ["B", "D", "F"],
+    69000: ["B", "D", "F"],
+    70000: ["B", "D", "F"],
+    71000: ["B", "D", "F"],
+    72000: ["B", "D", "F"],
+    73000: ["B", "D", "F"],
+    74000: ["B", "D", "F"],
+    75000: ["B", "D", "F"],
+    76000: ["B", "D", "F"],
+    77000: ["B", "D", "F"],
+    78000: ["B", "D", "F"],
+    79000: ["B", "D", "F"],
+    80000: ["B", "D", "F"],
+    81000: ["B", "D", "F"],
+    82000: ["B", "D", "F"],
+    83000: ["B", "D", "F"],
+    84000: ["B", "D", "F"],
+    85000: ["B", "D", "F"],
+    86000: ["B", "D", "F"],
+    87000: ["B", "D", "F"],
+    88000: ["B", "D", "F"],
+    89000: ["B", "D", "F"],
+    90000: ["B", "D", "F"],
+    91000: ["B", "D", "F"],
+    92000: ["B", "D", "F"],
+    93000: ["B", "D", "F"],
+    94000: ["B", "D", "F"],
+    95000: ["B", "D", "F"],
+    96000: ["B", "D", "F"],
+    97000: ["B", "D", "F"],
+    98000: ["B", "D", "F"],
+    99000: ["B", "D", "F"],
+    100000: ["B", "D", "F"],
+    110000: ["B", "D", "F"],
+    120000: ["B", "D", "F"],
+    130000: ["B", "D", "F"],
+    140000: ["B", "D", "F"],
+    150000: ["B", "D", "F"],
+    160000: ["B", "D", "F"],
+    170000: ["B", "D", "F"],
+    180000: ["B", "D", "F"],
+    190000: ["B", "D", "F"],
+    200000: ["B", "D", "F"],
+}
+_KEY = int(value.value * 1e6 + 0.5)
+_AVAILABLE = _CODES.get(_KEY, [])
+_CODE = tolerance if tolerance != "" or len(_AVAILABLE) != 1 else _AVAILABLE[0]
+# An unorderable (value, tolerance) gets the sentinel MPN UNORDERABLE (never a real but wrong part number).
+_MPN_STR = _MPN.get((_KEY, _CODE), "UNORDERABLE")
+
+
+def _allowed(_m, found, what, r, code, available):
+    why = "%s: %s ohm with tolerance code %s is not orderable (VISHAY-DECADE values per tolerance code: B 0.01 to 0.2 ohm, D 0.005 to 0.2 ohm, F 0.005 to 0.2 ohm)"
+    if len(available) > 0:
+        why += "; the tolerance codes that allow this value: %s (set tolerance)" % available
+    check(found, why % (what, r, code))
+
+
+_ALLOWED_SEVERITY = "advice" if _ROOT else "error"  # standalone build: value is unset
+builtin.add_electrical_check(
+    name="value_allowed",
+    check_fn=_allowed,
+    inputs={
+        "found": (_KEY, _CODE) in _MPN,
+        "what": "value_allowed",
+        "r": value.value,
+        "code": _CODE,
+        "available": _AVAILABLE,
+    },
+    severity=_ALLOWED_SEVERITY,
+)
+
+
+def _rated_voltage(_m, v1, v2, what, r, p, derate):
+    # Worst case |V(P1) - V(P2)| over both nets' ranges. Zener has no sqrt, so compare squares:
+    # vmax <= derate x sqrt(P x R)  <=>  vmax^2 <= derate^2 x P x R. The datasheet prints no Vlimit.
+    vmax = max(v1.max - v2.min, v2.max - v1.min)
+    limit2 = p * r * derate * derate
+    msg = "%s: up to %s V across the part, (V across)^2 = %s V^2 > %s V^2 = derate^2 x P x R with R = %s ohm, P = %s W"
+    check(vmax * vmax <= limit2, msg % (what, vmax, vmax * vmax, limit2, r, p))
+
+
+# t_oper_ambient: board ambient range inside this range
+#   Operating temperature range: min -65 / max 170 degC
+#   DS p.2, Technical Specifications, Operating temperature range, -65 to +170
+#   Severity error: rec_op violated
+_limit("t_oper_ambient", _temp, {"v": ambient, "what": "t_oper_ambient", "lo": 208.15, "hi": 443.15}, "error")
+
+# rated_voltage: voltage across the part within sqrt(P x R), x derate
+#   Power rating p70: Power rating at 70 degC ambient: max 1.0 W (DS p.1, Standard Electrical Specifications, POWER RATING P70 degC, W, 1.0)
+#   No limiting element voltage: the datasheet prints none.
+#   Evaluated for the configured value. Error: a rated part voltage is exceeded.
+#   Not checked here: power derating above 70 degC (curve) is the module's job, calc.rated_power;
+#   above 70 degC ambient this check is optimistic.
+_limit(
+    "rated_voltage",
+    _rated_voltage,
+    {"v1": I1.voltage, "v2": I2.voltage, "what": "rated_voltage", "r": value.value, "p": 1.0, "derate": derate},
+    "error",
+)
+
+Component(
+    name="WSK2512",
+    symbol=Symbol(library="./WSK2512.kicad_sym"),
+    part=Part(mpn=_MPN_STR, manufacturer="Vishay Dale", datasheet="https://www.vishay.com/doc?30108"),
+    pins={
+        "I2": I2,
+        "E2": E2,
+        "E1": E1,
+        "I1": I1,
+    },
+)

@@ -1,0 +1,262 @@
+"""WSK2512-LOW: 0.0005 to 0.0049 ohm (decade values) +/-0.5 % / +/-1.0 % 1 W 4-terminal (Kelvin) Power Metal Strip current-sense resistor series, 2512.
+GENERATED from component.toml by `python3 -m lib.zen`; do not edit. Source of truth: component.toml and
+calc.py (numbers, cites, equations). DS: https://www.vishay.com/doc?30108, 11-Dec-2023 (Document 30108) (2023-12-11).
+Checks are DC steady-state on the voltages each instance declares. They do not cover transients, overshoot,
+hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
+Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
+
+load("@stdlib/units.zen", "Resistance", "Temperature")
+
+# UNCHECKED: max_working_voltage: Maximum working voltage (DS p.2, Technical Specifications, Maximum working voltage, (P x R)^1/2); formula rating; owner: module (calc.max_working_voltage)
+# UNCHECKED: derate_knee: Derating knee: 100 % rated power up to (DS p.3, Figure: DERATING graph (unnumbered; rated power vs ambient, 100 % line ends at 70 degC); coincides with DS p.1 P70 degC); curve value; used by calc.rated_power
+# UNCHECKED: derate_zero: Derating: 0 % rated power at (DS p.3, Figure: DERATING graph (unnumbered; rated power vs ambient, line reaches 0 % at 170 degC)); curve value; used by calc.rated_power
+# UNCHECKED: power derating above 70 degC: curve-based, depends on the dissipation; owner: module (calc.rated_power). rated_voltage below uses the 70 degC power rating at
+#   every ambient, so above 70 degC ambient it is OPTIMISTIC (0 W at the derating zero).
+
+# Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
+# GND can drive them; ground-named pins are Ground.
+# pin 1 I2, passive: Current connection (I2)
+I2 = io(Net)
+# pin 2 E2, passive: Voltage sense connection (E2), on the I2 terminal
+E2 = io(Net)
+# pin 3 E1, passive: Voltage sense connection (E1), on the I1 terminal
+E1 = io(Net)
+# pin 4 I1, passive: Current connection (I1)
+I1 = io(Net)
+
+value = config(Resistance, help="Resistance, an allowed E-series value (see the _MPN table)")
+tolerance = config(str, default="", help="Tolerance code, one of D, F; needed when more than one code allows the value")
+ambient = config(Temperature, optional=True, help="Board ambient temperature range")
+derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+
+_ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
+check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
+
+
+def _limit(name, fn, inputs, severity, waiver=""):
+    # Unset input: UNVERIFIED warning, never a silent pass. Waiver drops a warning to advice.
+    if waiver and severity != "warning":
+        error("only warning-level checks can be waived: " + name)
+    unset = [k for k, v in inputs.items() if v == None]
+    if unset:
+
+        def _unverified(_m):
+            error("UNVERIFIED " + name + ": no value for " + ", ".join(unset))
+
+        builtin.add_electrical_check(name=name, check_fn=_unverified, severity="advice" if _ROOT else "warning")
+    else:
+        builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
+
+
+def _range(_m, v, what, lo=None, hi=None, lo_ref=None, hi_ref=None):
+    # Worst case: v.min >= lo + lo_ref.max and v.max <= hi + hi_ref.min (narrowest window). No ref = absolute.
+    lo_b = None if lo == None else lo + (0.0 if lo_ref == None else lo_ref.max)
+    hi_b = None if hi == None else hi + (0.0 if hi_ref == None else hi_ref.min)
+    ok = (lo_b == None or v.min >= lo_b) and (hi_b == None or v.max <= hi_b)
+    lo_t = "no limit" if lo_b == None else "%s V" % lo_b
+    hi_t = "no limit" if hi_b == None else "%s V" % hi_b
+    check(ok, "%s: %s to %s V outside %s to %s" % (what, v.min, v.max, lo_t, hi_t))
+
+
+def _temp(_m, v, what, lo, hi):
+    # Temperatures are kelvin floats in Zener; messages in degC.
+    ok = v.min >= lo and v.max <= hi
+    msg = "%s: %s to %s degC outside %s to %s degC"
+    check(ok, msg % (what, v.min - 273.15, v.max - 273.15, lo - 273.15, hi - 273.15))
+
+
+# Orderable part number per (value, tolerance code), generated from calc.mpn() over every allowed pair (calc.py
+# is the single source). Keys are (integer micro-ohms, code): float text differs between Python and Zener.
+_MPN = {
+    (1000, "D"): "WSK25121L000DEA",  # 0.001 ohm, tolerance D
+    (1000, "F"): "WSK25121L000FEA",  # 0.001 ohm, tolerance F
+    (1100, "D"): "WSK25121L100DEA",  # 0.0011 ohm, tolerance D
+    (1100, "F"): "WSK25121L100FEA",  # 0.0011 ohm, tolerance F
+    (1200, "D"): "WSK25121L200DEA",  # 0.0012 ohm, tolerance D
+    (1200, "F"): "WSK25121L200FEA",  # 0.0012 ohm, tolerance F
+    (1300, "D"): "WSK25121L300DEA",  # 0.0013 ohm, tolerance D
+    (1300, "F"): "WSK25121L300FEA",  # 0.0013 ohm, tolerance F
+    (1400, "D"): "WSK25121L400DEA",  # 0.0014 ohm, tolerance D
+    (1400, "F"): "WSK25121L400FEA",  # 0.0014 ohm, tolerance F
+    (1500, "D"): "WSK25121L500DEA",  # 0.0015 ohm, tolerance D
+    (1500, "F"): "WSK25121L500FEA",  # 0.0015 ohm, tolerance F
+    (1600, "D"): "WSK25121L600DEA",  # 0.0016 ohm, tolerance D
+    (1600, "F"): "WSK25121L600FEA",  # 0.0016 ohm, tolerance F
+    (1700, "D"): "WSK25121L700DEA",  # 0.0017 ohm, tolerance D
+    (1700, "F"): "WSK25121L700FEA",  # 0.0017 ohm, tolerance F
+    (1800, "D"): "WSK25121L800DEA",  # 0.0018 ohm, tolerance D
+    (1800, "F"): "WSK25121L800FEA",  # 0.0018 ohm, tolerance F
+    (1900, "D"): "WSK25121L900DEA",  # 0.0019 ohm, tolerance D
+    (1900, "F"): "WSK25121L900FEA",  # 0.0019 ohm, tolerance F
+    (2000, "D"): "WSK25122L000DEA",  # 0.002 ohm, tolerance D
+    (2000, "F"): "WSK25122L000FEA",  # 0.002 ohm, tolerance F
+    (2100, "D"): "WSK25122L100DEA",  # 0.0021 ohm, tolerance D
+    (2100, "F"): "WSK25122L100FEA",  # 0.0021 ohm, tolerance F
+    (2200, "D"): "WSK25122L200DEA",  # 0.0022 ohm, tolerance D
+    (2200, "F"): "WSK25122L200FEA",  # 0.0022 ohm, tolerance F
+    (2300, "D"): "WSK25122L300DEA",  # 0.0023 ohm, tolerance D
+    (2300, "F"): "WSK25122L300FEA",  # 0.0023 ohm, tolerance F
+    (2400, "D"): "WSK25122L400DEA",  # 0.0024 ohm, tolerance D
+    (2400, "F"): "WSK25122L400FEA",  # 0.0024 ohm, tolerance F
+    (2500, "D"): "WSK25122L500DEA",  # 0.0025 ohm, tolerance D
+    (2500, "F"): "WSK25122L500FEA",  # 0.0025 ohm, tolerance F
+    (2600, "D"): "WSK25122L600DEA",  # 0.0026 ohm, tolerance D
+    (2600, "F"): "WSK25122L600FEA",  # 0.0026 ohm, tolerance F
+    (2700, "D"): "WSK25122L700DEA",  # 0.0027 ohm, tolerance D
+    (2700, "F"): "WSK25122L700FEA",  # 0.0027 ohm, tolerance F
+    (2800, "D"): "WSK25122L800DEA",  # 0.0028 ohm, tolerance D
+    (2800, "F"): "WSK25122L800FEA",  # 0.0028 ohm, tolerance F
+    (2900, "D"): "WSK25122L900DEA",  # 0.0029 ohm, tolerance D
+    (2900, "F"): "WSK25122L900FEA",  # 0.0029 ohm, tolerance F
+    (3000, "D"): "WSK25123L000DEA",  # 0.003 ohm, tolerance D
+    (3000, "F"): "WSK25123L000FEA",  # 0.003 ohm, tolerance F
+    (3100, "D"): "WSK25123L100DEA",  # 0.0031 ohm, tolerance D
+    (3100, "F"): "WSK25123L100FEA",  # 0.0031 ohm, tolerance F
+    (3200, "D"): "WSK25123L200DEA",  # 0.0032 ohm, tolerance D
+    (3200, "F"): "WSK25123L200FEA",  # 0.0032 ohm, tolerance F
+    (3300, "D"): "WSK25123L300DEA",  # 0.0033 ohm, tolerance D
+    (3300, "F"): "WSK25123L300FEA",  # 0.0033 ohm, tolerance F
+    (3400, "D"): "WSK25123L400DEA",  # 0.0034 ohm, tolerance D
+    (3400, "F"): "WSK25123L400FEA",  # 0.0034 ohm, tolerance F
+    (3500, "D"): "WSK25123L500DEA",  # 0.0035 ohm, tolerance D
+    (3500, "F"): "WSK25123L500FEA",  # 0.0035 ohm, tolerance F
+    (3600, "D"): "WSK25123L600DEA",  # 0.0036 ohm, tolerance D
+    (3600, "F"): "WSK25123L600FEA",  # 0.0036 ohm, tolerance F
+    (3700, "D"): "WSK25123L700DEA",  # 0.0037 ohm, tolerance D
+    (3700, "F"): "WSK25123L700FEA",  # 0.0037 ohm, tolerance F
+    (3800, "D"): "WSK25123L800DEA",  # 0.0038 ohm, tolerance D
+    (3800, "F"): "WSK25123L800FEA",  # 0.0038 ohm, tolerance F
+    (3900, "D"): "WSK25123L900DEA",  # 0.0039 ohm, tolerance D
+    (3900, "F"): "WSK25123L900FEA",  # 0.0039 ohm, tolerance F
+    (4000, "D"): "WSK25124L000DEA",  # 0.004 ohm, tolerance D
+    (4000, "F"): "WSK25124L000FEA",  # 0.004 ohm, tolerance F
+    (4100, "D"): "WSK25124L100DEA",  # 0.0041 ohm, tolerance D
+    (4100, "F"): "WSK25124L100FEA",  # 0.0041 ohm, tolerance F
+    (4200, "D"): "WSK25124L200DEA",  # 0.0042 ohm, tolerance D
+    (4200, "F"): "WSK25124L200FEA",  # 0.0042 ohm, tolerance F
+    (4300, "D"): "WSK25124L300DEA",  # 0.0043 ohm, tolerance D
+    (4300, "F"): "WSK25124L300FEA",  # 0.0043 ohm, tolerance F
+    (4400, "D"): "WSK25124L400DEA",  # 0.0044 ohm, tolerance D
+    (4400, "F"): "WSK25124L400FEA",  # 0.0044 ohm, tolerance F
+    (4500, "D"): "WSK25124L500DEA",  # 0.0045 ohm, tolerance D
+    (4500, "F"): "WSK25124L500FEA",  # 0.0045 ohm, tolerance F
+    (4600, "D"): "WSK25124L600DEA",  # 0.0046 ohm, tolerance D
+    (4600, "F"): "WSK25124L600FEA",  # 0.0046 ohm, tolerance F
+    (4700, "D"): "WSK25124L700DEA",  # 0.0047 ohm, tolerance D
+    (4700, "F"): "WSK25124L700FEA",  # 0.0047 ohm, tolerance F
+    (4800, "D"): "WSK25124L800DEA",  # 0.0048 ohm, tolerance D
+    (4800, "F"): "WSK25124L800FEA",  # 0.0048 ohm, tolerance F
+    (4900, "D"): "WSK25124L900DEA",  # 0.0049 ohm, tolerance D
+    (4900, "F"): "WSK25124L900FEA",  # 0.0049 ohm, tolerance F
+}
+# Tolerance codes that allow each value (micro-ohm).
+_CODES = {
+    1000: ["D", "F"],
+    1100: ["D", "F"],
+    1200: ["D", "F"],
+    1300: ["D", "F"],
+    1400: ["D", "F"],
+    1500: ["D", "F"],
+    1600: ["D", "F"],
+    1700: ["D", "F"],
+    1800: ["D", "F"],
+    1900: ["D", "F"],
+    2000: ["D", "F"],
+    2100: ["D", "F"],
+    2200: ["D", "F"],
+    2300: ["D", "F"],
+    2400: ["D", "F"],
+    2500: ["D", "F"],
+    2600: ["D", "F"],
+    2700: ["D", "F"],
+    2800: ["D", "F"],
+    2900: ["D", "F"],
+    3000: ["D", "F"],
+    3100: ["D", "F"],
+    3200: ["D", "F"],
+    3300: ["D", "F"],
+    3400: ["D", "F"],
+    3500: ["D", "F"],
+    3600: ["D", "F"],
+    3700: ["D", "F"],
+    3800: ["D", "F"],
+    3900: ["D", "F"],
+    4000: ["D", "F"],
+    4100: ["D", "F"],
+    4200: ["D", "F"],
+    4300: ["D", "F"],
+    4400: ["D", "F"],
+    4500: ["D", "F"],
+    4600: ["D", "F"],
+    4700: ["D", "F"],
+    4800: ["D", "F"],
+    4900: ["D", "F"],
+}
+_KEY = int(value.value * 1e6 + 0.5)
+_AVAILABLE = _CODES.get(_KEY, [])
+_CODE = tolerance if tolerance != "" or len(_AVAILABLE) != 1 else _AVAILABLE[0]
+# An unorderable (value, tolerance) gets the sentinel MPN UNORDERABLE (never a real but wrong part number).
+_MPN_STR = _MPN.get((_KEY, _CODE), "UNORDERABLE")
+
+
+def _allowed(_m, found, what, r, code, available):
+    why = "%s: %s ohm with tolerance code %s is not orderable (VISHAY-DECADE values per tolerance code: D 0.001 to 0.0049 ohm, F 0.0005 to 0.0049 ohm)"
+    if len(available) > 0:
+        why += "; the tolerance codes that allow this value: %s (set tolerance)" % available
+    check(found, why % (what, r, code))
+
+
+_ALLOWED_SEVERITY = "advice" if _ROOT else "error"  # standalone build: value is unset
+builtin.add_electrical_check(
+    name="value_allowed",
+    check_fn=_allowed,
+    inputs={
+        "found": (_KEY, _CODE) in _MPN,
+        "what": "value_allowed",
+        "r": value.value,
+        "code": _CODE,
+        "available": _AVAILABLE,
+    },
+    severity=_ALLOWED_SEVERITY,
+)
+
+
+def _rated_voltage(_m, v1, v2, what, r, p, derate):
+    # Worst case |V(P1) - V(P2)| over both nets' ranges. Zener has no sqrt, so compare squares:
+    # vmax <= derate x sqrt(P x R)  <=>  vmax^2 <= derate^2 x P x R. The datasheet prints no Vlimit.
+    vmax = max(v1.max - v2.min, v2.max - v1.min)
+    limit2 = p * r * derate * derate
+    msg = "%s: up to %s V across the part, (V across)^2 = %s V^2 > %s V^2 = derate^2 x P x R with R = %s ohm, P = %s W"
+    check(vmax * vmax <= limit2, msg % (what, vmax, vmax * vmax, limit2, r, p))
+
+
+# t_oper_ambient: board ambient range inside this range
+#   Operating temperature range: min -65 / max 170 degC
+#   DS p.2, Technical Specifications, Operating temperature range, -65 to +170
+#   Severity error: rec_op violated
+_limit("t_oper_ambient", _temp, {"v": ambient, "what": "t_oper_ambient", "lo": 208.15, "hi": 443.15}, "error")
+
+# rated_voltage: voltage across the part within sqrt(P x R), x derate
+#   Power rating p70: Power rating at 70 degC ambient: max 1.0 W (DS p.1, Standard Electrical Specifications, POWER RATING P70 degC, W, 1.0)
+#   No limiting element voltage: the datasheet prints none.
+#   Evaluated for the configured value. Error: a rated part voltage is exceeded.
+#   Not checked here: power derating above 70 degC (curve) is the module's job, calc.rated_power;
+#   above 70 degC ambient this check is optimistic.
+_limit(
+    "rated_voltage",
+    _rated_voltage,
+    {"v1": I1.voltage, "v2": I2.voltage, "what": "rated_voltage", "r": value.value, "p": 1.0, "derate": derate},
+    "error",
+)
+
+Component(
+    name="WSK2512-LOW",
+    symbol=Symbol(library="./WSK2512-LOW.kicad_sym"),
+    part=Part(mpn=_MPN_STR, manufacturer="Vishay Dale", datasheet="https://www.vishay.com/doc?30108"),
+    pins={
+        "I2": I2,
+        "E2": E2,
+        "E1": E1,
+        "I1": I1,
+    },
+)

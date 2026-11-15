@@ -22,7 +22,7 @@ SCOPES = {"25C", "full", "partial", "na"}
 CITE_STARTS = ("DS p.", "DS PDF p.")
 
 
-SERIES_FIELDS = ["value_param", "e_series", "series_power", "series_vlimit", "series_tol"]
+SERIES_FIELDS = ["value_param", "e_series", "series_power"]  # plus series_tol or series_tolerances; series_vlimit is optional
 CAPACITOR_FIELDS = ["catalog", "tc_param", "package_default", "package_alternates"]
 
 
@@ -249,8 +249,16 @@ def check_series_part(part, pins, params, folder):
     out = [("ERROR", f"[part] series needs '{f}'") for f in SERIES_FIELDS if f not in part]
     if "mpn" in part:
         out.append(("ERROR", "[part] mpn must be absent for a series: calc.mpn(value) is the single source"))
-    if len(pins) != 2:
-        out.append(("ERROR", f"a series resistor needs exactly 2 pins, found {len(pins)}"))
+    if "series_pins" in part:
+        sp = part["series_pins"]
+        if not (isinstance(sp, list) and len(sp) == 2 and sp[0] != sp[1] and all(x in {p.get("name") for p in pins} for x in sp)):
+            out.append(("ERROR", f"[part] series_pins must list two different [[pin]] names, got {sp}"))
+    elif len(pins) != 2:
+        out.append(("ERROR", f"a series resistor needs exactly 2 pins, found {len(pins)} (or name the two current pins in series_pins)"))
+    if "series_tol" in part and "series_tolerances" in part:
+        out.append(("ERROR", "[part] series_tol and series_tolerances are exclusive: tolerance options carry their own rows"))
+    elif "series_tol" not in part and "series_tolerances" not in part:
+        out.append(("ERROR", "[part] series needs 'series_tol' or 'series_tolerances'"))
     for f in ("value_param", "series_power", "series_vlimit", "series_tol"):
         if f in part and part[f] not in params:
             out.append(("ERROR", f"[part] {f} = '{part[f]}' is not a param key"))
@@ -269,6 +277,7 @@ def check_series_part(part, pins, params, folder):
     tol = params.get(part.get("series_tol"), {})
     if tol and not (tol.get("unit") in ("%", "ppm") and "min" in tol and "max" in tol):
         out.append(("ERROR", f"param {part['series_tol']}: the series tolerance needs min, max and unit %"))
+    out += check_series_tables(part, params)
     if out:
         return out
     if not (folder / "calc.py").exists():
@@ -279,8 +288,50 @@ def check_series_part(part, pins, params, folder):
         return []  # check_calc reports the import failure
     if not callable(getattr(calc, "mpn", None)):
         return [("ERROR", "calc.py of a series must define mpn(value)")]
-    values = series.allowed_values(names, *(to_si(rng[f], rng["unit"])[0] for f in ("min", "max")), mins)
-    return [("ERROR", msg) for msg in series.mpn_table(calc, values)[1]]
+
+    def bounds(key):
+        return tuple(to_si(params[key][f], params[key]["unit"])[0] for f in ("min", "max"))
+
+    pair_list = series.pairs(part, bounds)
+    out = []
+    if part.get("series_tolerances"):
+        for code, _, key in series.options(part):
+            if not any(c == code for _, c in pair_list):
+                out.append(("ERROR", f"[part] series_tolerances.{code}: its range '{key}' has no value inside the series range"))
+    out += [("ERROR", msg) for msg in series.mpn_table(calc, pair_list)[1]]
+    if part.get("series_tcr"):
+        spans = [bounds(r) for _, r in series.tcr_rows(part)]
+        for v in sorted({v for v, _ in pair_list}):
+            n = sum(lo * (1 - 1e-9) <= v <= hi * (1 + 1e-9) for lo, hi in spans)
+            if n != 1:
+                out.append(("ERROR", f"[part] series_tcr: {n} TCR rows cover {v:g} ohm (need exactly 1)"))
+    return out
+
+
+def check_series_tables(part, params):
+    """series_tolerances = {code = {tol, range}} and series_tcr = [{tcr, range}]: well-formed, rows exist with units."""
+    out = []
+    opts = part.get("series_tolerances", {})
+    if "series_tolerances" in part and (not isinstance(opts, dict) or not opts or any(
+            not isinstance(c, str) or not c.isalnum() or not isinstance(o, dict) or set(o) != {"tol", "range"}
+            for c, o in opts.items())):
+        return out + [("ERROR", "[part] series_tolerances must map a code (letters/digits) to { tol = <row>, range = <row> }")]
+    pairs_ = [(f"series_tolerances.{c}", o["tol"], ("%", "ppm"), o["range"]) for c, o in opts.items()]
+    tcrs = part.get("series_tcr", [])
+    if "series_tcr" in part and (not isinstance(tcrs, list) or not tcrs or any(
+            not isinstance(o, dict) or set(o) != {"tcr", "range"} for o in tcrs)):
+        return out + [("ERROR", "[part] series_tcr must be a list of { tcr = <row>, range = <row> }")]
+    pairs_ += [(f"series_tcr[{i}]", o["tcr"], ("ppm/degC",), o["range"]) for i, o in enumerate(tcrs)]
+    for label, row, units, rrow in pairs_:
+        for key in (row, rrow):
+            if key not in params:
+                out.append(("ERROR", f"[part] {label}: '{key}' is not a param key"))
+        t, r = params.get(row, {}), params.get(rrow, {})
+        if t and not (t.get("unit") in units and "min" in t and "max" in t):
+            out.append(("ERROR", f"param {row}: needs min, max and unit {' or '.join(units)}"))
+        if r and not (r.get("unit", "").endswith("ohm") and "min" in r and "max" in r):
+            out.append(("ERROR", f"param {rrow}: a range row needs min, max and an ohm unit"))
+    return out
 
 
 def check_kicad(pins, part, folder):

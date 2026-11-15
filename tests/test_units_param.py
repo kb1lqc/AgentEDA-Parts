@@ -101,6 +101,18 @@ class TestUnits(unittest.TestCase):
         self.assertEqual(eng(2e-8, "V/rtHz"), "20 nV/rtHz")
 
 
+class TestChargeEnergy(unittest.TestCase):
+    def test_coulomb_and_joule(self):
+        v, base = to_si(58, "nC")  # MOSFET gate charge
+        self.assertAlmostEqual(v, 58e-9, delta=1e-21)
+        self.assertEqual(base, "C")
+        v, base = to_si(150, "mJ")  # avalanche energy
+        self.assertAlmostEqual(v, 0.15, delta=1e-15)
+        self.assertEqual(base, "J")
+        self.assertEqual(to_si(25, "degC"), (25.0, "degC"))  # degC is not milli-something of C
+        self.assertEqual(eng(58e-9, "C"), "58 nC")
+
+
 class TestParam(unittest.TestCase):
     def test_tol(self):
         p = Param.tol(5.49, 0.01, "kohm")

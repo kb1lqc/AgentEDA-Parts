@@ -1,0 +1,626 @@
+# ISC750P10LM: -100 V P-channel OptiMOS Power-Transistor, PG-TDSON-8 (SuperSO8). Source: docs/datasheets/infineon/
+# infineon-isc750p10lm-datasheet-en.pdf, Final Data Sheet Rev.2.0, 2022-10-13. Raw datasheet values in printed units;
+# negative values are stored signed as printed. Where the DS prints a negative pair in magnitude order (MIN -1, MAX -2),
+# the row is stored in numeric order (min = printed MAX, max = printed MIN) and the note quotes the printed columns.
+# Electrical rows are at Tj = 25 degC (DS p.4, "at Tj=25 degC, unless otherwise specified") and carry scope "25C".
+# Rows with a single stated temperature in their own condition (Tj = 125 degC, TC = 25 degC) carry scope "na".
+# Charge (nC) and energy (mJ) rows are loaded: lib/units.py accepts C and J (coordinator, this revision).
+
+# Footprint: Infineon land pattern kept (the DS prints none). Its 4.42 x 4.31 mm tab pad is 0.09 mm narrower than the DS exposed-tab D1 max (4.40-4.31 vs 3.90-4.40 x 3.88-4.31, DS p.10 Figure 1): open item.
+[part]
+value           = "ISC750P10LM"
+mpn             = "ISC750P10LM"                # DS p.1 Type/Ordering Code prints the type name only; no reel suffix printed (open item)
+# Unverified: the user's vendor downloads are named ISC750P10LMATMA1. The DS prints no suffix, so mpn stays the type name.
+manufacturer    = "Infineon Technologies"
+description     = "-100 V P-channel OptiMOS Power-Transistor, logic level, -32 A, 75 mohm max at VGS = -10 V, PG-TDSON-8 (SuperSO8)"
+category        = "mosfet"
+package         = "PG-TDSON-8 (SuperSO8)"
+datasheet_url   = "https://www.infineon.com"  # DS prints no part-specific URL (open item)
+datasheet_file  = "docs/datasheets/infineon/infineon-isc750p10lm-datasheet-en.pdf"
+datasheet_rev   = "Rev.2.0"
+datasheet_date  = "2022-10-13"                 # DS p.1 footer, Rev.2.0,2022-10-13
+temp_grade      = "-55 to 175 degC"            # informational: Tj,Tstg range (DS p.3 Table 2), a junction range
+kicad_symbol    = "ISC750P10LM.kicad_sym"
+kicad_footprint = "ISC750P10LM.kicad_mod"
+step            = "none"                      # no STEP supplied (open item)
+# Lead finish: "Pb-free lead plating; RoHS compliant" (DS p.1 Features). MSL: not printed in the DS (open item).
+
+# Pins: DS p.1 pin diagram (SuperSO8 / PG-TDSON-8). Pins 1-3 source, pin 4 gate, pins 5-8 drain. The diagram prints the drain
+# label as "Drain Pin 5-8": the drain pad under the package has NO printed number, so there is no pin for it (open item).
+# Discrete transistor: S, D and G are passive terminals (function text states it).
+
+[[pin]]
+number   = "1"
+name     = "S"
+type     = "passive"
+function = "Source, discrete MOSFET terminal; pins 1 to 3 are one source node (DS p.1 pin diagram 'Source Pin 1-3')"
+cite     = "DS p.1, pin diagram (SuperSO8), Source Pin 1-3"
+
+[[pin]]
+number   = "2"
+name     = "S"
+type     = "passive"
+function = "Source, discrete MOSFET terminal; same source node as pin 1"
+cite     = "DS p.1, pin diagram (SuperSO8), Source Pin 1-3"
+
+[[pin]]
+number   = "3"
+name     = "S"
+type     = "passive"
+function = "Source, discrete MOSFET terminal; same source node as pin 1"
+cite     = "DS p.1, pin diagram (SuperSO8), Source Pin 1-3"
+
+[[pin]]
+number   = "4"
+name     = "G"
+type     = "passive"
+function = "Gate, discrete MOSFET terminal (DS p.1 pin diagram 'Gate Pin 4')"
+cite     = "DS p.1, pin diagram (SuperSO8), Gate Pin 4"
+
+[[pin]]
+number   = "5"
+name     = "D"
+type     = "passive"
+function = "Drain, discrete MOSFET terminal; pins 5 to 8 are one drain node (DS p.1 pin diagram 'Drain Pin 5-8'). The drain tab (exposed pad) has no DS number and is not a separate pin: the footprint makes it pad 5 (a real pad on the drain net), overlapping the drain lead pads 5-8."
+cite     = "DS p.1, pin diagram (SuperSO8), Drain Pin 5-8"
+
+[[pin]]
+number   = "6"
+name     = "D"
+type     = "passive"
+function = "Drain, discrete MOSFET terminal; same drain node as pin 5"
+cite     = "DS p.1, pin diagram (SuperSO8), Drain Pin 5-8"
+
+[[pin]]
+number   = "7"
+name     = "D"
+type     = "passive"
+function = "Drain, discrete MOSFET terminal; same drain node as pin 5"
+cite     = "DS p.1, pin diagram (SuperSO8), Drain Pin 5-8"
+
+[[pin]]
+number   = "8"
+name     = "D"
+type     = "passive"
+function = "Drain, discrete MOSFET terminal; same drain node as pin 5"
+cite     = "DS p.1, pin diagram (SuperSO8), Drain Pin 5-8"
+
+# ---------------------------------------------------------------------------------------------------------------
+# Maximum ratings: DS p.3, Table 2 "Maximum ratings", at TA = 25 degC unless the row says otherwise.
+# VDS: the Maximum ratings table has no VDS row. VDS = -100 V is the DS key performance parameter (DS p.1, Table 1).
+# ---------------------------------------------------------------------------------------------------------------
+
+[param.vds_rating]
+name       = "Drain-source voltage rating"
+symbol     = "VDS"
+kind       = "rec_op"
+scope      = "na"
+min        = -100
+unit       = "V"
+conditions = ""
+cite       = "DS p.1, Table 1 Key Performance Parameters, VDS"
+note       = "Not a row of the Maximum ratings table (DS p.3). P-channel: the limit is on the negative side, so it is stored as min = -100 (numeric order), not max. The DS gives no temperature for it. The guaranteed breakdown is V(BR)DSS = -100 V at 25 degC (vbr_dss, DS p.4 Table 4), the same value."
+check_pins = ["D"]
+min_ref    = "S"
+
+[param.id_tc25]
+name       = "Continuous drain current, TC = 25 degC"
+symbol     = "ID"
+kind       = "abs_max"
+scope      = "na"
+max        = -32
+unit       = "A"
+conditions = "VGS = -10 V, TC = 25 degC"
+cite       = "DS p.3, Table 2 Maximum ratings, Continuous drain current ID (row 1)"
+note       = "Printed in the Max column with a minus sign (P-channel sign convention, stored as printed). Footnote 1: derate for other case temperatures (Diagram 2)."
+unchecked  = "not a voltage; owner: module"
+
+[param.id_tc100]
+name       = "Continuous drain current, TC = 100 degC"
+symbol     = "ID"
+kind       = "abs_max"
+scope      = "na"
+max        = -28
+unit       = "A"
+conditions = "VGS = -10 V, TC = 100 degC"
+cite       = "DS p.3, Table 2 Maximum ratings, Continuous drain current ID (row 2)"
+unchecked  = "not a voltage; owner: module"
+
+[param.id_pcb]
+name       = "Continuous drain current, PCB-limited"
+symbol     = "ID"
+kind       = "abs_max"
+scope      = "na"
+max        = -3.8
+unit       = "A"
+conditions = "VGS = -4.5 V, TA = 25 degC, RthJA = 50 degC/W"
+cite       = "DS p.3, Table 2 Maximum ratings, Continuous drain current ID (row 3), footnote 2"
+note       = "Footnote 2: 40 x 40 x 1.5 mm FR4 PCB with 6 cm2 drain copper, vertical in still air."
+unchecked  = "not a voltage; owner: module"
+
+[param.id_pulse]
+name       = "Pulsed drain current"
+symbol     = "ID,pulse"
+kind       = "abs_max"
+scope      = "na"
+max        = -129
+unit       = "A"
+conditions = "TA = 25 degC"
+cite       = "DS p.3, Table 2 Maximum ratings, Pulsed drain current ID,pulse (footnote 3: Diagram 3)"
+note       = "The SOA (Diagram 3) is not extracted (open item). The DS prints TA = 25 degC on this row."
+unchecked  = "not a voltage; owner: module"
+
+[param.vgs]
+name       = "Gate-source voltage"
+symbol     = "VGS"
+kind       = "abs_max"
+scope      = "na"
+min        = -20
+max        = 20
+unit       = "V"
+conditions = ""
+cite       = "DS p.3, Table 2 Maximum ratings, Gate source voltage VGS"
+note       = "No reference pin printed; applied as gate to source (pin-pair row, S is the reference)."
+check_pins = ["G"]
+min_ref    = "S"
+max_ref    = "S"
+
+[param.ptot_ta25]
+name       = "Power dissipation, TA = 25 degC (as printed)"
+symbol     = "Ptot"
+kind       = "abs_max"
+scope      = "na"
+max        = 188
+unit       = "W"
+conditions = "TA = 25 degC"
+cite       = "DS p.3, Table 2 Maximum ratings, Power dissipation Ptot (row 1)"
+note       = "Stored as printed. The DS prints TA = 25 degC on this 188 W row. Printed TA = 25 degC (render confirmed on both Ptot rows); the value is consistent with a TC rating (Diagram 1 is Ptot = f(TC)). DS ambiguity, open item: not corrected."
+unchecked  = "not a voltage; owner: module"
+
+[param.ptot_pcb]
+name       = "Power dissipation, PCB-limited"
+symbol     = "Ptot"
+kind       = "abs_max"
+scope      = "na"
+max        = 3
+unit       = "W"
+conditions = "TA = 25 degC, RthJA = 50 degC/W"
+cite       = "DS p.3, Table 2 Maximum ratings, Power dissipation Ptot (row 2), footnote 2"
+unchecked  = "not a voltage; owner: module"
+
+[param.tj_tstg]
+name       = "Operating and storage temperature Tj, Tstg"
+symbol     = "Tj,Tstg"
+kind       = "abs_max"
+scope      = "na"
+min        = -55
+max        = 175
+unit       = "degC"
+conditions = ""
+cite       = "DS p.3, Table 2 Maximum ratings, Operating and storage temperature Tj, Tstg"
+note       = "Junction range (Tj); the storage part of the row is assembly-owned (see the unchecked reason)."
+unchecked  = "TJ: needs dissipation x RthJA; owner: module (Tstg part: owner: assembly)"
+
+[param.iec_climatic]
+name       = "IEC climatic category"
+kind       = "abs_max"
+scope      = "na"
+text       = "55/175/56"
+unit       = ""
+conditions = "DIN IEC 68-1"
+cite       = "DS p.3, Table 2 Maximum ratings, Operating and storage temperature, IEC climatic category (note column)"
+note       = "Classification printed as text; no number."
+unchecked  = "owner: assembly (climatic classification, not an operating voltage or temperature)"
+
+# ---------------------------------------------------------------------------------------------------------------
+# Thermal characteristics: DS p.3, Table 3. The DS prints RthJC without bottom or top qualifier.
+# ---------------------------------------------------------------------------------------------------------------
+
+[param.rth_jc]
+name       = "Thermal resistance, junction to case"
+symbol     = "RthJC"
+kind       = "thermal"
+scope      = "na"
+max        = 0.8
+unit       = "degC/W"
+conditions = ""
+cite       = "DS p.3, Table 3 Thermal characteristics, Thermal resistance junction-case"
+note       = "No bottom or top qualifier in the DS (only one RthJC row); the drain-pad side is not stated."
+
+[param.rth_ja]
+name       = "Thermal resistance, junction to ambient, 6 cm2 PCB"
+symbol     = "RthJA"
+kind       = "thermal"
+scope      = "na"
+max        = 50
+unit       = "degC/W"
+conditions = "Device on PCB, 6 cm2 cooling area"
+cite       = "DS p.3, Table 3 Thermal characteristics, Device on PCB 6 cm2 cooling area (RthJA), footnote 2"
+note       = "Valid only for the DS PCB (footnote 2)."
+
+# ---------------------------------------------------------------------------------------------------------------
+# Static characteristics: DS p.4, Table 4 (at Tj = 25 degC).
+# ---------------------------------------------------------------------------------------------------------------
+
+[param.vbr_dss]
+name       = "Drain-source breakdown voltage"
+symbol     = "V(BR)DSS"
+kind       = "electrical"
+scope      = "25C"
+min        = -100
+unit       = "V"
+conditions = "VGS = 0 V, ID = -250 uA"
+cite       = "DS p.4, Table 4 Static characteristics, Drain-source breakdown voltage V(BR)DSS"
+
+[param.vgs_th]
+name       = "Gate threshold voltage"
+symbol     = "VGS(th)"
+kind       = "electrical"
+scope      = "25C"
+min        = -2
+typ        = -1.6
+max        = -1
+unit       = "V"
+conditions = "VDS = VGS, ID = -2304 uA"
+cite       = "DS p.4, Table 4 Static characteristics, Gate threshold voltage VGS(th)"
+note       = "Printed MIN -1, TYP -1.6, MAX -2. Stored in numeric order: min = printed MAX (-2), max = printed MIN (-1)."
+
+[param.idss_25c]
+name       = "Zero gate voltage drain current, Tj = 25 degC"
+symbol     = "IDSS"
+kind       = "electrical"
+scope      = "25C"
+min        = -1
+typ        = -0.1
+unit       = "uA"
+conditions = "VDS = -100 V, VGS = 0 V, Tj = 25 degC"
+cite       = "DS p.4, Table 4 Static characteristics, Zero gate voltage drain current IDSS (row 1)"
+note       = "Printed MIN '-', TYP -0.1, MAX -1 (the bound is the printed MAX). Stored as min = -1 (numeric order, the bound), no max."
+
+[param.idss_125c]
+name       = "Zero gate voltage drain current, Tj = 125 degC"
+symbol     = "IDSS"
+kind       = "electrical"
+scope      = "na"
+min        = -100
+typ        = -10
+unit       = "uA"
+conditions = "VDS = -100 V, VGS = 0 V, Tj = 125 degC"
+cite       = "DS p.4, Table 4 Static characteristics, Zero gate voltage drain current IDSS (row 2)"
+note       = "Printed MIN '-', TYP -10, MAX -100. Stored as min = -100 (numeric order). Single stated temperature (125 degC)."
+
+[param.igss]
+name       = "Gate-source leakage current"
+symbol     = "IGSS"
+kind       = "electrical"
+scope      = "25C"
+min        = -100
+typ        = -10
+unit       = "nA"
+conditions = "VGS = -20 V, VDS = 0 V"
+cite       = "DS p.4, Table 4 Static characteristics, Gate-source leakage current IGSS"
+note       = "Printed MIN '-', TYP -10, MAX -100. Stored as min = -100 (numeric order)."
+
+[param.rds_on_10v]
+name       = "Drain-source on-state resistance, VGS = -10 V"
+symbol     = "RDS(on)"
+kind       = "electrical"
+scope      = "25C"
+typ        = 61
+max        = 75
+unit       = "mohm"
+conditions = "VGS = -10 V, ID = -25 A"
+cite       = "DS p.4, Table 4 Static characteristics, Drain-source on-state resistance RDS(on) (row 1)"
+note       = "Table 1 prints RDS(on),max 75 mohm (DS p.1), same value. Tj = 25 degC only (open item, see calc.py)."
+
+[param.rds_on_4v5]
+name       = "Drain-source on-state resistance, VGS = -4.5 V"
+symbol     = "RDS(on)"
+kind       = "electrical"
+scope      = "25C"
+typ        = 63
+max        = 86
+unit       = "mohm"
+conditions = "VGS = -4.5 V, ID = -20 A"
+cite       = "DS p.4, Table 4 Static characteristics, Drain-source on-state resistance RDS(on) (row 2)"
+note       = "Tj = 25 degC only (open item, see calc.py)."
+
+[param.norm_rds_100c]
+name       = "Normalized drain-source on-state resistance at Tj = 100 degC (curve)"
+symbol     = "RDS(on)/RDS(on)25C"
+kind       = "electrical"
+scope      = "na"
+typ        = 1.6
+unit       = ""
+conditions = "ID = -25 A, VGS = -10 V, normalized to 25 degC, Tj = 100 degC"
+cite       = "DS p.8, Diagram 9 figure Normalized drain-source on resistance, RDS(on)=f(Tj), ID = -25 A, VGS = -10 V, read at Tj = 100 degC"
+curve      = true
+note       = "Read by eye, +/-0.05. The figure has one unlabelled line: read as the typical curve (no typ or max line printed). Not a bound."
+
+[param.norm_rds_150c]
+name       = "Normalized drain-source on-state resistance at Tj = 150 degC (curve)"
+symbol     = "RDS(on)/RDS(on)25C"
+kind       = "electrical"
+scope      = "na"
+typ        = 2.1
+unit       = ""
+conditions = "ID = -25 A, VGS = -10 V, normalized to 25 degC, Tj = 150 degC"
+cite       = "DS p.8, Diagram 9 figure Normalized drain-source on resistance, RDS(on)=f(Tj), ID = -25 A, VGS = -10 V, read at Tj = 150 degC"
+curve      = true
+note       = "Read by eye, +/-0.05. Unlabelled single line: typical curve, not a bound. 150 degC is the printed Tj max."
+
+[param.rg]
+name       = "Gate resistance"
+symbol     = "RG"
+kind       = "electrical"
+scope      = "25C"
+typ        = 5.2
+unit       = "ohm"
+conditions = ""
+cite       = "DS p.4, Table 4 Static characteristics, Gate resistance RG"
+note       = "Typical only."
+
+[param.gfs]
+name       = "Transconductance"
+symbol     = "gfs"
+kind       = "electrical"
+scope      = "25C"
+typ        = 51
+unit       = "A/V"
+conditions = "|VDS| >= 2|ID| RDS(on)max, ID = -25 A"
+cite       = "DS p.4, Table 4 Static characteristics, Transconductance gfs"
+note       = "Printed unit S; S = A/V, stored as A/V (loader has no S unit). Typical only."
+
+# ---------------------------------------------------------------------------------------------------------------
+# Dynamic characteristics: DS p.4, Table 5 (at Tj = 25 degC). Ciss, Coss, Crss are defined by design (footnote 1).
+# ---------------------------------------------------------------------------------------------------------------
+
+[param.ciss]
+name       = "Input capacitance"
+symbol     = "Ciss"
+kind       = "electrical"
+scope      = "25C"
+typ        = 3600
+max        = 4700
+unit       = "pF"
+conditions = "VGS = 0 V, VDS = -50 V, f = 1 MHz"
+cite       = "DS p.4, Table 5 Dynamic characteristics, Input capacitance Ciss"
+note       = "Defined by design. Not subject to production test (footnote 1)."
+
+[param.coss]
+name       = "Output capacitance"
+symbol     = "Coss"
+kind       = "electrical"
+scope      = "25C"
+typ        = 230
+max        = 300
+unit       = "pF"
+conditions = "VGS = 0 V, VDS = -50 V, f = 1 MHz"
+cite       = "DS p.4, Table 5 Dynamic characteristics, Output capacitance Coss"
+note       = "Defined by design. Not subject to production test (footnote 1)."
+
+[param.crss]
+name       = "Reverse transfer capacitance"
+symbol     = "Crss"
+kind       = "electrical"
+scope      = "25C"
+typ        = 50
+max        = 88
+unit       = "pF"
+conditions = "VGS = 0 V, VDS = -50 V, f = 1 MHz"
+cite       = "DS p.4, Table 5 Dynamic characteristics, Reverse transfer capacitance Crss"
+note       = "Defined by design. Not subject to production test (footnote 1)."
+
+[param.td_on]
+name       = "Turn-on delay time"
+symbol     = "td(on)"
+kind       = "electrical"
+scope      = "25C"
+typ        = 35.6
+unit       = "ns"
+conditions = "VDD = -50 V, VGS = -4.5 V, ID = -25 A, RG,ext = 1.6 ohm"
+cite       = "DS p.4, Table 5 Dynamic characteristics, Turn-on delay time td(on)"
+note       = "Typical only."
+
+[param.tr]
+name       = "Rise time"
+symbol     = "tr"
+kind       = "electrical"
+scope      = "25C"
+typ        = 47.2
+unit       = "ns"
+conditions = "VDD = -50 V, VGS = -4.5 V, ID = -25 A, RG,ext = 1.6 ohm"
+cite       = "DS p.4, Table 5 Dynamic characteristics, Rise time tr"
+note       = "Typical only."
+
+[param.td_off]
+name       = "Turn-off delay time"
+symbol     = "td(off)"
+kind       = "electrical"
+scope      = "25C"
+typ        = 100
+unit       = "ns"
+conditions = "VDD = -50 V, VGS = -4.5 V, ID = -25 A, RG,ext = 1.6 ohm"
+cite       = "DS p.4, Table 5 Dynamic characteristics, Turn-off delay time td(off)"
+note       = "Typical only."
+
+[param.tf]
+name       = "Fall time"
+symbol     = "tf"
+kind       = "electrical"
+scope      = "25C"
+typ        = 24.8
+unit       = "ns"
+conditions = "VDD = -50 V, VGS = -4.5 V, ID = -25 A, RG,ext = 1.6 ohm"
+cite       = "DS p.4, Table 5 Dynamic characteristics, Fall time tf"
+note       = "Typical only."
+
+# ---------------------------------------------------------------------------------------------------------------
+# Gate charge: DS p.4, Table 6. Charge rows are below.
+# ---------------------------------------------------------------------------------------------------------------
+
+[param.vplateau]
+name       = "Gate plateau voltage"
+symbol     = "Vplateau"
+kind       = "electrical"
+scope      = "25C"
+typ        = -3.1
+unit       = "V"
+conditions = "VDD = -50 V, ID = -25 A, VGS = 0 to -4.5 V"
+cite       = "DS p.4, Table 6 Gate charge characteristics, Gate plateau voltage Vplateau"
+note       = "Typical only."
+
+# ---------------------------------------------------------------------------------------------------------------
+# Reverse diode: DS p.5, Table 7 (charge row below).
+# ---------------------------------------------------------------------------------------------------------------
+
+[param.is_cont]
+name       = "Diode continuous forward current"
+symbol     = "IS"
+kind       = "electrical"
+scope      = "na"
+max        = -32
+unit       = "A"
+conditions = "TC = 25 degC"
+cite       = "DS p.5, Table 7 Reverse diode, Diode continuous forward current IS"
+note       = "Printed in the Max column with a minus sign. Single stated temperature (TC = 25 degC)."
+
+[param.is_pulse]
+name       = "Diode pulse current"
+symbol     = "IS,pulse"
+kind       = "electrical"
+scope      = "na"
+max        = -129
+unit       = "A"
+conditions = "TC = 25 degC"
+cite       = "DS p.5, Table 7 Reverse diode, Diode pulse current IS,pulse"
+note       = "Printed in the Max column with a minus sign. Single stated temperature (TC = 25 degC)."
+
+[param.vsd]
+name       = "Diode forward voltage"
+symbol     = "VSD"
+kind       = "electrical"
+scope      = "25C"
+min        = -1
+typ        = -0.84
+unit       = "V"
+conditions = "VGS = 0 V, IF = -25 A, Tj = 25 degC"
+cite       = "DS p.5, Table 7 Reverse diode, Diode forward voltage VSD"
+note       = "Printed MIN '-', TYP -0.84, MAX -1 (the bound is the printed MAX). Stored as min = -1 (numeric order)."
+
+[param.trr]
+name       = "Reverse recovery time"
+symbol     = "trr"
+kind       = "electrical"
+scope      = "25C"
+typ        = 86
+max        = 172
+unit       = "ns"
+conditions = "VR = -50 V, IF = -25 A, diF/dt = -100 A/us"
+cite       = "DS p.5, Table 7 Reverse diode, Reverse recovery time trr"
+note       = "Defined by design. Not subject to production test (footnote 1)."
+
+# ---------------------------------------------------------------------------------------------------------------
+# Former blocked rows (EAS, Qg/Qgs/Qgd/Qsw/Qoss/Qrr), now loaded. Each cite is checked against the DS pages named.
+# ---------------------------------------------------------------------------------------------------------------
+
+[param.eas]
+name       = "Avalanche energy, single pulse"
+symbol     = "EAS"
+kind       = "abs_max"
+scope      = "na"
+max        = 710
+unit       = "mJ"
+conditions = "ID = -25 A, RGS = 25 ohm"
+cite       = "DS p.3, Table 2 Maximum ratings, Avalanche energy, single pulse EAS (footnote 4: Diagram 13)"
+unchecked  = "not a voltage; owner: module"
+
+[param.qgs]
+name       = "Gate to source charge"
+symbol     = "Qgs"
+kind       = "electrical"
+scope      = "25C"
+typ        = -11
+unit       = "nC"
+conditions = "VDD = -50 V, ID = -25 A, VGS = 0 to -4.5 V"
+cite       = "DS p.4, Table 6 Gate charge characteristics, Gate to source charge Qgs"
+
+[param.qg_th]
+name       = "Gate charge at threshold"
+symbol     = "Qg(th)"
+kind       = "electrical"
+scope      = "25C"
+typ        = -5.7
+unit       = "nC"
+conditions = "VDD = -50 V, ID = -25 A, VGS = 0 to -4.5 V"
+cite       = "DS p.4, Table 6 Gate charge characteristics, Gate charge at threshold Qg(th)"
+
+[param.qgd]
+name       = "Gate to drain charge"
+symbol     = "Qgd"
+kind       = "electrical"
+scope      = "25C"
+min        = -35
+typ        = -23
+unit       = "nC"
+conditions = "VDD = -50 V, ID = -25 A, VGS = 0 to -4.5 V"
+cite       = "DS p.4, Table 6 Gate charge characteristics, Gate to drain charge Qgd (footnote 1)"
+note       = "Printed MIN '-', TYP -23, MAX -35. Stored as min = -35 (numeric order). Defined by design (footnote 1)."
+
+[param.qsw]
+name       = "Switching charge"
+symbol     = "Qsw"
+kind       = "electrical"
+scope      = "25C"
+typ        = -29
+unit       = "nC"
+conditions = "VDD = -50 V, ID = -25 A, VGS = 0 to -4.5 V"
+cite       = "DS p.4, Table 6 Gate charge characteristics, Switching charge Qsw"
+
+[param.qg_4v5]
+name       = "Gate charge total, VGS = -4.5 V"
+symbol     = "Qg"
+kind       = "electrical"
+scope      = "25C"
+min        = -58
+typ        = -46
+unit       = "nC"
+conditions = "VDD = -50 V, ID = -25 A, VGS = 0 to -4.5 V"
+cite       = "DS p.4, Table 6 Gate charge characteristics, Gate charge total Qg (row 1, footnote 1)"
+note       = "Printed MIN '-', TYP -46, MAX -58. Stored as min = -58 (numeric order). Defined by design (footnote 1)."
+
+[param.qg_10v]
+name       = "Gate charge total, VGS = -10 V"
+symbol     = "Qg"
+kind       = "electrical"
+scope      = "25C"
+min        = -122
+typ        = -92
+unit       = "nC"
+conditions = "VDD = -50 V, ID = -25 A, VGS = 0 to -10 V"
+cite       = "DS p.4, Table 6 Gate charge characteristics, Gate charge total Qg (row 2, footnote 1)"
+note       = "Printed MIN '-', TYP -92, MAX -122. Stored as min = -122 (numeric order). Defined by design (footnote 1)."
+
+[param.qoss]
+name       = "Output charge"
+symbol     = "Qoss"
+kind       = "electrical"
+scope      = "25C"
+min        = -38
+typ        = -28.3
+unit       = "nC"
+conditions = "VDS = -50 V, VGS = 0 V"
+cite       = "DS p.4, Table 6 Gate charge characteristics, Output charge Qoss (footnote 1)"
+note       = "Printed MIN '-', TYP -28.3, MAX -38. Stored as min = -38 (numeric order). Defined by design (footnote 1)."
+
+[param.qrr]
+name       = "Reverse recovery charge"
+symbol     = "Qrr"
+kind       = "electrical"
+scope      = "25C"
+min        = -580
+typ        = -290
+unit       = "nC"
+conditions = "VR = -50 V, IF = -25 A, diF/dt = -100 A/us"
+cite       = "DS p.5, Table 7 Reverse diode, Reverse recovery charge Qrr (footnote 1)"
+note       = "DS ambiguity (open item): typ printed -290, max printed 580 with no minus sign (render DS p.5 checked). Stored as min = -580: the sign is inferred from typ -290 and the P-channel magnitude-order convention (printed Max -> min); the printed 580 carries no minus sign. Defined by design (footnote 1)."

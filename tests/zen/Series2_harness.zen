@@ -1,0 +1,21 @@
+# Test harness for the tolerance-option series fixture wrapper (tests/test_series_tolerance.py copies it next to
+# RSER2.zen and builds it). Defaults: 4.7 ohm, tolerance D, 0.6 V +/-1 % across the part (rated sqrt(0.1 W x 4.7 ohm)
+# = 0.686 V), industrial ambient.
+U = Module("./RSER2.zen")
+
+value = config(str, default="4.7ohm")
+tolerance = config(str, default="D")  # 4.7 ohm is allowed with D and F; "" must fail as ambiguous
+va = config(str, default="0.6V 1%")  # P1 voltage; worst case 0.606 V
+vb = config(str, default="0V")  # P2 voltage
+ta = config(str, default="-40°C to 85°C")  # inside the -55 to 155 degC range
+derate = config(float, default=1.0)
+
+U(
+    name="R1",
+    value=value,
+    tolerance=tolerance,
+    derate=derate,
+    P1=Net("A") if va == "unset" else Power("A", voltage=va),
+    P2=Power("B", voltage=vb),
+    **({} if ta == "unset" else {"ambient": ta}),
+)
