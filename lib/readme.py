@@ -165,28 +165,54 @@ def series_section(folder):
     """'Series' section: range, E-series, MPN rule with examples, rated voltage formula and a table by decade."""
     part = load(folder)
     info, values = part.info, part.values()
-    power, vlim = part.param(info["series_power"]), part.param(info["series_vlimit"])
-    tol = part.param(info["series_tol"])
-    picks = [values[0], values[len(values) // 2], values[-1]]
-    examples = ", ".join(f"{eng(v, 'ohm')} -> `{part.mpn(v)}`" for v in picks)
-    decades = [v for v in (10, 100, 1e3, 1e4, 1e5, 1e6) if v in values]
-    rows = [[eng(v, "ohm"), eng(series.rated_voltage(v, power.max, vlim.max), "V")] for v in decades]
+    power = part.param(info["series_power"])
+    vlim = part.param(info["series_vlimit"]) if "series_vlimit" in info else None
+    vl_max = vlim.max if vlim else None
+    pairs = part.pairs()
+    options = series.options(info)
+    if options:
+        picks = [pairs[0], pairs[len(pairs) // 2], pairs[-1]]
+        examples = ", ".join(f"{eng(v, 'ohm')} {c} -> `{part.mpn(v, c)}`" for v, c in picks)
+    else:
+        picks = [values[0], values[len(values) // 2], values[-1]]
+        examples = ", ".join(f"{eng(v, 'ohm')} -> `{part.mpn(v)}`" for v in picks)
+    decades = [v for v in (1e-3, 1e-2, 1e-1, 1, 10, 100, 1e3, 1e4, 1e5, 1e6) if v in values]
+    rows = [[eng(v, "ohm"), eng(series.rated_voltage(v, power.max, vl_max), "V")] for v in decades]
     text = "\n## Series\n\n"
     text += f"- **Value range**: {eng(values[0], 'ohm')} to {eng(values[-1], 'ohm')} (`{info['value_param']}`)\n"
     text += f"- **E-series**: {', '.join(info['e_series'])} ({len(values)} values in range)"
     text += "".join(f"; {n} only from {eng(v, 'ohm')}" for n, v in info.get("series_eseries_min", {}).items()) + "\n"
-    text += f"- **Tolerance**: {tol.max * 100:g} % (`{info['series_tol']}`), used by `Part.series_value`\n"
-    text += f"- **MPN rule**: `calc.mpn(value)`; examples: {examples}\n"
-    text += (f"- **Rated voltage**: min(sqrt(P70 x R), Vlimit), P70 = {eng(power.max, 'W')} (`{info['series_power']}`), "
-             f"Vlimit = {eng(vlim.max, 'V')} (`{info['series_vlimit']}`)\n")
-    text += (f"- **Zener wrapper**: config `value`; checks `value_allowed` and `rated_voltage` "
-             f"(|V(P1) - V(P2)| <= derate x rated voltage). It uses the 70 degC power rating at every ambient, so above "
-             f"70 degC it is optimistic: use `calc.rated_power` (curve-based) for hot designs\n"
-             f"- **Worst-case resistance**: `wca(calc.resistance_worst, r0=<value>, tol=part.param('tol'), tcr=..., ...)` "
+    if options:
+        text += "- **Tolerance options** (code, tolerance, range clipped to the series range, values; `Part.tolerance`, "
+        text += "wrapper config `tolerance`):\n"
+        for code, tkey, rkey in options:
+            tol, n = part.param(tkey), len(part.values(code))
+            vs = part.values(code)
+            span = f"{eng(vs[0], 'ohm')} to {eng(vs[-1], 'ohm')}, {n} values" if vs else "no value in this series"
+            text += f"  - `{code}`: +/-{tol.max * 100:g} % (`{tkey}`), {span} (`{rkey}`)\n"
+    else:
+        tol = part.param(info["series_tol"])
+        text += f"- **Tolerance**: {tol.max * 100:g} % (`{info['series_tol']}`), used by `Part.series_value`\n"
+    text += (f"- **MPN rule**: `calc.mpn(value{', tol_code' if options else ''})`; examples: {examples}\n")
+    if series.tcr_rows(info):
+        text += "- **TCR by value** (`Part.tcr(value)` returns the row whose range holds the value): "
+        text += ", ".join(f"`{t}` for {eng(part.param(r).min, 'ohm')} to {eng(part.param(r).max, 'ohm')}"
+                          for t, r in series.tcr_rows(info)) + "\n"
+    if vlim:
+        text += (f"- **Rated voltage**: min(sqrt(P70 x R), Vlimit), P70 = {eng(power.max, 'W')} (`{info['series_power']}`), "
+                 f"Vlimit = {eng(vlim.max, 'V')} (`{info['series_vlimit']}`)\n")
+    else:
+        text += (f"- **Rated voltage**: sqrt(P70 x R), P70 = {eng(power.max, 'W')} (`{info['series_power']}`); the "
+                 f"datasheet prints no limiting element voltage\n")
+    p1, p2 = info.get("series_pins", ["P1", "P2"])
+    text += (f"- **Zener wrapper**: config `value`{' and `tolerance` (a code)' if options else ''}; checks `value_allowed` and "
+             f"`rated_voltage` (|V({p1}) - V({p2})| <= derate x rated voltage). It uses the 70 degC power rating at every "
+             f"ambient, so above 70 degC it is optimistic: use `calc.rated_power` (curve-based) for hot designs\n"
+             f"- **Worst-case resistance**: `wca(calc.resistance_worst, r0=<value>, tol={"part.tolerance(<code>)" if options else "part.param('tol')"}, tcr={"part.tcr(<value>)" if series.tcr_rows(info) else "..."}, ...)` "
              f"with the plain value as r0; `Part.series_value(value)` already includes the tolerance, so do not pass it "
              f"as r0 together with tol (that counts the tolerance twice)\n\n")
-    text += (f"Rated voltage at decade values, computed from `{info['series_power']}`, `{info['series_vlimit']}` "
-             f"and the formula above:\n\n")
+    keys = f"`{info['series_power']}`" + (f", `{info['series_vlimit']}`" if vlim else "")
+    text += f"Rated voltage at decade values, computed from {keys} and the formula above:\n\n"
     return text + md_table(["Resistance", "Rated voltage"], rows)
 
 

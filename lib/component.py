@@ -61,32 +61,89 @@ class Part:
                 found[int(tail)] = param
         return dict(sorted(found.items()))
 
-    def values(self):
-        """Allowed values (ohm) of a series component, sorted: the E-series values inside its value_param range."""
+    def _bounds(self, key):
+        r = self.param(key)
+        return r.min, r.max
+
+    def _need_resistor(self):
         if self.info.get("series") != "resistor":
             raise ValueError(f"{self.info.get('value')} is not a resistor series component")
-        r = self.param(self.info["value_param"])
-        return _series.allowed_values(self.info["e_series"], r.min, r.max, self.info.get("series_eseries_min"))
 
-    def _check_allowed(self, value):
-        """ValueError unless value (ohm) is one of values() (to 1e-9 relative)."""
-        if not any(abs(value - v) <= 1e-9 * v for v in self.values()):
-            raise ValueError(f"{self.info['value']}: {value:g} ohm is not an allowed value ({', '.join(self.info['e_series'])} "
-                             f"from {self.values()[0]:g} to {self.values()[-1]:g} ohm)")
+    def pairs(self):
+        """Sorted [(value, tolerance code)] a resistor series allows (code None for a series without tolerance options)."""
+        self._need_resistor()
+        return _series.pairs(self.info, self._bounds)
 
-    def mpn(self, value):
-        """Orderable MPN of a series component for one allowed value (ohm), from calc.mpn."""
-        self._check_allowed(value)
-        return self.calc.mpn(value)
+    def tolerances(self):
+        """Tolerance codes of a resistor series with tolerance options, as listed ([] for a plain series)."""
+        self._need_resistor()
+        return [code for code, _, _ in _series.options(self.info)]
 
-    def series_value(self, value):
-        """Param for a chosen series value (ohm): typ = value, min/max from the `series_tol` row (a fraction).
+    def values(self, tol=None):
+        """Allowed values (ohm) of a series component, sorted: the series values inside its ranges.
 
+        With tolerance options, tol = a code gives the values that code allows; None gives the values any code allows.
+        """
+        self._need_resistor()
+        if tol is not None and tol not in self.tolerances():
+            raise ValueError(f"{self.info['value']}: tolerance code '{tol}' is not an option (options: "
+                             f"{', '.join(self.tolerances()) or 'none'})")
+        return sorted({v for v, code in self.pairs() if tol is None or code == tol})
+
+    def _resolve(self, value, tol):
+        """The tolerance code (None for a plain series) for an allowed value; ValueError for anything else."""
+        values = self.values(tol)
+        name = self.info["value"]
+        if not any(abs(value - v) <= 1e-9 * v for v in values):
+            where = f" with tolerance {tol}" if tol else ""
+            span = f" from {values[0]:g} to {values[-1]:g} ohm" if values else ""
+            raise ValueError(f"{name}: {value:g} ohm{where} is not an allowed value ({', '.join(self.info['e_series'])}{span})")
+        if not self.tolerances():
+            return None
+        if tol is not None:
+            return tol
+        codes = [c for v, c in self.pairs() if abs(value - v) <= 1e-9 * v]
+        if len(codes) > 1:
+            raise ValueError(f"{name}: ambiguous: {value:g} ohm is allowed with tolerance codes {', '.join(codes)}; pass tol")
+        return codes[0]
+
+    def mpn(self, value, tol=None):
+        """Orderable MPN of a series component for one allowed value (ohm), from calc.mpn.
+
+        A series with tolerance options needs the code (calc.mpn(value, code)) unless only one code allows the value.
+        """
+        code = self._resolve(value, tol)
+        return self.calc.mpn(value) if code is None else self.calc.mpn(value, code)
+
+    def tolerance(self, tol):
+        """Param of a tolerance option (fraction, min and max): wca(calc.resistance_worst, tol=part.tolerance("D"), ...)."""
+        self._need_resistor()
+        keys = {code: key for code, key, _ in _series.options(self.info)}
+        if tol not in keys:
+            raise ValueError(f"{self.info['value']}: tolerance code '{tol}' is not an option (options: {', '.join(keys) or 'none'})")
+        return self.param(keys[tol])
+
+    def series_value(self, value, tol=None):
+        """Param for a chosen series value (ohm): typ = value, min/max from the tolerance row (a fraction).
+
+        The row is `series_tol`, or with tolerance options the row of code tol (None only if one code allows the value).
         erj.series_value(2.61e3) -> min 2.5839 kohm, typ 2.61 kohm, max 2.6361 kohm for a +/-1 % row.
         """
-        self._check_allowed(value)
-        tol = self.param(self.info["series_tol"])
-        return Param(min=value * (1 + tol.min), typ=value, max=value * (1 + tol.max), unit="ohm")
+        code = self._resolve(value, tol)
+        row = self.param(self.info["series_tol"]) if code is None else self.tolerance(code)
+        return Param(min=value * (1 + row.min), typ=value, max=value * (1 + row.max), unit="ohm")
+
+    def tcr(self, value):
+        """Param of the TCR row (1/degC) whose own range holds a value (ohm): [part] series_tcr pairs each row with its range.
+
+        Use it as the tcr input of calc.resistance_worst, which INPUTS cannot map when the TCR depends on the value.
+        """
+        self._need_resistor()
+        found = [self.param(t) for t, r in _series.tcr_rows(self.info)
+                 if self.param(r).min * (1 - 1e-9) <= value <= self.param(r).max * (1 + 1e-9)]
+        if len(found) != 1:
+            raise ValueError(f"{self.info['value']}: {len(found)} TCR rows cover {value:g} ohm (need exactly 1; series_tcr)")
+        return found[0]
 
     def catalog(self):
         """Catalog rows (lib.capacitor.CatalogRow) of a capacitor series: one per orderable value."""

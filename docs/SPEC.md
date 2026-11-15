@@ -116,7 +116,7 @@ If one parameter has rows for 25 °C and full temperature, make two keys: `vosi_
 
 Write the unit as printed, using ASCII. Per-part values: a datasheet that prints "63.6 g / 1000 pieces" is stored as
 the per-part value in a unit that keeps the printed digits (63.6 mg) with the printed wording in `conditions`. A unit is `[prefix]base[suffix]` with prefix `f p n u m k M G`, base
-`V A ohm W F H Hz s`, and optional suffix `pp` (peak-to-peak), `/rtHz`, `/degC`, `/us`, `/MHz`, `/V` (transconductance). Examples: `V mV uV nV A mA uA nA pA ohm mohm kohm Mohm W mW F uF nF pF H uH Hz kHz
+`V A ohm W F H Hz s C J` (C = coulomb for gate charge, J = joule for avalanche energy), and optional suffix `pp` (peak-to-peak), `/rtHz`, `/degC`, `/us`, `/MHz`, `/V` (transconductance). Examples: `V mV uV nV A mA uA nA pA ohm mohm kohm Mohm W mW F uF nF pF H uH Hz kHz
 MHz s ms us ns uVpp nV/rtHz fA/rtHz uV/degC V/us uA/MHz mA/V us/V`. Converted: `mm` -> m, `g mg` -> kg, `uV/V mV/V m%` -> fraction, `mdegC` -> degC, `kcycles` -> cycles (10 kcycles -> 10000), `%` -> fraction
 (0.5 % -> 0.005, unit `1`), `ppm` -> fraction (35 ppm -> 35e-6, unit `1`), `ppm/degC` -> 1/degC (unit `1/degC`), `ppm/V` -> 1/V (unit `1/V`). `/us` -> `/s` (2.5 V/us -> 2.5e6 V/s). `/MHz` -> `/Hz` (23.4 uA/MHz -> 2.34e-11 A/Hz). `uV/V` and `mV/V` stay fractions, never `/V` transconductance.
 Unscaled: `degC degC/W dB bits LSB cycles years` and `""`. So every value a calc function receives is SI or a plain fraction; README
@@ -188,8 +188,12 @@ series_tol     = "tol"                   # param row: tolerance (%, min and max,
 series_eseries_min = { E96 = 100 }       # optional: lowest value (ohm) taken from one E-series (here E96)
 ```
 
-- `calc.py` must define `mpn(value)` (value in ohm, returns the orderable MPN text). It is the single source of
-  the part number: `[part] mpn` must be absent. The README gives three example values.
+Optional keys, each described below: `series_vlimit` may be absent, `series_tolerances` replaces `series_tol`,
+`series_tcr` selects a TCR row per value, `series_pins` names the two current terminals of a 4-terminal part.
+
+- `calc.py` must define `mpn(value)` (value in ohm, returns the orderable MPN text; `mpn(value, tol_code)` for a
+  series with tolerance options). It is the single source of the part number: `[part] mpn` must be absent. The README
+  gives three example values.
 - The allowed values are every `E24` / `E96` mantissa (literal lists in `lib/series.py`, 24 and 96 values per decade)
   times a power of ten that falls in the `value_param` range, sorted and unique (E24 has values E96 lacks, for
   example 2.7). Each is the float nearest its printed decimal: 2.61 x 10^3 is `2610.0`, the same float `2.61e3` gives.
@@ -197,14 +201,57 @@ series_eseries_min = { E96 = 100 }       # optional: lowest value (ohm) taken fr
   (use it where the catalog prints no part-number code for them); a value that another listed series contains stays
   allowed (E24 47 ohm with `E96 = 100`; E96 47.5 ohm is out). `lib.check`, `part.values()` and the wrapper's
   `value_allowed` all use the reduced set.
+- **Decade value set.** `e_series = ["VISHAY-DECADE"]` allows every two-significant-digit value 10..99 per decade
+  (mantissas 1.0 ... 9.9: 90 values per decade; `lib.series.DECADE`), from Vishay Dale "Standard resistance decade
+  values", document 30117, rev 04-Oct-06 (titled "WSL Type Resistors": "Resistance values must be within the
+  resistance range listed on the most current datasheet"). It combines with E24/E96 in one list like any other name.
+- **No limiting element voltage.** `series_vlimit` is optional. Without it the rated voltage is `sqrt(P70 x R)` only
+  (`lib.series.rated_voltage(r, p70)`; the wrapper compares squares and has no `vlim` argument; the README says the
+  datasheet prints none).
+- **Tolerance options.** Instead of one `series_tol` row, a series may list several orderable tolerances, each with its
+  own resistance range (a datasheet that prints a range per tolerance column):
+
+  ```toml
+  series_tolerances = { B = { tol = "tol_b", range = "r_range_b" }, D = { tol = "tol_d", range = "r_range_d" } }
+  ```
+
+  The key is the tolerance code as printed in the part number (letters/digits). `tol` names a param row (%, min and
+  max, like `series_tol`), `range` names a param row (ohm, min and max) holding that option's range as printed, so every
+  number keeps its row, unit and cite. `series_tol` and `series_tolerances` are exclusive. `value_param` stays the
+  directory's range; each option's range is **clipped** to it (`max(low) .. min(high)`), so one datasheet table splits
+  over several directories (`WSK2512-LOW`, `WSK2512`) without editing the printed rows. An option with no value left
+  after clipping is ERROR (leave it out of that directory). The allowed set is the sorted list of
+  `(value, tolerance code)` pairs; a value is orderable with every code whose clipped range holds it.
+- **TCR by range.** `series_tcr = [{ tcr = "tcr_a", range = "tcr_a_range" }, ...]` pairs each TCR row (ppm/degC, min
+  and max) with a range row (ohm) for datasheets that print a TCR per resistance range. Every allowed value must fall
+  in exactly one range (ERROR for none or several). `part.tcr(value)` returns the Param of that row (a fraction per
+  degC), for `wca(calc.resistance_worst, r0=value, tol=part.tolerance(code), tcr=part.tcr(value), ...)`. `INPUTS` cannot
+  map the TCR argument when there are several rows (the row depends on the value); with a single row it may map it as
+  usual. The rows named by `series_tolerances` and `series_tcr` need no `check_pins` / `unchecked`.
+- **Four-terminal parts.** A series has exactly 2 pins unless `series_pins = ["I1", "I2"]` names two different `[[pin]]`
+  names (the current terminals): the wrapper's `rated_voltage` check is taken between those nets (default: pins `1`
+  and `2`). The other pins (Kelvin sense) are ordinary pass-through nets.
 - `lib.check` (series) ERRORs on: a missing `[part]` key or an unknown row key, `mpn` present, a series that does not
-  have exactly 2 pins, an unknown E-series name, a range or tolerance row without min/max (and ohm / % units),
-  missing `calc.mpn`, and, over every allowed value, `calc.mpn` raising or two values giving the same MPN. The
-  four rows the series reads need no `check_pins` / `unchecked`. A series cannot be a family.
-- `part.values()` returns the sorted allowed values (ohm). `part.mpn(value)` returns `calc.mpn(value)` for an
-  allowed value. `part.series_value(value)` returns a `Param` with typ = value and min/max =
-  value x (1 + tol.min), value x (1 + tol.max), in ohm, ready for `wca`:
-  `rg = erj.series_value(2.61e3)`. `mpn` and `series_value` raise `ValueError` for a value that is not allowed.
+  have exactly 2 pins (and no valid `series_pins`), an unknown E-series name, a range or tolerance row without min/max
+  (and ohm / % units), a malformed `series_tolerances` / `series_tcr` table, both `series_tol` and `series_tolerances`
+  (or neither), an option with no value after clipping, a value with no or several TCR rows, missing `calc.mpn`, and,
+  over every allowed (value, code) pair, `calc.mpn` raising or two pairs giving the same MPN. The rows the series reads
+  need no `check_pins` / `unchecked`. A series cannot be a family.
+- `part.values(tol=None)` returns the sorted allowed values (ohm); with tolerance options, `tol` = a code gives that
+  code's values and `None` the values any code allows. `part.pairs()` returns the sorted `(value, code)` list
+  (`code` is `None` without options), `part.tolerances()` the codes, `part.tolerance(code)` the tolerance Param
+  (fraction). `part.mpn(value, tol=None)` returns `calc.mpn(value)` (or `calc.mpn(value, code)`) for an allowed value;
+  `tol` may be left out only when exactly one code allows the value, otherwise `ValueError` "ambiguous: ... pass tol".
+  `part.series_value(value, tol=None)` returns a `Param` with typ = value and min/max =
+  value x (1 + tol.min), value x (1 + tol.max), in ohm (the row of the code), ready for `wca`:
+  `rg = erj.series_value(2.61e3)`. `mpn` and `series_value` raise `ValueError` for a value (or value/code pair) that is
+  not allowed or a code that is not an option.
+- Example, Vishay WSK2512 (`components/Vishay/WSK2512`, 0.005 to 0.2 ohm, decade values, B/D/F; and `WSK2512-LOW`,
+  0.0005 to 0.0049 ohm, D/F): the datasheet prints one table for the whole model, split into two directories where the
+  solder pad dimensions change. MPN = `WSK2512` + 5-character value code + tolerance code + `EA`: value code
+  `R0250` (0.025 ohm: `R` is the decimal point, four digits of ohm), `5L000` (0.005 ohm: below 0.01 ohm the value is
+  in mohm with `L`), `L5000` (0.0005 ohm, inferred: no printed sub-1 mohm example); `0.025 D -> WSK2512R0250DEA`.
+  The single part `WSK2512R0250D` stays a separate directory and is also reachable as `WSK2512` 0.025 ohm code D.
 - `lib.readme` adds a "Series" section: value range, E-series, tolerance, MPN rule with three example values,
   the rated-voltage formula and a table of rated voltage at the decade values (10 ohm ... 1 Mohm) inside the range,
   "computed from" the power and voltage-limit rows.
@@ -393,7 +440,13 @@ What the generator emits, so a reviewer can predict the file from the TOML:
 
 A resistor series component (see "Series components") gets one wrapper, `<Value>.zen`. It differs from the above as follows:
 - `value = config(Resistance, ...)`: required, no default (an instance without it fails to build).
+- With tolerance options, `tolerance = config(str, default="")`, the code as printed (`D`). It may stay empty only when
+  exactly one code allows the value; otherwise `value_allowed` fails and lists the codes. `_MPN` is keyed by
+  `(micro-ohm integer, code)`, `_CODES` lists the codes per value, and an unorderable pair gets the sentinel MPN
+  `UNORDERABLE` (as in the capacitor wrapper), never a real part number. `value_allowed` checks the pair is a key of
+  `_MPN` and its message names every code's clipped range.
 - Pins `"1"` and `"2"` become `P1` and `P2` (a purely numeric pin name gets a `P` prefix: `io_name("1") = "P1"`).
+  With `series_pins` the voltage across the part is taken between those two pins' nets (`I1`, `I2`).
 - `_MPN = {<micro-ohm integer>: "<MPN>", ...}`, generated from `calc.mpn` over every allowed value, and
   `Part(mpn=_MPN_STR, ...)` with `_MPN_STR = _MPN[int(value x 1e6 + 0.5)]`. Keys are integers because float text differs
   between Python and Zener (`1e+06`). Resistance `.value` is a float in ohm (confirmed with a scratch build).
@@ -402,7 +455,8 @@ A resistor series component (see "Series components") gets one wrapper, `<Value>
 - Check `rated_voltage` (error, through `_limit`, so an unset net is UNVERIFIED): the worst-case voltage across the
   part, max(P1.max - P2.min, P2.max - P1.min), is at most `derate x min(sqrt(P x R), Vlimit)`, with P from
   `series_power`, Vlimit from `series_vlimit` (their `max`) and R the configured value. Zener has no sqrt, so the
-  generated code compares squares. Both rows are generated literals, like every other limit.
+  generated code compares squares. Both rows are generated literals, like every other limit. Without `series_vlimit`
+  the limit is `derate x sqrt(P x R)`.
 - Power derating above 70 degC is a curve (`calc.rated_power`) and is not checked in Zener; the wrapper lists it as
   `# UNCHECKED ... owner: module`. The four series rows are not listed as UNCHECKED (the series check reads them).
 - The ambient check comes from the normal `check_ambient` row.
@@ -459,7 +513,8 @@ print(table([("Gain", g, "")]))
 ```
 
 A resistor series component (`[part] series = "resistor"`) also gives `part.values()`, `part.mpn(value)` and
-`part.series_value(value)` (see "Series components"): `wca(fn, r=load("Panasonic/ERJ-3EKF").series_value(2.61e3))`.
+`part.series_value(value)` (with tolerance options also `part.pairs()`, `part.tolerance(code)`, `part.tcr(value)`; see
+"Series components"): `wca(fn, r=load("Panasonic/ERJ-3EKF").series_value(2.61e3))`.
 A capacitor series gives `part.catalog()` and `part.select(capacitance, rated_voltage, dielectric, tolerance=None)`
 (see "Capacitor series"): `sel = load("Murata/GCM155").select(0.1e-6, 50, "X7R", "+/-10%")`, `sel.mpn`, and
 `wca(sel.part.calc.capacitance_worst_pct, **sel.part.inputs("capacitance_worst_pct"))` (X7R; `capacitance_worst_ppm` for C0G).

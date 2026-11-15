@@ -1,0 +1,21 @@
+# Test harness for the generated ISC750P10LM wrapper (tests/test_zen.py copies it next to the wrapper and builds it).
+# Defaults: P-channel high-side switch on a 48 V rail. S 48 V +/-5 % (45.6-50.4 V). D 0-48 V: VDS = D - S
+#   is at least 0 - 50.4 = -50.4 V, inside the -100 V rating. G 38 V +/-1 % (37.62-38.38 V): VGS from 37.62 - 50.4 =
+#   -12.8 V to 38.38 - 45.6 = -7.2 V, inside +/-20 V (each net's range is independent; correlation not modelled).
+U = Module("./ISC750P10LM.zen")
+
+vd = config(str, default="0V to 48V")
+vs = config(str, default="48V 5%")
+vg = config(str, default="38V 1%")
+
+
+def _net(name, v):  # "unset" = a net with no voltage, which must report UNVERIFIED
+    return Net(name) if v == "unset" else Net(name, voltage=v)
+
+
+U(
+    name="Q1",
+    D=_net("D", vd),
+    S=_net("S", vs),
+    G=_net("G", vg),
+)

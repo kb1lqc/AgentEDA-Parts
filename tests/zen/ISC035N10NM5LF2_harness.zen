@@ -1,0 +1,20 @@
+# Test harness for the generated ISC035N10NM5LF2 wrapper (tests/test_zen.py copies it next to the wrapper and builds it).
+# Defaults: low-side switch on a 48 V rail. D 48 V +/-5 % (50.4 V max) vs S 0 V: inside VDS 100 V.
+#   G 10 V +/-5 % vs S: 9.5-10.5 V, inside VGS +/-20 V. Junction temperature is not a wrapper check (owner: module).
+U = Module("./ISC035N10NM5LF2.zen")
+
+vd = config(str, default="48V 5%")
+vs = config(str, default="0V")
+vg = config(str, default="10V 5%")
+
+
+def _net(name, v):  # "unset" = a net with no voltage, which must report UNVERIFIED
+    return Net(name) if v == "unset" else Net(name, voltage=v)
+
+
+U(
+    name="Q1",
+    D=_net("D", vd),
+    S=_net("S", vs),
+    G=_net("G", vg),
+)

@@ -1,0 +1,103 @@
+"""BSC040N10NS5: 100 V N-channel OptiMOS 5 power MOSFET, 136 A, 4.0 mohm max at VGS=10 V, PG-TDSON-8 (SuperSO8).
+GENERATED from component.toml by `python3 -m lib.zen`; do not edit. Source of truth: component.toml and
+calc.py (numbers, cites, equations). DS: https://www.infineon.com, Rev.2.4 (2020-05-15).
+Checks are DC steady-state on the voltages each instance declares. They do not cover transients, overshoot,
+hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
+Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
+
+# UNCHECKED: id_tc25: Continuous drain current, TC = 25 degC (DS p.3, Table 2 Maximum ratings, Continuous drain current ID (row 1)); not a voltage; owner: module
+# UNCHECKED: id_tc100: Continuous drain current, TC = 100 degC (DS p.3, Table 2 Maximum ratings, Continuous drain current ID (row 2)); not a voltage; owner: module
+# UNCHECKED: id_pcb: Continuous drain current, PCB-limited (DS p.3, Table 2 Maximum ratings, Continuous drain current ID (row 3), footnote 2); not a voltage; owner: module
+# UNCHECKED: id_pulse: Pulsed drain current (DS p.3, Table 2 Maximum ratings, Pulsed drain current ID,pulse (footnote 3: Diagram 3 SOA)); not a voltage; owner: module
+# UNCHECKED: ptot_tc25: Power dissipation, TC = 25 degC (DS p.3, Table 2 Maximum ratings, Power dissipation Ptot (row 1)); not a voltage; owner: module
+# UNCHECKED: ptot_pcb: Power dissipation, PCB-limited (DS p.3, Table 2 Maximum ratings, Power dissipation Ptot (row 2), footnote 3); not a voltage; owner: module
+# UNCHECKED: tj_tstg: Operating and storage temperature Tj, Tstg (DS p.3, Table 2 Maximum ratings, Operating and storage temperature Tj, Tstg); TJ: needs dissipation x RthJA; owner: module (Tstg part: owner: assembly)
+# UNCHECKED: iec_climatic: IEC climatic category (DS p.3, Table 2 Maximum ratings, Operating and storage temperature, IEC climatic category (note column)); owner: assembly (climatic classification, not an operating voltage or temperature)
+# UNCHECKED: eas: Avalanche energy, single pulse (DS p.3, Table 2 Maximum ratings, Avalanche energy, single pulse EAS (footnote 4: Diagram 13)); not a voltage; owner: module
+
+# Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
+# GND can drive them; ground-named pins are Ground.
+# pin 1 S, passive: Source (S1), discrete MOSFET terminal; S1, S2 and S3 are one source node
+# pin 2 S, passive: Source (S2), discrete MOSFET terminal; same source node as pin 1
+# pin 3 S, passive: Source (S3), discrete MOSFET terminal; same source node as pin 1
+S = io(Net)
+# pin 4 G, passive: Gate (G4), discrete MOSFET terminal
+G = io(Net)
+# pin 5 D, passive: Drain (D5), discrete MOSFET terminal; pins 5 to 8 are one drain node. The drain tab (exposed pad) has no DS number and is not a separate pin: the footprint makes it pad 5 (a real pad on the drain net), overlapping the drain lead pads 5-8.
+# pin 6 D, passive: Drain (D6), discrete MOSFET terminal; same drain node as pin 5
+# pin 7 D, passive: Drain (D7), discrete MOSFET terminal; same drain node as pin 5
+# pin 8 D, passive: Drain (D8), discrete MOSFET terminal; same drain node as pin 5
+D = io(Net)
+
+derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+
+_ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
+check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
+
+
+def _limit(name, fn, inputs, severity, waiver=""):
+    # Unset input: UNVERIFIED warning, never a silent pass. Waiver drops a warning to advice.
+    if waiver and severity != "warning":
+        error("only warning-level checks can be waived: " + name)
+    unset = [k for k, v in inputs.items() if v == None]
+    if unset:
+
+        def _unverified(_m):
+            error("UNVERIFIED " + name + ": no value for " + ", ".join(unset))
+
+        builtin.add_electrical_check(name=name, check_fn=_unverified, severity="advice" if _ROOT else "warning")
+    else:
+        builtin.add_electrical_check(name=name, check_fn=fn, inputs=inputs, severity="advice" if waiver else severity)
+
+
+def _range(_m, v, what, lo=None, hi=None, lo_ref=None, hi_ref=None):
+    # Worst case: v.min >= lo + lo_ref.max and v.max <= hi + hi_ref.min (narrowest window). No ref = absolute.
+    lo_b = None if lo == None else lo + (0.0 if lo_ref == None else lo_ref.max)
+    hi_b = None if hi == None else hi + (0.0 if hi_ref == None else hi_ref.min)
+    ok = (lo_b == None or v.min >= lo_b) and (hi_b == None or v.max <= hi_b)
+    lo_t = "no limit" if lo_b == None else "%s V" % lo_b
+    hi_t = "no limit" if hi_b == None else "%s V" % hi_b
+    check(ok, "%s: %s to %s V outside %s to %s" % (what, v.min, v.max, lo_t, hi_t))
+
+
+def _temp(_m, v, what, lo, hi):
+    # Temperatures are kelvin floats in Zener; messages in degC.
+    ok = v.min >= lo and v.max <= hi
+    msg = "%s: %s to %s degC outside %s to %s degC"
+    check(ok, msg % (what, v.min - 273.15, v.max - 273.15, lo - 273.15, hi - 273.15))
+
+
+# vds_rating_D: pin D (D) within the limit
+#   Drain-source voltage rating: max 100 V (max_ref rel. S)
+#   DS p.1, Table 1 Key Performance Parameters, VDS
+#   Severity error: rec_op violated
+_limit("vds_rating_D", _range, {"v": D.voltage, "what": "vds_rating_D", "hi": 100.0, "hi_ref": S.voltage}, "error")
+
+# vgs_G: pin G (G) within the limit, x derate
+#   Gate-source voltage: min -20 / max 20 V (min_ref rel. S) (max_ref rel. S)
+#   DS p.3, Table 2 Maximum ratings, Gate source voltage VGS
+#   Severity error: abs_max violated
+_limit(
+    "vgs_G",
+    _range,
+    {
+        "v": G.voltage,
+        "what": "vgs_G",
+        "lo": -20.0 * derate,
+        "lo_ref": S.voltage,
+        "hi": 20.0 * derate,
+        "hi_ref": S.voltage,
+    },
+    "error",
+)
+
+Component(
+    name="BSC040N10NS5",
+    symbol=Symbol(library="./BSC040N10NS5.kicad_sym"),
+    part=Part(mpn="BSC040N10NS5", manufacturer="Infineon Technologies", datasheet="https://www.infineon.com"),
+    pins={
+        "S": S,
+        "G": G,
+        "D": D,
+    },
+)

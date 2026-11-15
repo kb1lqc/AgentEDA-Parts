@@ -3,6 +3,18 @@
 Never hand-draw a symbol or footprint. Start from the vendor download (Ultra Librarian, SnapEDA, manufacturer) in
 `docs/vendor/<Value>/`, then fix it up. Each fix-up is checkable against the datasheet.
 
+Vendor files only in Altium format (`.SchLib`, `.PcbLib`): convert them with the KiCad command line, keep the
+originals next to the result, and record the conversion in `docs/vendor/<Value>/KiCad_from_Altium/CONVERTED.txt`:
+```sh
+K=/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli   # macOS install; `kicad-cli` on PATH elsewhere
+$K fp upgrade --force -o <out>.pretty <file>.PcbLib
+$K sym upgrade --force -o <out>.kicad_sym <file>.SchLib
+```
+Then fix up the converted files like any other vendor file. Check custom drain/exposed pads (converted pads are
+custom shapes, sometimes with tiny anchor pads) and remove converter leftovers. Vendor footprints that draw an
+exposed pad as plain copper (`fp_poly` on F.Cu) instead of a pad must get a real pad numbered as the pin it
+belongs to, or the copper has no net.
+
 ## Symbol (`<Value>.kicad_sym`)
 - Properties: `Value` = Value, `Manufacturer_Part_Number` = MPN, `Manufacturer_Name` = manufacturer with spaces,
   `Datasheet` = manufacturer URL, `Description` filled, `Footprint` = `<Value>` (the footprint name; the symbol and footprint sit in the same package directory).
