@@ -132,4 +132,4 @@ A human verifies a part by opening its datasheet next to its README: every row a
    `python3 -m lib.check` clean, `python3 -m lib.zen`, `python3 -m lib.readme`.
 5. Add `tests/zen/<Value>_harness.zen` and its cases in `tests/test_zen.py`; all tests pass.
 6. Have a second reviewer check every number against the page images.
-The full procedure, with defaults for every judgement call, is in [CLAUDE.md](CLAUDE.md).
+A short guide to the workflow and part types is [docs/WORKFLOW.md](docs/WORKFLOW.md). The full procedure, with defaults for every judgement call, is in [CLAUDE.md](CLAUDE.md).
