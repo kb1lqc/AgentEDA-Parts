@@ -1,0 +1,75 @@
+---
+name: ee-design
+description: How this designer engineers any circuit or board - requirements bounded by worst-case analysis, fewest components, BOM line-item reuse, 0603+ passives, stocked parts, decoupling at every power pin, source-terminated controlled-impedance digital lines, rating margins checked, and when to stop and ask. Use when designing, sizing, choosing parts for, or reviewing any circuit, module or board, including choosing values from datasheet equations.
+---
+
+# EE design approach
+
+How circuits are designed here, for any board. Act like a senior hardware engineer's sidekick: bound every claim
+with data, never guess a number, show the trade-off, and let the designer make judgment calls. Schematic
+presentation is the `schematic-style` skill; part data and equations come from this library (`component.toml`,
+`calc.py`, `lib/`).
+
+## Principles
+- **Worst-case analysis bounds every requirement.** Every value is derived over all min/max corners (tolerance,
+  temperature, supply, part-to-part), never from typicals. State the requirement, the worst-case result, and the
+  margin. Typical-only datasheet values are never bounds; curve-read values are labelled as estimates.
+- **Never guess a number.** Datasheet values come from the library with their cite. A value the datasheet does not
+  bound (e.g. a driver's output impedance when only VOH at one current is given) is an open item with a plan to
+  get it (IBIS model, measurement), not an assumption. A placeholder is allowed only as a named DESIGN CHOICE
+  with a comment and an open item.
+- **Fewest components.** Add a part only when a requirement or the worst-case analysis needs it. Prefer an IC's
+  internal pull-ups, defaults and features over external parts when the datasheet allows.
+- **Fewest BOM line items on the first pass.** Before adding a new resistor or capacitor value, check whether a
+  value already in the design meets the worst-case bound, and reuse it. Report the BOM line count and every value
+  used in only one place, with the reason. Accuracy-critical parts (shunts, precision dividers) may be unique;
+  say why.
+- **Stocked parts.** Check availability (e.g. `pcb bom -f json` sourcing) before committing to a value. When the
+  worst-case-optimal part is not stocked, rank the stocked alternatives by worst-case performance and headroom and
+  present the trade-off (what accuracy or margin is lost) for the designer to choose. Record the stock snapshot
+  date.
+- **Narrow the operating range instead of adding protection, when that is acceptable,** and record the residual
+  risk as an open item (e.g. capping a bus voltage so an abs-max is never exceeded rather than adding a TVS).
+  Ask before choosing between the two.
+
+## Default design rules (apply unless the requirement says otherwise)
+- **Passives 0603 or larger** (hand reworkable). Larger where power, voltage or accuracy needs it.
+- **Decoupling: 100 nF at every IC power pin**, placed at the pin, plus bulk capacitance where the rail or the
+  datasheet needs it. Check the capacitor's voltage rating and, for X7R/X5R, its DC-bias loss.
+- **Digital lines with edges that matter (SPI, clocks, fast GPIO): source series termination at every driving
+  end**, sized so R_series + R_out(driver) is about the trace impedance (typically 50 ohm), with a controlled-
+  impedance trace after the resistor. For SPI: MISO at the peripheral; SCLK, MOSI and CS at the controller. Take
+  R_out from the driver's datasheet or IBIS model, worst case (e.g. (VS - VOH)/IOH is a bound, not a value; label
+  any such estimate as not a datasheet equation).
+- **Logic levels and rails:** check every input's abs-max against the driver's worst-case high level (e.g. VIO max
+  = VS + 0.3 V). Choose the rail tolerance so the worst case passes, and prefer sharing one rail between a host and
+  its peripherals. Record the required regulator accuracy.
+- **Open-drain outputs** get a pull-up sized from the rise time and sink current, placed on the block or shared
+  at the host (wired-OR), selectable with DNP rather than a topology change.
+- **Current sense:** Kelvin (4-terminal) connection to the shunt; shunt value from the ADC full-scale range at
+  worst-case resistance (tolerance + TCR over temperature), with headroom; shunt power within its derated rating at
+  maximum ambient; firmware calibration constants computed and recorded.
+- **Ratings:** every abs-max and recommended-operating limit checked worst case against the declared voltages,
+  ambient and derating; transients (hot-plug, shorts, inductive kickback) are called out even when DC checks
+  pass.
+
+## Reusable blocks
+- Build reusable circuits as modules with role-named ports, the sense or support parts inside the block, and
+  design-intent configs (value, tolerance, DNP choices) set by each board from its own analysis.
+- Name the block after its limits when it is not general (high-side only, single supply, ...).
+- Keep topology config-independent: configs change values and DNP, never add, remove or reconnect parts.
+- Each block has a worst-case analysis script and a report: inputs with cites, results with margins, plots where
+  a quantity varies over an operating range (e.g. error vs current), and a "limits of this analysis" section.
+
+## When to stop and ask the designer
+- A requirement is missing or ambiguous (range, accuracy, ambient, interface).
+- Two rules conflict, or a rule cannot be met (e.g. a stocked part cannot reach the accuracy target).
+- A safety or abs-max risk remains after the design choice (zero-margin cases, unprotected transients).
+- A choice trades accuracy, cost, part count or margin in a way the designer has not decided before.
+Present the options with numbers and a recommendation; record the decision.
+
+## Deliverables for any block or board
+- Spec: purpose, operating conditions, block definition (ports, configs), part table with the basis for each
+  choice, worst-case results, interfaces, open questions, open items.
+- Worst-case analysis report with plots, and the BOM line count.
+- Schematic per `schematic-style`; strict build passing; every waiver and open item listed.
