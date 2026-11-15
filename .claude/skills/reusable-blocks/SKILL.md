@@ -42,7 +42,8 @@ benches/<Block>/bench.zen         bench board: declared nets with voltages, one 
                                   Board(path="eda"); imports the block by its full URL (resolved locally)
 benches/<Block>/params.json       the reference instance's analysis inputs (each with a basis)
 benches/<Block>/eda/              bench root sheet + the arranged REFERENCE sheet <instance>.kicad_sch
-benches/<Block>/docs/             generated datasheet, charts and values.json for the reference instance
+benches/<Block>/docs/             generated datasheet, charts, values.json, and <bench name>.pdf (all sheets, named
+                                  after the Board), for the reference instance
 benches/<Block>/notes_rules.py    note rules for the bench parent sheet (read by tools/schematic/update_notes.py)
 analysis/                         shared helpers (library loader, report writer); no block-specific numbers
 tools/                            check_sync, update_notes, stamp_block, render, netcmp, erc (shared by all blocks)
@@ -97,6 +98,9 @@ tools/                            check_sync, update_notes, stamp_block, render,
   re-placed every part off-page and added power symbols. Known limits: a net shared between instances may change
   from a global-style name (`VBUS_MID`) to the root-local `/VBUS_MID` (same nodes); existing sheet pins are not
   moved and transplanted pins get no root wiring; untested for blocks with nested sub-sheets.
+- Each bench commits a PDF of all its sheets (`docs/<bench name>.pdf`, named after the bench's Board / KiCad project) so a reader can review the block without KiCad.
+  Export it reproducibly (kicad-cli on a copy of `eda/`, `/CreationDate` pinned to a fixed same-length value: the
+  file is then byte-identical for the same sheets and KiCad version) and have the sync check fail on a stale one.
 - Never re-arrange a block's internals on a board. Fix the reference sheet in the blocks repo, release, re-stamp.
 - Reference-sheet notes hold for every instance (limits, reasons, roles). Instance numbers (full scale, error,
   scaling, dissipation) go in the DESIGN VALUES box beside the sheet symbol on the parent, filled from the
