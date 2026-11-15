@@ -44,6 +44,8 @@ and how to use agents. Every rule here came from rework that cost real tokens.
 3. **Placement by generator script.** Encode the plan as a re-runnable script that computes every coordinate from
    the symbol pin geometry and writes the `.kicad_sch` (never hand-nudge coordinates by trial). A re-run after a
    correction is cheap; a trial-and-error edit loop is not.
+   The script also performs the steps `pcb` cannot express and that a regeneration undoes, e.g. swapping power
+   symbols inside reusable sheets for hierarchical labels (`schematic-style`, local rails recipe).
 4. **Annotate (required, never skipped).** Add the engineering notes and titled group boxes per `schematic-style`
    ("Engineering notes and grouping boxes" and its annotation checklist): every number copied from the spec or the
    worst-case analysis report with its source recorded in the agent's report, instance values on the parent sheet,

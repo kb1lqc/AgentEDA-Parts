@@ -64,8 +64,15 @@ started.
 ## Hierarchy
 - **Each reusable module is its own hierarchical sub-sheet**, reused unchanged on every board. The parent shows
   the sheet symbol with the module's ports: inputs on the left edge, outputs and interfaces on the right edge.
+- **Power paths flow through the sheet symbol.** A block's power-path ports sit at the same height on opposite
+  edges (e.g. `BUS_IN` left, `BUS_OUT` right), so the path reads as one straight wire through the block. Interface
+  pins group above or below it on the right edge; rails on the top edge, ground on the bottom edge.
 - **The reusable sheet carries no board net names.** Ports appear inside as hierarchical labels named after the
   module's ports; the parent maps board nets to them.
+- **Rails and ground are local inside a reusable sheet.** Inside the block, V3V3 / GND (and any rail) are
+  hierarchical labels connected through sheet pins; global power symbols appear only on the top-level sheet, where
+  the board rails are defined. The block then makes no assumption about which rail it sits on. Power symbols
+  pointing up/down still apply on the top level and on non-reusable sheets.
 - **Interfaces as harnesses** (a bus group carrying SPI, I2C, ...) are preferred where the toolchain keeps them;
   otherwise one sheet pin per member, grouped together on the sheet edge.
 
@@ -122,6 +129,20 @@ sheet contains. A printed sheet must identify itself.
   inside a sub-sheet a plain-`Net` port becomes a hierarchical label. A `Power` net passed into a sub-sheet shows
   up inside as a global power symbol named after the board net, and KiCad ERC reports that sheet pin unmatched:
   declare power paths into reusable sheets as `Net(voltage=...)` (voltage checks still run).
+- **Local rails in a sub-sheet (verified recipe):** library wrappers type supply pins as `Power` (cast at the
+  pin) and ground pins as `Ground`, so inside a block those nets are always drawn as global power symbols. To make
+  them local: declare the module ports as plain nets (`V3V3 = io(Net)`, `GND = io(Net)` then
+  `_GND = Ground(GND)` and connect library ground pins to `_GND`); the board keeps `V3V3 = Power(..., voltage=...)`
+  so voltage checks still run. The root gets V3V3/GND sheet pins. Then replace each V3V3/GND power symbol in the
+  child with a `hierarchical_label` of the same name at the symbol's pin point (angle 90 for a rail, 270 for
+  ground). `pcb apply` keeps it, the netlist is unchanged and ERC finds every sheet pin matched. A fresh
+  regeneration brings the power symbols back, so this swap is a scripted step re-run after any regeneration.
+  - On an already-arranged sheet, an incremental `pcb apply` does NOT add the new V3V3/GND sheet pins or root
+    power symbols after the port-type change, and still reports success while the rails are split into
+    `/INA/V3V3` and `/INA/GND` (only the netlist diff shows it). Generate a throwaway fresh copy, transplant the
+    root's new sheet pins, power symbols and their `lib_symbols` entries by script, then place them by hand.
+  - For a ground label pointing down (angle 270) use `justify right`; `justify left` folds the text back over the
+    wire.
 - **Internal net names** are always `<instance>.<net>`, even for an explicitly named `Net()`. A `Net("X")` assigned
   to a variable `X` only triggers a `style.redundant_name` advice; write `X = Net(...)`.
 - **Interfaces** (stdlib `Spi`, `I2c`, ...) become one hierarchical label and sheet pin per member (`SPI.CS`, ...).
