@@ -3,9 +3,9 @@
 # Electrical rows are at Tj = 25 degC (DS p.5, "at Tj=25 degC, unless otherwise specified") and carry scope "25C".
 # Rows with a single stated temperature in their own condition (Tj = 125 degC, TC = 25 degC) carry scope "na".
 # Charge (nC) and energy (mJ) rows are loaded: lib/units.py accepts C and J (coordinator, this revision).
-# The Linear FET 2 SOA (Diagrams 3, 4) is not extracted (open item).
-
-# Open item: DS p.1 Table 1 row I(VDS = 50 V, tp = 10 ms) = 7.4 A (linear-mode capability) is not extracted as a row.
+# Open item: Diagram 3 (TC = 25 degC) 100 ms and DC lines are one merged trace at 40-80 V in the render; no rows for them.
+# Diagram 3 10 us: rows at 50 and 80 V only (merged with 1 us or label at 20-40 V).
+# Open item: 10 us line in Diagram 4 is hidden under its label at 50 V; Diagram 3 1 us and 10 us near 5 V sit on corner rounding (no rows).
 [part]
 value           = "ISC035N10NM5LF2"
 mpn             = "ISC035N10NM5LF2"            # DS p.1 Part number prints the type name only; no reel suffix printed (open item)
@@ -146,8 +146,1229 @@ max        = 656
 unit       = "A"
 conditions = "TA = 25 degC"
 cite       = "DS p.3, Table 2 Maximum ratings, Pulsed drain current ID,pulse (footnote 3: Diagrams 3 and 4)"
-note       = "The SOA (Diagrams 3, 4) is not extracted (open item)."
+note       = "The pulsed rating is the SOA ceiling: the Diagram 3 and 4 curve rows (soa_tc25_*, soa_tc125_*) give the limit per pulse width and VDS."
 unchecked  = "not a voltage; owner: module"
+
+[param.id_lin_50v_10ms]
+name       = "Linear-mode drain current, tp = 10 ms"
+symbol     = "I"
+kind       = "electrical"
+scope      = "na"
+max        = 7.4
+unit       = "A"
+conditions = "VDS = 50 V, tp = 10 ms"
+cite       = "DS p.1, Table 1 Key performance parameters, I(VDS=50 V, tp=10 ms)"
+note       = "Printed in the Value column with no MIN/TYP/MAX label: stored as max. Same convention as the BSC040N10NS5 Table 1 key parameter vds_rating: a capability limit the design must stay below. Not checked in Zener. Table 1 gives no case temperature. Cross-check: the 10 ms line of Diagram 3 (TC = 25 degC) reads 7.30 A at 50 V (soa_tc25_10ms_50v), within read accuracy of 7.4 A; Diagram 4 (TC = 125 degC) reads 5.84 A. Table 1 is a printed value, not a curve."
+unchecked  = "not a voltage; owner: module"
+
+[param.soa_tc25_1us_12v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 1 us, VDS = 12 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 650
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 1 us; VDS = 12 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound. Flat top of the 1 us line (650 A level)."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc25_1us_20v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 1 us, VDS = 20 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 650
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 1 us; VDS = 20 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound. Flat top of the 1 us line (650 A level)."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc25_1us_40v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 1 us, VDS = 40 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 650
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 1 us; VDS = 40 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound. Flat top of the 1 us line (650 A level)."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc25_1us_50v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 1 us, VDS = 50 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 650
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 1 us; VDS = 50 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound. Flat top of the 1 us line (650 A level)."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc25_1us_80v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 1 us, VDS = 80 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 553
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 1 us; VDS = 80 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc25_10us_50v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 10 us, VDS = 50 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 247
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 10 us; VDS = 50 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc25_10us_80v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 10 us, VDS = 80 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 154
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 10 us; VDS = 80 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc25_100us_20v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 100 us, VDS = 20 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 137
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 100 us; VDS = 20 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc25_100us_40v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 100 us, VDS = 40 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 68.3
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 100 us; VDS = 40 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc25_100us_50v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 100 us, VDS = 50 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 54.7
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 100 us; VDS = 50 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc25_100us_80v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 100 us, VDS = 80 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 34.2
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 100 us; VDS = 80 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc25_1ms_20v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 1 ms, VDS = 20 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 38.1
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 1 ms; VDS = 20 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc25_1ms_40v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 1 ms, VDS = 40 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 19.1
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 1 ms; VDS = 40 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc25_1ms_50v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 1 ms, VDS = 50 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 15.3
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 1 ms; VDS = 50 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc25_1ms_80v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 1 ms, VDS = 80 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 9.55
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 1 ms; VDS = 80 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc25_10ms_20v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 10 ms, VDS = 20 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 18.6
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 10 ms; VDS = 20 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc25_10ms_40v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 10 ms, VDS = 40 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 9.33
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 10 ms; VDS = 40 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc25_10ms_50v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 10 ms, VDS = 50 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 7.3
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 10 ms; VDS = 50 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc25_10ms_80v]
+name       = "Drain current limit, SOA, TC = 25 degC, tp = 10 ms, VDS = 80 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 2.92
+unit       = "A"
+conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 10 ms; VDS = 80 V"
+cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_1us_12v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 1 us, VDS = 12 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 660
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 1 us; VDS = 12 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_1us_20v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 1 us, VDS = 20 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 660
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 1 us; VDS = 20 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_1us_40v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 1 us, VDS = 40 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 660
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 1 us; VDS = 40 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_1us_50v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 1 us, VDS = 50 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 660
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 1 us; VDS = 50 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_1us_80v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 1 us, VDS = 80 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 436
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 1 us; VDS = 80 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_10us_20v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 10 us, VDS = 20 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 485
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 10 us; VDS = 20 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_10us_40v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 10 us, VDS = 40 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 236
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 10 us; VDS = 40 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_10us_80v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 10 us, VDS = 80 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 122
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 10 us; VDS = 80 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_100us_12v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 100 us, VDS = 12 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 179
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 100 us; VDS = 12 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_100us_40v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 100 us, VDS = 40 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 53.0
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 100 us; VDS = 40 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_100us_50v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 100 us, VDS = 50 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 42.8
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 100 us; VDS = 50 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_100us_80v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 100 us, VDS = 80 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 26.5
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 100 us; VDS = 80 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_1ms_12v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 1 ms, VDS = 12 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 49.9
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 1 ms; VDS = 12 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_1ms_40v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 1 ms, VDS = 40 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 14.8
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 1 ms; VDS = 40 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_1ms_50v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 1 ms, VDS = 50 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 11.9
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 1 ms; VDS = 50 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_1ms_80v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 1 ms, VDS = 80 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 7.41
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 1 ms; VDS = 80 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_10ms_12v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 10 ms, VDS = 12 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 24.2
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 10 ms; VDS = 12 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_10ms_20v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 10 ms, VDS = 20 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 14.6
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 10 ms; VDS = 20 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_10ms_40v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 10 ms, VDS = 40 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 7.24
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 10 ms; VDS = 40 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_10ms_50v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 10 ms, VDS = 50 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 5.84
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 10 ms; VDS = 50 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_10ms_80v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 10 ms, VDS = 80 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 2.39
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 10 ms; VDS = 80 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_100ms_12v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 100 ms, VDS = 12 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 13.7
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 100 ms; VDS = 12 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_100ms_20v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 100 ms, VDS = 20 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 8.57
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 100 ms; VDS = 20 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_100ms_40v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 100 ms, VDS = 40 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 3.31
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 100 ms; VDS = 40 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_100ms_50v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 100 ms, VDS = 50 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 2.13
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 100 ms; VDS = 50 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_100ms_80v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = 100 ms, VDS = 80 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 0.835
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 100 ms; VDS = 80 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_dc_12v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = DC, VDS = 12 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 6.07
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = DC; VDS = 12 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_dc_20v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = DC, VDS = 20 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 3.65
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = DC; VDS = 20 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_dc_40v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = DC, VDS = 40 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 1.38
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = DC; VDS = 40 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_dc_50v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = DC, VDS = 50 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 0.888
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = DC; VDS = 50 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.soa_tc125_dc_80v]
+name       = "Drain current limit, SOA, TC = 125 degC, tp = DC, VDS = 80 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 0.347
+unit       = "A"
+conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = DC; VDS = 80 V"
+cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+curve      = true
+note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
+unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs15v_vds0p5v]
+name       = "Output current, Tj = 25 degC, VGS = 15 V, VDS = 0.5 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 198
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 15 V; VDS = 0.5 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed)."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs15v_vds1v]
+name       = "Output current, Tj = 25 degC, VGS = 15 V, VDS = 1 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 382
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 15 V; VDS = 1 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed)."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs15v_vds2v]
+name       = "Output current, Tj = 25 degC, VGS = 15 V, VDS = 2 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 697
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 15 V; VDS = 2 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Clipped at the 700 A chart top: a lower bound of the typical curve, not a typ value. Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed). Near the 700 A chart top: value at the top edge, use with care."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs12v_vds0p5v]
+name       = "Output current, Tj = 25 degC, VGS = 12 V, VDS = 0.5 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 182
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 12 V; VDS = 0.5 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed)."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs12v_vds1v]
+name       = "Output current, Tj = 25 degC, VGS = 12 V, VDS = 1 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 348
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 12 V; VDS = 1 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed)."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs12v_vds2v]
+name       = "Output current, Tj = 25 degC, VGS = 12 V, VDS = 2 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 626
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 12 V; VDS = 2 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed). Near the 700 A chart top: value at the top edge, use with care."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs10v_vds0p5v]
+name       = "Output current, Tj = 25 degC, VGS = 10 V, VDS = 0.5 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 158
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 10 V; VDS = 0.5 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed)."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs10v_vds1v]
+name       = "Output current, Tj = 25 degC, VGS = 10 V, VDS = 1 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 296
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 10 V; VDS = 1 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed)."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs10v_vds2v]
+name       = "Output current, Tj = 25 degC, VGS = 10 V, VDS = 2 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 501
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 10 V; VDS = 2 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed)."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs10v_vds3v]
+name       = "Output current, Tj = 25 degC, VGS = 10 V, VDS = 3 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 617
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 10 V; VDS = 3 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed)."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs10v_vds5v]
+name       = "Output current, Tj = 25 degC, VGS = 10 V, VDS = 5 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 666
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 10 V; VDS = 5 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed). Flat (saturation) current at the chart max VDS, after the 3.9 V label."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs9v_vds0p5v]
+name       = "Output current, Tj = 25 degC, VGS = 9 V, VDS = 0.5 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 138
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 9 V; VDS = 0.5 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed)."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs9v_vds1v]
+name       = "Output current, Tj = 25 degC, VGS = 9 V, VDS = 1 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 248
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 9 V; VDS = 1 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed)."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs9v_vds2v]
+name       = "Output current, Tj = 25 degC, VGS = 9 V, VDS = 2 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 371
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 9 V; VDS = 2 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed)."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs9v_vds3v]
+name       = "Output current, Tj = 25 degC, VGS = 9 V, VDS = 3 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 406
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 9 V; VDS = 3 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed)."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs9v_vds5v]
+name       = "Output current, Tj = 25 degC, VGS = 9 V, VDS = 5 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 420
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 9 V; VDS = 5 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed). Flat (saturation) current at the chart max VDS."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs8v_vds0p5v]
+name       = "Output current, Tj = 25 degC, VGS = 8 V, VDS = 0.5 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 106
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 8 V; VDS = 0.5 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed)."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs8v_vds1v]
+name       = "Output current, Tj = 25 degC, VGS = 8 V, VDS = 1 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 167
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 8 V; VDS = 1 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed)."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs8v_vds2v]
+name       = "Output current, Tj = 25 degC, VGS = 8 V, VDS = 2 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 208
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 8 V; VDS = 2 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed)."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs8v_vds3v]
+name       = "Output current, Tj = 25 degC, VGS = 8 V, VDS = 3 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 217
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 8 V; VDS = 3 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed)."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.ioutput_tj25_vgs8v_vds5v]
+name       = "Output current, Tj = 25 degC, VGS = 8 V, VDS = 5 V (curve)"
+symbol     = "ID"
+kind       = "electrical"
+scope      = "na"
+typ        = 224
+unit       = "A"
+conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 8 V; VDS = 5 V"
+cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed). Flat (saturation) current at the chart max VDS."
+unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
+
+[param.rds_tj25_vgs8v_id50a]
+name       = "Drain-source on resistance, Tj = 25 degC, VGS = 8 V, ID = 50 A (curve)"
+symbol     = "RDS(on)"
+kind       = "electrical"
+scope      = "na"
+typ        = 4.23
+unit       = "mohm"
+conditions = "RDS(on) = f(ID), Tj = 25 degC; parameter VGS = 8 V; ID = 50 A"
+cite       = "DS p.8, Diagram 7 Typ. drain-source on resistance (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): ID = 217 + 1.7053 x A px; RDS(on) = (1925.5 - y) / 75.44 mohm. Read accuracy about +/-1 %. Printed ID = 50 A, Tj = 25 degC."
+unchecked  = "curve read off Diagram 7, not a voltage; owner: module"
+
+[param.rds_tj25_vgs9v_id50a]
+name       = "Drain-source on resistance, Tj = 25 degC, VGS = 9 V, ID = 50 A (curve)"
+symbol     = "RDS(on)"
+kind       = "electrical"
+scope      = "na"
+typ        = 3.38
+unit       = "mohm"
+conditions = "RDS(on) = f(ID), Tj = 25 degC; parameter VGS = 9 V; ID = 50 A"
+cite       = "DS p.8, Diagram 7 Typ. drain-source on resistance (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): ID = 217 + 1.7053 x A px; RDS(on) = (1925.5 - y) / 75.44 mohm. Read accuracy about +/-1 %. Printed ID = 50 A, Tj = 25 degC."
+unchecked  = "curve read off Diagram 7, not a voltage; owner: module"
+
+[param.rds_tj25_vgs10v_id50a]
+name       = "Drain-source on resistance, Tj = 25 degC, VGS = 10 V, ID = 50 A (curve)"
+symbol     = "RDS(on)"
+kind       = "electrical"
+scope      = "na"
+typ        = 3.01
+unit       = "mohm"
+conditions = "RDS(on) = f(ID), Tj = 25 degC; parameter VGS = 10 V; ID = 50 A"
+cite       = "DS p.8, Diagram 7 Typ. drain-source on resistance (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): ID = 217 + 1.7053 x A px; RDS(on) = (1925.5 - y) / 75.44 mohm. Read accuracy about +/-1 %. Printed ID = 50 A, Tj = 25 degC."
+unchecked  = "curve read off Diagram 7, not a voltage; owner: module"
+
+[param.rds_tj25_vgs12v_id50a]
+name       = "Drain-source on resistance, Tj = 25 degC, VGS = 12 V, ID = 50 A (curve)"
+symbol     = "RDS(on)"
+kind       = "electrical"
+scope      = "na"
+typ        = 2.66
+unit       = "mohm"
+conditions = "RDS(on) = f(ID), Tj = 25 degC; parameter VGS = 12 V; ID = 50 A"
+cite       = "DS p.8, Diagram 7 Typ. drain-source on resistance (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): ID = 217 + 1.7053 x A px; RDS(on) = (1925.5 - y) / 75.44 mohm. Read accuracy about +/-1 %. Printed ID = 50 A, Tj = 25 degC."
+unchecked  = "curve read off Diagram 7, not a voltage; owner: module"
+
+[param.rds_tj25_vgs15v_id50a]
+name       = "Drain-source on resistance, Tj = 25 degC, VGS = 15 V, ID = 50 A (curve)"
+symbol     = "RDS(on)"
+kind       = "electrical"
+scope      = "na"
+typ        = 2.47
+unit       = "mohm"
+conditions = "RDS(on) = f(ID), Tj = 25 degC; parameter VGS = 15 V; ID = 50 A"
+cite       = "DS p.8, Diagram 7 Typ. drain-source on resistance (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): ID = 217 + 1.7053 x A px; RDS(on) = (1925.5 - y) / 75.44 mohm. Read accuracy about +/-1 %. Printed ID = 50 A, Tj = 25 degC."
+unchecked  = "curve read off Diagram 7, not a voltage; owner: module"
+
+[param.rds_tj25_vgs8p24v_id50a]
+name       = "Drain-source on resistance, Tj = 25 degC, VGS = 8.24 V, ID = 50 A (curve)"
+symbol     = "RDS(on)"
+kind       = "electrical"
+scope      = "na"
+typ        = 3.94
+unit       = "mohm"
+conditions = "RDS(on) = f(VGS), ID = 50 A; parameter Tj = 25 degC; VGS = 8.24 V"
+cite       = "DS p.9, Diagram 9 Typ. drain-source on resistance (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm. Read accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC): VGS 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent)."
+unchecked  = "curve read off Diagram 9, not a voltage; owner: module"
+
+[param.rds_tj175_vgs8p24v_id50a]
+name       = "Drain-source on resistance, Tj = 175 degC, VGS = 8.24 V, ID = 50 A (curve)"
+symbol     = "RDS(on)"
+kind       = "electrical"
+scope      = "na"
+typ        = 7.92
+unit       = "mohm"
+conditions = "RDS(on) = f(VGS), ID = 50 A; parameter Tj = 175 degC; VGS = 8.24 V"
+cite       = "DS p.9, Diagram 9 Typ. drain-source on resistance (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm. Read accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC): VGS 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent)."
+unchecked  = "curve read off Diagram 9, not a voltage; owner: module"
+
+[param.rds_tj175_vgs10v_id50a]
+name       = "Drain-source on resistance, Tj = 175 degC, VGS = 10 V, ID = 50 A (curve)"
+symbol     = "RDS(on)"
+kind       = "electrical"
+scope      = "na"
+typ        = 6.86
+unit       = "mohm"
+conditions = "RDS(on) = f(VGS), ID = 50 A; parameter Tj = 175 degC; VGS = 10 V"
+cite       = "DS p.9, Diagram 9 Typ. drain-source on resistance (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm. Read accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC): VGS 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent)."
+unchecked  = "curve read off Diagram 9, not a voltage; owner: module"
+
+[param.rds_tj175_vgs12v_id50a]
+name       = "Drain-source on resistance, Tj = 175 degC, VGS = 12 V, ID = 50 A (curve)"
+symbol     = "RDS(on)"
+kind       = "electrical"
+scope      = "na"
+typ        = 6.42
+unit       = "mohm"
+conditions = "RDS(on) = f(VGS), ID = 50 A; parameter Tj = 175 degC; VGS = 12 V"
+cite       = "DS p.9, Diagram 9 Typ. drain-source on resistance (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm. Read accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC): VGS 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent)."
+unchecked  = "curve read off Diagram 9, not a voltage; owner: module"
+
+[param.rds_tj175_vgs15v_id50a]
+name       = "Drain-source on resistance, Tj = 175 degC, VGS = 15 V, ID = 50 A (curve)"
+symbol     = "RDS(on)"
+kind       = "electrical"
+scope      = "na"
+typ        = 6.14
+unit       = "mohm"
+conditions = "RDS(on) = f(VGS), ID = 50 A; parameter Tj = 175 degC; VGS = 15 V"
+cite       = "DS p.9, Diagram 9 Typ. drain-source on resistance (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm. Read accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC): VGS 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent)."
+unchecked  = "curve read off Diagram 9, not a voltage; owner: module"
+
+[param.iav_tjstart25_1us]
+name       = "Avalanche current, Tj,start = 25 degC, tAV = 1 us (curve)"
+symbol     = "IAV"
+kind       = "electrical"
+scope      = "na"
+typ        = 50.1
+unit       = "A"
+conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 25 degC; tAV = 1 us"
+cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of the three read points at tAV about 890 to 980 us (slope -0.60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %. Plateau at about 50 A (50.1 A read) before the knee; plateau is the common 50 A level."
+unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
+
+[param.iav_tjstart25_10us]
+name       = "Avalanche current, Tj,start = 25 degC, tAV = 10 us (curve)"
+symbol     = "IAV"
+kind       = "electrical"
+scope      = "na"
+typ        = 50.1
+unit       = "A"
+conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 25 degC; tAV = 10 us"
+cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of the three read points at tAV about 890 to 980 us (slope -0.60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %. Plateau at about 50 A (50.1 A read) before the knee; plateau is the common 50 A level."
+unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
+
+[param.iav_tjstart25_100us]
+name       = "Avalanche current, Tj,start = 25 degC, tAV = 100 us (curve)"
+symbol     = "IAV"
+kind       = "electrical"
+scope      = "na"
+typ        = 50.1
+unit       = "A"
+conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 25 degC; tAV = 100 us"
+cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of the three read points at tAV about 890 to 980 us (slope -0.60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %. Plateau at about 50 A (50.1 A read) before the knee; plateau is the common 50 A level."
+unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
+
+[param.iav_tjstart25_1000us]
+name       = "Avalanche current, Tj,start = 25 degC, tAV = 1000 us (curve)"
+symbol     = "IAV"
+kind       = "electrical"
+scope      = "na"
+typ        = 13.5
+unit       = "A"
+conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 25 degC; tAV = 1000 us"
+cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the read at the 1000 us chart edge (verifier re-read within 1.4 %).60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %."
+unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
+
+[param.iav_tjstart100_1us]
+name       = "Avalanche current, Tj,start = 100 degC, tAV = 1 us (curve)"
+symbol     = "IAV"
+kind       = "electrical"
+scope      = "na"
+typ        = 50.1
+unit       = "A"
+conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 100 degC; tAV = 1 us"
+cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of the three read points at tAV about 890 to 980 us (slope -0.60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %. Plateau at about 50 A (50.1 A read) before the knee; plateau is the common 50 A level."
+unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
+
+[param.iav_tjstart100_10us]
+name       = "Avalanche current, Tj,start = 100 degC, tAV = 10 us (curve)"
+symbol     = "IAV"
+kind       = "electrical"
+scope      = "na"
+typ        = 50.1
+unit       = "A"
+conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 100 degC; tAV = 10 us"
+cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of the three read points at tAV about 890 to 980 us (slope -0.60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %. Plateau at about 50 A (50.1 A read) before the knee; plateau is the common 50 A level."
+unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
+
+[param.iav_tjstart100_100us]
+name       = "Avalanche current, Tj,start = 100 degC, tAV = 100 us (curve)"
+symbol     = "IAV"
+kind       = "electrical"
+scope      = "na"
+typ        = 23.9
+unit       = "A"
+conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 100 degC; tAV = 100 us"
+cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of the three read points at tAV about 890 to 980 us (slope -0.60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %."
+unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
+
+[param.iav_tjstart100_1000us]
+name       = "Avalanche current, Tj,start = 100 degC, tAV = 1000 us (curve)"
+symbol     = "IAV"
+kind       = "electrical"
+scope      = "na"
+typ        = 5.65
+unit       = "A"
+conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 100 degC; tAV = 1000 us"
+cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the read at the 1000 us chart edge (verifier re-read within 1.4 %).60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %."
+unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
+
+[param.iav_tjstart150_1us]
+name       = "Avalanche current, Tj,start = 150 degC, tAV = 1 us (curve)"
+symbol     = "IAV"
+kind       = "electrical"
+scope      = "na"
+typ        = 50.1
+unit       = "A"
+conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 150 degC; tAV = 1 us"
+cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of the three read points at tAV about 890 to 980 us (slope -0.60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %. Plateau at about 50 A (50.1 A read) before the knee; plateau is the common 50 A level."
+unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
+
+[param.iav_tjstart150_10us]
+name       = "Avalanche current, Tj,start = 150 degC, tAV = 10 us (curve)"
+symbol     = "IAV"
+kind       = "electrical"
+scope      = "na"
+typ        = 25.6
+unit       = "A"
+conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 150 degC; tAV = 10 us"
+cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of the three read points at tAV about 890 to 980 us (slope -0.60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %."
+unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
+
+[param.iav_tjstart150_100us]
+name       = "Avalanche current, Tj,start = 150 degC, tAV = 100 us (curve)"
+symbol     = "IAV"
+kind       = "electrical"
+scope      = "na"
+typ        = 6.06
+unit       = "A"
+conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 150 degC; tAV = 100 us"
+cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of the three read points at tAV about 890 to 980 us (slope -0.60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %."
+unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
+
+[param.iav_tjstart150_1000us]
+name       = "Avalanche current, Tj,start = 150 degC, tAV = 1000 us (curve)"
+symbol     = "IAV"
+kind       = "electrical"
+scope      = "na"
+typ        = 1.43
+unit       = "A"
+conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 150 degC; tAV = 1000 us"
+cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the read at the 1000 us chart edge (verifier re-read within 1.4 %).60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %."
+unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
 
 [param.vgs]
 name       = "Gate-source voltage"
@@ -236,6 +1457,71 @@ unit       = "degC/W"
 conditions = "6 cm2 cooling area"
 cite       = "DS p.4, Table 3 Thermal characteristics, Thermal resistance junction-ambient, 6 cm2 cooling area (RthJA), footnote 5"
 note       = "Valid only for the DS PCB (footnote 5)."
+
+[param.zthjc_single_10us]
+name       = "Max. transient thermal impedance, junction to case, single pulse, tp = 10 us (curve)"
+symbol     = "ZthJC"
+kind       = "thermal"
+scope      = "na"
+typ        = 0.0121
+unit       = "degC/W"
+conditions = "single pulse (solid line), tp = 10 us, D = tp/T; printed K/W, same number in degC/W"
+cite       = "DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve"
+curve      = true
+note       = "Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound."
+unchecked  = "curve read off Diagram 5, not a voltage; owner: module"
+
+[param.zthjc_single_100us]
+name       = "Max. transient thermal impedance, junction to case, single pulse, tp = 100 us (curve)"
+symbol     = "ZthJC"
+kind       = "thermal"
+scope      = "na"
+typ        = 0.0545
+unit       = "degC/W"
+conditions = "single pulse (solid line), tp = 100 us, D = tp/T; printed K/W, same number in degC/W"
+cite       = "DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve"
+curve      = true
+note       = "Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound."
+unchecked  = "curve read off Diagram 5, not a voltage; owner: module"
+
+[param.zthjc_single_1ms]
+name       = "Max. transient thermal impedance, junction to case, single pulse, tp = 1 ms (curve)"
+symbol     = "ZthJC"
+kind       = "thermal"
+scope      = "na"
+typ        = 0.201
+unit       = "degC/W"
+conditions = "single pulse (solid line), tp = 1 ms, D = tp/T; printed K/W, same number in degC/W"
+cite       = "DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve"
+curve      = true
+note       = "Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound."
+unchecked  = "curve read off Diagram 5, not a voltage; owner: module"
+
+[param.zthjc_single_10ms]
+name       = "Max. transient thermal impedance, junction to case, single pulse, tp = 10 ms (curve)"
+symbol     = "ZthJC"
+kind       = "thermal"
+scope      = "na"
+typ        = 0.404
+unit       = "degC/W"
+conditions = "single pulse (solid line), tp = 10 ms, D = tp/T; printed K/W, same number in degC/W"
+cite       = "DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve"
+curve      = true
+note       = "Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound."
+unchecked  = "curve read off Diagram 5, not a voltage; owner: module"
+
+[param.zthjc_single_100ms]
+name       = "Max. transient thermal impedance, junction to case, single pulse, tp = 100 ms (curve)"
+symbol     = "ZthJC"
+kind       = "thermal"
+scope      = "na"
+typ        = 0.676
+unit       = "degC/W"
+conditions = "single pulse (solid line), tp = 100 ms, D = tp/T; printed K/W, same number in degC/W"
+cite       = "DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve"
+curve      = true
+note       = "Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound. Sanity: the trace reaches about 0.68 degC/W at 100 ms, against the 0.7 degC/W RthJC max (rth_jc_bottom)."
+unchecked  = "curve read off Diagram 5, not a voltage; owner: module"
 
 # ---------------------------------------------------------------------------------------------------------------
 # Static characteristics: DS p.5, Table 4 (at Tj = 25 degC).
@@ -332,6 +1618,71 @@ conditions = "ID = 50 A, VGS = 10 V, normalized to 25 degC, Tj = 150 degC"
 cite       = "DS p.9, Diagram 10 figure Normalized drain-source on resistance, RDS(on)=f(Tj), ID = 50 A, VGS = 10 V, read at Tj = 150 degC"
 curve      = true
 note       = "Read by eye, +/-0.05 (re-read at 220 dpi against the 25 degC = 1.0 point). Unlabelled single line: typical curve, not a bound. The curve runs to about 175 degC (factor about 2.3 there); 150 degC is the printed Tj max."
+
+[param.norm_rds_m50c]
+name       = "Normalized drain-source on-state resistance at Tj = -50 degC (curve)"
+symbol     = "RDS(on)/RDS(on)25C"
+kind       = "electrical"
+scope      = "na"
+typ        = 0.651
+unit       = ""
+conditions = "ID = 50 A, VGS = 10 V, normalized to 25 degC, Tj = -50 degC"
+cite       = "DS p.9, Diagram 10 Normalized drain-source on resistance (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): Tj = -75 + (x - 960) / 2.1036 degC; RDS(on)/RDS(on)25 = 2.4 - (y - 445) / 300.5. Read accuracy about +/-1 %. Single unlabelled line, no max line printed. Conditions: ID = 50 A, VGS = 10 V."
+unchecked  = "curve read off Diagram 10, not a voltage; owner: module"
+
+[param.norm_rds_25c]
+name       = "Normalized drain-source on-state resistance at Tj = 25 degC (curve)"
+symbol     = "RDS(on)/RDS(on)25C"
+kind       = "electrical"
+scope      = "na"
+typ        = 1.0
+unit       = ""
+conditions = "ID = 50 A, VGS = 10 V, normalized to 25 degC, Tj = 25 degC"
+cite       = "DS p.9, Diagram 10 Normalized drain-source on resistance (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): Tj = -75 + (x - 960) / 2.1036 degC; RDS(on)/RDS(on)25 = 2.4 - (y - 445) / 300.5. Read accuracy about +/-1 %. Single unlabelled line, no max line printed. Conditions: ID = 50 A, VGS = 10 V. The curve is normalized to 25 degC, so 1.00 is the definition (curve reading 0.999)."
+unchecked  = "curve read off Diagram 10, not a voltage; owner: module"
+
+[param.norm_rds_75c]
+name       = "Normalized drain-source on-state resistance at Tj = 75 degC (curve)"
+symbol     = "RDS(on)/RDS(on)25C"
+kind       = "electrical"
+scope      = "na"
+typ        = 1.33
+unit       = ""
+conditions = "ID = 50 A, VGS = 10 V, normalized to 25 degC, Tj = 75 degC"
+cite       = "DS p.9, Diagram 10 Normalized drain-source on resistance (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): Tj = -75 + (x - 960) / 2.1036 degC; RDS(on)/RDS(on)25 = 2.4 - (y - 445) / 300.5. Read accuracy about +/-1 %. Single unlabelled line, no max line printed. Conditions: ID = 50 A, VGS = 10 V."
+unchecked  = "curve read off Diagram 10, not a voltage; owner: module"
+
+[param.norm_rds_125c]
+name       = "Normalized drain-source on-state resistance at Tj = 125 degC (curve)"
+symbol     = "RDS(on)/RDS(on)25C"
+kind       = "electrical"
+scope      = "na"
+typ        = 1.74
+unit       = ""
+conditions = "ID = 50 A, VGS = 10 V, normalized to 25 degC, Tj = 125 degC"
+cite       = "DS p.9, Diagram 10 Normalized drain-source on resistance (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): Tj = -75 + (x - 960) / 2.1036 degC; RDS(on)/RDS(on)25 = 2.4 - (y - 445) / 300.5. Read accuracy about +/-1 %. Single unlabelled line, no max line printed. Conditions: ID = 50 A, VGS = 10 V."
+unchecked  = "curve read off Diagram 10, not a voltage; owner: module"
+
+[param.norm_rds_175c]
+name       = "Normalized drain-source on-state resistance at Tj = 175 degC (curve)"
+symbol     = "RDS(on)/RDS(on)25C"
+kind       = "electrical"
+scope      = "na"
+typ        = 2.27
+unit       = ""
+conditions = "ID = 50 A, VGS = 10 V, normalized to 25 degC, Tj = 175 degC"
+cite       = "DS p.9, Diagram 10 Normalized drain-source on resistance (figure), curve"
+curve      = true
+note       = "Axis fit (200 dpi, gridlines): Tj = -75 + (x - 960) / 2.1036 degC; RDS(on)/RDS(on)25 = 2.4 - (y - 445) / 300.5. Read accuracy about +/-1 %. Single unlabelled line, no max line printed. Conditions: ID = 50 A, VGS = 10 V."
+unchecked  = "curve read off Diagram 10, not a voltage; owner: module"
 
 [param.rg]
 name       = "Gate resistance"

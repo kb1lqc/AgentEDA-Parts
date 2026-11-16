@@ -344,7 +344,7 @@ Inputs:
 ### `vin_ovp_from_divider`
 
 ```
-VINOVP = V(OVR) x (R1 + R2 + R3) / R3. Overvoltage trip from the resistor divider VIN-R1-OV-R2-UV-R3-GND.
+VINOVP = V(OVR) x (R1 + R2 + R3) / R3. Overvoltage trip from the resistor divider VIN-R1-EN/UVLO-R2-OV-R3-GND (DS Fig 7-5, p.16; EN/UVLO is the upper tap, OV the lower).
 Inverse of eq. (12), DS p.24, 8.2.2 Detailed Design Procedure, Equation 12: V(OVR) = R3/(R1+R2+R3) x VINOVP.
 r1, r2, r3: ohm (design choices). vovr: V, OV rising threshold (DS p.6 typ 1.23 V; DS text p.24 uses 1.225 V).
 Returns: V. INPUTS: vovr -> v_ovr (rising OV threshold; min 1.17, max 1.28 V gives the trip range).
