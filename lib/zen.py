@@ -81,8 +81,8 @@ def num(x):
     return repr(round(float(x), 9))
 
 
-def limit_args(t, p, key, nets, derate):
-    """Zener argument text for one voltage limit: lo/hi (derated if abs_max) and lo_ref/hi_ref."""
+def limit_args(t, p, key, nets, derate, refs=True):
+    """Zener argument text for one voltage limit: lo/hi (derated if abs_max) and lo_ref/hi_ref (refs=False: lo/hi only)."""
     args = []
     for end, field, ref_field in (("lo", "min", "min_ref"), ("hi", "max", "max_ref")):
         value = getattr(p, field)
@@ -94,9 +94,24 @@ def limit_args(t, p, key, nets, derate):
             text += " * derate"
         args.append(f'"{end}": {text}')
         ref = t.get(ref_field)
-        if ref:
+        if ref and refs:
             args.append(f'"{end}_ref": {nets[ref]}.voltage')
     return args
+
+
+def pair_ref(t, p, nets):
+    """The reference pin of a pin-pair row that can take a declared v_<key>, else None.
+
+    Needs one check pin, one non-ground reference pin (min_ref/max_ref, whichever are set) and a reference on every
+    limited end, so the declared V(pin) - V(ref) range alone decides the check."""
+    refs = {t[f] for f in ("min_ref", "max_ref") if t.get(f)}
+    if len(t.get("check_pins", [])) != 1 or len(refs) != 1 or not refs <= set(nets):
+        return None
+    ref = next(iter(refs))
+    if ref.upper() in GROUND_NAMES or any(getattr(p, f) is not None and not t.get(r)
+                                          for f, r in (("min", "min_ref"), ("max", "max_ref"))):
+        return None
+    return ref
 
 
 def comment_block(key, t, p, what, severity, why):
@@ -431,7 +446,7 @@ def generate(part_dir, variant=None):
         'Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""',
         "",
     ]
-    checks, unchecked, configs, uses_ambient = [], [], [], False
+    checks, unchecked, configs, uses_ambient, uses_voltage = [], [], [], False, False
     is_series = info.get("series") == "resistor"
     is_cap = info.get("series") == "capacitor"
     if info.get("series") not in (None, "resistor", "capacitor"):
@@ -485,9 +500,33 @@ def generate(part_dir, variant=None):
             name = f"{key}_{nets[pin]}"
             what = f"pin {pin} ({nets[pin]}) within the limit" + (", x derate" if derate else "")
             checks += comment_block(name, t, p, what, severity, why)
-            args = [f'"v": {nets[pin]}.voltage', f'"what": "{name}"'] + limit_args(t, p, key, nets, derate)
             tail = f", {waiver}" if waiver else ""
-            checks.append(f'_limit("{name}", _range, {{{", ".join(args)}}}, "{severity}"{tail})')
+            ref = pair_ref(t, p, nets)
+            if ref is None:
+                args = [f'"v": {nets[pin]}.voltage', f'"what": "{name}"'] + limit_args(t, p, key, nets, derate)
+                checks.append(f'_limit("{name}", _range, {{{", ".join(args)}}}, "{severity}"{tail})')
+            else:
+                # Pin-pair row: v_<key> (the module's analysis of V(pin) - V(ref)) replaces the two independent net ranges.
+                uses_voltage = True
+                cfg = f"v_{key}"
+                configs.append(f'{cfg} = config(Voltage, optional=True, help="Declared worst-case range of V({pin}) - V({ref}) '
+                               f'from the module\'s worst-case analysis; replaces the independent net ranges when set")')
+                checks += [
+                    f"#   Pin pair: {cfg} (config, the module's worst-case analysis of V({pin}) - V({ref})) when set,",
+                    "#   compared with the same limit and derate; otherwise the two nets' ranges, taken as independent.",
+                    f"def _{name}_inputs(vd):",
+                    f'    inputs = {{"what": "{name}", {", ".join(limit_args(t, p, key, nets, derate, refs=False))}}}',
+                    "    if vd == None:",
+                    f'        inputs["v"] = {nets[pin]}.voltage',
+                    *[f'        inputs["{e}_ref"] = {nets[ref]}.voltage' for e, f in (("lo", "min"), ("hi", "max"))
+                      if getattr(p, f) is not None],
+                    "    else:",
+                    '        inputs["v"] = vd',
+                    "    return inputs",
+                    "",
+                    "",
+                    f'_limit("{name}", _range, _{name}_inputs({cfg}), "{severity}"{tail})',
+                ]
             checks.append("")
         if t.get("check_ambient"):
             if p.unit != "degC" or p.min is None or p.max is None:
@@ -518,7 +557,7 @@ def generate(part_dir, variant=None):
                          "owner: module (calc.rated_power). rated_voltage below uses the 70 degC power rating at")
         unchecked.append("#   every ambient, so above 70 degC ambient it is OPTIMISTIC (0 W at the derating zero).")
     units = (["Resistance"] if is_series else []) + (["Capacitance"] if is_cap else []) + \
-        (["Temperature"] if uses_ambient else []) + (["Voltage"] if is_cap or is_series else [])
+        (["Temperature"] if uses_ambient else []) + (["Voltage"] if is_cap or is_series or uses_voltage else [])
     if units:
         out += [f'load("@stdlib/units.zen", {", ".join('"' + u + '"' for u in units)})', ""]
     out += unchecked + ([""] if unchecked else [])

@@ -5,6 +5,8 @@ Checks are DC steady-state on the voltages each instance declares. They do not c
 hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
 Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
 
+load("@stdlib/units.zen", "Voltage")
+
 # UNCHECKED: abs_vs: VS pin DC voltage (DS p.5, Table 2. Absolute maximum ratings, VS); covered by vs_op
 # UNCHECKED: abs_ignd: GND pin reverse DC current (DS p.5, Table 2. Absolute maximum ratings, -IGND); current rating, not a voltage; owner: module
 # UNCHECKED: abs_vspi: VSPI pin DC voltage (DS p.5, Table 2. Absolute maximum ratings, VSPI); covered by vspi_op
@@ -85,6 +87,21 @@ CP1M = io(Net)
 # No-connect pins omitted (auto NotConnected): 11 N.C, 16 N.C, 17 N.C, 22 N.C, 26 N.C, 32 N.C.
 
 derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+v_abs_diag_v3v3 = config(
+    Voltage,
+    optional=True,
+    help="Declared worst-case range of V(DIAG) - V(V3V3) from the module's worst-case analysis; replaces the independent net ranges when set",
+)
+v_abs_dvisns = config(
+    Voltage,
+    optional=True,
+    help="Declared worst-case range of V(ISNS_P) - V(ISNS_N) from the module's worst-case analysis; replaces the independent net ranges when set",
+)
+v_abs_outst_v3v3 = config(
+    Voltage,
+    optional=True,
+    help="Declared worst-case range of V(OUTST) - V(V3V3) from the module's worst-case analysis; replaces the independent net ranges when set",
+)
 
 _ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
 check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
@@ -188,16 +205,24 @@ _limit(
     "error",
 )
 
+
 # abs_diag_v3v3_DIAG: pin DIAG (DIAG) within the limit, x derate
 #   VDIAG pin DC voltage relative to V3V3: max 0.3 V (max_ref rel. V3V3)
 #   DS p.5, Table 2. Absolute maximum ratings, VDIAG (V3V3 + 0.3 V)
 #   Severity error: abs_max violated
-_limit(
-    "abs_diag_v3v3_DIAG",
-    _range,
-    {"v": DIAG.voltage, "what": "abs_diag_v3v3_DIAG", "hi": 0.3 * derate, "hi_ref": V3V3.voltage},
-    "error",
-)
+#   Pin pair: v_abs_diag_v3v3 (config, the module's worst-case analysis of V(DIAG) - V(V3V3)) when set,
+#   compared with the same limit and derate; otherwise the two nets' ranges, taken as independent.
+def _abs_diag_v3v3_DIAG_inputs(vd):
+    inputs = {"what": "abs_diag_v3v3_DIAG", "hi": 0.3 * derate}
+    if vd == None:
+        inputs["v"] = DIAG.voltage
+        inputs["hi_ref"] = V3V3.voltage
+    else:
+        inputs["v"] = vd
+    return inputs
+
+
+_limit("abs_diag_v3v3_DIAG", _range, _abs_diag_v3v3_DIAG_inputs(v_abs_diag_v3v3), "error")
 
 # abs_isns_ISNS_P: pin ISNS_P (ISNS_P) within the limit, x derate
 #   ISNS_P and ISNS_N pins voltage: min -15 / max 70 V
@@ -221,16 +246,24 @@ _limit(
     "error",
 )
 
+
 # abs_dvisns_ISNS_P: pin ISNS_P (ISNS_P) within the limit, x derate
 #   Differential DC input voltage (VSENSE = VISNS_P - VISNS_N): max 3.3 V (max_ref rel. ISNS_N)
 #   DS p.5, Table 2. Absolute maximum ratings, Differential DC input voltage (VSENSE = VISNS_P - VISNS_N)
 #   Severity error: abs_max violated
-_limit(
-    "abs_dvisns_ISNS_P",
-    _range,
-    {"v": ISNS_P.voltage, "what": "abs_dvisns_ISNS_P", "hi": 3.3 * derate, "hi_ref": ISNS_N.voltage},
-    "error",
-)
+#   Pin pair: v_abs_dvisns (config, the module's worst-case analysis of V(ISNS_P) - V(ISNS_N)) when set,
+#   compared with the same limit and derate; otherwise the two nets' ranges, taken as independent.
+def _abs_dvisns_ISNS_P_inputs(vd):
+    inputs = {"what": "abs_dvisns_ISNS_P", "hi": 3.3 * derate}
+    if vd == None:
+        inputs["v"] = ISNS_P.voltage
+        inputs["hi_ref"] = ISNS_N.voltage
+    else:
+        inputs["v"] = vd
+    return inputs
+
+
+_limit("abs_dvisns_ISNS_P", _range, _abs_dvisns_ISNS_P_inputs(v_abs_dvisns), "error")
 
 # abs_vdin_DIN: pin DIN (DIN) within the limit, x derate
 #   DIN pin DC voltage: min -0.3 / max 70 V
@@ -254,16 +287,24 @@ _limit(
     "error",
 )
 
+
 # abs_outst_v3v3_OUTST: pin OUTST (OUTST) within the limit, x derate
 #   VOUTST pin DC voltage relative to V3V3: max 0.3 V (max_ref rel. V3V3)
 #   DS p.5, Table 2. Absolute maximum ratings, VOUTST (V3V3 + 0.3 V)
 #   Severity error: abs_max violated
-_limit(
-    "abs_outst_v3v3_OUTST",
-    _range,
-    {"v": OUTST.voltage, "what": "abs_outst_v3v3_OUTST", "hi": 0.3 * derate, "hi_ref": V3V3.voltage},
-    "error",
-)
+#   Pin pair: v_abs_outst_v3v3 (config, the module's worst-case analysis of V(OUTST) - V(V3V3)) when set,
+#   compared with the same limit and derate; otherwise the two nets' ranges, taken as independent.
+def _abs_outst_v3v3_OUTST_inputs(vd):
+    inputs = {"what": "abs_outst_v3v3_OUTST", "hi": 0.3 * derate}
+    if vd == None:
+        inputs["v"] = OUTST.voltage
+        inputs["hi_ref"] = V3V3.voltage
+    else:
+        inputs["v"] = vd
+    return inputs
+
+
+_limit("abs_outst_v3v3_OUTST", _range, _abs_outst_v3v3_OUTST_inputs(v_abs_outst_v3v3), "error")
 
 # vs_op_VS: pin VS (VS) within the limit
 #   Operating supply voltage: min 6 / typ 48 / max 60 V

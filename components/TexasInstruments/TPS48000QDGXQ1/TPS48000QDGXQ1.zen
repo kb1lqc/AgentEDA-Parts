@@ -5,7 +5,7 @@ Checks are DC steady-state on the voltages each instance declares. They do not c
 hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
 Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
 
-load("@stdlib/units.zen", "Temperature")
+load("@stdlib/units.zen", "Temperature", "Voltage")
 
 # UNCHECKED: abs_src_gnd: SRC voltage to GND (DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, SRC to GND); SRC is the external FET source node; its voltage is set by the external MOSFET and load; owner: module
 # UNCHECKED: abs_gate_bst_src: PU, PD, BST voltage to SRC (DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, PU, PD, BST to SRC); PU, PD and BST are driven by the part (gate driver and charge pump); owner: module
@@ -63,6 +63,11 @@ VS = io(Net)
 
 ambient = config(Temperature, optional=True, help="Board ambient temperature range")
 derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+v_abs_cs_pair = config(
+    Voltage,
+    optional=True,
+    help="Declared worst-case range of V(CS+) - V(CS-) from the module's worst-case analysis; replaces the independent net ranges when set",
+)
 waive_rec_vs_scp_min = config(str, default="", help="Rationale with a cite for violating rec_vs_scp_min")
 
 _ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
@@ -253,24 +258,26 @@ _limit(
     "error",
 )
 
+
 # abs_cs_pair_CS_P: pin CS+ (CS_P) within the limit, x derate
 #   CS+ to CS- voltage: min -1 / max 100 V (min_ref rel. CS-) (max_ref rel. CS-)
 #   DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, CS+ to CS-
 #   Conditions: Absolute maximum, pin pair
 #   Severity error: abs_max violated
-_limit(
-    "abs_cs_pair_CS_P",
-    _range,
-    {
-        "v": CS_P.voltage,
-        "what": "abs_cs_pair_CS_P",
-        "lo": -1.0 * derate,
-        "lo_ref": CS_N.voltage,
-        "hi": 100.0 * derate,
-        "hi_ref": CS_N.voltage,
-    },
-    "error",
-)
+#   Pin pair: v_abs_cs_pair (config, the module's worst-case analysis of V(CS+) - V(CS-)) when set,
+#   compared with the same limit and derate; otherwise the two nets' ranges, taken as independent.
+def _abs_cs_pair_CS_P_inputs(vd):
+    inputs = {"what": "abs_cs_pair_CS_P", "lo": -1.0 * derate, "hi": 100.0 * derate}
+    if vd == None:
+        inputs["v"] = CS_P.voltage
+        inputs["lo_ref"] = CS_N.voltage
+        inputs["hi_ref"] = CS_N.voltage
+    else:
+        inputs["v"] = vd
+    return inputs
+
+
+_limit("abs_cs_pair_CS_P", _range, _abs_cs_pair_CS_P_inputs(v_abs_cs_pair), "error")
 
 # abs_flt_gnd_FLT: pin FLT (FLT) within the limit, x derate
 #   FLT, FLT_GD voltage to GND: min -1 / max 20 V (min_ref rel. GND) (max_ref rel. GND)

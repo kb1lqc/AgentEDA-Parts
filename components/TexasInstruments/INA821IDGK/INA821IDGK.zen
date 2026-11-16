@@ -5,7 +5,7 @@ Checks are DC steady-state on the voltages each instance declares. They do not c
 hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
 Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
 
-load("@stdlib/units.zen", "Temperature")
+load("@stdlib/units.zen", "Temperature", "Voltage")
 
 # UNCHECKED: vs_abs: Supply voltage (DS p.5, 7.1 Absolute Maximum Ratings, Supply voltage); printed +/-20 V is a 40 V span (DS p.24, 8.3.5); covered by vs_rec_single (4.5 V to 36 V span, error), which is stricter
 # UNCHECKED: vout_abs: Signal output pins (DS p.5, 7.1 Absolute Maximum Ratings, Signal output pins); OUT is driven by the part; owner: module
@@ -38,6 +38,11 @@ VS_P = io(Net)
 
 ambient = config(Temperature, optional=True, help="Board ambient temperature range")
 derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+v_vs_rec_single = config(
+    Voltage,
+    optional=True,
+    help="Declared worst-case range of V(+VS) - V(-VS) from the module's worst-case analysis; replaces the independent net ranges when set",
+)
 waive_vcm_range_25c = config(str, default="", help="Rationale with a cite for violating vcm_range_25c")
 waive_vref_range_25c = config(str, default="", help="Rationale with a cite for violating vref_range_25c")
 
@@ -113,24 +118,26 @@ _limit(
     "error",
 )
 
+
 # vs_rec_single_VS_P: pin +VS (VS_P) within the limit
 #   Supply voltage, single-supply: min 4.5 / max 36 V (min_ref rel. -VS) (max_ref rel. -VS)
 #   DS p.5, 7.3 Recommended Operating Conditions, Supply voltage VS, Single-supply
 #   Conditions: single-supply; over operating free-air temperature range
 #   Severity error: rec_op violated
-_limit(
-    "vs_rec_single_VS_P",
-    _range,
-    {
-        "v": VS_P.voltage,
-        "what": "vs_rec_single_VS_P",
-        "lo": 4.5,
-        "lo_ref": VS_N.voltage,
-        "hi": 36.0,
-        "hi_ref": VS_N.voltage,
-    },
-    "error",
-)
+#   Pin pair: v_vs_rec_single (config, the module's worst-case analysis of V(+VS) - V(-VS)) when set,
+#   compared with the same limit and derate; otherwise the two nets' ranges, taken as independent.
+def _vs_rec_single_VS_P_inputs(vd):
+    inputs = {"what": "vs_rec_single_VS_P", "lo": 4.5, "hi": 36.0}
+    if vd == None:
+        inputs["v"] = VS_P.voltage
+        inputs["lo_ref"] = VS_N.voltage
+        inputs["hi_ref"] = VS_N.voltage
+    else:
+        inputs["v"] = vd
+    return inputs
+
+
+_limit("vs_rec_single_VS_P", _range, _vs_rec_single_VS_P_inputs(v_vs_rec_single), "error")
 
 # ta_rec_ambient: board ambient range inside this range
 #   Specified temperature: min -40 / max 125 degC

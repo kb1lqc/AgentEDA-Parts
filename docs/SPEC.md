@@ -430,6 +430,16 @@ What the generator emits, so a reviewer can predict the file from the TOML:
   away from zero. Severity: `abs_max`/`rec_op`/other rows with scope `full`/`na` are errors; scope `25C`/`partial`
   are warnings, waivable with `waive_<key>` (a non-empty rationale with a cite drops it to advice; errors cannot be
   waived).
+- Pin-pair rows: a `check_pins` row with exactly one check pin, one non-ground reference pin (`min_ref`/`max_ref`,
+  whichever are set, all naming that pin) and a reference on every limited end (for example `vgs` G rel S, `abs_cs_pair`
+  CS+ rel CS-) gets an optional config `v_<key> = config(Voltage, optional=True)`: the module's worst-case range of
+  V(pin) - V(ref), taken from its own worst-case analysis (not a datasheet value; the module justifies it in a comment
+  at the instance). When set, the check compares that declared range with the row's `min`/`max` (same `derate` on
+  abs_max, same severity and waiver) and needs no net voltage, so the two nets may stay undeclared for that check.
+  When unset, the check is unchanged and evaluates the two nets' ranges independently (pessimistic on a bus where
+  both nets swing together: the generator cannot know they are correlated). Rows referenced to a ground-named pin,
+  with several check pins, with two different references, or with an unreferenced limited end get no `v_<key>`.
+  The check name stays `<key>_<IO>`; the config is `v_<key>`.
 - One check per `check_ambient` row, named `<key>_ambient`, against the `ambient` config.
 - A checked net with no declared voltage is `UNVERIFIED` (warning, fails `-Dwarnings`); when the wrapper is built
   alone it is advice, so `pcb build <dir>` stays green.

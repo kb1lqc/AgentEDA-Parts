@@ -6,10 +6,23 @@ U = Module("./ISC035N10NM5LF2.zen")
 vd = config(str, default="48V 5%")
 vs = config(str, default="0V")
 vg = config(str, default="10V 5%")
+vgs = config(str, default="unset")  # v_vgs: the module's worst-case V(G) - V(S); unset = none (net ranges decide)
+vds = config(str, default="unset")  # v_vds_rating: the module's worst-case V(D) - V(S); unset = none
+derate = config(float, default=1.0)
 
 
 def _net(name, v):  # "unset" = a net with no voltage, which must report UNVERIFIED
     return Net(name) if v == "unset" else Net(name, voltage=v)
+
+
+def _optional():
+    # Optional wrapper configs: an unset one is left out, so the wrapper sees None (Starlark allows one ** per call).
+    kw = {}
+    if vgs != "unset":
+        kw["v_vgs"] = vgs
+    if vds != "unset":
+        kw["v_vds_rating"] = vds
+    return kw
 
 
 U(
@@ -17,4 +30,6 @@ U(
     D=_net("D", vd),
     S=_net("S", vs),
     G=_net("G", vg),
+    derate=derate,
+    **_optional(),
 )

@@ -5,7 +5,7 @@ Checks are DC steady-state on the voltages each instance declares. They do not c
 hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
 Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
 
-load("@stdlib/units.zen", "Temperature")
+load("@stdlib/units.zen", "Temperature", "Voltage")
 
 # UNCHECKED: vs_abs: Supply voltage (DS p.3, 6.1 Absolute Maximum Ratings, Supply voltage VS); covered by vs_rec (2.7 V to 5.5 V, error), which is stricter
 # UNCHECKED: iin_abs: Input current into any pin (DS p.3, 6.1 Absolute Maximum Ratings, IIN, Input current into any pin); current rating, not a voltage (the wrapper checks voltages only); owner: board
@@ -40,6 +40,11 @@ IN_P = io(Net)
 
 ambient = config(Temperature, optional=True, help="Board ambient temperature range")
 derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+v_vin_diff_abs = config(
+    Voltage,
+    optional=True,
+    help="Declared worst-case range of V(IN+) - V(IN-) from the module's worst-case analysis; replaces the independent net ranges when set",
+)
 
 _ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
 check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
@@ -82,19 +87,20 @@ def _temp(_m, v, what, lo, hi):
 #   DS p.3, 6.1 Absolute Maximum Ratings, VIN+, VIN- Differential (VIN+) - (VIN-)
 #   Conditions: over operating free-air temperature range (unless otherwise noted)
 #   Severity error: abs_max violated
-_limit(
-    "vin_diff_abs_IN_P",
-    _range,
-    {
-        "v": IN_P.voltage,
-        "what": "vin_diff_abs_IN_P",
-        "lo": -40.0 * derate,
-        "lo_ref": IN_N.voltage,
-        "hi": 40.0 * derate,
-        "hi_ref": IN_N.voltage,
-    },
-    "error",
-)
+#   Pin pair: v_vin_diff_abs (config, the module's worst-case analysis of V(IN+) - V(IN-)) when set,
+#   compared with the same limit and derate; otherwise the two nets' ranges, taken as independent.
+def _vin_diff_abs_IN_P_inputs(vd):
+    inputs = {"what": "vin_diff_abs_IN_P", "lo": -40.0 * derate, "hi": 40.0 * derate}
+    if vd == None:
+        inputs["v"] = IN_P.voltage
+        inputs["lo_ref"] = IN_N.voltage
+        inputs["hi_ref"] = IN_N.voltage
+    else:
+        inputs["v"] = vd
+    return inputs
+
+
+_limit("vin_diff_abs_IN_P", _range, _vin_diff_abs_IN_P_inputs(v_vin_diff_abs), "error")
 
 # vcm_abs_IN_P: pin IN+ (IN_P) within the limit, x derate
 #   Common-mode input voltage, VIN+ and VIN-: min -0.3 / max 85 V

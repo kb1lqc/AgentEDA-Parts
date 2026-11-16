@@ -5,6 +5,8 @@ Checks are DC steady-state on the voltages each instance declares. They do not c
 hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
 Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
 
+load("@stdlib/units.zen", "Voltage")
+
 # UNCHECKED: id_tc25: Continuous drain current, TC = 25 degC (DS p.3, Table 2 Maximum ratings, Continuous drain current ID (row 1)); not a voltage; owner: module
 # UNCHECKED: id_tc100: Continuous drain current, TC = 100 degC (DS p.3, Table 2 Maximum ratings, Continuous drain current ID (row 2)); not a voltage; owner: module
 # UNCHECKED: id_pcb: Continuous drain current, PCB-limited (DS p.3, Table 2 Maximum ratings, Continuous drain current ID (row 3), footnote 2); not a voltage; owner: module
@@ -29,6 +31,16 @@ G = io(Net)
 D = io(Net)
 
 derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+v_vds_rating = config(
+    Voltage,
+    optional=True,
+    help="Declared worst-case range of V(D) - V(S) from the module's worst-case analysis; replaces the independent net ranges when set",
+)
+v_vgs = config(
+    Voltage,
+    optional=True,
+    help="Declared worst-case range of V(G) - V(S) from the module's worst-case analysis; replaces the independent net ranges when set",
+)
 
 _ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
 check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
@@ -70,25 +82,39 @@ def _temp(_m, v, what, lo, hi):
 #   Drain-source voltage rating: max 100 V (max_ref rel. S)
 #   DS p.1, Table 1 Key performance parameters, VDS
 #   Severity error: rec_op violated
-_limit("vds_rating_D", _range, {"v": D.voltage, "what": "vds_rating_D", "hi": 100.0, "hi_ref": S.voltage}, "error")
+#   Pin pair: v_vds_rating (config, the module's worst-case analysis of V(D) - V(S)) when set,
+#   compared with the same limit and derate; otherwise the two nets' ranges, taken as independent.
+def _vds_rating_D_inputs(vd):
+    inputs = {"what": "vds_rating_D", "hi": 100.0}
+    if vd == None:
+        inputs["v"] = D.voltage
+        inputs["hi_ref"] = S.voltage
+    else:
+        inputs["v"] = vd
+    return inputs
+
+
+_limit("vds_rating_D", _range, _vds_rating_D_inputs(v_vds_rating), "error")
+
 
 # vgs_G: pin G (G) within the limit, x derate
 #   Gate-source voltage: min -20 / max 20 V (min_ref rel. S) (max_ref rel. S)
 #   DS p.3, Table 2 Maximum ratings, Gate source voltage VGS
 #   Severity error: abs_max violated
-_limit(
-    "vgs_G",
-    _range,
-    {
-        "v": G.voltage,
-        "what": "vgs_G",
-        "lo": -20.0 * derate,
-        "lo_ref": S.voltage,
-        "hi": 20.0 * derate,
-        "hi_ref": S.voltage,
-    },
-    "error",
-)
+#   Pin pair: v_vgs (config, the module's worst-case analysis of V(G) - V(S)) when set,
+#   compared with the same limit and derate; otherwise the two nets' ranges, taken as independent.
+def _vgs_G_inputs(vd):
+    inputs = {"what": "vgs_G", "lo": -20.0 * derate, "hi": 20.0 * derate}
+    if vd == None:
+        inputs["v"] = G.voltage
+        inputs["lo_ref"] = S.voltage
+        inputs["hi_ref"] = S.voltage
+    else:
+        inputs["v"] = vd
+    return inputs
+
+
+_limit("vgs_G", _range, _vgs_G_inputs(v_vgs), "error")
 
 Component(
     name="ISC035N10NM5LF2",
