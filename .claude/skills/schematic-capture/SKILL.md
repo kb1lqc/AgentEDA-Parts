@@ -92,6 +92,8 @@ The main session hand-checks the top two or three contributors of any changed re
 calculation before presenting it (e.g. TCR x temperature span, drift x temperature span).
 
 ## Agents: which model does what
+The general, always-on roles and token rules are in `agent-roles`; this table adds the schematic-specific jobs.
+
 | Job | Model | Why |
 |---|---|---|
 | Orchestration, decisions with the designer, final review of renders, skill updates | main session | owns judgment and context |
@@ -103,16 +105,52 @@ Brief every agent with absolute paths, the files it may write, the skills to rea
 and the scratch directory; ask for a summary plus artifact paths, not full logs.
 
 ## Tooling (reuse, extend, commit)
-Keep these as committed helpers (e.g. in the library's `lib/` or a `tools/` folder) rather than rebuilding them in
-scratch each time:
-- `render`: export all sheets to PDF and PNG (`kicad-cli sch export pdf` + `pdftoppm`), with crop/zoom options.
-- `netcmp`: export the netlist and compare net-by-net against a baseline (names and node sets).
-- `erc`: run `kicad-cli sch erc` and summarize by category, marking accepted classes.
-- `overlap`: compute text bounding boxes (labels, hierarchical labels, sheet pins, fields) and report any that
-  intersect a wire, pin, symbol body or other text. This turns the most common visual review finding into an
-  automatic gate.
-- `place`: helpers for the placement script: pin endpoint for a symbol at (x, y, rotation, mirror), grid snap,
-  wire/label emitters with correct label anchor, angle and justify.
+Committed in the component library repo, `tools/schematic/` (README there). Extend them; do not rebuild in scratch.
+Needs KiCad 10 `kicad-cli` and `pdftoppm`; Python scripts are stdlib only.
+- `render.sh <root.kicad_sch> <out_dir> [dpi]`: all sheets to PDF and PNG.
+- `netcmp.py <baseline.net> <new.net>`: net-by-net netlist diff.
+- `erc.sh <root.kicad_sch> [report]`: ERC counts by category. Run it on the ROOT sheet; a child sheet alone reports
+  every hierarchical label as `pin_not_connected`.
+- `kicad_sexpr.py`: lossless `.kicad_sch` reader/writer (`load`, `dumps`, `save`; byte-exact round trip).
+- `place.py`: library for the placement script. `Sheet.load(path, namespace)`, `pin_point(ref, pin)`,
+  `place_symbol`, `set_field`, `wire`, `junction`, `no_connect`, `label` / `hlabel` / `global_label` (take the
+  direction the text runs), `text`, `group_box`, `power_to_hlabels`, `set_paper(PAPER_TABLOID)`,
+  `set_title_block`, `repo_comment`, `snap`, `pin_endpoint`. Deterministic UUIDs; re-emitting a key replaces it.
+- `overlap.py [--overlap] [--dangling] sheet.kicad_sch ...`: text boxes vs wires, pins, symbol bodies and other
+  text; wire ends, pins, labels and sheet pins that connect to nothing. Exit 1 on any finding. It is the text-overlap
+  gate of phase 5.
+
+## Placement generator lessons
+Write the generator against these; each came from a rework.
+- One parametric script, one source of coordinates: select symbols by reference (never by old coordinates), compute
+  every point from `pin_point`, emit with `key`s, start with `clear()`. The INA arrangement took two one-off scripts
+  because the first fixed pitches before label widths and support-part positions were known; the second re-edited
+  raw coordinates. Size label runs and put support parts at their pins in the plan, then run `overlap.py` in the loop.
+- Transform: library pin position, y flipped to screen, rotated CCW, THEN mirrored (`mirror x` flips screen y,
+  `mirror y` flips screen x). Verified for all 8 orientations against `kicad-cli` netlists.
+- Rotate 180 swaps left/right and up/down of the pin groups; mirror flips one axis only. When a pinout puts the rail
+  pin below ground, rotate the IC 180 so rail goes up and ground down; mirror only to put a part's pins on the
+  other side (shunt Kelvin pins down).
+- A symbol field's stored angle is relative to the symbol rotation: a rotated part with stored 90 reads horizontal.
+  Place fields with `set_field` (visual angle) and it sets `do_not_autoplace`.
+- Local label: anchor at the wire end, text runs along the wire (angle = direction toward the pin, justify
+  `left`/`right` + `bottom`), so it sits on its wire; the wire must be longer than the text. Hierarchical and global
+  label: anchor at the wire end, text runs away from the wire. KiCad never draws text upside down: 0 and 90 use
+  `left`, 180 and 270 use `right` (text ends at the anchor).
+- Crossings forced by pin order: draw both nets as labelled stubs at each end, symmetric, no wire between.
+- Wires on the 1.27 mm grid, pin rows on 2.54 mm; dog-leg inside a 2.54 mm pitch (INA SPI fan-out).
+- Net prefix: module-internal nets carry the instance prefix on local labels (`INA.SENSE_P`); ports are bare names
+  (`BUS_OUT`, `SPI.CLK`). Stamping rewrites the prefix; the generator must not hard-code the instance.
+- Reusable child sheets: swap power symbols for hierarchical labels with `power_to_hlabels` (rails text up, ground
+  down); the parent keeps global power symbols.
+- What `pcb apply` does (verified on INA, 2 applies, second `unchanged`): an existing arranged sheet keeps symbol
+  positions, wires, labels, notes, boxes, title block and paper size. A freshly generated sheet has default
+  positions, power symbols and no wiring: rerun the generator after every fresh generation (idempotent by UUID).
+- Paper: Tabloid (11 x 17 in) is `USLedger`; set it on every sheet; `pcb apply` preserves it.
+- Gates in the script's own loop: `overlap.py` exit 0 (text, then dangling), then the Automatic gates. ERC finding
+  `label_dangling` on a root label whose net has only a sheet pin, and `isolated_pin_label`, are net-level
+  and not geometric; `overlap.py --dangling` reports geometry only.
+- `overlap.py` does not check pin number/name text or group-box edges; review those in the render.
 
 ## Reused blocks on a board
 A board built from reusable blocks (see `reusable-blocks`) gets one child sheet per instance, generated fresh in the

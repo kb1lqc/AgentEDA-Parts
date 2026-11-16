@@ -121,6 +121,13 @@ Present the options with numbers and a recommendation; record the decision.
   and schematic notes (a script with one exact-match pattern per note line that refuses to write on any miss).
   Spec text and `.zen` comments cite the analysis section or values key instead of copying a number; a copied
   number goes stale the next time the design changes.
+- **Walk through every datasheet design example for the actual design.** When a part's datasheet has an
+  application or design-procedure example (e.g. TPS4800-Q1 8.2.2: bootstrap capacitor, ISCP resistor, timer
+  capacitor, UVLO/OV divider, inrush), the design-analysis datasheet has a section that repeats each step in the
+  datasheet's order with this design's values: the equation and its cite, the datasheet example's inputs and result
+  beside this design's inputs, nominal and worst-case results, and the chosen standard value. The library's
+  `EXAMPLES` already prove the equation reproduces the datasheet; this section shows the reader the same procedure
+  applied to the design.
 - **The design-analysis datasheet is pure analysis of the design as it is:** no options, alternatives,
   candidate comparisons or worked examples. Option studies happen before the decision (scratch scripts, presented
   to the designer); the chosen design is what the datasheet analyses.

@@ -18,9 +18,26 @@ started.
   - Examples: connector -> protection -> regulator -> load; sensor -> filter/amplifier -> ADC -> digital interface;
     high-side current sense: supply enters left, passes through the shunt, exits right, with the sense IC below
     the shunt and any input network running down from the shunt taps to the IC.
+  - **Rank the nets when not all can flow straight.** Give the straight left-to-right run to the highest-value nets
+    first: the main power path, then the primary data path (bus or harness). Lower-value nets (pull-ups, timing,
+    bias, configuration) bend, drop below, or use labelled stubs instead.
+- **Group nets by kind for the reviewer.** Keep power nets together and data nets, buses and harnesses together,
+  each in its own region of the sheet (typically power along the top and through the middle, data and control
+  toward the right or bottom edge), so a reviewer finds each story in one place. Bundle related signals (all SPI
+  lines, all status lines) side by side in a consistent order rather than scattering them. Optimize for a human
+  reading the sheet, not for the shortest wires.
+  - **Status and control signals are their own group,** not mixed into a data bus: `ALERT_N`, `FAULT_N`, `PGOOD_N`
+    sit in a small group beside the bus. Each bus uses one fixed order on every sheet (SPI: CS, SCLK, MOSI, MISO;
+    I2C: SDA, SCL). When an IC's pin order interleaves them, break the run with labelled stubs, or change the
+    symbol's pin arrangement in the library, so the bundle reads in the fixed order.
+  - **A net never crosses a group box it does not belong to.** It leaves its box only toward its destination; a tap
+    that feeds another group (shunt sense taps into the monitor) becomes a labelled stub inside each box, or enters
+    the other box from its own side.
 - **Orient parts to the flow.** Rotate or mirror (`(mirror y)`) a symbol so its inputs face the source and its
   outputs face the destination. Prefer mirroring over long wires that wrap around a part.
-- **Support parts at the pin they serve.** Decoupling capacitors next to the power pin they bypass; series
+- **Support parts at the pin they serve.** Decoupling capacitors may instead sit in a nearby group, clearly
+  associated with their part, when that reads better; then each carries a note naming the part and pin it
+  decouples and that it is placed at that pin in layout (e.g. "C3: U1 VS pin 6, place at pin"). Series
   terminations next to the driving pin; pull-ups/pull-downs next to the pin they bias (with a junction on that
   pin's wire); feedback dividers next to the feedback pin; crystals and load capacitors next to the oscillator
   pins. The schematic then shows which part belongs to which pin, and the layout engineer inherits that intent.
@@ -42,7 +59,8 @@ started.
 - **Every label sits on a wire**, and the wire is long enough that the label fits along it. No label floats at a
   bare pin end; a label on a pin is easy to misread as unconnected.
 - **No crossings where a reroute or a label avoids them.** When two connections would cross, draw both nets as
-  labelled wire stubs at each end, symmetrically, with no wire between. Never rely on a four-way junction.
+  labelled wire stubs at each end, symmetrically, with no wire between; the label text reads the same way at both
+  ends (horizontal where the stub allows). Never rely on a four-way junction.
 - **Junction dots** at every T; no four-way junctions.
 - **No text overlaps a wire, pin, symbol or other text** - including the text of net labels, hierarchical labels
   (ports), global labels, sheet pins, power-symbol names, references, values and fields. A label's text runs

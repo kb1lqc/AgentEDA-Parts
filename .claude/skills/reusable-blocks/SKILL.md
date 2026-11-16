@@ -25,7 +25,7 @@ for the current `pcb` version.
 | Logic or supply rail feeding parts | `V3V3`, `V5`, `V12` (voltage in the name) | plain `Net` port, `Power(...)` on the board, local inside the sheet |
 | Ground | `GND` | plain `Net` port, cast to `Ground` inside |
 | Enable / control in | `EN` (active high) or `<NAME>_N` | `Net` with logic voltage |
-| Status out (open drain) | `FAULT_N`, `ALERT_N`, `PGOOD` | `Net` with logic voltage |
+| Status out (open drain) | `FAULT_N`, `ALERT_N`, `PGOOD` (high = good), `PGOOD_N` (low = good, e.g. TPS48000 FLT_GD) | `Net` with logic voltage |
 | Digital interfaces | stdlib interface (`Spi`, `I2c`, ...) named by role (`SPI`) | interface |
 | Analog outputs | role name with what it represents (`IMON`, `VMON`) | `Net` with voltage range |
 New blocks reuse these names before inventing new ones; record any new standard name here.
