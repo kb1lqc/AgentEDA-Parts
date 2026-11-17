@@ -79,14 +79,14 @@ and how to use agents. Every rule here came from rework that cost real tokens.
 ## Design-value change loop (after the schematic exists)
 A changed requirement or part changes numbers, not placement. Run, judging by exit code:
 1. Edit the analysis inputs and/or the `.zen` configs (never the sheet).
-2. Run the analysis: it regenerates the datasheet, charts and the values file.
+2. Run the analysis: it regenerates the datasheet (Markdown and its PDF), charts and the values file.
 3. Run the notes script (board `tools/schematic/update_notes.py` pattern): each note line is found by one regex
    that must match exactly once, or nothing is written. If the WORDING of a note changes (a new quantity, e.g.
    calibrated and uncalibrated error), edit that note's text in the `.kicad_sch` once, keeping its line count so
    the box still fits, then extend the rule; the script maintains it from then on. Run it twice: the second run
    changes nothing.
 4. `pcb apply schematic --no-open` twice (second unchanged), netlist diff, `pcb build -Dwarnings`, classified ERC,
-   sync check.
+   schematic PDF export, sync check (fails on a stale schematic PDF, analysis PDF or passive text stack).
 5. grep the `.zen` comments, spec and README for the old numbers; replace copies with cites.
 The main session hand-checks the top two or three contributors of any changed result with a back-of-envelope
 calculation before presenting it (e.g. TCR x temperature span, drift x temperature span).
@@ -159,6 +159,14 @@ board's own `eda/`; the block repository's arranged reference sheet is not picke
 (`reusable-blocks`, Schematic reuse), then run the normal gates. Arrange only the
 board's top-level block diagram by hand; never re-arrange a block's internals on a board (fix them in the block
 repository and re-stamp).
+
+## Connectivity comes from the datasheet figure, rendered
+Before code freeze, check every support-part connection (where each R and C returns: GND, SRC, VS, OUT) against
+the datasheet's application figure **rendered as an image** (`pdftoppm -r 400 -x .. -y .. -W .. -H ..` crop, then
+look at it). `pdftotext -layout` places pin names next to unrelated parts: on the TPS48000 switch it put "SRC"
+beside the gate-ramp C1, and the block shipped with C1 to SRC although Fig 7-4 draws it to GND (found by the
+designer, 2026-11-16). The verifier repeats the check from its own render. A return-node change also changes the
+part's voltage stress (C1 to GND sees bus + VGS, not VGS), so re-run the rating checks.
 
 ## Before reporting a limitation
 State what was tried, on a fresh generation, with what evidence (file snippet, exact error). Check the tool's

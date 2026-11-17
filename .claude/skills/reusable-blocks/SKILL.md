@@ -42,8 +42,9 @@ benches/<Block>/bench.zen         bench board: declared nets with voltages, one 
                                   Board(path="eda"); imports the block by its full URL (resolved locally)
 benches/<Block>/params.json       the reference instance's analysis inputs (each with a basis)
 benches/<Block>/eda/              bench root sheet + the arranged REFERENCE sheet <instance>.kicad_sch
-benches/<Block>/docs/             generated datasheet, charts, values.json, and <bench name>.pdf (all sheets, named
-                                  after the Board), for the reference instance
+benches/<Block>/docs/             generated datasheet (design-analysis.md + design-analysis.pdf, both written by every
+                                  analysis run), charts, values.json, and <bench name>.pdf (all sheets, named after
+                                  the Board), for the reference instance; the sync check fails on either PDF if stale
 benches/<Block>/notes_rules.py    note rules for the bench parent sheet (read by tools/schematic/update_notes.py)
 analysis/                         shared helpers (library loader, report writer); no block-specific numbers
 tools/                            check_sync, update_notes, stamp_block, render, netcmp, erc (shared by all blocks)

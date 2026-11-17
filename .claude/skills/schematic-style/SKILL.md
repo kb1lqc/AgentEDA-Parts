@@ -41,6 +41,13 @@ started.
   terminations next to the driving pin; pull-ups/pull-downs next to the pin they bias (with a junction on that
   pin's wire); feedback dividers next to the feedback pin; crystals and load capacitors next to the oscillator
   pins. The schematic then shows which part belongs to which pin, and the layout engineer inherits that intent.
+- **Dividers and ladders are drawn vertically,** top at the source rail, bottom at ground, taps on the right, in
+  the order the current flows (e.g. BUS_IN -> R_TOP -> EN tap -> R_MID -> OV tap -> R_BOT -> GND), even when the top
+  connects through a label rather than a wire: the reader sees a divider at a glance.
+- **A drive chain reads from the IC pin to the part it drives.** Left is the (implied) IC pin, right is the driven
+  part (gate driver PU/PD -> series R -> gate node -> MOSFET); the shunt branch at the node (R + C to GND) drops
+  vertically to its ground symbol. Support parts that serve a different pin pair (a bootstrap capacitor BST-SRC
+  beside a gate-ramp network) get their own small group, never a shared rail with the chain.
 - **Group by function.** Each functional group (input protection, regulation, sensing, interface) is a visible
   cluster with whitespace between groups.
 
@@ -84,9 +91,25 @@ started.
   the sheet symbol with the module's ports: inputs on the left edge, outputs and interfaces on the right edge.
 - **Power paths flow through the sheet symbol.** A block's power-path ports sit at the same height on opposite
   edges (e.g. `BUS_IN` left, `BUS_OUT` right), so the path reads as one straight wire through the block. Interface
-  pins group above or below it on the right edge; rails on the top edge, ground on the bottom edge.
+  pins group below it on the right edge; ground on the bottom edge. A logic rail that ONLY feeds pull-ups or
+  bias (`V3V3` on a switch block) enters at the lower-left of the sheet symbol: a short wire to the left, the power symbol pointing up
+  at the wire's left end, and no text over the sheet symbol (designer, 2026-11-16). A rail that powers an IC in the block
+  (`V3V3` feeding the INA229 VS pin) stays on the top edge with the power symbol pointing up.
 - **The reusable sheet carries no board net names.** Ports appear inside as hierarchical labels named after the
   module's ports; the parent maps board nets to them.
+- **Each port appears once inside a sheet.** A hierarchical label (`BUS_IN`, `BUS_OUT`, `FAULT_N`, `PGOOD_N`) is
+  drawn once, in the group box that owns that function (power-path ports in the POWER PATH box; status ports at the
+  IC pin or in the STATUS box). Every other use on the sheet is a local label of the same net (GND included,
+  unless a ground symbol is proven by the netlist diff to keep the block's own net), so a
+  pull-up or a decoupling capacitor never wires back to a port. A decoupling capacitor sits on its own pin's net
+  (wired to the pin's wire with a junction), never on the port. Prove the connectivity with the netlist diff.
+  Toolchain limit (pcb 0.4.102, verified 2026-11-16): `pcb apply` deletes local or global labels that carry a port
+  net's name and re-adds a hierarchical label on EVERY separate wire group of that net. So "once" is achieved by
+  wiring: make every use of a port net one wire group (pull-up wired to its IC pin's wire, decoupling cap wired to
+  its pin's wire). Where uses are far apart (a divider top on BUS_IN), a second port flag is the accepted fallback.
+  A port line that must be re-ordered (SPI SCLK into the fixed bus order) is a labelled stub pair: a flag at the pin
+  and a flag at BOTH ends of the re-entering row. Never leave a wire end unconnected to save a flag: a dangling end
+  reads as an error and fails the overlap/ERC gates (designer review, 2026-11-17).
 - **Rails and ground are local inside a reusable sheet.** Inside the block, V3V3 / GND (and any rail) are
   hierarchical labels connected through sheet pins; global power symbols appear only on the top-level sheet, where
   the board rails are defined. The block then makes no assumption about which rail it sits on. Power symbols
@@ -102,7 +125,25 @@ started.
 - **Interfaces as harnesses** (a bus group carrying SPI, I2C, ...) are preferred where the toolchain keeps them;
   otherwise one sheet pin per member, grouped together on the sheet edge.
 
+## Component text (every resistor and capacitor)
+Reference style: the designer's Fox-1-MPPT schematics (github.com/FaradayRF/Fox-1-MPPT, `Hardware/Rev2_1/OutputFiles`).
+- Show the engineering values, not just the MPN: one field per line, left-aligned in one column beside the symbol,
+  1.27 mm text, in this order. Resistor: reference, value with unit (`536k`, `10.5k`, `10R`... or `536 kOhm`, one
+  convention per sheet), package (`0603`), tolerance (`1%`). Capacitor: reference, value in its natural unit
+  (`6.8nF`, `470nF`, `100nF`, `1uF`), package (`0603`), rating and dielectric (`100V C0G`), tolerance (`5%`). The
+  MPN lives in the BOM fields, hidden or below the stack.
+- The text is generated from the source of truth (the Zener instance or the library catalog for its MPN), never
+  typed, and the generator refuses to write when a field cannot be resolved.
+- Every stack sits clear of wires and other text and aligns with its neighbours (same x for a row of parts).
+
 ## Engineering notes and grouping boxes
+- **Write like the Fox-1-MPPT sheets: one-line, high-impact statements next to the part they describe**, setpoints
+  as equations with the result last: `R5: V(SCP) = <min>-<max> mV -> I(SC) = <min>-<max> A`, `C6: tSC = <min>-<max>
+  us, latch-off` (numbers from the values file), `VIN MAX = 2.42V @ 6.54V`. No generic headings inside note text ("DESIGN NOTES", "NOTE:"), no
+  paragraphs; the box title already names the group. A part that sets a quantity always states that quantity
+  (and its consequence in user units: mV -> A, capacitance -> time). Parent DESIGN VALUES box: about 6-10 lines of
+  the numbers a reviewer acts on (rating, trip points, timing, worst temperature/margin, any FAIL); caveats such as
+  missing protection get one short line each, details stay in the spec.
 - **Minimal, high-impact notes** at the power path input and output, at each rail and at key parts: expected
   voltage range, rail voltage and tolerance, design maximum current, worst-case full-scale error, scaling (A per V,
   A per count, LSB), key limits and why (e.g. a cap set by an abs max). Short lines with units, no prose. Drop any
