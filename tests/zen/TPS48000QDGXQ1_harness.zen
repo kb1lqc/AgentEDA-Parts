@@ -23,11 +23,22 @@ vscp = config(str, default="0V")
 vflt = config(str, default="0V to 5V")
 vfltgd = config(str, default="0V to 5V")
 ta = config(str, default="-40°C to 85°C")
+vpair = config(str, default="unset")  # v_abs_cs_pair: the module's worst-case V(CS+) - V(CS-); unset = none
 waive = config(str, default="")  # rationale for waive_rec_vs_scp_min (CASES set it)
 
 
 def _net(name, v):  # "unset" = a net with no voltage, which must report UNVERIFIED
     return Net(name) if v == "unset" else Net(name, voltage=v)
+
+
+def _optional():
+    # Optional wrapper configs: an unset one is left out, so the wrapper sees None (Starlark allows one ** per call).
+    kw = {}
+    if ta != "unset":
+        kw["ambient"] = ta
+    if vpair != "unset":
+        kw["v_abs_cs_pair"] = vpair
+    return kw
 
 
 gate = Net("GATE")
@@ -52,5 +63,5 @@ U(
     FLT=_net("FLT", vflt),
     FLT_GD=_net("FLT_GD", vfltgd),
     waive_rec_vs_scp_min=waive,
-    **({} if ta == "unset" else {"ambient": ta}),
+    **_optional(),
 )

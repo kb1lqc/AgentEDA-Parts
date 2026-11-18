@@ -5,7 +5,7 @@ Checks are DC steady-state on the voltages each instance declares. They do not c
 hot-plug ringing or load dump. A checked net with no declared voltage reports UNVERIFIED (a warning).
 Analysis (worst case, tables, plots) is done in Python: see README.md and calc.py."""
 
-load("@stdlib/units.zen", "Temperature")
+load("@stdlib/units.zen", "Temperature", "Voltage")
 
 # UNCHECKED: abs_dgate_hgate: DGATE, HGATE voltages (relative to SOURCE) (DS p.2, Absolute Maximum Ratings, DGATE, HGATE Voltages (Note 3) SOURCE - 0.3 V to SOURCE + 10 V); DGATE and HGATE are driven by the part (internally clamped); owner: module
 # UNCHECKED: abs_sense_source: Voltage difference SENSE to SOURCE (DS p.2, Absolute Maximum Ratings, Voltage Difference (SENSE to SOURCE)); SOURCE is set by the external MOSFETs and rarely declared; owner: module (MOSFET VDS rating)
@@ -46,6 +46,16 @@ FB = io(Net)
 
 ambient = config(Temperature, optional=True, help="Board ambient temperature range")
 derate = config(float, default=1.0, help="Project derating factor in (0, 1]; shrinks abs-max only")
+v_abs_sense_out = config(
+    Voltage,
+    optional=True,
+    help="Declared worst-case range of V(SENSE) - V(OUT) from the module's worst-case analysis; replaces the independent net ranges when set",
+)
+v_abs_out_vcc = config(
+    Voltage,
+    optional=True,
+    help="Declared worst-case range of V(OUT) - V(VCC) from the module's worst-case analysis; replaces the independent net ranges when set",
+)
 
 _ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
 check(derate > 0 and derate <= 1.0, "derate must be in (0, 1]; >1 would loosen abs max")
@@ -227,41 +237,45 @@ _limit(
     "error",
 )
 
+
 # abs_sense_out_SENSE: pin SENSE (SENSE) within the limit, x derate
 #   Voltage difference SENSE to OUT: min -30 / max 30 V (min_ref rel. OUT) (max_ref rel. OUT)
 #   DS p.2, Absolute Maximum Ratings, Voltage Difference (SENSE to OUT)
 #   Severity error: abs_max violated
-_limit(
-    "abs_sense_out_SENSE",
-    _range,
-    {
-        "v": SENSE.voltage,
-        "what": "abs_sense_out_SENSE",
-        "lo": -30.0 * derate,
-        "lo_ref": OUT.voltage,
-        "hi": 30.0 * derate,
-        "hi_ref": OUT.voltage,
-    },
-    "error",
-)
+#   Pin pair: v_abs_sense_out (config, the module's worst-case analysis of V(SENSE) - V(OUT)) when set,
+#   compared with the same limit and derate; otherwise the two nets' ranges, taken as independent.
+def _abs_sense_out_SENSE_inputs(vd):
+    inputs = {"what": "abs_sense_out_SENSE", "lo": -30.0 * derate, "hi": 30.0 * derate}
+    if vd == None:
+        inputs["v"] = SENSE.voltage
+        inputs["lo_ref"] = OUT.voltage
+        inputs["hi_ref"] = OUT.voltage
+    else:
+        inputs["v"] = vd
+    return inputs
+
+
+_limit("abs_sense_out_SENSE", _range, _abs_sense_out_SENSE_inputs(v_abs_sense_out), "error")
+
 
 # abs_out_vcc_OUT: pin OUT (OUT) within the limit, x derate
 #   Voltage difference OUT to VCC: min -100 / max 100 V (min_ref rel. VCC) (max_ref rel. VCC)
 #   DS p.2, Absolute Maximum Ratings, Voltage Difference (OUT to VCC)
 #   Severity error: abs_max violated
-_limit(
-    "abs_out_vcc_OUT",
-    _range,
-    {
-        "v": OUT.voltage,
-        "what": "abs_out_vcc_OUT",
-        "lo": -100.0 * derate,
-        "lo_ref": VCC.voltage,
-        "hi": 100.0 * derate,
-        "hi_ref": VCC.voltage,
-    },
-    "error",
-)
+#   Pin pair: v_abs_out_vcc (config, the module's worst-case analysis of V(OUT) - V(VCC)) when set,
+#   compared with the same limit and derate; otherwise the two nets' ranges, taken as independent.
+def _abs_out_vcc_OUT_inputs(vd):
+    inputs = {"what": "abs_out_vcc_OUT", "lo": -100.0 * derate, "hi": 100.0 * derate}
+    if vd == None:
+        inputs["v"] = OUT.voltage
+        inputs["lo_ref"] = VCC.voltage
+        inputs["hi_ref"] = VCC.voltage
+    else:
+        inputs["v"] = vd
+    return inputs
+
+
+_limit("abs_out_vcc_OUT", _range, _abs_out_vcc_OUT_inputs(v_abs_out_vcc), "error")
 
 # abs_fb_tmr_FB: pin FB (FB) within the limit, x derate
 #   FB, TMR voltages: min -0.3 / max 5.5 V (min_ref rel. GND) (max_ref rel. GND)

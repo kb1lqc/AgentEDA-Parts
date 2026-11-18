@@ -38,6 +38,34 @@ class TestGenerator(unittest.TestCase):
         self.assertIn('"lo": 2.0, "lo_ref": GND.voltage, "hi": -2.0, "hi_ref": IN.voltage', text)  # rec_op: no derate
         self.assertIn("# UNCHECKED: io_cont: Output current rating", text)
 
+    def test_pin_pair_config(self):
+        """A single-pin row referenced to one non-ground pin gets an optional v_<key>; the declared range replaces the nets."""
+        text, problems = generate(ROOT / "components/Infineon/ISC035N10NM5LF2")
+        self.assertEqual(problems, [])
+        self.assertIn("v_vgs = config(", text)
+        self.assertIn("optional=True", text)
+        self.assertIn('inputs = {"what": "vgs_G", "lo": -20.0 * derate, "hi": 20.0 * derate}', text)  # same derated limit
+        self.assertIn('inputs["v"] = G.voltage', text)  # unset: the net ranges, as before
+        self.assertIn('inputs["lo_ref"] = S.voltage', text)
+        self.assertIn('inputs["v"] = vd', text)  # set: the declared range, no net voltages in the inputs
+        self.assertIn('_limit("vgs_G", _range, _vgs_G_inputs(v_vgs), "error")', text)
+        self.assertIn('load("@stdlib/units.zen", "Voltage")', text)
+        tps, _ = generate(ROOT / "components/TexasInstruments/TPS48000QDGXQ1")
+        self.assertIn("v_abs_cs_pair = config(", tps)
+        self.assertNotIn("v_abs_vs_cs_gnd", tps)  # ground-referenced rows take no declared range
+
+    def test_no_pin_pair_config_when_ambiguous(self):
+        """Ground references, several check pins, two different refs or an unreferenced limited end: unchanged."""
+        text, problems = generate(FIX / "LDO1")
+        self.assertEqual(problems, [])
+        self.assertNotIn("= config(Voltage", text)  # GND ref, or two different refs
+        ina, _ = generate(ROOT / "components/TexasInstruments/INA821IDGK")
+        self.assertNotIn("v_vcm_range_25c", ina)  # two check pins and two refs
+        self.assertNotIn("v_vref_range_25c", ina)  # two different refs (-VS, +VS)
+        stm, _ = generate(ROOT / "components/STMicroelectronics/STM32H723ZET6")
+        self.assertNotIn("v_adc16", stm)  # min unreferenced, max referenced
+        self.assertNotIn("= config(Voltage", stm)
+
     def test_bad_check_pins(self):
         with tempfile.TemporaryDirectory() as d:
             copy = Path(d) / "LDO1"
@@ -201,6 +229,18 @@ CASES = [
     ("Infineon/ISC035N10NM5LF2", "vgs_out", ["vg=21V"], "error", "vgs_G"),  # > +20 V vs S
     ("Infineon/ISC035N10NM5LF2", "vgs_negative_out", ["vg=-21V"], "error", "vgs_G"),  # < -20 V vs S
     ("Infineon/ISC035N10NM5LF2", "drain_unset", ["vd=unset"], "warning", "UNVERIFIED vds_rating_D"),
+    # v_vgs: a gate driven 10 V above a source that swings 12-40 V. The nets alone give G - S from -30 to +30 V (error);
+    # the module's analysis gives 9.5-10.5 V. The declared range is compared with +/-20 V x derate.
+    ("Infineon/ISC035N10NM5LF2", "gate_nets_spread", ["vs=12V to 40V", "vg=22V to 50V"], "error", "vgs_G"),
+    ("Infineon/ISC035N10NM5LF2", "vgs_declared_pass", ["vs=12V to 40V", "vg=22V to 50V", "vgs=9.5V to 10.5V"], "pass", ""),
+    ("Infineon/ISC035N10NM5LF2", "vgs_declared_at_limit", ["vgs=-20V to 20V"], "pass", ""),
+    ("Infineon/ISC035N10NM5LF2", "vgs_declared_over", ["vgs=0V to 20.1V"], "error", "vgs_G"),
+    ("Infineon/ISC035N10NM5LF2", "vgs_declared_under", ["vgs=-20.1V to 0V"], "error", "vgs_G"),
+    ("Infineon/ISC035N10NM5LF2", "vgs_declared_derated_pass", ["vgs=16V", "derate=0.8"], "pass", ""),
+    ("Infineon/ISC035N10NM5LF2", "vgs_declared_derated_over", ["vgs=16.1V", "derate=0.8"], "error", "vgs_G"),
+    ("Infineon/ISC035N10NM5LF2", "vgs_declared_nets_unset", ["vs=unset", "vg=unset", "vgs=10V", "vds=50V"], "pass", ""),
+    ("Infineon/ISC035N10NM5LF2", "vds_declared_over", ["vds=100.5V"], "error", "vds_rating_D"),
+    ("Infineon/ISC035N10NM5LF2", "vds_declared_pass", ["vd=unset", "vds=100V"], "pass", ""),
     ("Infineon/ISC750P10LM", "nominal", [], "pass", ""),
     ("Infineon/ISC750P10LM", "vds_out", ["vs=101V", "vg=95V"], "error", "vds_rating_D"),  # D 0 V - S 101 V < -100 V (G moved to keep VGS in range)
     ("Infineon/ISC750P10LM", "vgs_out", ["vg=20V"], "error", "vgs_G"),  # 20 - 50.4 = -30.4 V < -20 V
@@ -242,6 +282,14 @@ CASES = [
     ("TexasInstruments/TPS48000QDGXQ1", "vs_scp_min_waived", ["vs=3.8V", "waive=SCP not used, DS p.4"], "pass", ""),
     ("TexasInstruments/TPS48000QDGXQ1", "csp_abs_out", ["vcsp=101V", "vcsn=101V"], "error", "abs_vs_cs_gnd_CS_P"),  # both CS nets moved
     ("TexasInstruments/TPS48000QDGXQ1", "cs_pair_out", ["vcsn=50V"], "error", "abs_cs_pair_CS_P"),  # 47.52 V < 50 - 1 V
+    # v_abs_cs_pair: sense nets on a 12-40 V bus. The nets alone give CS+ - CS- from -28 to +28 V (error); the module's
+    # analysis gives the sense drop, a few mV. The declared range is compared with -1 to 100 V.
+    ("TexasInstruments/TPS48000QDGXQ1", "cs_pair_nets_spread", ["vcsp=12V to 40V", "vcsn=12V to 40V"], "error", "abs_cs_pair_CS_P"),
+    ("TexasInstruments/TPS48000QDGXQ1", "cs_pair_declared_pass", ["vcsp=12V to 40V", "vcsn=12V to 40V", "vpair=-0.01V to 0.1V"], "pass", ""),
+    ("TexasInstruments/TPS48000QDGXQ1", "cs_pair_declared_at_limit", ["vpair=-1V to 100V"], "pass", ""),
+    ("TexasInstruments/TPS48000QDGXQ1", "cs_pair_declared_under", ["vpair=-1.01V to 0V"], "error", "abs_cs_pair_CS_P"),
+    ("TexasInstruments/TPS48000QDGXQ1", "cs_pair_declared_over", ["vpair=0V to 100.1V"], "error", "abs_cs_pair_CS_P"),
+    ("TexasInstruments/TPS48000QDGXQ1", "cs_pair_declared_nets_unset", ["vcsp=unset", "vcsn=unset", "vpair=0V"], "warning", "UNVERIFIED abs_vs_cs_gnd_CS_P"),  # other rows still need the nets
     ("TexasInstruments/TPS48000QDGXQ1", "en_rec_out", ["ven=66V"], "error", "rec_en_inp_cs_sel_EN_UVLO"),  # inside abs 70 V
     ("TexasInstruments/TPS48000QDGXQ1", "ov_abs_out", ["vov=71V"], "error", "abs_input_vs_pos_OV"),
     ("TexasInstruments/TPS48000QDGXQ1", "scp_test_out", ["vscp=6V"], "error", "abs_iscp_tmr_scp_test_SCP_TEST"),
