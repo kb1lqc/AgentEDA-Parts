@@ -47,6 +47,24 @@ def library(log):
     return out + ([] if ok else failure_block(lines)), ok
 
 
+def verdicts(text):
+    """(PASS, FAIL, PASS (UNVERIFIED INPUTS)) verdict rows in the report's 'Summary of key results' section."""
+    m = re.search(r"^## (?:\d+\. )?Summary of key results\n(.*?)(?=^## )", text, re.M | re.S)
+    passes = fails = unv = 0
+    for row in (m[1] if m else "").splitlines():
+        if not row.startswith("|"):
+            continue
+        cells = [c.strip() for c in row.strip("|").split("|")]
+        v = next((c for c in reversed(cells) if re.match(r"(ESTIMATE, )?(PASS|FAIL)\b", c)), "")
+        if "UNVERIFIED INPUTS" in v:
+            unv += 1
+        elif re.match(r"(ESTIMATE, )?PASS", v):
+            passes += 1
+        elif v:
+            fails += 1
+    return passes, fails, unv
+
+
 def blocks(log, schem):
     line, lines = first_line(log)
     ok = line.startswith("PASS")
@@ -59,12 +77,12 @@ def blocks(log, schem):
     out += ["", "| Block | Judged PASS | FAIL (reported) | Input verification |", "|---|---|---|---|"]
     for md in sorted(Path("benches").glob("*/docs/design-analysis.md")):
         text = md.read_text()
-        unv = len(re.findall(r"PASS \(UNVERIFIED INPUTS\)", text))
-        passes = len(re.findall(r"\bPASS\b", text)) - unv
-        fails = len(re.findall(r"\bFAIL\b", text))
+        passes, fails, unv = verdicts(text)
         m = re.search(r"^(\d+) library rows read; (.*?)[.:]", text, re.M)
         inputs = (f"{m[1]} rows, all verified ✅" if m and "every one" in m[2] else f"{m[1]} rows, {m[2]} ⚠️") if m else "?"
         out.append(f"| {md.parent.parent.name} | {passes + unv}{f' ({unv} unverified)' if unv else ''} | {fails} | {inputs} |")
+    out += ["", "Counts are the verdict rows of each report's \"Summary of key results\"; a reported FAIL is a disclosed"
+            " result (for example an uncalibrated case or an accepted risk), not a broken build."]
     return out + ([] if ok else failure_block(lines)), ok
 
 
