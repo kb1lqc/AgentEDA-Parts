@@ -14,4 +14,5 @@ EXAMPLES = [
 
 INPUTS = {
     "dissipation": {},
+    "mpn": {},
 }
