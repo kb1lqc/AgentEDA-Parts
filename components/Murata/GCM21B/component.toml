@@ -93,7 +93,7 @@ min        = 1.2
 max        = 1.2
 unit       = "mm"
 conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.15), code 21"
-cite       = "DS p.27 (GCM21BR72A104KA37-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), a"
+cite       = "DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), a"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed). Row for the +/-0.15 chip; the +/-0.20 row is land_a_020."
 
 [param.land_b_015]
@@ -105,7 +105,7 @@ min        = 0.6
 max        = 0.8
 unit       = "mm"
 conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.15), code 21"
-cite       = "DS p.27 (GCM21BR72A104KA37-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), b"
+cite       = "DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), b"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed)."
 
 [param.land_c_015]
@@ -117,7 +117,7 @@ min        = 1.2
 max        = 1.4
 unit       = "mm"
 conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.15), code 21"
-cite       = "DS p.27 (GCM21BR72A104KA37-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), c"
+cite       = "DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), c"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed)."
 
 [param.land_a_020]
@@ -129,7 +129,7 @@ min        = 1.0
 max        = 1.4
 unit       = "mm"
 conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.20), code 21"
-cite       = "DS p.27 (GCM21BR72A104KA37-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), a"
+cite       = "DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), a"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed)."
 
 [param.land_b_020]
@@ -141,7 +141,7 @@ min        = 0.6
 max        = 0.8
 unit       = "mm"
 conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.20), code 21"
-cite       = "DS p.27 (GCM21BR72A104KA37-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), b"
+cite       = "DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), b"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed)."
 
 [param.land_c_020]
@@ -153,7 +153,7 @@ min        = 1.2
 max        = 1.4
 unit       = "mm"
 conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.20), code 21"
-cite       = "DS p.27 (GCM21BR72A104KA37-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), c"
+cite       = "DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), c"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed)."
 
 # X7R per-part rows (GCM21BR72A104KA37, from its reference sheet). Keys without suffix, as for GCM188's X7R rows.
@@ -660,7 +660,7 @@ min        = -30
 max        = 30
 unit       = "ppm/degC"
 conditions = "Ref. temp 25 degC; temp range printed as 25 to 125 degC; coefficient 0 +/-30 ppm/degC"
-cite       = "DS p.2 (C0G sheet of GCM21A5C2E101FX01), Rated Value, Temp. coeff. or Cap. Change (0+/-30 ppm/degC), Temp. Range (25 to 125 degC)"
+cite       = "DS p.2 (GCM21A5C2E101FX01-00B-EN.pdf), Rated Value, Temp. coeff. or Cap. Change (0+/-30 ppm/degC), Temp. Range (25 to 125 degC)"
 note       = "Public STD code C0G (EIA). A temperature coefficient, not a percent-change class. The DS prints the range 25 to 125 degC only: no coefficient is printed below 25 degC. The -55 to -10 degC capacitance drift is in the Table A rows (capdrift_*_c0g); the -10 to 25 degC segment has no printed number (open item). capacitance_worst_ppm requires dt and refuses values outside 0 to 100 degC (docs/SPEC.md, Capacitor series)."
 
 [param.op_temp_c0g]
@@ -672,7 +672,7 @@ min        = -55
 max        = 125
 unit       = "degC"
 conditions = ""
-cite       = "DS p.2 (C0G sheet of GCM21A5C2E101FX01), Rated Value, Operating Temp. Range (-55 to 125 degC)"
+cite       = "DS p.2 (GCM21A5C2E101FX01-00B-EN.pdf), Rated Value, Operating Temp. Range (-55 to 125 degC)"
 check_ambient = true
 note       = "Read from the C0G reference sheet of GCM21A5C2E101FX01. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every C0G catalog row uses it."
 
@@ -688,7 +688,7 @@ min        = -0.24
 max        = 0.58
 unit       = "%"
 conditions = "Reference 25 degC, no bias; measured at -55 degC"
-cite       = "DS p.7 (C0G sheet of GCM21A5C2E101FX01), Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -55 degC"
+cite       = "DS p.7 (GCM21A5C2E101FX01-00B-EN.pdf), Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -55 degC"
 note       = "Printed Max 0.58, Min -0.24: stored as min -0.24, max 0.58 (printed columns). Covers only the -55 degC point."
 
 [param.capdrift_m30_c0g]
@@ -701,7 +701,7 @@ min        = -0.17
 max        = 0.4
 unit       = "%"
 conditions = "Reference 25 degC, no bias; measured at -30 degC"
-cite       = "DS p.7 (C0G sheet of GCM21A5C2E101FX01), Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -30 degC"
+cite       = "DS p.7 (GCM21A5C2E101FX01-00B-EN.pdf), Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -30 degC"
 note       = "Printed Max 0.4, Min -0.17: stored as min -0.17, max 0.4 (printed columns). Covers only the -30 degC point."
 
 [param.capdrift_m10_c0g]
@@ -714,7 +714,7 @@ min        = -0.11
 max        = 0.25
 unit       = "%"
 conditions = "Reference 25 degC, no bias; measured at -10 degC"
-cite       = "DS p.7 (C0G sheet of GCM21A5C2E101FX01), Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -10 degC"
+cite       = "DS p.7 (GCM21A5C2E101FX01-00B-EN.pdf), Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -10 degC"
 note       = "Printed Max 0.25, Min -0.11: stored as min -0.11, max 0.25 (printed columns). Covers only the -10 degC point."
 
 [param.capdrift_limit_c0g]
@@ -726,7 +726,7 @@ scope      = "na"
 text       = "Within +/-0.2 % or +/-0.05 pF, whichever is larger"
 unit       = "%"
 conditions = "Temperature characteristics test, 1.0 Vrms max; capacitance at steps 1, 3, 5 compared with step 3"
-cite       = "DS p.6 (C0G sheet of GCM21A5C2E101FX01), Specifications and Test Methods, No. 25 Temperature Characteristics, Capacitance Drift"
+cite       = "DS p.6 (GCM21A5C2E101FX01-00B-EN.pdf), Specifications and Test Methods, No. 25 Temperature Characteristics, Capacitance Drift"
 note       = "Text row: the limit is the larger of a percentage and an absolute value. Not stored as numbers."
 
 # Open item: qualification-test rows not stored (as for GCM188): visual, dimensions, DPA (No. 5), voltage proof (No. 21),

@@ -612,7 +612,7 @@ min        = -30
 max        = 30
 unit       = "ppm/degC"
 conditions = "Ref. temp 25 degC; temp range printed as 25 to 125 degC; coefficient 0 +/-30 ppm/degC"
-cite       = "DS p.2, Rated Value, Temp. coeff. or Cap. Change (0+/-30 ppm/degC), Temp. Range (25 to 125 degC)"
+cite       = "DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Rated Value, Temp. coeff. or Cap. Change (0+/-30 ppm/degC), Temp. Range (25 to 125 degC)"
 note       = "Public STD code C0G (EIA). A temperature coefficient, not a percent-change class. The DS prints the range 25 to 125 degC only: no coefficient is printed below 25 degC. The -55 to -10 degC capacitance drift is in the Table A rows (capdrift_*_c0g); the -10 to 25 degC segment has no printed number (open item). capacitance_worst_ppm requires dt and refuses values outside 0 to 100 degC (docs/SPEC.md, Capacitor series)."
 
 [param.op_temp_c0g]
@@ -624,7 +624,7 @@ min        = -55
 max        = 125
 unit       = "degC"
 conditions = ""
-cite       = "DS p.2, Rated Value, Operating Temp. Range (-55 to 125 degC)"
+cite       = "DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Rated Value, Operating Temp. Range (-55 to 125 degC)"
 check_ambient = true
 note       = "Read from the C0G reference sheet of GCM1885C1H101GA16. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every C0G catalog row uses it."
 
@@ -641,7 +641,7 @@ min        = -0.24
 max        = 0.58
 unit       = "%"
 conditions = "Reference 25 degC, no bias; measured at -55 degC"
-cite       = "DS p.7, Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -55 degC"
+cite       = "DS p.7 (GCM1885C1H101GA16-01A-EN.pdf), Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -55 degC"
 note       = "Printed Max 0.58, Min -0.24: stored as min -0.24, max 0.58 (printed columns). Covers only the -55 degC point."
 
 [param.capdrift_m30_c0g]
@@ -654,7 +654,7 @@ min        = -0.17
 max        = 0.4
 unit       = "%"
 conditions = "Reference 25 degC, no bias; measured at -30 degC"
-cite       = "DS p.7, Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -30 degC"
+cite       = "DS p.7 (GCM1885C1H101GA16-01A-EN.pdf), Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -30 degC"
 note       = "Printed Max 0.4, Min -0.17: stored as min -0.17, max 0.4 (printed columns). Covers only the -30 degC point."
 
 [param.capdrift_m10_c0g]
@@ -667,7 +667,7 @@ min        = -0.11
 max        = 0.25
 unit       = "%"
 conditions = "Reference 25 degC, no bias; measured at -10 degC"
-cite       = "DS p.7, Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -10 degC"
+cite       = "DS p.7 (GCM1885C1H101GA16-01A-EN.pdf), Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -10 degC"
 note       = "Printed Max 0.25, Min -0.11: stored as min -0.11, max 0.25 (printed columns). Covers only the -10 degC point."
 
 # Per-part rows: GCM1885C1H101GA16 (100 pF, +/-2 %, DC 50 V, C0G), from the C0G reference sheet.
@@ -681,7 +681,7 @@ scope      = "na"
 text       = "Within +/-0.2 % or +/-0.05 pF, whichever is larger"
 unit       = "%"
 conditions = "Temperature characteristics test, 1.0 Vrms max; capacitance at steps 1, 3, 5 compared with step 3"
-cite       = "DS p.6, Specifications and Test Methods, No. 25 Temperature Characteristics, Capacitance Drift"
+cite       = "DS p.6 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 25 Temperature Characteristics, Capacitance Drift"
 note       = "Text row: the limit is the larger of a percentage and an absolute value. Not stored as numbers."
 
 # Open item: qualification-test rows not stored (as for X7R): visual, dimensions, solvents, mechanical shock, vibration,
@@ -697,7 +697,7 @@ scope      = "25C"
 typ        = 100
 unit       = "pF"
 conditions = "25 degC, 1.0 +/-0.1 MHz, 0.5 to 5.0 Vrms (DS p.5, No. 17)"
-cite       = "DS p.2, Rated Value, Capacitance (100pF)"
+cite       = "DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Rated Value, Capacitance (100pF)"
 
 [param.tolerance_ds_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -708,7 +708,7 @@ min        = -2
 max        = 2
 unit       = "%"
 conditions = ""
-cite       = "DS p.2, Rated Value, Capacitance Tolerance (+/-2 %)"
+cite       = "DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Rated Value, Capacitance Tolerance (+/-2 %)"
 note       = "Printed +/-2 % as a limit: min -2, max 2 (SPEC +/-X rule). The catalog tolerance of this value (catalog.csv) is the export's own printed value."
 
 [param.rated_v_ds_c0g]
@@ -723,7 +723,7 @@ min_ref    = "2"
 max_ref    = "2"
 unchecked  = "the generated rated_voltage check applies the catalog rated voltage of the selected part; this per-part row duplicates it (owner: module)"
 conditions = "Voltage between pin 1 and pin 2 (non-polarized; either polarity)"
-cite       = "DS p.2, Rated Value, Rated Voltage (DC 50V)"
+cite       = "DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Rated Value, Rated Voltage (DC 50V)"
 note       = "DS prints DC 50V with no MIN/MAX label. Stored symmetric (min -50, max 50) because the part is non-polarized, as for the X7R row."
 
 [param.length_c0g]
@@ -737,7 +737,7 @@ typ        = 1.6
 max        = 1.7
 unit       = "mm"
 conditions = ""
-cite       = "DS p.2, Type & Dimension, L (1.6+/-0.1)"
+cite       = "DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, L (1.6+/-0.1)"
 note       = "min and max are the printed nominal 1.6 -/+ 0.1 (arithmetic)."
 
 [param.width_c0g]
@@ -751,7 +751,7 @@ typ        = 0.8
 max        = 0.9
 unit       = "mm"
 conditions = ""
-cite       = "DS p.2, Type & Dimension, W (0.8+/-0.1)"
+cite       = "DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, W (0.8+/-0.1)"
 note       = "min and max are the printed nominal 0.8 -/+ 0.1 (arithmetic)."
 
 [param.thickness_t_c0g]
@@ -765,7 +765,7 @@ typ        = 0.8
 max        = 0.9
 unit       = "mm"
 conditions = ""
-cite       = "DS p.2, Type & Dimension, T (0.8+/-0.1)"
+cite       = "DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, T (0.8+/-0.1)"
 note       = "min and max are the printed nominal 0.8 -/+ 0.1 (arithmetic)."
 
 [param.dim_e_c0g]
@@ -778,7 +778,7 @@ min        = 0.2
 max        = 0.5
 unit       = "mm"
 conditions = ""
-cite       = "DS p.2, Type & Dimension, e (0.2 to 0.5)"
+cite       = "DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, e (0.2 to 0.5)"
 
 [param.dim_g_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -789,7 +789,7 @@ scope      = "na"
 min        = 0.5
 unit       = "mm"
 conditions = ""
-cite       = "DS p.2, Type & Dimension, g (0.5 min.)"
+cite       = "DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, g (0.5 min.)"
 note       = "Printed as a minimum only; no max stored."
 
 [param.q_25c_c0g]
@@ -801,7 +801,7 @@ scope      = "25C"
 min        = 1000
 unit       = ""
 conditions = "25 degC, 1.0 +/-0.1 MHz, 0.5 to 5.0 Vrms"
-cite       = "DS p.5, Specifications and Test Methods, No. 18 Q or Dissipation Factor (DF): Q>=1000"
+cite       = "DS p.5 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 18 Q or Dissipation Factor (DF): Q>=1000"
 note       = "C0G is specified as Q (not DF): stored as a minimum, as printed."
 
 [param.ir_25c_c0g]
@@ -813,7 +813,7 @@ scope      = "25C"
 text       = "More than 100000 Mohm (printed 'More than 100000MΩ')"
 unit       = ""
 conditions = "25 degC, rated voltage, charging time 2 min, charge/discharge current 50 mA max"
-cite       = "DS p.5, Specifications and Test Methods, No. 19 Insulation Resistance (IR), Room Temperature"
+cite       = "DS p.5 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 19 Insulation Resistance (IR), Room Temperature"
 
 [param.ir_125c_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -824,7 +824,7 @@ scope      = "na"
 text       = "More than 10000 Mohm (printed 'More than 10000MΩ')"
 unit       = ""
 conditions = "125 degC, rated voltage, charging time 2 min, charge/discharge current 50 mA max"
-cite       = "DS p.5, Specifications and Test Methods, No. 20 Insulation Resistance (IR), High Temperature"
+cite       = "DS p.5 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 20 Insulation Resistance (IR), High Temperature"
 
 [param.hte_cap_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -836,7 +836,7 @@ min        = -2.5
 max        = 2.5
 unit       = "%"
 conditions = "150 degC, 1000 h, no bias; after 24 h at room temperature"
-cite       = "DS p.3, Specifications and Test Methods, No. 3 High Temperature Exposure (Storage), Capacitance Change"
+cite       = "DS p.3 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 3 High Temperature Exposure (Storage), Capacitance Change"
 
 [param.hte_q_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -847,7 +847,7 @@ scope      = "na"
 min        = 1000
 unit       = ""
 conditions = "150 degC, 1000 h, no bias; after 24 h at room temperature"
-cite       = "DS p.3, Specifications and Test Methods, No. 3 High Temperature Exposure (Storage), Q or D.F."
+cite       = "DS p.3 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 3 High Temperature Exposure (Storage), Q or D.F."
 
 [param.hte_ir_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -858,7 +858,7 @@ scope      = "na"
 text       = "More than 10000 Mohm (printed 'More than 10000MΩ')"
 unit       = ""
 conditions = "Room temperature, after 150 degC, 1000 h exposure"
-cite       = "DS p.3, Specifications and Test Methods, No. 3 High Temperature Exposure (Storage), I.R. (Room Temp.)"
+cite       = "DS p.3 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 3 High Temperature Exposure (Storage), I.R. (Room Temp.)"
 
 [param.cycle_cap_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -870,7 +870,7 @@ min        = -2.5
 max        = 2.5
 unit       = "%"
 conditions = "1000 cycles, min operating temp to max operating temp (30 min dwell each); after room-temperature sit"
-cite       = "DS p.3, Specifications and Test Methods, No. 4 Temperature Cycling, Capacitance Change"
+cite       = "DS p.3 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 4 Temperature Cycling, Capacitance Change"
 
 [param.cycle_q_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -881,7 +881,7 @@ scope      = "na"
 min        = 1000
 unit       = ""
 conditions = "1000 cycles; after room-temperature sit"
-cite       = "DS p.3, Specifications and Test Methods, No. 4 Temperature Cycling, Q or D.F."
+cite       = "DS p.3 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 4 Temperature Cycling, Q or D.F."
 
 [param.cycle_ir_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -892,7 +892,7 @@ scope      = "na"
 text       = "More than 10000 Mohm (printed 'More than 10000MΩ')"
 unit       = ""
 conditions = "Room temperature, after 1000 cycles"
-cite       = "DS p.3, Specifications and Test Methods, No. 4 Temperature Cycling, I.R. (Room Temp.)"
+cite       = "DS p.3 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 4 Temperature Cycling, I.R. (Room Temp.)"
 
 [param.moist_cap_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -904,7 +904,7 @@ min        = -3
 max        = 3
 unit       = "%"
 conditions = "+25 degC to +65 degC, 80 to 98 %RH, 10 cycles of the 24 h profile"
-cite       = "DS p.3, Specifications and Test Methods, No. 6 Moisture Resistance, Capacitance Change"
+cite       = "DS p.3 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 6 Moisture Resistance, Capacitance Change"
 
 [param.moist_q_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -915,7 +915,7 @@ scope      = "na"
 min        = 350
 unit       = ""
 conditions = "+25 degC to +65 degC, 80 to 98 %RH, 10 cycles of the 24 h profile"
-cite       = "DS p.3, Specifications and Test Methods, No. 6 Moisture Resistance, Q or D.F."
+cite       = "DS p.3 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 6 Moisture Resistance, Q or D.F."
 
 [param.moist_ir_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -926,7 +926,7 @@ scope      = "na"
 text       = "More than 10000 Mohm (printed 'More than 10000MΩ')"
 unit       = ""
 conditions = "Room temperature, after the moisture test"
-cite       = "DS p.3, Specifications and Test Methods, No. 6 Moisture Resistance, I.R. (Room Temp.)"
+cite       = "DS p.3 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 6 Moisture Resistance, I.R. (Room Temp.)"
 
 [param.hb_cap_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -938,7 +938,7 @@ min        = -3
 max        = 3
 unit       = "%"
 conditions = "85 degC, 80 to 85 %RH, 1000 h; test voltage: rated voltage and 1.3 +0.2/-0 V DC (6.8 kohm series, as printed)"
-cite       = "DS p.4, Specifications and Test Methods, No. 7 Humidity Bias, Capacitance Change"
+cite       = "DS p.4 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 7 Humidity Bias, Capacitance Change"
 
 [param.hb_q_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -949,7 +949,7 @@ scope      = "na"
 min        = 200
 unit       = ""
 conditions = "85 degC, 80 to 85 %RH, 1000 h"
-cite       = "DS p.4, Specifications and Test Methods, No. 7 Humidity Bias, Q or D.F."
+cite       = "DS p.4 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 7 Humidity Bias, Q or D.F."
 
 [param.hb_ir_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -960,7 +960,7 @@ scope      = "na"
 text       = "More than 1000 Mohm (printed 'More than 1000MΩ')"
 unit       = ""
 conditions = "Room temperature, after the humidity bias test"
-cite       = "DS p.4, Specifications and Test Methods, No. 7 Humidity Bias, I.R. (Room Temp.)"
+cite       = "DS p.4 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 7 Humidity Bias, I.R. (Room Temp.)"
 
 [param.htol_cap_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -972,7 +972,7 @@ min        = -3
 max        = 3
 unit       = "%"
 conditions = "Max operating temp +/-3 degC (125 degC), 1000 h, 200 % of rated voltage"
-cite       = "DS p.4, Specifications and Test Methods, No. 8 High Temperature Operating Life, Capacitance Change"
+cite       = "DS p.4 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 8 High Temperature Operating Life, Capacitance Change"
 
 [param.htol_q_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -983,7 +983,7 @@ scope      = "na"
 min        = 350
 unit       = ""
 conditions = "Max operating temp +/-3 degC, 1000 h, 200 % of rated voltage"
-cite       = "DS p.4, Specifications and Test Methods, No. 8 High Temperature Operating Life, Q or D.F."
+cite       = "DS p.4 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 8 High Temperature Operating Life, Q or D.F."
 
 [param.htol_ir_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -994,7 +994,7 @@ scope      = "na"
 text       = "More than 1000 Mohm (printed 'More than 1000MΩ')"
 unit       = ""
 conditions = "Room temperature, after the high-temperature operating life test"
-cite       = "DS p.4, Specifications and Test Methods, No. 8 High Temperature Operating Life, I.R. (Room Temp.)"
+cite       = "DS p.4 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 8 High Temperature Operating Life, I.R. (Room Temp.)"
 
 [param.board_flex_cap_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -1006,7 +1006,7 @@ min        = -5
 max        = 5
 unit       = "%"
 conditions = "Flexure 3 mm, holding time 60 s, reflow solder on test substrate (1.6 mm glass epoxy); after test"
-cite       = "DS p.5, Specifications and Test Methods, No. 22 Board Flex, Capacitance Change"
+cite       = "DS p.5 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 22 Board Flex, Capacitance Change"
 
 [param.beam_load_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -1016,7 +1016,7 @@ scope      = "na"
 text       = "More than 20 N (destruction value)"
 unit       = ""
 conditions = "Speed 0.5 mm/s; chip length 2.5 mm max."
-cite       = "DS p.5, Specifications and Test Methods, No. 24 Beam Load Test"
+cite       = "DS p.5 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 24 Beam Load Test"
 
 [param.solderability_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -1026,5 +1026,5 @@ scope      = "na"
 min        = 95
 unit       = "%"
 conditions = "Specifications and Test Methods No.16 (a) test conditions"
-cite       = "DS p.5, Specifications and Test Methods, No.16 Solderability (a)"
+cite       = "DS p.5 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No.16 Solderability (a)"
 note       = "Assembly acceptance criterion, not a circuit limit."
