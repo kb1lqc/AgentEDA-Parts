@@ -64,6 +64,14 @@ tools/                            check_sync, update_notes, stamp_block, render,
 
 ## Versioning
 - Release each block with a tag `blocks/<Block>/vX.Y.Z` (`pcb publish`, or a manual tag if it needs a TTY).
+  Verified 2026-11-17 (pcb 0.4.102): `pcb publish` refuses outside CI, `--force` still prompts for a TTY, and its
+  pre-flight builds each block module STANDALONE with its default configs, so a block whose value configs have no
+  defaults (0 ohm, undeclared voltages) is blocked by `value_allowed`/`rated_voltage`/UNVERIFIED diagnostics even
+  though its bench passes. Release then with annotated tags named and messaged as `pcb publish --check` would
+  (`git tag -a blocks/<Block>/vX.Y.Z -m "github.com/<owner>/<repo>/blocks/<Block> vX.Y.Z"`) on the merged main,
+  after the bench gates pass, and prove resolution with `pcb add <url>/blocks/<Block>@X.Y.Z` in a throwaway board.
+  Giving each block reference-instance defaults (the bench values) would let the standalone pre-flight pass; not
+  done yet.
 - A board pins each block with `pcb add github.com/<owner>/<repo>/blocks/<Block>@<version>`; never hand-edit
   versions. The block's analysis is pinned to the SAME tag (below); bump both together.
 - Patch: notes, docs, analysis fixes that change no result direction. Minor: new configs with backward-compatible
