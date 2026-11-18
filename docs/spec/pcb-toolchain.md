@@ -42,5 +42,12 @@ Library wrappers type supply pins as `Power` and ground pins as `Ground`, so ins
 - Wires on 1.27 mm, pin rows on 2.54 mm; dog-leg inside a 2.54 mm pitch.
 - Paper: Tabloid is `USLedger`; `pcb apply` preserves it.
 
+## Publishing
+- `pcb publish` refuses to run outside CI; `--force` still prompts for a TTY.
+- Its pre-flight builds each block module on its own with default configs. A block whose value configs have no
+  defaults (0 ohm, undeclared voltages) fails there on `value_allowed`, `rated_voltage` or UNVERIFIED diagnostics, even
+  when its bench passes.
+- Without CI, release blocks with annotated tags as circuit-blocks `docs/spec/blocks.md` "Versioning" describes.
+
 ## Tools
 Generic helpers live in `tools/schematic/` (README there): `render.sh`, `netcmp.py`, `erc.sh`, `kicad_sexpr.py`, `place.py`, `overlap.py`. Run them on copies. `overlap.py` skips pin number/name text and group-box edges; review those in the render.
