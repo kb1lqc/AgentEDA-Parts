@@ -61,7 +61,7 @@ Shared data below applies to every variant unless a row names its variants.
 | OUT, SENSE voltages |  | -20 (rel. GND) |  | 100 (rel. GND) | V | Note: Reference: DS p.2 header (Notes 1, 2) and DS p.5, Note 2 ('All voltages are referenced to GND unless otherwise specified'). min_ref/max_ref = GND. | DS p.2, Absolute Maximum Ratings, OUT, SENSE Voltages |
 | Voltage difference SENSE to OUT |  | -30 (rel. OUT) |  | 30 (rel. OUT) | V | Note: Difference V(SENSE) - V(OUT): the value is SENSE, the reference pin is OUT (DS p.2 row 'Voltage Difference (SENSE to OUT)'); the row names no reference pin beyond the difference. Cite: DS p.2 header (Notes 1, 2). | DS p.2, Absolute Maximum Ratings, Voltage Difference (SENSE to OUT) |
 | Voltage difference OUT to VCC |  | -100 (rel. VCC) |  | 100 (rel. VCC) | V | Note: Difference V(OUT) - V(VCC): the value is OUT, the reference pin is VCC (DS p.2 row 'Voltage Difference (OUT to VCC)'). Cite: DS p.2 header (Notes 1, 2). | DS p.2, Absolute Maximum Ratings, Voltage Difference (OUT to VCC) |
-| Voltage difference SENSE to SOURCE |  | -100 (rel. SOURCE) |  | 100 (rel. SOURCE) | V | Note: Difference V(SENSE) - V(SOURCE): the value is SENSE, the reference pin is SOURCE (DS p.2 row 'Voltage Difference (SENSE to SOURCE)'). Cite: DS p.2 header (Notes 1, 2). | DS p.2, Absolute Maximum Ratings, Voltage Difference (SENSE to SOURCE) |
+| Voltage difference SENSE to SOURCE |  | -100 (rel. SOURCE) |  | 100 (rel. SOURCE) | V | Note: Difference V(SENSE) - V(SOURCE): the value is SENSE, the reference pin is SOURCE (DS p.2 row 'Voltage Difference (SENSE to SOURCE)'). Cite: DS p.2 header (Notes 1, 2). SENSE is circuit-set (the sense resistor node), so the row is checked on SENSE with SOURCE as the reference; a module that leaves SOURCE undeclared gets UNVERIFIED (docs/spec/extract.md check-row rules). | DS p.2, Absolute Maximum Ratings, Voltage Difference (SENSE to SOURCE) |
 | FB, TMR voltages |  | -0.3 (rel. GND) |  | 5.5 (rel. GND) | V | Note: Reference: DS p.2 header (Notes 1, 2) and DS p.5, Note 2 ('All voltages are referenced to GND unless otherwise specified'). min_ref/max_ref = GND. | DS p.2, Absolute Maximum Ratings, FB, TMR Voltages |
 | Operating ambient temperature range, LTC4364H |  | -40 |  | 125 | degC | LTC4364H grade, -40 degC to 125 degC (variants LTC4364HMS-1, LTC4364HMS-2) Variants: LTC4364HMS-1, LTC4364HMS-2. | DS p.2, Absolute Maximum Ratings, Operating Ambient Temperature Range, LTC4364H |
 | Operating ambient temperature range, LTC4364C |  | 0 |  | 70 | degC | LTC4364C grade, 0 degC to 70 degC (variants LTC4364CMS-1, LTC4364CMS-2) Variants: LTC4364CMS-1, LTC4364CMS-2. | DS p.2, Absolute Maximum Ratings, Operating Ambient Temperature Range, LTC4364C |
@@ -169,13 +169,13 @@ Generated wrapper: `<Variant>.zen` (`python3 -m lib.zen`). abs_max and rec_op ro
 | Param | Name | Checked against | Not checked / reason |
 |---|---|---|---|
 | abs_vcc | Supply voltage VCC | pins VCC |  |
-| abs_source_ov_uv_shdn | SOURCE, OV, UV, SHDN voltages | pins OV, UV, SHDN | SOURCE not checked: its voltage is set by the external MOSFETs and rarely declared; owner: module |
+| abs_source_ov_uv_shdn | SOURCE, OV, UV, SHDN voltages | pins OV, UV, SHDN, SOURCE |  |
 | abs_dgate_hgate | DGATE, HGATE voltages (relative to SOURCE) | UNCHECKED | DGATE and HGATE are driven by the part (internally clamped); owner: module |
 | abs_enout_flt | ENOUT, FLT voltages | pins ENOUT, FLT |  |
 | abs_out_sense | OUT, SENSE voltages | pins OUT, SENSE |  |
 | abs_sense_out | Voltage difference SENSE to OUT | pins SENSE |  |
 | abs_out_vcc | Voltage difference OUT to VCC | pins OUT |  |
-| abs_sense_source | Voltage difference SENSE to SOURCE | UNCHECKED | SOURCE is set by the external MOSFETs and rarely declared; owner: module (MOSFET VDS rating) |
+| abs_sense_source | Voltage difference SENSE to SOURCE | pins SENSE |  |
 | abs_fb_tmr | FB, TMR voltages | pins FB | TMR not checked: timer capacitor node driven by the part; owner: module |
 | ta_h | Operating ambient temperature range, LTC4364H | board ambient |  |
 | ta_c | Operating ambient temperature range, LTC4364C | board ambient |  |

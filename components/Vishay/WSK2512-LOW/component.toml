@@ -258,11 +258,12 @@ unchecked  = "curve value; used by calc.rated_power"
 name       = "Performance test limit, additive term (all PERFORMANCE rows)"
 kind       = "electrical"
 scope      = "na"
+min        = -0.0005
 max        = 0.0005
 unit       = "ohm"
 conditions = "Added to the percent term of every PERFORMANCE row: total limit ±(X % of R + 0.0005 ohm)"
 cite       = "DS p.3, PERFORMANCE, TEST LIMITS column, '+ 0.0005 ohm' (all rows)"
-note       = "One-sided printed term. Reading: the ± on each row applies to the percent term only."
+note       = "Printed '± X % + 0.0005 Ω' with no brackets. Stored symmetric, ±(X % of R + 0.0005 ohm): the conservative worst-case reading (a one-sided +0.0005 would understate the low side). Open item: confirm the reading with Vishay."
 
 [param.perf_thermal_shock]
 name       = "Resistance change, thermal shock"

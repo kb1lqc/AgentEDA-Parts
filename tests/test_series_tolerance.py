@@ -280,6 +280,20 @@ class TestWskSeries(unittest.TestCase):
                 t_c=__import__("lib").Param(min=-40, max=85), t_ref_c=25.0)
         self.assertAlmostEqual(r.max, 0.025 * 1.005 * (1 + 35e-6 * 65))
 
+    def test_inputs_give_end_of_life_bounds(self):
+        # INPUTS maps aging (perf_load_life, +/-1.0 %) and aging_abs (perf_offset_ohm, +/-0.0005 ohm): wca over
+        # part.inputs is end of life and must be wider on both sides than the beginning-of-life call
+        from lib import Param
+        from lib.wca import wca
+        kw = dict(r0=0.025, tol=self.main.tolerance("D"), tcr=self.main.tcr(0.025), t_c=Param(min=-40, max=85),
+                  t_ref_c=25.0)
+        bol = wca(self.main.calc.resistance_worst, **kw)
+        inp = self.main.inputs("resistance_worst")
+        self.assertEqual(set(inp) & {"aging", "aging_abs"}, {"aging", "aging_abs"})
+        eol = wca(self.main.calc.resistance_worst, **kw, aging=inp["aging"], aging_abs=inp["aging_abs"])
+        self.assertAlmostEqual(eol.max, bol.max * 1.01 + 0.0005)
+        self.assertAlmostEqual(eol.min, bol.min * 0.99 - 0.0005)
+
     def test_no_voltage_limit_and_pins(self):
         for part in (self.main, self.low):
             self.assertNotIn("series_vlimit", part.info)

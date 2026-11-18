@@ -165,8 +165,7 @@ unit       = "V"
 conditions = ""
 cite       = "DS p.2, Absolute Maximum Ratings, SOURCE, OV, UV, SHDN Voltages"
 note       = "Reference: DS p.2 header (Notes 1, 2) and DS p.5, Note 2 ('All voltages are referenced to GND unless otherwise specified'). min_ref/max_ref = GND."
-check_pins = ["OV", "UV", "SHDN"]
-unchecked  = "SOURCE not checked: its voltage is set by the external MOSFETs and rarely declared; owner: module"
+check_pins = ["OV", "UV", "SHDN", "SOURCE"]
 
 [param.abs_dgate_hgate]
 name       = "DGATE, HGATE voltages (relative to SOURCE)"
@@ -249,8 +248,8 @@ max_ref    = "SOURCE"
 unit       = "V"
 conditions = ""
 cite       = "DS p.2, Absolute Maximum Ratings, Voltage Difference (SENSE to SOURCE)"
-note       = "Difference V(SENSE) - V(SOURCE): the value is SENSE, the reference pin is SOURCE (DS p.2 row 'Voltage Difference (SENSE to SOURCE)'). Cite: DS p.2 header (Notes 1, 2)."
-unchecked  = "SOURCE is set by the external MOSFETs and rarely declared; owner: module (MOSFET VDS rating)"
+note       = "Difference V(SENSE) - V(SOURCE): the value is SENSE, the reference pin is SOURCE (DS p.2 row 'Voltage Difference (SENSE to SOURCE)'). Cite: DS p.2 header (Notes 1, 2). SENSE is circuit-set (the sense resistor node), so the row is checked on SENSE with SOURCE as the reference; a module that leaves SOURCE undeclared gets UNVERIFIED (docs/spec/extract.md check-row rules)."
+check_pins = ["SENSE"]
 
 [param.abs_fb_tmr]
 name       = "FB, TMR voltages"

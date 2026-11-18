@@ -1,7 +1,7 @@
 # Test harness for the generated LTC4364 MS family wrappers (tests/test_zen.py copies it into the family directory and
 # builds it); `variant` selects which <Variant>.zen is instantiated. The default ambient (-40 to 85 degC) passes the
 # I and H grades; C-grade cases set ambient 0 to 70 degC.
-# Defaults are a nominal passing 12 V system: VCC, OUT, SENSE, ENOUT and FLT pull-ups at 12 V 5 %, UV/OV/FB near
+# Defaults are a nominal passing 12 V system: VCC, OUT, SENSE, SOURCE, ENOUT and FLT pull-ups at 12 V 5 %, UV/OV/FB near
 # their 1.25 V thresholds, SHDN at its open-circuit float range (DS p.4), GND = Ground (0 V), industrial ambient.
 variant = config(str, default="LTC4364HMS-1")  # which generated variant wrapper to test (CASES override it)
 U = Module("./" + variant + ".zen")
@@ -9,6 +9,7 @@ U = Module("./" + variant + ".zen")
 vcc = config(str, default="12V 5%")
 vout = config(str, default="12V 5%")
 vsense = config(str, default="12V 5%")
+vsource = config(str, default="12V 5%")  # common source of the back-to-back MOSFETs: nominal at the supply when they are on
 vuv = config(str, default="1.3V 5%")
 vfb = config(str, default="1.25V 2%")
 ta = config(str, default="-40°C to 85°C")
@@ -25,7 +26,7 @@ U(
     OUT=_net("OUT", vout),
     SENSE=_net("SENSE", vsense),
     DGATE=Net("DGATE"),
-    SOURCE=Net("SOURCE"),
+    SOURCE=_net("SOURCE", vsource),
     HGATE=Net("HGATE"),
     SHDN=Net("SHDN", voltage="2.3V to 6.5V"),
     UV=_net("UV", vuv),

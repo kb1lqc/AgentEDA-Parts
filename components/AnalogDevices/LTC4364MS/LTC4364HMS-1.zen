@@ -8,7 +8,6 @@ Analysis (worst case, tables, plots) is done in Python: see README.md and calc.p
 load("@stdlib/units.zen", "Temperature", "Voltage")
 
 # UNCHECKED: abs_dgate_hgate: DGATE, HGATE voltages (relative to SOURCE) (DS p.2, Absolute Maximum Ratings, DGATE, HGATE Voltages (Note 3) SOURCE - 0.3 V to SOURCE + 10 V); DGATE and HGATE are driven by the part (internally clamped); owner: module
-# UNCHECKED: abs_sense_source: Voltage difference SENSE to SOURCE (DS p.2, Absolute Maximum Ratings, Voltage Difference (SENSE to SOURCE)); SOURCE is set by the external MOSFETs and rarely declared; owner: module (MOSFET VDS rating)
 # UNCHECKED: tstg: Storage temperature range (DS p.2, Absolute Maximum Ratings, Storage Temperature Range); owner: assembly
 # UNCHECKED: t_lead: Lead temperature, soldering 10 s, MS and SO packages (DS p.2, Absolute Maximum Ratings, Lead Temperature (Soldering, 10 sec), MS, SO Packages); owner: assembly
 
@@ -55,6 +54,11 @@ v_abs_out_vcc = config(
     Voltage,
     optional=True,
     help="Declared worst-case range of V(OUT) - V(VCC) from the module's worst-case analysis; replaces the independent net ranges when set",
+)
+v_abs_sense_source = config(
+    Voltage,
+    optional=True,
+    help="Declared worst-case range of V(SENSE) - V(SOURCE) from the module's worst-case analysis; replaces the independent net ranges when set",
 )
 
 _ROOT = len(builtin.current_module_path()) == 0  # built standalone, not instantiated
@@ -157,6 +161,24 @@ _limit(
     {
         "v": SHDN.voltage,
         "what": "abs_source_ov_uv_shdn_SHDN",
+        "lo": -40.0 * derate,
+        "lo_ref": GND.voltage,
+        "hi": 100.0 * derate,
+        "hi_ref": GND.voltage,
+    },
+    "error",
+)
+
+# abs_source_ov_uv_shdn_SOURCE: pin SOURCE (SOURCE) within the limit, x derate
+#   SOURCE, OV, UV, SHDN voltages: min -40 / max 100 V (min_ref rel. GND) (max_ref rel. GND)
+#   DS p.2, Absolute Maximum Ratings, SOURCE, OV, UV, SHDN Voltages
+#   Severity error: abs_max violated
+_limit(
+    "abs_source_ov_uv_shdn_SOURCE",
+    _range,
+    {
+        "v": SOURCE.voltage,
+        "what": "abs_source_ov_uv_shdn_SOURCE",
         "lo": -40.0 * derate,
         "lo_ref": GND.voltage,
         "hi": 100.0 * derate,
@@ -276,6 +298,26 @@ def _abs_out_vcc_OUT_inputs(vd):
 
 
 _limit("abs_out_vcc_OUT", _range, _abs_out_vcc_OUT_inputs(v_abs_out_vcc), "error")
+
+
+# abs_sense_source_SENSE: pin SENSE (SENSE) within the limit, x derate
+#   Voltage difference SENSE to SOURCE: min -100 / max 100 V (min_ref rel. SOURCE) (max_ref rel. SOURCE)
+#   DS p.2, Absolute Maximum Ratings, Voltage Difference (SENSE to SOURCE)
+#   Severity error: abs_max violated
+#   Pin pair: v_abs_sense_source (config, the module's worst-case analysis of V(SENSE) - V(SOURCE)) when set,
+#   compared with the same limit and derate; otherwise the two nets' ranges, taken as independent.
+def _abs_sense_source_SENSE_inputs(vd):
+    inputs = {"what": "abs_sense_source_SENSE", "lo": -100.0 * derate, "hi": 100.0 * derate}
+    if vd == None:
+        inputs["v"] = SENSE.voltage
+        inputs["lo_ref"] = SOURCE.voltage
+        inputs["hi_ref"] = SOURCE.voltage
+    else:
+        inputs["v"] = vd
+    return inputs
+
+
+_limit("abs_sense_source_SENSE", _range, _abs_sense_source_SENSE_inputs(v_abs_sense_source), "error")
 
 # abs_fb_tmr_FB: pin FB (FB) within the limit, x derate
 #   FB, TMR voltages: min -0.3 / max 5.5 V (min_ref rel. GND) (max_ref rel. GND)
