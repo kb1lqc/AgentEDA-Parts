@@ -7,7 +7,7 @@ import sys
 import tomllib
 from pathlib import Path
 
-from . import capacitor, catalog, kicad, series
+from . import capacitor, catalog, kicad, rules, series
 from .component import ROOT, load_calc, merge_variant, run_example, variants_of
 from .units import to_si
 
@@ -19,7 +19,6 @@ PIN_TYPES = {"input", "output", "bidirectional", "tri_state", "passive", "free",
              "power_out", "open_collector", "open_emitter", "no_connect"}
 KINDS = {"abs_max", "rec_op", "electrical", "thermal", "mechanical"}
 SCOPES = {"25C", "full", "partial", "na"}
-CITE_STARTS = ("DS p.", "DS PDF p.")
 # KiCad 10 symbol format. `pcb apply schematic` (pcb 0.4.102) rejects older symbol libraries. Upgrade with
 # `kicad-cli sym upgrade --force` (docs/KICAD.md, Symbol). Footprints are not checked for this.
 KICAD_SYMBOL_MIN_VERSION = 20251024
@@ -60,8 +59,6 @@ def check_pins(pins):
         out.append(("ERROR", f"pin {num}: number appears more than once in [[pin]]"))
     for i, pin in enumerate(pins):
         label = f"pin {pin.get('number', f'#{i + 1}')}"
-        if pin.get("cite") and not pin["cite"].startswith(CITE_STARTS):
-            out.append(("WARN", f"{label}: cite should start with 'DS p.' or 'DS PDF p.'"))
         for f in PIN_FIELDS:
             if not pin.get(f):
                 out.append(("ERROR", f"{label}: missing '{f}'" + (" (cite)" if f == "cite" else "")))
@@ -105,8 +102,6 @@ def check_param(key, t, pin_names=(), used_by_series=False):
     for f in PARAM_FIELDS:
         if f not in t or (f == "cite" and not t[f]):
             out.append(("ERROR", f"{label}: missing '{f}'"))
-    if t.get("cite") and not t["cite"].startswith(CITE_STARTS):
-        out.append(("WARN", f"{label}: cite should start with 'DS p.' or 'DS PDF p.'"))
     if t.get("kind") not in KINDS and "kind" in t:
         out.append(("ERROR", f"{label}: kind '{t['kind']}' not one of {sorted(KINDS)}"))
     if t.get("scope") not in SCOPES and "scope" in t:
@@ -358,10 +353,17 @@ def check_kicad(pins, part, folder):
                 out.append(("ERROR", f"pin {num}: name mismatch, TOML '{toml[num][0]}' vs symbol '{symbol[num][0]}'"))
             if toml[num][1] != symbol[num][1]:
                 out.append(("ERROR", f"pin {num}: type mismatch, TOML '{toml[num][1]}' vs symbol '{symbol[num][1]}'"))
+        out += finding_messages(rules.symbol_grid_findings(sym))
     if part.get("kicad_footprint") and fp.exists():
         for num in sorted({str(p.get("number")) for p in pins} - kicad.footprint_pads(fp)):
             out.append(("ERROR", f"pin {num}: no footprint pad with that number"))
+        out += finding_messages(rules.courtyard_findings(fp)[0])
     return out
+
+
+def finding_messages(findings):
+    """Rule findings as (ERROR, '[rule] location: message') tuples; main() maps them to the allowlist."""
+    return [("ERROR", rules.text(f)) for f in findings]
 
 
 def check_imports(path):
@@ -429,15 +431,38 @@ def check_calc(folder, params, inputs=True):
     """calc.py present, imports only math, EXAMPLES and INPUTS valid (inputs=False: a family checks them per variant)."""
     if not (folder / "calc.py").exists():
         return [("WARN", "no calc.py")]
-    out = check_imports(folder / "calc.py")
+    out = check_imports(folder / "calc.py") + finding_messages(rules.example_comment_findings(folder / "calc.py"))
     try:
         calc = load_calc(folder / "calc.py")
     except Exception as e:
         return out + [("ERROR", f"calc.py fails to import: {e}")]
+    out += finding_messages(rules.inputs_coverage_findings(calc))
     return out + check_examples(calc) + (check_inputs(calc, params) if inputs else [])
 
 
-def check_component(folder):
+def check_component(folder, raw=False):
+    """All checks for one component directory, minus findings listed in lib/known_findings.toml (raw=True keeps them,
+    so main() can tell which entries went stale). Returns [(level, message), ...]."""
+    out = _check_component(folder)
+    if raw:
+        return out
+    part = f"{Path(folder).parent.name}/{Path(folder).name}"
+    allowed = {(e["rule"], e["location"]) for e in rules.load_allowlist() if e["part"] == part}
+    return [(lvl, msg) for lvl, msg in out if not (lvl == "ERROR" and rules.split_message(msg) in allowed)]
+
+
+def abstentions(folder):
+    """Rules that could not decide for this component (reported in the summary, never a failure)."""
+    folder = Path(folder)
+    notes = []
+    for fp in sorted(folder.glob("*.kicad_mod")):
+        reason = rules.courtyard_findings(fp)[1]
+        if reason:
+            notes.append(f"{folder.name}: courtyard-margin not checked: {reason}")
+    return notes
+
+
+def _check_component(folder):
     """All checks for one component directory. Returns [(level, message), ...].
 
     A family (variants.toml present): the shared file is checked once; each variant's merged params get the
@@ -455,6 +480,7 @@ def check_component(folder):
         return [("ERROR", f"component.toml or variants.toml is not valid TOML: {e}")]
     part, pins = data.get("part", {}), data.get("pin", [])
     out = check_part(part, folder, family=bool(variants)) + check_pins(pins)
+    out += finding_messages(rules.cite_findings(data, variants))
     names = {p.get("name") for p in pins}
     used = series.series_keys(part)
     if part.get("series") and variants:
@@ -503,17 +529,59 @@ def find_components(args):
     return [Path(a).parent if a.endswith("component.toml") else Path(a) for a in args]
 
 
-def main(argv=None):
-    """Print problems, a summary, and return the exit code (1 if any ERROR)."""
-    folders = find_components(sys.argv[1:] if argv is None else argv)
-    errors = warns = 0
+TOLERATED = "datasheet_file not found"  # PDFs are git-ignored: the only WARN that does not fail the exit code
+
+
+def collect(folders, root, full):
+    """(findings, other messages) over all folders. findings are rules.Finding; other messages are (label, level, msg)
+    for the older checks. Rule findings from check_component are tagged with the component; full adds repo-level rules."""
+    findings, others, notes = [], [], []
     for folder in folders:
-        for level, msg in check_component(folder):
-            print(f"{folder.parent.name}/{folder.name}: {level}: {msg}")
-            errors += level == "ERROR"
-            warns += level == "WARN"
-    print(f"{len(folders)} components, {errors} errors, {warns} warnings")
-    return 1 if errors else 0
+        part = f"{folder.parent.name}/{folder.name}"
+        for level, msg in check_component(folder, raw=True):
+            parsed = rules.split_message(msg)
+            if parsed and level == "ERROR":
+                findings.append(rules.Finding(parsed[0], part, parsed[1], msg[rules.MESSAGE_RE.match(msg).end():]))
+            else:
+                others.append((part, level, msg))
+        findings += rules.wiring_findings(folder, root)
+        notes += abstentions(folder)
+    if full:
+        findings += rules.repo_findings(root) + rules.zen_lint_findings(root)
+    return findings, others, notes
+
+
+def main(argv=None):
+    """Print problems, a summary, and return the exit code (1 on any ERROR, any WARN other than a missing datasheet
+    file, a stale allowlist entry, or zero components found)."""
+    args = sys.argv[1:] if argv is None else argv
+    folders = find_components(args)
+    findings, others, notes = collect(folders, ROOT, full=not args)
+    errors = warns = tolerated = 0
+    if not folders:
+        print("ERROR: no components found (components/*/*/component.toml); nothing was checked")
+        errors += 1
+    for part, level, msg in others:
+        if level == "WARN" and TOLERATED in msg:
+            tolerated += 1
+            continue
+        print(f"{part}: {level}: {msg}")
+        errors += level == "ERROR"
+        warns += level == "WARN"
+    for n in notes:
+        print(f"ABSTAIN: {n}")
+    abstained = len(notes)
+    violations, allowed, stale = rules.apply_allowlist(findings, rules.load_allowlist())
+    for f in violations:
+        print(f"{f.part}: ERROR: {rules.text(f)}")
+    errors += len(violations)
+    if not args:  # a partial run cannot see every entry
+        for e in stale:
+            print(f"lib/known_findings.toml: ERROR: stale entry (matches nothing): {e['rule']} {e['part']} {e['location']}")
+        errors += len(stale)
+    print(f"{len(folders)} components, {errors} errors, {warns} warnings, {tolerated} tolerated (datasheets absent), "
+          f"{len(allowed)} allowlisted findings, {abstained} abstained")
+    return 1 if errors or warns else 0
 
 
 if __name__ == "__main__":

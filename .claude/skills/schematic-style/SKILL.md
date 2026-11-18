@@ -1,303 +1,65 @@
 ---
 name: schematic-style
-description: House style for drawing and reviewing any circuit schematic (KiCad, generated from Zener with pcb apply schematic, or hand-drawn) - left-to-right signal and power flow, power symbols up and ground down, labels on wires, support parts at their pins, crossings replaced by labelled stubs, reusable blocks as hierarchical sheets, role-based port names, complete title blocks. Use whenever a schematic is generated, arranged, reviewed or critiqued, for any board or module.
+description: Use when planning or running schematic generation or arrangement, delegating schematic work to agents, or generating, reviewing or critiquing any schematic: flow, grouping, naming, notes, title blocks, review checklist.
 ---
 
 # Schematic style
 
-A schematic is a document for a reader who must understand, review and debug the circuit without the designer in
-the room. Every rule below serves that: the eye should follow function, not hunt for connections. The rules are
-general; examples are illustrations, not the scope. Where the toolchain cannot do something, the fallback is given.
-
-Schematic first: do no PCB layout work (no `pcb layout`, no `.kicad_pcb` edits) until the designer says layout has
-started.
+The reader must understand and debug the circuit without the designer. No layout work (`agent-roles`). Workflow, gates, agent jobs: `docs/briefs/schematic-capture.md` (give it to delegated agents). Toolchain facts: `docs/spec/pcb-toolchain.md`. Sheet-symbol geometry: `docs/spec/blocks.md` (circuit-blocks).
 
 ## Flow and placement
-- **Left to right.** Signals and power flow from inputs on the left to outputs on the right, in the order they
-  are processed. A reader scanning left to right reads the circuit's story.
-  - Examples: connector -> protection -> regulator -> load; sensor -> filter/amplifier -> ADC -> digital interface;
-    high-side current sense: supply enters left, passes through the shunt, exits right, with the sense IC below
-    the shunt and any input network running down from the shunt taps to the IC.
-  - **Rank the nets when not all can flow straight.** Give the straight left-to-right run to the highest-value nets
-    first: the main power path, then the primary data path (bus or harness). Lower-value nets (pull-ups, timing,
-    bias, configuration) bend, drop below, or use labelled stubs instead.
-- **Group nets by kind for the reviewer.** Keep power nets together and data nets, buses and harnesses together,
-  each in its own region of the sheet (typically power along the top and through the middle, data and control
-  toward the right or bottom edge), so a reviewer finds each story in one place. Bundle related signals (all SPI
-  lines, all status lines) side by side in a consistent order rather than scattering them. Optimize for a human
-  reading the sheet, not for the shortest wires.
-  - **Status and control signals are their own group,** not mixed into a data bus: `ALERT_N`, `FAULT_N`, `PGOOD_N`
-    sit in a small group beside the bus. Each bus uses one fixed order on every sheet (SPI: CS, SCLK, MOSI, MISO;
-    I2C: SDA, SCL). When an IC's pin order interleaves them, break the run with labelled stubs, or change the
-    symbol's pin arrangement in the library, so the bundle reads in the fixed order.
-  - **A net never crosses a group box it does not belong to.** It leaves its box only toward its destination; a tap
-    that feeds another group (shunt sense taps into the monitor) becomes a labelled stub inside each box, or enters
-    the other box from its own side.
-- **Orient parts to the flow.** Rotate or mirror (`(mirror y)`) a symbol so its inputs face the source and its
-  outputs face the destination. Prefer mirroring over long wires that wrap around a part.
-- **Support parts at the pin they serve.** Decoupling capacitors may instead sit in a nearby group, clearly
-  associated with their part, when that reads better; then each carries a note naming the part and pin it
-  decouples and that it is placed at that pin in layout (e.g. "C3: U1 VS pin 6, place at pin"). Series
-  terminations next to the driving pin; pull-ups/pull-downs next to the pin they bias (with a junction on that
-  pin's wire); feedback dividers next to the feedback pin; crystals and load capacitors next to the oscillator
-  pins. The schematic then shows which part belongs to which pin, and the layout engineer inherits that intent.
-- **Dividers and ladders are drawn vertically,** top at the source rail, bottom at ground, taps on the right, in
-  the order the current flows (e.g. BUS_IN -> R_TOP -> EN tap -> R_MID -> OV tap -> R_BOT -> GND), even when the top
-  connects through a label rather than a wire: the reader sees a divider at a glance.
-- **A drive chain reads from the IC pin to the part it drives.** Left is the (implied) IC pin, right is the driven
-  part (gate driver PU/PD -> series R -> gate node -> MOSFET); the shunt branch at the node (R + C to GND) drops
-  vertically to its ground symbol. Support parts that serve a different pin pair (a bootstrap capacitor BST-SRC
-  beside a gate-ramp network) get their own small group, never a shared rail with the chain.
-- **Group by function.** Each functional group (input protection, regulation, sensing, interface) is a visible
-  cluster with whitespace between groups.
+- Left to right in processing order (connector, protection, regulator, load). High-side sense: supply in left through the shunt, out right, sense IC below.
+- Rank nets: main power path straight first, then the primary data path; pull-ups, timing, bias and configuration bend, drop below or become labelled stubs.
+- Group by function into visible clusters with whitespace: power together, data buses together, status and control (`ALERT_N`, `FAULT_N`, `PGOOD_N`) in their own group. 
+- Use one bus order on every sheet (SPI: CS, SCLK, MOSI, MISO; I2C: SDA, SCL); stub or re-pin the symbol when pin order interleaves.
+- A net never crosses a group box it does not belong to; a tap feeding another group is a labelled stub in each box.
+- Orient parts to the flow; mirror, do not wrap wires.
+- Support parts sit at the pin they serve: terminations at the driving pin, pull-ups beside the biased pin, dividers at the feedback pin, crystal loads at the oscillator. A decoupling capacitor may sit in a nearby group if its note names part and pin.
+- Dividers are vertical: source top, ground bottom, taps right. A drive chain reads from IC pin to driven part; a support pair for another pin pair (bootstrap) gets its own group.
 
-## Power and ground
-- **Power symbols up, ground down.** Rails feeding parts are power symbols pointing up at the top of the part;
-  ground symbols point down at the bottom. No rail wires running across the sheet.
-- **Never rotate a rail symbol to dodge a pinout.** If a pinout puts a rail pin below a ground pin (or otherwise
-  forces the rail and ground wires to cross), route the rail wire around so the symbols keep pointing up and down.
-- **Power paths through a block are nets, not rail symbols.** A path that carries load power through a block (a
-  bus through a shunt, a switch, a fuse or an eFuse) is a labelled net entering on the left and leaving on the
-  right, so the reader sees the path. Rails that only feed parts stay power symbols.
-- **Rail names carry the intended voltage** (`V3V3`, `V5`, `VBAT`, `V12_IN`): the reader knows the level without
-  looking it up. Identifiers cannot start with a digit, so `V3V3`, not `3V3`.
-
-## Wires, labels and crossings
-- **Every label sits on a wire**, and the wire is long enough that the label fits along it. No label floats at a
-  bare pin end; a label on a pin is easy to misread as unconnected.
-- **No crossings where a reroute or a label avoids them.** When two connections would cross, draw both nets as
-  labelled wire stubs at each end, symmetrically, with no wire between; the label text reads the same way at both
-  ends (horizontal where the stub allows). Never rely on a four-way junction.
-- **Junction dots** at every T; no four-way junctions.
-- **No text overlaps a wire, pin, symbol or other text** - including the text of net labels, hierarchical labels
-  (ports), global labels, sheet pins, power-symbol names, references, values and fields. A label's text runs
-  along its own wire, never across another one; leave clearance between parallel wires so neighbouring labels do
-  not touch. Reference and value sit beside their symbol.
-- **Grid:** everything on the 1.27 mm (50 mil) grid so wires land exactly on pins.
+## Power, wires, labels
+- Power symbols up, ground down; never rotate a rail symbol to dodge a pinout (route around; rotate the IC 180, not mirror, to put rail above ground). Power paths through a block are labelled nets; rails that only feed parts are power symbols.
+- Every label sits on a wire long enough for it.
+- Replace crossings with labelled stubs, no wire between. Junction dot at every T, no four-way junctions.
+- No text overlaps a wire, pin, symbol or other text; leave clearance between parallel wires.
+- Everything on the 1.27 mm grid; `(paper "USLedger")` on every sheet.
 
 ## Names
-- **Net and port names state role, not part pin names.** `BUS_IN` / `BUS_OUT` for a power path, `V3V3` for a
-  rail, `SENSE_P` / `SENSE_N` for a differential pair; not `I_IN`, `VS`, `PIN6`.
-- **Active-low signals end in `_N`** (`ALERT_N`, `RESET_N`, `CS_N` where the name is ours to choose).
-- **Differential pairs end in `_P` / `_N`** (KiCad pairs nets by these suffixes).
-- **Board-level nets are plain** (`SPI_MISO`, `V3V3`) and drawn as **local labels**, not global labels. Nets internal to a reusable module keep the instance
-  prefix the tool adds (`INA.SENSE_P`), using a short instance name; do not expose internal nets as ports just to
-  shorten labels.
-- **Module names state their limits** when the block is not general (`...HighSideMonitor`, `...3V3Only`), so a
-  reuser cannot misapply it.
+- Names state role, not pin: `BUS_IN`/`BUS_OUT`, `V3V3`, `SENSE_P`/`SENSE_N`; active-low `_N`; pairs `_P`/`_N`.
+- Board-level nets are plain with local labels. Module-internal nets keep the instance prefix (`INA.SENSE_P`), not exposed as ports.
+- Module names state limits.
 
 ## Hierarchy
-- **Each reusable module is its own hierarchical sub-sheet**, reused unchanged on every board. The parent shows
-  the sheet symbol with the module's ports: inputs on the left edge, outputs and interfaces on the right edge.
-- **Power paths flow through the sheet symbol.** A block's power-path ports sit at the same height on opposite
-  edges (e.g. `BUS_IN` left, `BUS_OUT` right), so the path reads as one straight wire through the block. Interface
-  pins group below it on the right edge; ground on the bottom edge. A logic rail that ONLY feeds pull-ups or
-  bias (`V3V3` on a switch block) enters at the lower-left of the sheet symbol: a short wire to the left, the power symbol pointing up
-  at the wire's left end, and no text over the sheet symbol (designer, 2026-11-16). A rail that powers an IC in the block
-  (`V3V3` feeding the INA229 VS pin) stays on the top edge with the power symbol pointing up.
-- **The reusable sheet carries no board net names.** Ports appear inside as hierarchical labels named after the
-  module's ports; the parent maps board nets to them.
-- **Each port appears once inside a sheet.** A hierarchical label (`BUS_IN`, `BUS_OUT`, `FAULT_N`, `PGOOD_N`) is
-  drawn once, in the group box that owns that function (power-path ports in the POWER PATH box; status ports at the
-  IC pin or in the STATUS box). Every other use on the sheet is a local label of the same net (GND included,
-  unless a ground symbol is proven by the netlist diff to keep the block's own net), so a
-  pull-up or a decoupling capacitor never wires back to a port. A decoupling capacitor sits on its own pin's net
-  (wired to the pin's wire with a junction), never on the port. Prove the connectivity with the netlist diff.
-  Toolchain limit (pcb 0.4.102, verified 2026-11-16): `pcb apply` deletes local or global labels that carry a port
-  net's name and re-adds a hierarchical label on EVERY separate wire group of that net. So "once" is achieved by
-  wiring: make every use of a port net one wire group (pull-up wired to its IC pin's wire, decoupling cap wired to
-  its pin's wire). Where uses are far apart (a divider top on BUS_IN), a second port flag is the accepted fallback.
-  A port line that must be re-ordered (SPI SCLK into the fixed bus order) is a labelled stub pair: a flag at the pin
-  and a flag at BOTH ends of the re-entering row. Never leave a wire end unconnected to save a flag: a dangling end
-  reads as an error and fails the overlap/ERC gates (designer review, 2026-11-17).
-- **Rails and ground are local inside a reusable sheet.** Inside the block, V3V3 / GND (and any rail) are
-  hierarchical labels connected through sheet pins; global power symbols appear only on the top-level sheet, where
-  the board rails are defined. The block then makes no assumption about which rail it sits on. Power symbols
-  pointing up/down still apply on the top level and on non-reusable sheets.
-- **A board built from blocks reads as a block diagram.** The top-level sheet holds only sheet symbols, the
-  board's connectors and anything not yet worth a block. Blocks sit left to right in power and signal order
-  (input connector -> protection / switch -> monitor -> load connector; sensors -> controller -> interfaces),
-  joined by labelled wires; rails as power symbols on top edges, ground on bottom edges. Each block instance has
-  its DESIGN VALUES box beside it.
-- **Same sheet-symbol geometry across blocks.** Power-path ports (`BUS_IN` left, `BUS_OUT` right) sit at the same
-  offset from the top of every block's sheet symbol, rails on top, ground on the bottom, interfaces below the
-  path on the right edge, so chained blocks join with straight wires and no jogs.
-- **Interfaces as harnesses** (a bus group carrying SPI, I2C, ...) are preferred where the toolchain keeps them;
-  otherwise one sheet pin per member, grouped together on the sheet edge.
+- Each reusable module is a sub-sheet, reused unchanged: inputs left, outputs and interfaces right on the parent symbol; no board net names; ports are hierarchical labels.
+- Each port appears once in a sheet, in the box owning that function; other uses are local labels wired into the same wire group. A far-apart use may take a second port flag. Re-ordered port lines are labelled stub pairs; never leave a wire end dangling.
+- Rails and ground are hierarchical labels inside a reusable sheet; global power symbols only on the top sheet.
+- The top sheet is a block diagram (sheet symbols, connectors) in power and signal order, DESIGN VALUES beside each block.
 
-## Component text (every resistor and capacitor)
-Reference style: the designer's Fox-1-MPPT schematics (github.com/FaradayRF/Fox-1-MPPT, `Hardware/Rev2_1/OutputFiles`).
-- Show the engineering values, not just the MPN: one field per line, left-aligned in one column beside the symbol,
-  1.27 mm text, in this order. Resistor: reference, value with unit (`536k`, `10.5k`, `10R`... or `536 kOhm`, one
-  convention per sheet), package (`0603`), tolerance (`1%`). Capacitor: reference, value in its natural unit
-  (`6.8nF`, `470nF`, `100nF`, `1uF`), package (`0603`), rating and dielectric (`100V C0G`), tolerance (`5%`). The
-  MPN lives in the BOM fields, hidden or below the stack.
-- The text is generated from the source of truth (the Zener instance or the library catalog for its MPN), never
-  typed, and the generator refuses to write when a field cannot be resolved.
-- Every stack sits clear of wires and other text and aligns with its neighbours (same x for a row of parts).
+## Component text
+R and C value stacks are generated, never typed: `tools/schematic/passive_text.py` (circuit-blocks).
 
-## Engineering notes and grouping boxes
-- **Write like the Fox-1-MPPT sheets: one-line, high-impact statements next to the part they describe**, setpoints
-  as equations with the result last: `R5: V(SCP) = <min>-<max> mV -> I(SC) = <min>-<max> A`, `C6: tSC = <min>-<max>
-  us, latch-off` (numbers from the values file), `VIN MAX = 2.42V @ 6.54V`. No generic headings inside note text ("DESIGN NOTES", "NOTE:"), no
-  paragraphs; the box title already names the group. A part that sets a quantity always states that quantity
-  (and its consequence in user units: mV -> A, capacitance -> time). Parent DESIGN VALUES box: about 6-10 lines of
-  the numbers a reviewer acts on (rating, trip points, timing, worst temperature/margin, any FAIL); caveats such as
-  missing protection get one short line each, details stay in the spec.
-- **Minimal, high-impact notes** at the power path input and output, at each rail and at key parts: expected
-  voltage range, rail voltage and tolerance, design maximum current, worst-case full-scale error, scaling (A per V,
-  A per count, LSB), key limits and why (e.g. a cap set by an abs max). Short lines with units, no prose. Drop any
-  note that only repeats a label, unless the designer asks to keep it.
-- **Every number comes from the spec or the worst-case analysis report**; only unit conversions are derived (say
-  so). Never type a value from memory.
-- **Instance values on the parent, block notes on the reusable sheet.** The parent sheet carries this board's
-  numbers next to the block (with a boxed design-values summary); the reusable sheet carries notes about the block
-  itself. Block-sheet notes must be true for every instance: limits and facts of the block (ADC range, abs-max
-  reasons, what a termination is for), not an instance's full scale or error. A number set by an instance config
-  (shunt value, full-scale current) goes on the parent, or is filled per instance by the notes script when the
-  sheet is stamped.
-- **Group with titled boxes.** Draw rectangles (one stroke style per meaning, e.g. dashed = functional group) around
-  functional areas and note groups, each with a short title at the top-left inside the edge (e.g. POWER PATH /
-  CURRENT SENSE, LOGIC SUPPLY, SPI / ALERT, DESIGN VALUES). Boxes never cut through symbols or text; a net leaving a
-  group crosses the edge at a right angle. Even margins (>= 2.54 mm) between edge and contents.
-  - Plan box edges from the real text extents (pin names and numbers, rotated label text, reference/value,
-    symbol body), not from pin and wire geometry: keep >= 2.5 mm clearance. Estimate text at about 1.08 mm per
-    character for 1.27 mm font, then confirm in a render.
-  - Groups whose parts interleave (one group's symbol above another's stubs) cannot each get a clean rectangle
-    without moving parts: merge them into one box and let a note name the sub-function.
-  - Adjacent boxes need a channel of >= 2.5 mm between them.
-  - Use a dashed rectangle plus a separate bold title (about 1.524 mm) and plain text rather than a KiCad
-    `text_box`, so one stroke style keeps one meaning and titles can be larger than notes.
-- Notes sit on the free side of what they describe, never touching a wire, pin, symbol, label or other text.
-  Plain `text` with embedded line breaks gives clean multi-line notes; right-justify notes placed left of a part.
+## Notes and group boxes
+- One-line, high-impact notes next to the part, setpoints as equations, result last (`R5: V(SCP) = <min>-<max> mV -> I(SC) = <min>-<max> A`). No headings or paragraphs; drop a note that only repeats a label; right-justify notes left of a part. A part setting a quantity states it and its consequence in user units.
+- Every number comes from the spec or worst-case report (unit conversions aside); never type one from memory.
+- Instance values go in a boxed DESIGN VALUES on the parent (6-10 lines: rating, trip points, timing, worst margin, any FAIL); the reusable sheet carries notes true for every instance.
+- Titled dashed rectangles around functional areas (title top-left, bold about 1.524 mm, not `text_box`). Boxes cut through nothing; nets cross edges at right angles; margins and channels >= 2.5 mm. Size from real text extents (about 1.08 mm per character); merge interleaved groups.
 
-### Annotation checklist (what each kind of circuit should state)
-Show only the items that apply; every value from the spec or the worst-case report.
-| Where | Note content |
-|---|---|
-| Power input | voltage range (min-max, AC/DC), polarity or side (high/low), max current, transient or abs-max limit and its reason |
-| Power output / load side | what it feeds, max current, what is measured or switched there |
-| Each rail | nominal and tolerance, accepted range of the parts on it, decoupling at which pin |
-| Regulator / converter | input range, output setpoint and worst-case accuracy, max load, efficiency or dissipation if it drives thermal design |
-| Current / voltage sense | sense element value and tolerance, full-scale value, headroom to the ADC range, scaling (A/V, A/count, V/count, LSB), worst-case error at full scale and at the low end, calibration constants |
-| Divider / feedback | ratio, worst-case output range, what sets it |
-| Digital interface | bus and line impedance, where terminations are and their values (placeholders flagged), logic level, active-low and open-drain notes |
-| Protection | what it protects against, clamp/trip levels, and any residual risk |
-| Parent sheet | a boxed DESIGN VALUES summary of the block instance: operating conditions, key part choices, scaling, worst-case results, dissipation |
+Annotation checklist (only what applies):
+- Power input: voltage range, polarity, max current, abs-max limit and reason; what it feeds. Power output: rail, load side, max current.
+- Rail: nominal, tolerance, decoupling at which pin.
+- Regulator: input range, setpoint, accuracy, max load, dissipation.
+- Sense: element value and tolerance, full scale, ADC headroom, scaling, worst-case error (full scale, low end), calibration.
+- Divider: ratio, range. Interface: impedance, terminations, logic level, placeholders flagged, open-drain notes. Protection: threats, trip levels, residual risk. Parent sheet: DESIGN VALUES.
 
-## Title block (every sheet)
-Title, revision, date, company, author, the repo URL plus git short hash, and a one-line description of what the
-sheet contains. A printed sheet must identify itself.
-- **Each sheet carries its own hash:** the short hash of the commit where THAT sheet's content last changed, not a
-  shared base hash (designer, 2026-11-17). A file cannot hold its own commit's hash, so the flow is: commit the
-  sheet change, run the stamp tool (it ignores stamp-only commits when finding the content commit), re-export the
-  PDFs, commit "Stamp sheet hashes". The sync check fails a stale stamp on any sheet whose content is unchanged.
-  Reference implementation: circuit-blocks `tools/schematic/stamp_hash.py`.
-
-## Toolchain facts: Zener / pcb 0.4.102 with KiCad 10
-- **Sub-sheets:** a module becomes its own KiCad sub-sheet when it declares
-  `Project(name="<Module>", path="<anything>", layout=False)` (stdlib `properties.zen`). `path` is required; without
-  it the module is flattened. The parent gets a sheet symbol named after the instance with one sheet pin per port;
-  the child file is `<instance>.kicad_sch` next to the root. A second `Project()` at the root writes a full copy
-  of the design, not a sub-sheet.
-- **Net types decide the drawing:** `Power` and `Ground` nets become power symbols; plain `Net`s become labels, and
-  inside a sub-sheet a plain-`Net` port becomes a hierarchical label. A `Power` net passed into a sub-sheet shows
-  up inside as a global power symbol named after the board net, and KiCad ERC reports that sheet pin unmatched:
-  declare power paths into reusable sheets as `Net(voltage=...)` (voltage checks still run).
-- **Local rails in a sub-sheet (verified recipe):** library wrappers type supply pins as `Power` (cast at the
-  pin) and ground pins as `Ground`, so inside a block those nets are always drawn as global power symbols. To make
-  them local: declare the module ports as plain nets (`V3V3 = io(Net)`, `GND = io(Net)` then
-  `_GND = Ground(GND)` and connect library ground pins to `_GND`); the board keeps `V3V3 = Power(..., voltage=...)`
-  so voltage checks still run. The root gets V3V3/GND sheet pins. Then replace each V3V3/GND power symbol in the
-  child with a `hierarchical_label` of the same name at the symbol's pin point (angle 90 for a rail, 270 for
-  ground). `pcb apply` keeps it, the netlist is unchanged and ERC finds every sheet pin matched. A fresh
-  regeneration brings the power symbols back, so this swap is a scripted step re-run after any regeneration.
-  - On an already-arranged sheet, an incremental `pcb apply` does NOT add the new V3V3/GND sheet pins or root
-    power symbols after the port-type change, and still reports success while the rails are split into
-    `/INA/V3V3` and `/INA/GND` (only the netlist diff shows it). Generate a throwaway fresh copy, transplant the
-    root's new sheet pins, power symbols and their `lib_symbols` entries by script, then place them by hand.
-  - For a ground label pointing down (angle 270) use `justify right`; `justify left` folds the text back over the
-    wire.
-- **Child sheets are per instance and per board** (probed 2026-11-15): each instance becomes `<instance>.kicad_sch`
-  in the board's own `eda/`, generated fresh. The module's `Project(path=...)` does not act as a template: an
-  arranged sheet placed at that path was ignored. Copying an arranged sheet into another board's `eda/` as
-  `<instance>.kicad_sch` (same instance name) before `pcb apply` keeps its placement, notes and boxes (apply
-  reports updated, then unchanged), but the root's rail sheet pins still need the transplant described above
-  (otherwise `hier_label_mismatch`). A second copy of the same file for another instance fails ("generated net
-  symbol UUID ... is already used"), and its internal labels carry the first instance's prefix (`INA.SENSE_P`):
-  each stamped copy needs pcb's own refdes, part and file UUIDs for that instance, the new prefix and new
-  UUIDs elsewhere (done by the blocks repository's `stamp_block.py`, verified for two chained instances).
-- **Internal net names** are always `<instance>.<net>`, even for an explicitly named `Net()`. A `Net("X")` assigned
-  to a variable `X` only triggers a `style.redundant_name` advice; write `X = Net(...)`.
-- **Interfaces** (stdlib `Spi`, `I2c`, ...) become one hierarchical label and sheet pin per member (`SPI.CS`, ...).
-  A hand-drawn KiCad bus group does not persist: `pcb apply` accepts it only with breakouts named as group members,
-  then rewrites it into separate pins and leaves the breakouts dangling (ERC errors that `pcb build` does not
-  catch). Keep members as separate pins until pcb supports buses.
-- **`pcb apply` is incremental.** It keeps hand-moved symbols, wires, labels, text, graphics and the title block,
-  and refuses any edit that changes connectivity ("not netlist-equivalent"): use that as the safety check for hand
-  edits. Net-name, net-type and new-sheet changes often only appear on a fresh generation (delete the `.kicad_sch`
-  files, apply again), which loses hand placement. **Finish the Zener code first, regenerate once, then arrange.**
-- **Editing S-expressions by hand:** schematic Y grows downward; pin positions in `lib_symbols` are relative to
-  the symbol origin and transformed by the instance rotation and mirror (rot 0: sheet = (at.x + x, at.y - y)).
-  Move a symbol's Reference and Value `(at ...)` with it. KiCad 10 writes `(sheet` followed by a newline, so
-  search with `\(sheet($|\s)`.
-  - Read each symbol's real pin geometry from `lib_symbols`; do not assume symmetry (e.g. a resistor symbol with
-    pin 1 at +7.62 and pin 2 at -5.08). A wrong guess leaves a pin unconnected or shorts two nets.
-  - Field text angles on rotated symbols behaved differently in two passes (absolute in one, relative to the
-    symbol rotation in another): set `do_not_autoplace` on hand-placed fields and confirm the angle in a render.
-  - Hierarchical-label flags draw on one side of the anchor depending on the angle (0: text to the right, 180:
-    to the left); put the flag at the far end of its wire so the text points away from the wire.
-  - Rotating an IC 180 degrees (not mirroring) reverses its pin order top to bottom; it can put a rail pin above
-    a ground pin so both run straight up and down.
-  - Local-label text sits about 0.3-0.5 mm above its wire; at 2.54 mm pin pitch neighbouring label text nearly
-    touches the wire above. Fan stacked label wires out to 5.08 mm pitch with nested jogs (the lower pin's jog
-    closer to the IC).
-  - Plan room for a pull-up's vertical drop and its rail symbol before routing a stacked pin group: a pull-up on a
-    middle pin forces the pins above it to jog around it.
-  - `pcb apply` refuses a hand edit that shorts or splits nets ("not netlist-equivalent: nets ... are shorted"),
-    which catches bad coordinates before they are written.
-- **KiCad ERC label rule:** a LOCAL label on a sheet with no component pin, on a net with more than one pin inside a
-  sub-sheet, is reported as `label_dangling` (KiCad `ercCheckLabels`). It is not a wiring fault. A global label
-  clears it but changes the net name (no leading `/`). House convention: keep local labels for board-level nets
-  and accept these until the board's connectors or host exist.
-- **KiCad 10 symbols** (format 20251024+) are required by `pcb apply`; `python3 -m lib.check` enforces it for
-  library parts.
-- **Close KiCad** (no `*.lck` next to the schematic) before running `pcb apply`, or a KiCad save can overwrite it.
-  Always pass `--no-open` to `pcb apply`: without it, `pcb apply` launches KiCad on the schematic, which then holds
-  lock files and an in-memory copy that a later save can write over newer edits.
-  `kicad-cli` run on files inside the project folder can leave stale `.lck` files too: run it on copies.
+## Title block
+Every sheet: title, revision, date, company, author, repo URL plus short hash of the commit where that sheet last changed, one-line description.
 
 ## Procedure
-1. Finish the circuit in code; `pcb build -Dwarnings <board>.zen` exits 0.
-2. Regenerate fresh: back up and delete the `.kicad_sch` files, run `pcb apply schematic --no-open <board>.zen`
-   twice (the second must report `schematic unchanged`).
-3. Arrange in small steps per the rules above. After each step: `pcb apply schematic --no-open` (exit 0; if not
-   netlist-equivalent, restore the last backup), then render and look:
-   `kicad-cli sch export pdf --output <scratch>/s.pdf <root>.kicad_sch && pdftoppm -r 110 -png <scratch>/s.pdf <scratch>/s`
-   (all sheets export; on macOS `kicad-cli` is `/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli`).
-4. Fill every sheet's title block.
-5. Finish: apply twice (second unchanged), `pcb build -Dwarnings` exit 0, and `kicad-cli sch erc` with zero
-   dangling labels, dangling wires and hierarchical-label mismatches. Expected while the board is incomplete,
-   and to be re-checked once it is: `isolated_pin_label` (a net reaching only one real pin because its connector
-   or host is not drawn yet), `pin_not_driven` (inputs whose driver is off-sheet or not drawn yet) and
-   `power_pin_not_driven` (no regulator, input connector or PWR_FLAG on the rail yet). `lib_symbol_issues` means
-   KiCad's ERC has no symbol library table for the parts: a project-configuration notice, not a circuit error.
-   Review each render against every rule before showing it.
-6. **Count your hand-added items after every apply** (top-level `(text`, `(text_box`, `(rectangle`): an item
-   inserted inside a `lib_symbols` entry (e.g. found by searching for a nested `(embedded_fonts`) is silently
-   dropped by `pcb apply` with exit 0. Insert top-level items before the file's final `)`.
-7. **Diff the netlist after every apply**, not just its exit code: `pcb apply` has been seen to drop a hand-placed
-   label silently (net gone, still "updated", exit 0). Export with
-   `kicad-cli sch export netlist --output <scratch>/n.net <root>.kicad_sch` before and after, and compare nets.
+Follow the brief's phases and gates; after every `pcb apply`, diff the netlist, not the exit code. Review every render against the checklist before showing it. Record new preferences in the board repo's `docs/notes/style-notes.md`; promote generic ones here.
 
 ## Review checklist
-- Can a reader follow each function left to right without hunting?
-- Is every support part at the pin it serves, and is every label on a wire?
-- Any crossing, rotated rail symbol, floating label, or any text (labels, ports, sheet pins, fields) touching a wire?
-- Do names state role (ports, rails with voltage, `_N`, `_P`/`_N`)?
-- Is each reusable block a sub-sheet with no board net names inside?
-- Is every title block complete?
-
-## Open style questions (ask when they come up; record the answer here)
-- Value text shown on parts (MPN, or value such as "100nF 50V X7R") and reference designator style.
-- Sheet size, text sizes.
+- Can a reader follow each function left to right?
+- Is every support part at its pin, every label on a wire?
+- Any crossing, rotated rail symbol, floating label, or text touching a wire?
+- Do names state role?
+- Is each reusable block a sub-sheet with no board net names?

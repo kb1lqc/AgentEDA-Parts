@@ -1,0 +1,9 @@
+# History and rationale from the schematic-style skill (humans only)
+
+- Component text reference style: the designer's Fox-1-MPPT schematics (github.com/FaradayRF/Fox-1-MPPT, `Hardware/Rev2_1/OutputFiles`), an external repo agents cannot read; `tools/schematic/passive_text.py` in circuit-blocks is the checkable form. Stack order: resistor reference, value with unit (`536k`), package (`0603`), tolerance (`1%`); capacitor reference, value (`6.8nF`), package, rating and dielectric (`100V C0G`), tolerance; MPN in hidden BOM fields. Note style also follows those sheets (`R5: V(SCP) = ... mV -> I(SC) = ... A`, `C6: tSC = ... us, latch-off`, `VIN MAX = 2.42V @ 6.54V`).
+- Designer decisions with dates: V3V3-lower-left rule for pull-up-only rails (2026-11-16); "never leave a wire end dangling to save a flag" (2026-11-17 review); per-sheet commit hash stamping (2026-11-17), flow: commit the change, run `stamp_hash.py` (ignores stamp-only commits), re-export PDFs, commit "Stamp sheet hashes"; port-once toolchain limit verified 2026-11-16 on pcb 0.4.102.
+- Probes (2026-11-15): sub-sheets work with `Project(name=..., path=..., layout=False)` and a fresh generation (an earlier probe wrongly concluded flat-only).
+- Field-angle behaviour differed in two passes (absolute vs relative); Local-label text sits 0.3-0.5 mm above its wire.
+- Open questions now answered: value text on parts (value, package, rating, tolerance), sheet size (Tabloid), text size (1.27 mm), active-low (`_N`).
+- Procedure steps now live in the brief and gates; step "diff the netlist after every apply" exists because `pcb apply` was seen to drop a hand-placed label silently.
+- Conflict decisions (2026-11-17): schematic-style wins over the old `style-notes.md` (instance prefix kept on module-internal nets; rails local inside reusable sheets). The old notes are `docs/notes/style-notes.md` in circuit-blocks.
