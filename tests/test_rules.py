@@ -220,6 +220,17 @@ class TestCite(unittest.TestCase):
         for bad in ("page 5, TC", "DS p.5", "DS p.x, Table", "DS p.5,Table", "DS PDF 5, Table", "ds p.5, Table"):
             self.assertEqual(len(self.cites(bad)), 1, bad)
 
+    def test_cite_sheet_must_be_a_pdf_file(self):
+        good = {"param": {"a": {"cite": "DS p.7 (GCM1885C1H101GA16-01A-EN.pdf), Table A, 5C"}}}
+        bad = {"param": {"a": {"cite": "DS p.7 (C0G sheet of GCM1885C1H101GA16), Table A, 5C"}}}
+        self.assertEqual(rules.cite_findings(good), [])  # the bracket form is a valid cite
+        self.assertEqual(rules.cite_sheet_findings(good), [])
+        self.assertEqual(rules.cite_sheets(good), [("param a", "GCM1885C1H101GA16-01A-EN.pdf")])
+        f = rules.cite_sheet_findings(bad)
+        self.assertEqual([x.rule for x in f], ["cite-sheet"])
+        trav = {"param": {"a": {"cite": "DS p.7 (../secret.pdf), Table A, 5C"}}}
+        self.assertEqual([x.rule for x in rules.cite_sheet_findings(trav)], ["cite-sheet"])
+
     def test_variant_cites_checked(self):
         f = rules.cite_findings({}, {"V1": {"param": {"a": {"cite": "nope"}}}})
         self.assertEqual(f[0].location, "variant V1 param a")

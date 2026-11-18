@@ -5,7 +5,7 @@
 ## Part
 
 - **mpn**: WSK2512R0250DEA
-- **alternates**: ['WSK2512R0250DEK']
+- **alternates**: ['WSK2512R0250DEK', 'WSK2512R0250DEB']
 - **manufacturer**: Vishay Dale
 - **description**: 0.025 ohm +/-0.5 % 1 W 4-terminal (Kelvin) Power Metal Strip current-sense resistor, 2512
 - **category**: current_sense_resistor
@@ -46,7 +46,7 @@
 | Resistance tolerance, code D | TOL | -0.5 |  | 0.5 | % | Note: The DS does not state the reference temperature for the tolerance. | DS p.1, Standard Electrical Specifications, TOL. +/-0.5 % column; DS p.1, Global Part Number Information, tolerance code D = +/-0.5 % |
 | Resistance value range, +/-0.5 % tolerance |  | 0.001 |  | 0.2 | ohm | Note: Confirms 0.025 ohm is in range for code D. The +/-0.1 % range (0.01 to 0.2 ohm) also covers 0.025 ohm; the +/-1.0 % range is 0.0005 to 0.2 ohm. | DS p.1, Standard Electrical Specifications, Resistance value range TOL. +/-0.5 % column, 0.001 to 0.2 row |
 | Temperature coefficient of resistance | TCR | -35 |  | 35 | ppm/degC | Resistance range 0.005 ohm to 0.2 ohm (covers 0.025 ohm) Note: DS p.1 Features says 'low TCR (< 20 ppm/degC)'. Feature text is not a specification; the table value +/-35 is used (open item). The DS states neither the reference temperature nor the temperature span over which the TCR holds. | DS p.2, Technical Specifications, Temperature coefficient (RESISTOR CHARACTERISTICS), +/-35 for 0.005 ohm to 0.2 ohm |
-| Performance test limit, additive term (all PERFORMANCE rows) |  |  |  | 0.0005 | ohm | Added to the percent term of every PERFORMANCE row: total limit ±(X % of R + 0.0005 ohm) Note: One-sided printed term. Reading: the ± on each row applies to the percent term only. | DS p.3, PERFORMANCE, TEST LIMITS column, '+ 0.0005 ohm' (all rows) |
+| Performance test limit, additive term (all PERFORMANCE rows) |  | -0.0005 |  | 0.0005 | ohm | Added to the percent term of every PERFORMANCE row: total limit ±(X % of R + 0.0005 ohm) Note: Printed '± X % + 0.0005 Ω' with no brackets. Stored symmetric, ±(X % of R + 0.0005 ohm): the conservative worst-case reading (a one-sided +0.0005 would understate the low side). Open item: confirm the reading with Vishay. | DS p.3, PERFORMANCE, TEST LIMITS column, '+ 0.0005 ohm' (all rows) |
 | Resistance change, thermal shock |  | -0.5 |  | 0.5 | % | -55 degC to +150 degC, 1000 cycles, 15 min at each extreme Note: Printed ± 0.5 %. Total limit ±(0.5 % of R + 0.0005 ohm); add perf_offset_ohm. | DS p.3, PERFORMANCE, Thermal shock, TEST LIMITS |
 | Resistance change, short time overload |  | -0.5 |  | 0.5 | % | Overload level not printed; DS refers to external link www.vishay.com/en/resistors/power-metal-strip-calculator/ Note: Printed ± 0.5 %. Total limit ±(0.5 % of R + 0.0005 ohm); add perf_offset_ohm. Do not apply to any specific overload: the DS gives no level. Pulse capability has no numbers in the DS (online calculator only). | DS p.3, PERFORMANCE, Short time overload, TEST LIMITS |
 | Resistance change, low temperature operation |  | -0.5 |  | 0.5 | % | -65 degC for 24 h Note: Printed ± 0.5 %. Total limit ±(0.5 % of R + 0.0005 ohm); add perf_offset_ohm. | DS p.3, PERFORMANCE, Low temperature operation, TEST LIMITS |
@@ -97,11 +97,20 @@ Generated wrapper: `WSK2512R0250D.zen` (`python3 -m lib.zen`). abs_max and rec_o
 ### `resistance_worst`
 
 ```
-Not a DS equation: combines tolerance (DS p.1) and TCR (DS p.2) per the SPEC temperature recipe; DS states no
-reference temperature, caller supplies t_ref_c (25 degC is the usual assumption).
+Not a DS equation: combines tolerance (DS p.1), TCR (DS p.2) and, optionally, the aging test limit (DS p.3)
+per the SPEC temperature recipe; DS states no reference temperature, caller supplies t_ref_c (25 degC is the
+usual assumption).
 R = R0 * (1 + tol) * (1 + tcr * (T - Tref)). Call with tol = -0.005 and +0.005 for the two worst corners.
 The TCR term is only valid over the span the DS covers, which the DS does not state (open item).
-r0: ohm. tol: fraction (0.005 = 0.5 %). tcr: 1/degC (35e-6 = 35 ppm/degC). t_c, t_ref_c: degC. Returns: ohm.
+Aging (end of life): aging is the percent test limit of a PERFORMANCE row as a fraction (perf_load_life,
+1000 h at rated power, +/-1.0 % -> +/-0.01) and aging_abs its additive term in ohm (perf_offset_ohm, +/-0.0005 ohm,
+DS p.3 'TEST LIMITS'): R_EOL = R * (1 + aging) + aging_abs. Both default to 0, which is beginning of life and
+reproduces the result without aging exactly. Full form:
+R = R0 * (1 + tol) * (1 + tcr * (T - Tref)) * (1 + aging) + aging_abs.
+INPUTS maps aging and aging_abs, so wca(..., **part.inputs("resistance_worst")) gives END-OF-LIFE bounds; pass
+aging=0, aging_abs=0 (or call without them) for beginning of life.
+r0: ohm. tol: fraction (0.005 = 0.5 %). tcr: 1/degC (35e-6 = 35 ppm/degC). t_c, t_ref_c: degC.
+aging: fraction. aging_abs: ohm. Returns: ohm.
 ```
 
 Inputs:
@@ -109,6 +118,8 @@ Inputs:
 - `r0` -> `r_nom.typ` (typ 0.025 ohm)
 - `tol` -> `tol` (min -0.5 max 0.5 %)
 - `tcr` -> `tcr` (min -35 max 35 ppm/degC)
+- `aging` -> `perf_load_life` (min -1.0 max 1.0 %)
+- `aging_abs` -> `perf_offset_ohm` (min -0.0005 max 0.0005 ohm)
 
 ### `sense_voltage`
 
@@ -181,3 +192,4 @@ Inputs:
 | rated_power(ta_c=70, p70=1, knee_c=70, zero_c=170) | 1 | 1 | 1e-09 | pass | DS p.1, Standard Electrical Specifications, P70 degC = 1.0 W (100 % at 70 degC, DS p.3 DERATING) |
 | rated_power(ta_c=25, p70=1, knee_c=70, zero_c=170) | 1 | 1 | 1e-09 | pass | DS p.3, DERATING graph: 100 % flat below 70 degC (curve reading) |
 | rated_power(ta_c=170, p70=1, knee_c=70, zero_c=170) | 0 | 0 | 1e-09 | pass | DS p.3, DERATING graph: 0 % at 170 degC (curve reading) |
+| resistance_worst(r0=0.025, tol=0.005, tcr=0, t_c=25, t_ref_c=25, aging=0.01, aging_abs=0.0005) | 0.0258762 | 0.0258762 | 1e-09 | pass | DS p.1 TOL. +/-0.5 % (D); DS p.3 PERFORMANCE, Load life +/-1.0 % + 0.0005 ohm: high corner at end of life |

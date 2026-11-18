@@ -10,7 +10,7 @@ load("@stdlib/units.zen", "Capacitance", "Temperature", "Voltage")
 # UNCHECKED: rated_v_ds [parts GCM155R71H104KE02]: Rated voltage (DC) (DS p.2, Rated Value, Rated Voltage (DC 50V)); the generated rated_voltage check applies the catalog rated voltage of the selected part; this per-part row duplicates it (owner: module)
 # UNCHECKED: self_heating [parts GCM155R71H104KE02]: Self-heating of the capacitor body (AC or pulse load) (DS p.14, Rating 4. Type of Applied Voltage and Self-heating Temperature); depends on AC/pulse current, not a DC net voltage; owner: module
 # UNCHECKED: ac_peak [parts GCM155R71H104KE02]: AC or pulse voltage: peak-to-peak (and zero-to-peak with DC) within the rated DC voltage (DS p.13, Rating 3. Applied Voltage, 1-1 (1)); AC/pulse waveform is not modelled by the DC net-voltage check; owner: module
-# UNCHECKED: rated_v_ds_c0g [parts GCM1555C1H101FA16]: Rated voltage (DC) (DS p.2, Rated Value, Rated Voltage (DC 50V)); the generated rated_voltage check applies the catalog rated voltage of the selected part; this per-part row duplicates it (owner: module)
+# UNCHECKED: rated_v_ds_c0g [parts GCM1555C1H101FA16]: Rated voltage (DC) (DS p.2 (GCM1555C1H101FA16-01A-EN.pdf), Rated Value, Rated Voltage (DC 50V)); the generated rated_voltage check applies the catalog rated voltage of the selected part; this per-part row duplicates it (owner: module)
 # UNCHECKED: capacitance under DC bias, aging and AC/ripple stress: curve-based or not quantified by the datasheet; owner: module (calc.capacitance_worst_pct/_ppm exclude them)
 
 # Pins: component.toml [[pin]]. power_in/power_out pins are Net io cast to Power at the pin, so a negative rail or
@@ -1160,7 +1160,7 @@ _limit(
 )
 
 # ambient_range: board ambient inside the operating range of the configured dielectric
-#   C0G: op_temp_c0g: Operating temperature range (DS p.2, Rated Value, Operating Temp. Range (-55 to 125 degC))
+#   C0G: op_temp_c0g: Operating temperature range (DS p.2 (GCM1555C1H101FA16-01A-EN.pdf), Rated Value, Operating Temp. Range (-55 to 125 degC))
 #   X7R: op_temp_x7r: Operating temperature range (DS p.2, Rated Value, Operating Temp. Range (-55 to 125 degC))
 _limit(
     "ambient_range",

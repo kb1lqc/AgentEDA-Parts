@@ -62,6 +62,7 @@ max        = 0.1
 unit       = "W"
 conditions = "Ambient 70 degC; use with case temperature below the upper category temperature (footnote *1)"
 cite       = "DS PDF p.3, Ratings <+/-1 %>, Power rating (70 degC) (W), ERJ3EK row"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "The DS prints 0.1 W for ERJ3EK (same for 0402 and 0603 in this series). Printed with no MIN/TYP/MAX label: stored as max (Defaults table). Derated above 70 degC (derate_knee, derate_zero). No abs-max table in this DS."
 unchecked  = "series_power: used by the wrapper rated_voltage check (70 degC rating, optimistic above 70 degC ambient)"
 
@@ -74,6 +75,7 @@ max        = 75
 unit       = "V"
 conditions = ""
 cite       = "DS PDF p.3, Ratings <+/-1 %>, Limiting element voltage (V), ERJ3EK row"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Upper limit on RCWV (footnote *2): RCWV = sqrt(Power rating x Resistance value) or this limit, whichever is less. See rcwv_rule."
 unchecked  = "series_vlimit: used by the wrapper rated_voltage check"
 
@@ -111,6 +113,7 @@ max        = 155
 unit       = "degC"
 conditions = ""
 cite       = "DS PDF p.3, Ratings <+/-1 %>, Category temperature range (degC), ERJ3EK row (shared with ERJ2RK and ERJ6EN)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Read as ambient, the axis of the derating figure (DS PDF p.3). Ratings are for the case temperature below this limit (footnote *1)."
 check_ambient = true
 
@@ -123,6 +126,7 @@ typ        = 70
 unit       = "degC"
 conditions = ""
 cite       = "DS PDF p.3, Power derating curve (text: 'above 70 degC, power rating shall be derated')"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed in the text, not read off the graph. Used by calc.rated_power."
 unchecked  = "derating knee (printed in text, not a limit); used by calc.rated_power"
 
@@ -135,6 +139,7 @@ typ        = 155
 unit       = "degC"
 conditions = ""
 cite       = "DS PDF p.3, Power derating curve (figure: the 155 degC line reaches 0 %)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 curve      = true
 note       = "Read off the graph (no printed number). The 155 degC line is used because this part's category range is -55 to +155 degC; the steeper 125 degC line is labelled ERJXG,1G,1R. Linear between knee and zero (graph shape). Curve-based estimate; reading uncertainty not quantified (open item)."
 unchecked  = "curve value; used by calc.rated_power"
@@ -151,6 +156,7 @@ max        = 1
 unit       = "%"
 conditions = "Resistance measured at 20 degC (DS PDF p.4, Performance <+/-1 %>, Resistance row)"
 cite       = "DS PDF p.3, Ratings <+/-1 %>, Resistance tolerance (%), ERJ3EK row; DS PDF p.2, tolerance code F = +/-1 %"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Reference temperature 20 degC from the Performance table; the T.C.R. test runs from +25 degC (DS p.4)."
 
 [param.res_range]
@@ -162,6 +168,7 @@ max        = 1000000
 unit       = "ohm"
 conditions = "E24, E96 values"
 cite       = "DS PDF p.3, Ratings <+/-1 %>, Resistance range (ohm), ERJ3EK row '10 to 1 M'"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed '10 to 1 M' in the ohm column; 1 M is written out as 1000000 ohm. Values below 100 ohm use the R decimal code (DS p.2), see calc.mpn."
 
 [param.tcr_10r_1m]
@@ -174,6 +181,7 @@ max        = 100
 unit       = "ppm/degC"
 conditions = "Resistance 10 ohm to 1 Mohm; T.C.R. test at +25 degC / +155 degC (DS PDF p.4)"
 cite       = "DS PDF p.3, Ratings <+/-1 %>, T.C.R. (x10-6/K), ERJ3EK row (+/-100, one value for the whole 10 to 1 M range)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed +/-100 x10-6/K (= ppm/degC): stored as min = -100, max = 100. One TCR for the full +/-1 % range. The DS does not state the TCR reference temperature. Use this key for any value in 10 ohm to 1 Mohm."
 
 # ---- Performance test limits: +/-1 % block (DS PDF p.4). Printed +/-X: min = -X, max = X. ----
@@ -198,6 +206,7 @@ max        = 1
 unit       = "%"
 conditions = "270 degC, 10 s"
 cite       = "DS PDF p.4, Performance, ERJ XGN...3EK...series +/-1 % (F), Resistance to soldering heat"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed +/-1 %."
 
 [param.perf_rapid_change]
@@ -281,6 +290,7 @@ max        = 1.75
 unit       = "mm"
 conditions = ""
 cite       = "DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column L"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed 1.60+/-0.15. The ERJ3E row is shared with ERJ3R in the DS table."
 
 [param.dim_w]
@@ -294,6 +304,7 @@ max        = 0.95
 unit       = "mm"
 conditions = ""
 cite       = "DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column W"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed 0.80 +0.15/-0.05 (asymmetric): min = 0.75, max = 0.95 (arithmetic on the printed tolerance)."
 
 [param.dim_a]
@@ -307,6 +318,7 @@ max        = 0.50
 unit       = "mm"
 conditions = ""
 cite       = "DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column a"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed 0.30+/-0.20."
 
 [param.dim_b]
@@ -320,6 +332,7 @@ max        = 0.45
 unit       = "mm"
 conditions = ""
 cite       = "DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column b"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed 0.30+/-0.15."
 
 [param.dim_t]
@@ -333,6 +346,7 @@ max        = 0.55
 unit       = "mm"
 conditions = ""
 cite       = "DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column T"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed 0.45+/-0.10."
 
 [param.mass]
@@ -343,6 +357,7 @@ typ        = 2
 unit       = "mg"
 conditions = "Reference value, per part"
 cite       = "DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), Mass (Weight) (Reference) (g/1000 pcs) = 2"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "2 g per 1000 pcs = 2 mg per part (per-part value in mg keeps the printed digits). Reference only, not a bound."
 
 # No land pattern is printed in this datasheet. The footprint is supplied by the owner (open item).

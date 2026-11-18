@@ -109,6 +109,13 @@ CASES = [
     ("AnalogDevices/LTC4364MS", "vcc_abs_out", ["vcc=101V", "vout=101V", "vsense=101V"], "error", "abs_vcc_VCC"),
     ("AnalogDevices/LTC4364MS", "sense_out_out", ["vsense=45V"], "error", "abs_sense_out_SENSE"),
     ("AnalogDevices/LTC4364MS", "out_vcc_ok", ["vout=0V", "vsense=0V"], "pass", ""),
+    # SENSE - SOURCE = 101 V (abs max +/-100 V); SENSE, OUT and SOURCE each stay inside their own rows
+    ("AnalogDevices/LTC4364MS", "sense_source_out", ["vsense=99V", "vout=99V", "vsource=-2V"], "error",
+     "abs_sense_source_SENSE"),
+    ("AnalogDevices/LTC4364MS", "source_unset", ["vsource=unset"], "warning", "UNVERIFIED abs_sense_source_SENSE"),
+    # SOURCE 101 V (abs max 100 V vs GND); SENSE follows so SENSE - SOURCE stays inside +/-100 V
+    ("AnalogDevices/LTC4364MS", "source_abs_out", ["vsource=101V", "vsense=99V", "vout=99V"], "error",
+     "abs_source_ov_uv_shdn_SOURCE"),
     ("AnalogDevices/LTC4364MS", "fb_out", ["vfb=6V"], "error", "abs_fb_tmr_FB"),
     ("AnalogDevices/LTC4364MS", "uv_unset", ["vuv=unset"], "warning", "UNVERIFIED abs_source_ov_uv_shdn_UV"),
     ("AnalogDevices/LTC4364MS", "ambient_out", ["ta=-40°C to 130°C"], "error", "ta_h_ambient"),

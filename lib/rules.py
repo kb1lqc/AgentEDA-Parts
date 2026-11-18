@@ -7,6 +7,7 @@ A rule that cannot decide structurally abstains (returns nothing, or reports an 
 
 import ast
 import os
+import datetime
 import re
 import tomllib
 from collections import namedtuple
@@ -24,6 +25,8 @@ GEOM_TOL = 0.005  # mm
 # DS p.<printed page>, ... | DS PDF p.<n>, ... ; a Murata sheet may be named in parentheses after the page number.
 CITE_RE = re.compile(r"^DS (?:PDF )?p\.\d+(?:-\d+)?(?: \([^()]+\))?, \S")
 PCB_VERSION_RE = re.compile(r"^\d+\.\d+$")
+# A cite from a document other than datasheet_file names it in brackets after the page: DS p.7 (<file>.pdf), ...
+SHEET_RE = re.compile(r"^DS (?:PDF )?p\.\d+(?:-\d+)? \(([^()]+)\), ")
 
 
 def text(f):
@@ -148,6 +151,51 @@ def wiring_findings(folder, root):
 
 
 # ---------------------------------------------------------------- per component, content (D, E)
+
+VERIFIED_RE = re.compile(r"^\S+ (\d{4}-\d{2}-\d{2}) \S.*$")
+SHEET_NAME_RE = re.compile(r"^[A-Za-z0-9_.-]+\.pdf$")
+
+
+def _verified_ok(text):
+    m = VERIFIED_RE.match(str(text))
+    if not m:
+        return False
+    try:
+        datetime.date.fromisoformat(m[1])
+    except ValueError:
+        return False
+    return True
+
+
+def verified_findings(data, variants=None):
+    """`verified` is "<who> <YYYY-MM-DD> <method>" (docs/spec/extract.md, Fields)."""
+    items = [(f"param {k}", t) for k, t in data.get("param", {}).items()]
+    for v, table in (variants or {}).items():
+        items += [(f"variant {v} param {k}", t) for k, t in table.get("param", {}).items()]
+    return [Finding("verified-format", "", loc, f"verified '{t['verified']}' is not '<who> <YYYY-MM-DD> <method>'")
+            for loc, t in items if "verified" in t and not _verified_ok(t["verified"])]
+
+
+def cite_sheets(data, variants=None):
+    """(location, name) for every cite that names a source sheet in brackets after its page."""
+    items = [(f"pin {p.get('number')}", p.get("cite")) for p in data.get("pin", [])]
+    items += [(f"param {k}", t.get("cite")) for k, t in data.get("param", {}).items()]
+    for v, table in (variants or {}).items():
+        items += [(f"variant {v} param {k}", t.get("cite")) for k, t in table.get("param", {}).items()]
+    out = []
+    for loc, c in items:
+        m = SHEET_RE.match(c or "")
+        if m:
+            out.append((loc, m[1]))
+    return out
+
+
+def cite_sheet_findings(data, variants=None):
+    """A bracketed source in a cite must be a PDF file name (docs/spec/extract.md, Cite); existence is checked by
+    lib.check like datasheet_file (a missing PDF is the tolerated warning: PDFs are not committed)."""
+    return [Finding("cite-sheet", "", loc, f"source '{name}' is not a PDF file name; write 'DS p.<n> (<file>.pdf), ...'")
+            for loc, name in cite_sheets(data, variants) if not SHEET_NAME_RE.match(name)]
+
 
 def cite_findings(data, variants=None):
     """Every [[pin]] and [param.*] cite (and variant param cites) matches CITE_RE."""

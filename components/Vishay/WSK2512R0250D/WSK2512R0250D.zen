@@ -78,5 +78,5 @@ Component(
         "E1": E1,
         "I1": I1,
     },
-    properties={"alternatives": ["WSK2512R0250DEK"]},
+    properties={"alternatives": ["WSK2512R0250DEK", "WSK2512R0250DEB"]},
 )

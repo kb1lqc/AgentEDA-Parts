@@ -10,14 +10,23 @@ models self-heating: ambient temperature is the only temperature input.
 import math
 
 
-def resistance_worst(r0, tol, tcr, t_c, t_ref_c):
-    """Not a DS equation: combines tolerance (DS p.1) and TCR (DS p.2) per the SPEC temperature recipe; DS states no
-    reference temperature, caller supplies t_ref_c (25 degC is the usual assumption).
+def resistance_worst(r0, tol, tcr, t_c, t_ref_c, aging=0.0, aging_abs=0.0):
+    """Not a DS equation: combines tolerance (DS p.1), TCR (DS p.2) and, optionally, the aging test limit (DS p.3)
+    per the SPEC temperature recipe; DS states no reference temperature, caller supplies t_ref_c (25 degC is the
+    usual assumption).
     R = R0 * (1 + tol) * (1 + tcr * (T - Tref)). Call with tol = the tolerance row of the part's code (Part.tolerance(code),
     +/-0.1 %, +/-0.5 % or +/-1.0 %) and tcr = Part.tcr(value), the TCR row whose resistance range holds the value.
     The TCR term is only valid over the span the DS covers, which the DS does not state (open item).
-    r0: ohm, the plain nominal value (not Part.series_value, which already carries the tolerance). tol: fraction (0.005 = 0.5 %). tcr: 1/degC (35e-6 = 35 ppm/degC). t_c, t_ref_c: degC. Returns: ohm."""
-    return r0 * (1.0 + tol) * (1.0 + tcr * (t_c - t_ref_c))
+    Aging (end of life): aging is the percent test limit of a PERFORMANCE row as a fraction (perf_load_life,
+    1000 h at rated power, +/-1.0 % -> +/-0.01) and aging_abs its additive term in ohm (perf_offset_ohm, +/-0.0005 ohm,
+    DS p.3 'TEST LIMITS'): R_EOL = R * (1 + aging) + aging_abs. Both default to 0, which is beginning of life and
+    reproduces the result without aging exactly. Full form:
+    R = R0 * (1 + tol) * (1 + tcr * (T - Tref)) * (1 + aging) + aging_abs.
+    INPUTS maps aging and aging_abs, so wca(..., **part.inputs("resistance_worst")) gives END-OF-LIFE bounds; pass
+    aging=0, aging_abs=0 (or call without them) for beginning of life.
+    r0: ohm, the plain nominal value (not Part.series_value, which already carries the tolerance). tol: fraction (0.005 = 0.5 %). tcr: 1/degC (35e-6 = 35 ppm/degC). t_c, t_ref_c: degC.
+    aging: fraction. aging_abs: ohm. Returns: ohm."""
+    return r0 * (1.0 + tol) * (1.0 + tcr * (t_c - t_ref_c)) * (1.0 + aging) + aging_abs
 
 
 def sense_voltage(i, r):
@@ -120,13 +129,25 @@ EXAMPLES = [
         1e-9,
         "DS p.3, DERATING graph: 100 % flat below 70 degC (curve reading)",
     ),
+    (
+        "resistance_worst",
+        {"r0": 0.025, "tol": 0.005, "tcr": 0.0, "t_c": 25.0, "t_ref_c": 25.0, "aging": 0.01, "aging_abs": 0.0005},
+        0.02587625,
+        1e-9,
+        "DS p.1 TOL. +/-0.5 % (D); DS p.3 PERFORMANCE, Load life +/-1.0 % + 0.0005 ohm: high corner at end of life",
+    ),
 ]
 
 INPUTS = {
     # function: {argument: component.toml param key}. Design choices (value, tolerance code, current, ambient
     # temperature, t_ref_c, p_w) are not mapped, so r, r0 and tol have no entry. The TCR depends on the value:
     # this directory has one TCR row (0.005 ohm to 0.2 ohm), so it is mapped; tol comes from Part.tolerance(code).
-    "resistance_worst": {"tcr": "tcr_5m_200m"},
+    "resistance_worst": {"tcr": "tcr_5m_200m", "aging": "perf_load_life", "aging_abs": "perf_offset_ohm"},
+    # r is a design value here (from resistance_worst for a bound); no DS parameter feeds these.
+    "sense_voltage": {},
+    "dissipation": {},
+    "max_current": {},
+    "max_working_voltage": {},
     "rated_power": {"p70": "p70.max", "knee_c": "derate_knee.typ", "zero_c": "derate_zero.typ"},
     # mpn takes only the design choices value and tolerance code; no DS parameter feeds it.
     "mpn": {},

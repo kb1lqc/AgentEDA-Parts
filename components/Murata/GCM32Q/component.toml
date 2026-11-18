@@ -91,7 +91,7 @@ min        = 2.0
 max        = 2.4
 unit       = "mm"
 conditions = "Reflow soldering, chip 3.2x2.5, code 32"
-cite       = "DS p.28 (GCM32ER71C226ME19-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, a"
+cite       = "DS p.28 (GCM32ER71C226ME19-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, a"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed)."
 
 [param.land_b]
@@ -103,7 +103,7 @@ min        = 1.0
 max        = 1.2
 unit       = "mm"
 conditions = "Reflow soldering, chip 3.2x2.5, code 32"
-cite       = "DS p.28 (GCM32ER71C226ME19-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, b"
+cite       = "DS p.28 (GCM32ER71C226ME19-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, b"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed)."
 
 [param.land_c]
@@ -115,7 +115,7 @@ min        = 1.8
 max        = 2.3
 unit       = "mm"
 conditions = "Reflow soldering, chip 3.2x2.5, code 32"
-cite       = "DS p.28 (GCM32ER71C226ME19-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, c"
+cite       = "DS p.28 (GCM32ER71C226ME19-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, c"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed)."
 
 # X7R dielectric rows (dielectric X7R, Murata public code R7 / X7R (EIA)). Source: the 1210 X7R reference sheet
@@ -131,7 +131,7 @@ min        = -15
 max        = 15
 unit       = "%"
 conditions = "Ref. temp 25 degC; temp range -55 to 125 degC; capacitance change over temperature"
-cite       = "DS p.2 (X7R sheet GCM32ER71C226ME19-01A), Rated Value, Temp. coeff. or Cap. Change (-15 to 15 %)"
+cite       = "DS p.2 (GCM32ER71C226ME19-01A-EN.pdf), Rated Value, Temp. coeff. or Cap. Change (-15 to 15 %)"
 note       = "Public STD code X7R (EIA). Capacitance change over temperature, not a DC-bias or aging limit. Read from the 1210 X7R sheet of thickness code E, used for every X7R catalog row of thickness code Q (open item: no X7R sheet for thickness code Q)."
 
 [param.op_temp_x7r]
@@ -143,6 +143,6 @@ min        = -55
 max        = 125
 unit       = "degC"
 conditions = ""
-cite       = "DS p.2 (X7R sheet GCM32ER71C226ME19-01A), Rated Value, Operating Temp. Range (-55 to 125 degC)"
+cite       = "DS p.2 (GCM32ER71C226ME19-01A-EN.pdf), Rated Value, Operating Temp. Range (-55 to 125 degC)"
 check_ambient = true
 note       = "Read from the 1210 X7R sheet GCM32ER71C226ME19-01A. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every X7R catalog row uses it."

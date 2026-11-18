@@ -98,6 +98,7 @@ max        = 100
 unit       = "V"
 conditions = ""
 cite       = "DS p.1, Table 1 Key performance parameters, VDS"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Not a row of the Maximum ratings table (DS p.3). The DS gives no temperature for it. The guaranteed minimum breakdown voltage is V(BR)DSS = 100 V at 25 degC (vbr_dss, DS p.5 Table 4). Printed with no MIN/TYP/MAX label: stored as max. Only the upper bound is checked."
 check_pins = ["D"]
 max_ref    = "S"
@@ -134,6 +135,7 @@ max        = 19
 unit       = "A"
 conditions = "VGS = 10 V, TA = 25 degC, RthJA = 50 degC/W"
 cite       = "DS p.3, Table 2 Maximum ratings, Continuous drain current ID (row 3), footnote 2"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Footnote 2: 40 x 40 x 1.5 mm FR4 PCB with 6 cm2 drain copper, vertical in still air. Printed RthJA 50 degC/W is the PCB value."
 unchecked  = "not a voltage; owner: module"
 
@@ -146,6 +148,7 @@ max        = 656
 unit       = "A"
 conditions = "TA = 25 degC"
 cite       = "DS p.3, Table 2 Maximum ratings, Pulsed drain current ID,pulse (footnote 3: Diagrams 3 and 4)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "The pulsed rating is the SOA ceiling: the Diagram 3 and 4 curve rows (soa_tc25_*, soa_tc125_*) give the limit per pulse width and VDS."
 unchecked  = "not a voltage; owner: module"
 
@@ -170,6 +173,7 @@ typ        = 650
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 1 us; VDS = 12 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound. Flat top of the 1 us line (650 A level)."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -183,6 +187,7 @@ typ        = 650
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 1 us; VDS = 20 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound. Flat top of the 1 us line (650 A level)."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -196,6 +201,7 @@ typ        = 650
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 1 us; VDS = 40 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound. Flat top of the 1 us line (650 A level)."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -209,6 +215,7 @@ typ        = 650
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 1 us; VDS = 50 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound. Flat top of the 1 us line (650 A level)."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -222,6 +229,7 @@ typ        = 553
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 1 us; VDS = 80 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -235,6 +243,7 @@ typ        = 247
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 10 us; VDS = 50 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -248,6 +257,7 @@ typ        = 154
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 10 us; VDS = 80 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -261,6 +271,7 @@ typ        = 137
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 100 us; VDS = 20 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -274,6 +285,7 @@ typ        = 68.3
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 100 us; VDS = 40 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -287,6 +299,7 @@ typ        = 54.7
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 100 us; VDS = 50 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -300,6 +313,7 @@ typ        = 34.2
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 100 us; VDS = 80 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -313,6 +327,7 @@ typ        = 38.1
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 1 ms; VDS = 20 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -326,6 +341,7 @@ typ        = 19.1
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 1 ms; VDS = 40 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -339,6 +355,7 @@ typ        = 15.3
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 1 ms; VDS = 50 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -352,6 +369,7 @@ typ        = 9.55
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 1 ms; VDS = 80 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -365,6 +383,7 @@ typ        = 18.6
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 10 ms; VDS = 20 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -378,6 +397,7 @@ typ        = 9.33
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 10 ms; VDS = 40 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -391,6 +411,7 @@ typ        = 7.3
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 10 ms; VDS = 50 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -404,6 +425,7 @@ typ        = 2.92
 unit       = "A"
 conditions = "ID = f(VDS), TC = 25 degC, D = 0; tp = 10 ms; VDS = 80 V"
 cite       = "DS p.7, Diagram 3 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 3 (DS p.7, TC = 25 degC, D = 0), not a voltage; owner: module"
@@ -417,6 +439,7 @@ typ        = 660
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 1 us; VDS = 12 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -430,6 +453,7 @@ typ        = 660
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 1 us; VDS = 20 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -443,6 +467,7 @@ typ        = 660
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 1 us; VDS = 40 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -456,6 +481,7 @@ typ        = 660
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 1 us; VDS = 50 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -469,6 +495,7 @@ typ        = 436
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 1 us; VDS = 80 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -482,6 +509,7 @@ typ        = 485
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 10 us; VDS = 20 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -495,6 +523,7 @@ typ        = 236
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 10 us; VDS = 40 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 6 %, the point is behind a label on the figure, library value is the lower one"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -508,6 +537,7 @@ typ        = 122
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 10 us; VDS = 80 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -521,6 +551,7 @@ typ        = 179
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 100 us; VDS = 12 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -534,6 +565,7 @@ typ        = 53.0
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 100 us; VDS = 40 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -547,6 +579,7 @@ typ        = 42.8
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 100 us; VDS = 50 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -560,6 +593,7 @@ typ        = 26.5
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 100 us; VDS = 80 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -573,6 +607,7 @@ typ        = 49.9
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 1 ms; VDS = 12 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -586,6 +621,7 @@ typ        = 14.8
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 1 ms; VDS = 40 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -599,6 +635,7 @@ typ        = 11.9
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 1 ms; VDS = 50 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -612,6 +649,7 @@ typ        = 7.41
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 1 ms; VDS = 80 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -625,6 +663,7 @@ typ        = 24.2
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 10 ms; VDS = 12 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -638,6 +677,7 @@ typ        = 14.6
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 10 ms; VDS = 20 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -651,6 +691,7 @@ typ        = 7.24
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 10 ms; VDS = 40 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -664,6 +705,7 @@ typ        = 5.84
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 10 ms; VDS = 50 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -677,6 +719,7 @@ typ        = 2.39
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 10 ms; VDS = 80 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -690,6 +733,7 @@ typ        = 13.7
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 100 ms; VDS = 12 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 6 %, the point is behind a label on the figure, library value is the lower one"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -703,6 +747,7 @@ typ        = 8.57
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 100 ms; VDS = 20 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -716,6 +761,7 @@ typ        = 3.31
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 100 ms; VDS = 40 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -729,6 +775,7 @@ typ        = 2.13
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 100 ms; VDS = 50 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -742,6 +789,7 @@ typ        = 0.835
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = 100 ms; VDS = 80 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -755,6 +803,7 @@ typ        = 6.07
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = DC; VDS = 12 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -768,6 +817,7 @@ typ        = 3.65
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = DC; VDS = 20 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -781,6 +831,7 @@ typ        = 1.38
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = DC; VDS = 40 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -794,6 +845,7 @@ typ        = 0.888
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = DC; VDS = 50 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -807,6 +859,7 @@ typ        = 0.347
 unit       = "A"
 conditions = "ID = f(VDS), TC = 125 degC, D = 0; tp = DC; VDS = 80 V"
 cite       = "DS p.7, Diagram 4 Safe operating area (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the printed trace at 200 dpi (log axes fitted to the printed decade gridlines; independently re-read by a verifier within +/-2.3 %); read accuracy about +/-2 %. Not a bound."
 unchecked  = "curve read off Diagram 4 (DS p.7, TC = 125 degC, D = 0), not a voltage; owner: module"
@@ -1080,6 +1133,7 @@ typ        = 224
 unit       = "A"
 conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 8 V; VDS = 5 V"
 cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 curve      = true
 note       = "Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed). Flat (saturation) current at the chart max VDS."
 unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
@@ -1119,6 +1173,7 @@ typ        = 3.01
 unit       = "mohm"
 conditions = "RDS(on) = f(ID), Tj = 25 degC; parameter VGS = 10 V; ID = 50 A"
 cite       = "DS p.8, Diagram 7 Typ. drain-source on resistance (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 curve      = true
 note       = "Axis fit (200 dpi, gridlines): ID = 217 + 1.7053 x A px; RDS(on) = (1925.5 - y) / 75.44 mohm. Read accuracy about +/-1 %. Printed ID = 50 A, Tj = 25 degC."
 unchecked  = "curve read off Diagram 7, not a voltage; owner: module"
@@ -1158,6 +1213,7 @@ typ        = 3.94
 unit       = "mohm"
 conditions = "RDS(on) = f(VGS), ID = 50 A; parameter Tj = 25 degC; VGS = 8.24 V"
 cite       = "DS p.9, Diagram 9 Typ. drain-source on resistance (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 curve      = true
 note       = "Axis fit (200 dpi, gridlines): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm. Read accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC): VGS 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent)."
 unchecked  = "curve read off Diagram 9, not a voltage; owner: module"
@@ -1171,6 +1227,7 @@ typ        = 7.92
 unit       = "mohm"
 conditions = "RDS(on) = f(VGS), ID = 50 A; parameter Tj = 175 degC; VGS = 8.24 V"
 cite       = "DS p.9, Diagram 9 Typ. drain-source on resistance (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 curve      = true
 note       = "Axis fit (200 dpi, gridlines): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm. Read accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC): VGS 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent)."
 unchecked  = "curve read off Diagram 9, not a voltage; owner: module"
@@ -1184,6 +1241,7 @@ typ        = 6.86
 unit       = "mohm"
 conditions = "RDS(on) = f(VGS), ID = 50 A; parameter Tj = 175 degC; VGS = 10 V"
 cite       = "DS p.9, Diagram 9 Typ. drain-source on resistance (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 curve      = true
 note       = "Axis fit (200 dpi, gridlines): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm. Read accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC): VGS 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent)."
 unchecked  = "curve read off Diagram 9, not a voltage; owner: module"
@@ -1380,6 +1438,7 @@ max        = 20
 unit       = "V"
 conditions = ""
 cite       = "DS p.3, Table 2 Maximum ratings, Gate source voltage VGS"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "No reference pin printed; applied as gate to source (pin-pair row, S is the reference)."
 check_pins = ["G"]
 min_ref    = "S"
@@ -1406,6 +1465,7 @@ max        = 3
 unit       = "W"
 conditions = "TA = 25 degC, RthJA = 50 degC/W"
 cite       = "DS p.3, Table 2 Maximum ratings, Power dissipation Ptot (row 2), footnote 2"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 unchecked  = "not a voltage; owner: module"
 
 [param.tj_tstg]
@@ -1418,6 +1478,7 @@ max        = 175
 unit       = "degC"
 conditions = ""
 cite       = "DS p.3, Table 2 Maximum ratings, Operating and storage temperature Tj, Tstg"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Junction range (Tj); the storage part of the row is assembly-owned (see the unchecked reason)."
 unchecked  = "TJ: needs dissipation x RthJA; owner: module (Tstg part: owner: assembly)"
 
@@ -1434,6 +1495,7 @@ max        = 0.7
 unit       = "degC/W"
 conditions = ""
 cite       = "DS p.4, Table 3 Thermal characteristics, Thermal resistance junction-case, bottom"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Only a max is printed; the Min/Typ columns are '-'."
 
 [param.rth_jc_top]
@@ -1456,6 +1518,7 @@ max        = 50
 unit       = "degC/W"
 conditions = "6 cm2 cooling area"
 cite       = "DS p.4, Table 3 Thermal characteristics, Thermal resistance junction-ambient, 6 cm2 cooling area (RthJA), footnote 5"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Valid only for the DS PCB (footnote 5)."
 
 [param.zthjc_single_10us]
@@ -1467,6 +1530,7 @@ typ        = 0.0121
 unit       = "degC/W"
 conditions = "single pulse (solid line), tp = 10 us, D = tp/T; printed K/W, same number in degC/W"
 cite       = "DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound."
 unchecked  = "curve read off Diagram 5, not a voltage; owner: module"
@@ -1480,6 +1544,7 @@ typ        = 0.0545
 unit       = "degC/W"
 conditions = "single pulse (solid line), tp = 100 us, D = tp/T; printed K/W, same number in degC/W"
 cite       = "DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound."
 unchecked  = "curve read off Diagram 5, not a voltage; owner: module"
@@ -1493,6 +1558,7 @@ typ        = 0.201
 unit       = "degC/W"
 conditions = "single pulse (solid line), tp = 1 ms, D = tp/T; printed K/W, same number in degC/W"
 cite       = "DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound."
 unchecked  = "curve read off Diagram 5, not a voltage; owner: module"
@@ -1506,6 +1572,7 @@ typ        = 0.404
 unit       = "degC/W"
 conditions = "single pulse (solid line), tp = 10 ms, D = tp/T; printed K/W, same number in degC/W"
 cite       = "DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound."
 unchecked  = "curve read off Diagram 5, not a voltage; owner: module"
@@ -1519,6 +1586,7 @@ typ        = 0.676
 unit       = "degC/W"
 conditions = "single pulse (solid line), tp = 100 ms, D = tp/T; printed K/W, same number in degC/W"
 cite       = "DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
 curve      = true
 note       = "Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound. Sanity: the trace reaches about 0.68 degC/W at 100 ms, against the 0.7 degC/W RthJC max (rth_jc_bottom)."
 unchecked  = "curve read off Diagram 5, not a voltage; owner: module"
@@ -1536,6 +1604,7 @@ min        = 100
 unit       = "V"
 conditions = "VGS = 0 V, ID = 1 mA"
 cite       = "DS p.5, Table 4 Static characteristics, Drain-source breakdown voltage V(BR)DSS"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.vgs_th]
 name       = "Gate threshold voltage"
@@ -1548,6 +1617,7 @@ max        = 3.5
 unit       = "V"
 conditions = "VDS = VGS, ID = 115 uA"
 cite       = "DS p.5, Table 4 Static characteristics, Gate threshold voltage VGS(th)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.idss_25c]
 name       = "Zero gate voltage drain current, Tj = 25 degC"
@@ -1593,6 +1663,7 @@ max        = 3.5
 unit       = "mohm"
 conditions = "VGS = 10 V, ID = 50 A"
 cite       = "DS p.5, Table 4 Static characteristics, Drain-source on-state resistance RDS(on)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Table 1 prints RDS(on),max 3.5 mohm (DS p.1), same value. Tj = 25 degC only: no RDS(on) row over temperature (open item, see calc.py)."
 
 [param.norm_rds_100c]
@@ -1604,6 +1675,7 @@ typ        = 1.55
 unit       = ""
 conditions = "ID = 50 A, VGS = 10 V, normalized to 25 degC, Tj = 100 degC"
 cite       = "DS p.9, Diagram 10 figure Normalized drain-source on resistance, RDS(on)=f(Tj), ID = 50 A, VGS = 10 V, read at Tj = 100 degC"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 curve      = true
 note       = "Read by eye, +/-0.05 (re-read at 220 dpi against the 25 degC = 1.0 point). The figure has one unlabelled line: read as the typical curve (no typ or max line printed). Not a bound."
 
@@ -1616,6 +1688,7 @@ typ        = 2.0
 unit       = ""
 conditions = "ID = 50 A, VGS = 10 V, normalized to 25 degC, Tj = 150 degC"
 cite       = "DS p.9, Diagram 10 figure Normalized drain-source on resistance, RDS(on)=f(Tj), ID = 50 A, VGS = 10 V, read at Tj = 150 degC"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 curve      = true
 note       = "Read by eye, +/-0.05 (re-read at 220 dpi against the 25 degC = 1.0 point). Unlabelled single line: typical curve, not a bound. The curve runs to about 175 degC (factor about 2.3 there); 150 degC is the printed Tj max."
 
@@ -1641,6 +1714,7 @@ typ        = 1.0
 unit       = ""
 conditions = "ID = 50 A, VGS = 10 V, normalized to 25 degC, Tj = 25 degC"
 cite       = "DS p.9, Diagram 10 Normalized drain-source on resistance (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 curve      = true
 note       = "Axis fit (200 dpi, gridlines): Tj = -75 + (x - 960) / 2.1036 degC; RDS(on)/RDS(on)25 = 2.4 - (y - 445) / 300.5. Read accuracy about +/-1 %. Single unlabelled line, no max line printed. Conditions: ID = 50 A, VGS = 10 V. The curve is normalized to 25 degC, so 1.00 is the definition (curve reading 0.999)."
 unchecked  = "curve read off Diagram 10, not a voltage; owner: module"
@@ -1654,6 +1728,7 @@ typ        = 1.33
 unit       = ""
 conditions = "ID = 50 A, VGS = 10 V, normalized to 25 degC, Tj = 75 degC"
 cite       = "DS p.9, Diagram 10 Normalized drain-source on resistance (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 curve      = true
 note       = "Axis fit (200 dpi, gridlines): Tj = -75 + (x - 960) / 2.1036 degC; RDS(on)/RDS(on)25 = 2.4 - (y - 445) / 300.5. Read accuracy about +/-1 %. Single unlabelled line, no max line printed. Conditions: ID = 50 A, VGS = 10 V."
 unchecked  = "curve read off Diagram 10, not a voltage; owner: module"
@@ -1667,6 +1742,7 @@ typ        = 1.74
 unit       = ""
 conditions = "ID = 50 A, VGS = 10 V, normalized to 25 degC, Tj = 125 degC"
 cite       = "DS p.9, Diagram 10 Normalized drain-source on resistance (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 curve      = true
 note       = "Axis fit (200 dpi, gridlines): Tj = -75 + (x - 960) / 2.1036 degC; RDS(on)/RDS(on)25 = 2.4 - (y - 445) / 300.5. Read accuracy about +/-1 %. Single unlabelled line, no max line printed. Conditions: ID = 50 A, VGS = 10 V."
 unchecked  = "curve read off Diagram 10, not a voltage; owner: module"
@@ -1680,6 +1756,7 @@ typ        = 2.27
 unit       = ""
 conditions = "ID = 50 A, VGS = 10 V, normalized to 25 degC, Tj = 175 degC"
 cite       = "DS p.9, Diagram 10 Normalized drain-source on resistance (figure), curve"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 curve      = true
 note       = "Axis fit (200 dpi, gridlines): Tj = -75 + (x - 960) / 2.1036 degC; RDS(on)/RDS(on)25 = 2.4 - (y - 445) / 300.5. Read accuracy about +/-1 %. Single unlabelled line, no max line printed. Conditions: ID = 50 A, VGS = 10 V."
 unchecked  = "curve read off Diagram 10, not a voltage; owner: module"
@@ -1842,6 +1919,7 @@ max        = 1.2
 unit       = "V"
 conditions = "VGS = 0 V, IF = 50 A, Tj = 25 degC"
 cite       = "DS p.6, Table 7 Reverse diode, Diode forward voltage VSD"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.trr]
 name       = "Reverse recovery time"
@@ -1868,6 +1946,7 @@ max        = 398
 unit       = "mJ"
 conditions = "ID = 50 A, RGS = 25 ohm"
 cite       = "DS p.3, Table 2 Maximum ratings, Avalanche energy, single pulse EAS (footnote 4: Diagram 14)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 unchecked  = "not a voltage; owner: module"
 
 [param.qgs]
@@ -1922,6 +2001,7 @@ max        = 88
 unit       = "nC"
 conditions = "VDD = 50 V, ID = 50 A, VGS = 0 to 10 V"
 cite       = "DS p.6, Table 6 Gate charge characteristics, Gate charge total Qg (footnote 9)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Defined by design. Not subject to production test (footnote 9)."
 
 [param.qoss]

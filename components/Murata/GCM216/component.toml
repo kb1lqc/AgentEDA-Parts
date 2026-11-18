@@ -96,7 +96,7 @@ min        = 1.2
 max        = 1.2
 unit       = "mm"
 conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.15), code 21"
-cite       = "DS p.27 (GCM21BR72A104KA37-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), a"
+cite       = "DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), a"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed). Row for the +/-0.15 chip; the +/-0.20 row is land_a_020."
 
 [param.land_b_015]
@@ -108,7 +108,7 @@ min        = 0.6
 max        = 0.8
 unit       = "mm"
 conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.15), code 21"
-cite       = "DS p.27 (GCM21BR72A104KA37-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), b"
+cite       = "DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), b"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed)."
 
 [param.land_c_015]
@@ -120,7 +120,7 @@ min        = 1.2
 max        = 1.4
 unit       = "mm"
 conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.15), code 21"
-cite       = "DS p.27 (GCM21BR72A104KA37-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), c"
+cite       = "DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), c"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed)."
 
 [param.land_a_020]
@@ -132,7 +132,7 @@ min        = 1.0
 max        = 1.4
 unit       = "mm"
 conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.20), code 21"
-cite       = "DS p.27 (GCM21BR72A104KA37-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), a"
+cite       = "DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), a"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed)."
 
 [param.land_b_020]
@@ -144,7 +144,7 @@ min        = 0.6
 max        = 0.8
 unit       = "mm"
 conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.20), code 21"
-cite       = "DS p.27 (GCM21BR72A104KA37-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), b"
+cite       = "DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), b"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed)."
 
 [param.land_c_020]
@@ -156,7 +156,7 @@ min        = 1.2
 max        = 1.4
 unit       = "mm"
 conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.20), code 21"
-cite       = "DS p.27 (GCM21BR72A104KA37-01A), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), c"
+cite       = "DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), c"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed)."
 
 # C0G per-part rows (GCM2165C1K432FA16, from the C0G reference sheet). Keys end in _c0g.
@@ -621,7 +621,7 @@ min        = -15
 max        = 15
 unit       = "%"
 conditions = "Ref. temp 25 degC; temp range -55 to 125 degC; capacitance change over temperature"
-cite       = "DS p.2 (X7R sheet of GCM21B), Rated Value, Temp. coeff. or Cap. Change (-15 to 15 %)"
+cite       = "DS p.2 (GCM21BR72A104KA37-01A-EN.pdf), Rated Value, Temp. coeff. or Cap. Change (-15 to 15 %)"
 note       = "Public STD code X7R (EIA). Capacitance change over temperature, not a DC-bias or aging limit. Read from the X7R reference sheet (GCM21BR72A104KA37, 1.25 mm); used for every X7R catalog row of this directory (open item: no 0.6 mm X7R sheet)."
 
 [param.op_temp_x7r]
@@ -633,7 +633,7 @@ min        = -55
 max        = 125
 unit       = "degC"
 conditions = ""
-cite       = "DS p.2 (X7R sheet of GCM21B), Rated Value, Operating Temp. Range (-55 to 125 degC)"
+cite       = "DS p.2 (GCM21BR72A104KA37-01A-EN.pdf), Rated Value, Operating Temp. Range (-55 to 125 degC)"
 check_ambient = true
 note       = "Read from the X7R reference sheet of GCM21BR72A104KA37. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every X7R catalog row uses it."
 

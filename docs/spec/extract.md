@@ -5,7 +5,10 @@ Datasheet tables are read as rendered page images, never as extracted text (it s
 
 Terms: **MPN** = exact orderable number with reel suffix (LTC4364HMS-1#TRPBF). **Value** = MPN without the reel
 suffix (LTC4364HMS-1); it names the directory, or a variant in a family's `variants.toml`. **Cite** = `DS p.<printed page>, <table or figure title>, <row>`
-(printed page numbers; pages with no printed number: `DS PDF p.<n>, <drawing number>`).
+(printed page numbers; pages with no printed number: `DS PDF p.<n>, <drawing number>`). A row from a document other than
+`datasheet_file` (a second reference sheet, an errata) must name it by file name in brackets after the page (naming
+`datasheet_file` itself is allowed):
+`DS p.7 (GCM1885C1H101GA16-01A-EN.pdf), Table A, 5C, -10 degC`; `lib.check` confirms the file is in `docs/datasheets/`.
 
 ## Rules that override convenience
 1. **Every number has a cite.** `DS p.<printed page>, <table or figure title>, <row>`. No cite, no number.
@@ -85,7 +88,7 @@ note       = "Specified by characterization (DS note 3)"   # optional
 | `text` | if no number | A rating the DS states in words or as a formula ("Continuous", "(P x R)^1/2"). Use only when there is no number |
 | `unit` | yes | See units. Use `""` for unitless (gain V/V, ratio) |
 | `conditions` | yes | Test conditions as printed; `""` if none |
-| `cite` | yes | `DS p.<printed page>, <table/figure title>, <row>` |
+| `cite` | yes | `DS p.<printed page>, <table/figure title>, <row>`; from another document: `DS p.<n> (<file>.pdf), ...` |
 | `min_ref` / `max_ref` | no | Name of a pin or rail the min/max is relative to. Example: VCM range `(V-)+2 V to (V+)-2 V` is `min = 2, min_ref = "-VS", max = -2, max_ref = "+VS"` |
 | `typ_ref` | no | Like `min_ref`/`max_ref`, for typ: the DS prints "Typ = VS + 11 V" as `typ = 11, typ_ref = "+VS"`. `part.resolve()` returns typ = offset + the rail's typ (a float rail is exact; a rail Param without typ gives typ `None`). The Zener generator ignores typ |
 | `tol_pct` | no | `[lo, hi]` printed percentages: the DS prints a typ with "-10 % / +10 %" in the MIN/MAX columns. Store `typ` as printed plus `tol_pct = [-10, 10]`, no `min`/`max`. The loader sets min = typ x (1 + lo/100) and max = typ x (1 + hi/100), sorted so min <= max (also for a negative typ); wca and Zener checks use those. The README shows "-10 %" / "+10 %" in the Min/Max cells |
@@ -93,6 +96,7 @@ note       = "Specified by characterization (DS note 3)"   # optional
 | `dielectric` | no | Capacitor series only: the row applies to catalog parts of that dielectric (`"X7R"`); absent = all (see "Capacitor series") |
 | `parts` | no | Capacitor series only: list of catalog values (MPN without package letter) the row applies to; absent = all. A row has `dielectric` or `parts`, not both |
 | `note` | no | Footnotes, characterization notes, ambiguity |
+| `verified` | no | `"<who> <YYYY-MM-DD> <method>"`: an independent check of this row against the DS page image after extraction (a person, or a blind cross-model audit). Never set by the extractor of the row. A judged PASS resting on a row without it reports `PASS (UNVERIFIED INPUTS)` (`lib-api.md`) |
 | `sym` | no | `true` if the DS prints an unsigned magnitude bound for a quantity that can have either sign (VOS, IB, IOS, offset drift: TI prints VOS "40 uV" max, meaning ±40 uV). Store `max` (and `typ`) as printed; the loader sets min = -max. Say why in `note`. Never for a quantity that cannot be negative (IQ), and never for a printed `±X` (that is `min = -X, max = X`) |
 | `check_pins` | no | Zener wrapper: list of `[[pin]]` names whose net voltage must stay within this row's min/max (with `min_ref`/`max_ref` resolved to those pins' nets). Voltage rows only. See "Zener wrapper" |
 | `check_ambient` | no | Zener wrapper: `true` checks the instance's `ambient` config against this row (degC, min and max required) |
