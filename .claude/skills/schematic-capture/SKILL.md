@@ -152,6 +152,16 @@ Write the generator against these; each came from a rework.
   and not geometric; `overlap.py --dangling` reports geometry only.
 - `overlap.py` does not check pin number/name text or group-box edges; review those in the render.
 
+### Generators must be idempotent (and proven so before they touch committed sheets)
+- KiCad saves items grouped by type (rectangle, text, junction, no_connect, wire, label, hierarchical_label,
+  symbol, sheet), each group sorted by uuid, with its own indentation. A generator that appends items in emission
+  order produces a different file on every rerun even when the content is identical (thousands of churned lines,
+  easily misread as lost content). Canonicalise on save: re-indent new items and sort the generated kinds into
+  KiCad's order (circuit-blocks `tools/schematic/canon.py`). Gate: generator on its own output is byte-identical.
+- Prove a generator change on COPIES (`--eda <scratch copy>`) before writing to committed sheets. Agent briefs
+  forbid `git checkout/restore/stash/reset`; if an agent damages committed files it stops and reports, and the
+  main session asks the designer before restoring.
+
 ## Reused blocks on a board
 A board built from reusable blocks (see `reusable-blocks`) gets one child sheet per instance, generated fresh in the
 board's own `eda/`; the block repository's arranged reference sheet is not picked up automatically

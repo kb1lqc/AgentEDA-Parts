@@ -188,6 +188,11 @@ Show only the items that apply; every value from the spec or the worst-case repo
 ## Title block (every sheet)
 Title, revision, date, company, author, the repo URL plus git short hash, and a one-line description of what the
 sheet contains. A printed sheet must identify itself.
+- **Each sheet carries its own hash:** the short hash of the commit where THAT sheet's content last changed, not a
+  shared base hash (designer, 2026-11-17). A file cannot hold its own commit's hash, so the flow is: commit the
+  sheet change, run the stamp tool (it ignores stamp-only commits when finding the content commit), re-export the
+  PDFs, commit "Stamp sheet hashes". The sync check fails a stale stamp on any sheet whose content is unchanged.
+  Reference implementation: circuit-blocks `tools/schematic/stamp_hash.py`.
 
 ## Toolchain facts: Zener / pcb 0.4.102 with KiCad 10
 - **Sub-sheets:** a module becomes its own KiCad sub-sheet when it declares
