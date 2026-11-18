@@ -1,5 +1,7 @@
 # Component library: datasheet numbers + equations + KiCad
 
+[![verify](https://github.com/kb1lqc/zener-library/actions/workflows/verify.yml/badge.svg)](https://github.com/kb1lqc/zener-library/actions/workflows/verify.yml) [![release](https://img.shields.io/github/v/tag/kb1lqc/zener-library?filter=v*&sort=semver&label=release)](https://github.com/kb1lqc/zener-library/tags)
+
 Every part here has three things a person or an AI needs to design with it and check the result:
 
 1. **Data** (`component.toml`): pins and datasheet parameters with min / typ / max, units, test conditions and a

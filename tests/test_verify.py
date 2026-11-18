@@ -63,6 +63,19 @@ class TestVerify(unittest.TestCase):
         kw.setdefault("all_dirs", True)
         return v.verify(self.root, log_dir=self.logs, runner=fake, **kw)
 
+    def test_default_log_dir_is_fresh_per_run(self):
+        # two runs at once must not share a log directory (zener-library #19)
+        import shutil
+        dirs = []
+        for _ in range(2):
+            rc, lines = v.verify(self.root, runner=Fake(self.root), all_dirs=True)
+            logs = [l for l in lines if l.startswith("logs:")]
+            self.assertEqual(len(logs), 1, lines)
+            dirs.append(Path(logs[0].split(":", 1)[1].strip()))
+        self.addCleanup(lambda: [shutil.rmtree(d, ignore_errors=True) for d in dirs])
+        self.assertNotEqual(dirs[0], dirs[1])
+        self.assertTrue(all(d.is_dir() and d.name.startswith("zl-verify-") for d in dirs))
+
     def test_pass_line_has_counts(self):
         rc, lines = self.run_v(Fake(self.root))
         self.assertEqual(rc, 0)

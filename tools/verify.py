@@ -14,7 +14,7 @@ Steps, in order, each judged by exit code:
 lib.zen and lib.readme must leave components/** and README.md byte-identical (content hashes before and after). A
 difference is a FAIL unless --regen is given; then the changed files are listed and the run still passes.
 Output: one PASS line with counts, or the first 5 failures as `file:line message` (`step: line` when the tool prints no
-location). Full logs: --log-dir (default $TMPDIR/zl-verify), one file per step; the log path is printed last.
+location). Full logs: --log-dir (default: a new $TMPDIR/zl-verify-* per run), one file per step; the log path is printed last.
 __pycache__ directories are removed afterwards. Nothing is committed or restored.
 """
 
@@ -109,7 +109,8 @@ def root_pcb_version(root):
 def verify(root, dirs=None, all_dirs=False, regen=False, log_dir=None, runner=run_cmd):
     """Run the chain. Returns (exit code, summary text lines). `runner(cmd, cwd)` -> (rc, output) is injectable."""
     root = Path(root)
-    log_dir = Path(log_dir) if log_dir else Path(tempfile.gettempdir()) / "zl-verify"
+    # a fresh directory per run, so two runs at once never share logs (zener-library #19)
+    log_dir = Path(log_dir) if log_dir else Path(tempfile.mkdtemp(prefix="zl-verify-"))
     log_dir.mkdir(parents=True, exist_ok=True)
     fails, counts, notes = [], {}, []
     logs = []
