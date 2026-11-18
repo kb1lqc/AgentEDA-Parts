@@ -18,6 +18,12 @@ META = ("name", "symbol", "kind", "scope", "conditions", "cite", "note", "min_re
 _USED = {}  # "<Value>:<key>" -> verified (None = unverified), for every row an analysis has read this process
 
 
+def _record(label, key, verified):
+    """Record one row read. Unverified is sticky: a later verified read of the same key never clears it."""
+    k = f"{label}:{key}"
+    _USED[k] = None if (k in _USED and not _USED[k]) else verified
+
+
 def unverified_inputs():
     """Sorted "<Value>:<key>" of every row read through Part.param/inputs/series (and the helpers built on them) that
     has no `verified` stamp. A judged PASS that rests on any of them is reported "PASS (UNVERIFIED INPUTS)"."""
@@ -47,6 +53,8 @@ class Part:
     variant: str = None  # variant Value for a family part, None for a plain component
     family_path: Path = None  # family directory (same as path) for a variant, None for a plain component
     hidden: dict = field(default_factory=dict)  # capacitor series: key -> restriction text of rows not loaded here
+    selection: str = None  # capacitor series: catalog value of a Part.select() result (input record label)
+    aliases: dict = field(default_factory=dict)  # key -> the TOML row it stands for (select(): tc -> tc_x7r)
 
     def param(self, key):
         """Param for one TOML key, in SI. KeyError names the unknown key."""
@@ -57,8 +65,12 @@ class Part:
 
     def _used(self, key):
         p = self.params[key]
-        _USED[f"{self.variant or self.info.get('value')}:{key}"] = p.verified
+        _record(self._label(), self.aliases.get(key, key), p.verified)
         return p
+
+    def _label(self):
+        base = self.variant or self.info.get("value")
+        return f"{base}[{self.selection}]" if self.selection else base
 
     def inputs(self, function):
         """Datasheet arguments for calc.<function>, from its INPUTS map: {arg: Param or float}.
@@ -189,11 +201,16 @@ class Part:
         row = _cap.choose(self.catalog(), capacitance, rated_voltage, dielectric, tolerance)
         params, _ = _applicable(self.raw.get("param", {}), dielectric, row.value)
         cap, tol, rated = _cap.selection_params(row)
-        params.update(capacitance=cap, tolerance=tol, rated_v=rated, tc=params[self.info["tc_param"][dielectric]])
+        tc_key = self.info["tc_param"][dielectric]
+        params.update(capacitance=cap, tolerance=tol, rated_v=rated, tc=params[tc_key])
+        label = f"{self.info.get('value')}[{row.value}]"
+        _record(label, "capacitance", cap.verified)  # handed out directly as sel.capacitance / sel.rated_voltage
+        _record(label, "rated_v", rated.verified)
         letter, alts = self.info["package_default"], self.info["package_alternates"]
         return Selection(row=row, value=row.value, mpn=row.value + letter, alternates=[row.value + a for a in alts],
                          dielectric=dielectric, tolerance=row.tolerance, thickness=row.thickness, capacitance=cap,
-                         rated_voltage=rated, part=dataclasses.replace(self, params=params, hidden={}))
+                         rated_voltage=rated, part=dataclasses.replace(self, params=params, hidden={}, selection=row.value,
+                                                                        aliases={"tc": tc_key}))
 
     def resolve(self, key, rails):
         """Param with absolute min/max for a param stated relative to pins (min_ref / max_ref).

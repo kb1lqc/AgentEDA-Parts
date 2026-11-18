@@ -228,6 +228,8 @@ class TestCite(unittest.TestCase):
         self.assertEqual(rules.cite_sheets(good), [("param a", "GCM1885C1H101GA16-01A-EN.pdf")])
         f = rules.cite_sheet_findings(bad)
         self.assertEqual([x.rule for x in f], ["cite-sheet"])
+        trav = {"param": {"a": {"cite": "DS p.7 (../secret.pdf), Table A, 5C"}}}
+        self.assertEqual([x.rule for x in rules.cite_sheet_findings(trav)], ["cite-sheet"])
 
     def test_variant_cites_checked(self):
         f = rules.cite_findings({}, {"V1": {"param": {"a": {"cite": "nope"}}}})

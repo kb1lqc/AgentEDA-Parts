@@ -64,9 +64,32 @@ class Verified(unittest.TestCase):
         self.assertEqual(lib.verdict(True), "PASS (UNVERIFIED INPUTS)")
         self.assertIn(f"- `TPS48000QDGXQ1:{bad}`", lib.inputs_section())
 
+    def test_unverified_is_sticky(self):
+        p = lib.load("TexasInstruments/TPS48000QDGXQ1")
+        key = next(k for k, v in p.params.items() if not v.verified)
+        p.param(key)
+        import dataclasses
+        stamped = dataclasses.replace(p.params[key], verified="x 2026-11-18 test")
+        q = dataclasses.replace(p, params={**p.params, key: stamped})
+        q.param(key)  # a later verified read of the same key
+        self.assertEqual(lib.unverified_inputs(), [f"TPS48000QDGXQ1:{key}"])
+
+    def test_selection_keys_do_not_collide(self):
+        c = lib.load("Murata/GCM188")
+        rows = c.catalog()
+        x7r = next(r for r in rows if r.dielectric == "X7R")
+        c0g = next(r for r in rows if r.dielectric == "C0G")
+        a = c.select(x7r.capacitance, x7r.rated_voltage, "X7R", x7r.tolerance)
+        b = c.select(c0g.capacitance, c0g.rated_voltage, "C0G", c0g.tolerance)
+        a.part.param("tc"); b.part.param("tc")
+        used = lib.used_inputs()
+        for want in (f"GCM188[{x7r.value}]:capacitance", f"GCM188[{x7r.value}]:rated_v", f"GCM188[{x7r.value}]:tc_x7r",
+                     f"GCM188[{c0g.value}]:capacitance", f"GCM188[{c0g.value}]:tc_c0g"):
+            self.assertIn(want, used)
+
     def test_format_rule(self):
         good = {"param": {"a": {"verified": "jd 2026-11-20 page image"}}}
-        for bad in ("yes", "jd 20261120 page image", "jd 2026-11-20"):
+        for bad in ("yes", "jd 20261120 page image", "jd 2026-11-20", "jd 2026-13-45 page image"):
             self.assertEqual([f.rule for f in rules.verified_findings({"param": {"a": {"verified": bad}}})],
                              ["verified-format"], bad)
         self.assertEqual(rules.verified_findings(good), [])

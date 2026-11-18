@@ -6,7 +6,8 @@ Datasheet tables are read as rendered page images, never as extracted text (it s
 Terms: **MPN** = exact orderable number with reel suffix (LTC4364HMS-1#TRPBF). **Value** = MPN without the reel
 suffix (LTC4364HMS-1); it names the directory, or a variant in a family's `variants.toml`. **Cite** = `DS p.<printed page>, <table or figure title>, <row>`
 (printed page numbers; pages with no printed number: `DS PDF p.<n>, <drawing number>`). A row from a document other than
-`datasheet_file` (a second reference sheet, an errata) names it by file name in brackets after the page:
+`datasheet_file` (a second reference sheet, an errata) must name it by file name in brackets after the page (naming
+`datasheet_file` itself is allowed):
 `DS p.7 (GCM1885C1H101GA16-01A-EN.pdf), Table A, 5C, -10 degC`; `lib.check` confirms the file is in `docs/datasheets/`.
 
 ## Rules that override convenience
