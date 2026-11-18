@@ -40,6 +40,10 @@ presentation is the `schematic-style` skill; part data and equations come from t
   risk as an open item (e.g. capping a bus voltage so an abs-max is never exceeded rather than adding a TVS).
   Ask before choosing between the two.
 
+- **Topology from the datasheet figure, not its text.** Read connections from the rendered application figure;
+  text extraction misplaces pin labels. The voltage across a part depends on its return node: re-derive every
+  rating when a return changes (gate-to-GND vs gate-to-source differ by the full bus voltage).
+
 ## Default design rules (apply unless the requirement says otherwise)
 - **Passives 0603 or larger** (hand reworkable). Larger where power, voltage or accuracy needs it.
 - **Decoupling: 100 nF at every IC power pin**, placed at the pin, plus bulk capacitance where the rail or the
@@ -121,12 +125,21 @@ Present the options with numbers and a recommendation; record the decision.
   and schematic notes (a script with one exact-match pattern per note line that refuses to write on any miss).
   Spec text and `.zen` comments cite the analysis section or values key instead of copying a number; a copied
   number goes stale the next time the design changes.
+- **Walk through every datasheet design example for the actual design.** When a part's datasheet has an
+  application or design-procedure example (e.g. TPS4800-Q1 8.2.2: bootstrap capacitor, ISCP resistor, timer
+  capacitor, UVLO/OV divider, inrush), the design-analysis datasheet has a section that repeats each step in the
+  datasheet's order with this design's values: the equation and its cite, the datasheet example's inputs and result
+  beside this design's inputs, nominal and worst-case results, and the chosen standard value. The library's
+  `EXAMPLES` already prove the equation reproduces the datasheet; this section shows the reader the same procedure
+  applied to the design.
 - **The design-analysis datasheet is pure analysis of the design as it is:** no options, alternatives,
   candidate comparisons or worked examples. Option studies happen before the decision (scratch scripts, presented
   to the designer); the chosen design is what the datasheet analyses.
 - **Design-analysis datasheet:** a Python script in jupytext percent format (`# %%` cells: opens as a notebook,
   diffs as plain Python) that regenerates a committed Markdown datasheet plus PNG charts in `docs/` with one
-  command. Not a raw `.ipynb` (hidden state, unreadable diffs) and never hand-written numbers. Contents: a summary
+  command, and a PDF of that datasheet on every run (`docs/design-analysis.pdf`, for reviewers without a Markdown
+  viewer). The PDF carries a hash of the Markdown it was made from, and the repository's sync check fails when it
+  is stale or missing; never hand-edit it. Not a raw `.ipynb` (hidden state, unreadable diffs) and never hand-written numbers. Contents: a summary
   table (result, limit, margin, PASS/FAIL/ESTIMATE); operating conditions and assumptions; worst-case performance
   of every measured or regulated quantity over its range, with charts (error vs operating point bands, contributor
   breakdown); thermal: dissipation vs rating over current and ambient (derating curve), self-heating and its effect
