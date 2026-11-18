@@ -121,6 +121,7 @@ max        = 6
 unit       = "V"
 conditions = "over operating free-air temperature range (unless otherwise noted)"
 cite       = "DS p.3, 6.1 Absolute Maximum Ratings, Supply voltage VS"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Only a MAX is printed (MIN column blank). No reference pin printed; checked against system 0 V (a floating GND is not modelled)."
 unchecked  = "covered by vs_rec (2.7 V to 5.5 V, error), which is stricter"
 
@@ -136,6 +137,7 @@ max_ref    = "IN-"
 unit       = "V"
 conditions = "over operating free-air temperature range (unless otherwise noted)"
 cite       = "DS p.3, 6.1 Absolute Maximum Ratings, VIN+, VIN- Differential (VIN+) - (VIN-)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Pin-pair row: the value is V(IN+), the reference is IN- (second pin as reference). Footnote (2) on the same table: VIN+ and VIN- are the voltages at the IN+ and IN- pins. check_pins IN+ with IN- as reference."
 check_pins = ["IN+"]
 
@@ -149,6 +151,7 @@ max        = 85
 unit       = "V"
 conditions = "over operating free-air temperature range (unless otherwise noted)"
 cite       = "DS p.3, 6.1 Absolute Maximum Ratings, VIN+, VIN- Common-mode"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Same limits as vcm_rec (DS p.4, 6.3). No reference pin printed (DS p.12, 7.3.1 gives -0.3 V to +85 V at the input pins with no reference); checked against system 0 V (a floating GND is not modelled)."
 check_pins = ["IN+", "IN-"]
 
@@ -162,6 +165,7 @@ max        = 85
 unit       = "V"
 conditions = "over operating free-air temperature range (unless otherwise noted)"
 cite       = "DS p.3, 6.1 Absolute Maximum Ratings, VBUS"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "No reference pin printed; checked against system 0 V (a floating GND is not modelled)."
 check_pins = ["VBUS"]
 
@@ -177,6 +181,7 @@ max_ref    = "VS"
 unit       = "V"
 conditions = "over operating free-air temperature range (unless otherwise noted)"
 cite       = "DS p.3, 6.1 Absolute Maximum Ratings, VIO, MOSI, MISO, SCLK, ALERT"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed GND - 0.3 V (MIN) and VS + 0.3 V (MAX): min_ref = GND, max_ref = VS. CS is not in this row (DS omission, open item): CS is not checked."
 check_pins = ["MOSI", "SCLK", "ALERT"]
 unchecked  = "MISO not checked: push-pull output driven by the part; owner: module. CS: not listed in the DS VIO row (DS omission); no rating stored, open item"
@@ -190,6 +195,7 @@ max        = 5
 unit       = "mA"
 conditions = "over operating free-air temperature range (unless otherwise noted)"
 cite       = "DS p.3, 6.1 Absolute Maximum Ratings, IIN, Input current into any pin"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "MAX column only (MIN blank), stored as max."
 unchecked  = "current rating, not a voltage (the wrapper checks voltages only); owner: board"
 
@@ -202,6 +208,7 @@ max        = 10
 unit       = "mA"
 conditions = "over operating free-air temperature range (unless otherwise noted)"
 cite       = "DS p.3, 6.1 Absolute Maximum Ratings, IOUT, Digital output current"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "MAX column only (MIN blank), stored as max."
 unchecked  = "current rating, not a voltage (the wrapper checks voltages only); owner: module"
 
@@ -214,6 +221,7 @@ max        = 150
 unit       = "degC"
 conditions = ""
 cite       = "DS p.3, 6.1 Absolute Maximum Ratings, TJ, Junction temperature"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 unchecked  = "needs dissipation x RthetaJA; owner: module"
 
 [param.tstg_abs]
@@ -226,6 +234,7 @@ max        = 150
 unit       = "degC"
 conditions = ""
 cite       = "DS p.3, 6.1 Absolute Maximum Ratings, Tstg, Storage temperature"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 unchecked  = "owner: assembly"
 
 # ---------------------------------------------------------------- ESD ratings
@@ -242,6 +251,7 @@ max        = 2000
 unit       = "V"
 conditions = "HBM per ANSI/ESDA/JEDEC JS-001, all pins"
 cite       = "DS p.4, 6.2 ESD Ratings, Human body model (HBM), V(ESD)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed +/-2000 V. DS footnote (1): JEDEC JEP155 500 V HBM allows safe manufacturing."
 unchecked  = "owner: assembly"
 
@@ -255,6 +265,7 @@ max        = 1000
 unit       = "V"
 conditions = "CDM per JEDEC JESD22-C101, all pins"
 cite       = "DS p.4, 6.2 ESD Ratings, Charged device model (CDM), V(ESD)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed +/-1000 V. DS footnote (2): JEDEC JEP157 250 V CDM allows safe manufacturing."
 unchecked  = "owner: assembly"
 
@@ -272,6 +283,7 @@ max        = 85
 unit       = "V"
 conditions = "over operating free-air temperature range (unless otherwise noted)"
 cite       = "DS p.4, 6.3 Recommended Operating Conditions, VCM, Common-mode input range"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "No reference pin printed; checked against system 0 V (a floating GND is not modelled)."
 check_pins = ["IN+", "IN-"]
 
@@ -285,6 +297,7 @@ max        = 5.5
 unit       = "V"
 conditions = "over operating free-air temperature range (unless otherwise noted)"
 cite       = "DS p.4, 6.3 Recommended Operating Conditions, VS, Operating supply range"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "No reference pin printed; checked against system 0 V (a floating GND is not modelled)."
 check_pins = ["VS"]
 
@@ -298,6 +311,7 @@ max        = 125
 unit       = "degC"
 conditions = ""
 cite       = "DS p.4, 6.3 Recommended Operating Conditions, TA, Ambient temperature"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 check_ambient = true
 
 # ---------------------------------------------------------------- thermal information (DGS column only)
@@ -313,6 +327,7 @@ typ        = 177.6
 unit       = "degC/W"
 conditions = "DGS (VSSOP), 10 pins"
 cite       = "DS p.4, 6.4 Thermal Information, RthetaJA, DGS (VSSOP) 10 PINS"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Single printed value (no min or max), stored as typ."
 
 [param.rtheta_jc_top]
@@ -412,6 +427,7 @@ max        = 163.84
 unit       = "mV"
 conditions = "TA = -40 degC to +125 degC, ADCRANGE = 0"
 cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Shunt voltage input range VDIFF, ADCRANGE = 0"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "MIN -163.84 and MAX 163.84 printed with signs: stored as printed."
 
 [param.vdiff_adcr1_full]
@@ -438,6 +454,7 @@ max        = 1
 unit       = "uV"
 conditions = "VCM = 48 V, TCT > 280 us; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Shunt offset voltage Vos, VCM = 48 V"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "TYP printed +/-0.3 uV (spread around zero: typ_pm). MAX printed +/-1 uV: min = -1, max = 1. No temperature condition: header 25 degC. The full-temperature offset comes from vos_drift_full (SPEC recipe step 2)."
 
 [param.vos_vcm0_25c]
@@ -452,6 +469,7 @@ max        = 1
 unit       = "uV"
 conditions = "VCM = 0 V, TCT > 280 us; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Shunt offset voltage Vos, VCM = 0 V"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "TYP printed +/-0.3 uV (typ_pm). MAX printed +/-1 uV: min = -1, max = 1. No temperature condition: header 25 degC."
 
 [param.vos_drift_full]
@@ -466,6 +484,7 @@ max        = 10
 unit       = "nV/degC"
 conditions = "TA = -40 degC to +125 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Shunt offset voltage drift dVos/dT"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "TYP printed +/-2 nV/degC (typ_pm); MAX printed +/-10 nV/degC: min = -10, max = 10."
 
 [param.vos_psrr_full]
@@ -494,6 +513,7 @@ max        = 2.5
 unit       = "mV"
 conditions = "VBUS = 20 mV; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, VBUS offset voltage Vos_bus"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "TYP printed +/-1 mV (typ_pm); MAX printed +/-2.5 mV: min = -2.5, max = 2.5. No temperature condition: header 25 degC."
 
 [param.vos_bus_drift_full]
@@ -508,6 +528,7 @@ max        = 20
 unit       = "uV/degC"
 conditions = "TA = -40 degC to +125 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, VBUS offset voltage drift dVos/dT"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "TYP printed +/-4 uV/degC (typ_pm); MAX printed +/-20 uV/degC: min = -20, max = 20."
 
 [param.vos_bus_psrr_25c]
@@ -520,6 +541,7 @@ typ_pm     = true
 unit       = "mV/V"
 conditions = "VS = 2.7 V to 5.5 V; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, VBUS offset voltage vs power supply PSRR"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed +/-0.25 mV/V in TYP (MAX blank); stored as printed (typ_pm). No temperature condition: header 25 degC."
 
 [param.ib_25c]
@@ -533,6 +555,7 @@ max        = 2.5
 unit       = "nA"
 conditions = "Either input, IN+ or IN-, VCM = 85 V; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Input bias current IB"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "DS prints an unsigned magnitude for a quantity that can be either sign: sym = true (min = -max), printed TYP kept as typ_spread. Single value at 25 degC."
 
 [param.zvbus_25c]
@@ -546,6 +569,7 @@ max        = 1.2
 unit       = "Mohm"
 conditions = "Active mode; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, VBUS pin input impedance ZVBUS"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.ivbus_leak_25c]
 name       = "VBUS pin leakage current"
@@ -582,6 +606,7 @@ max        = 0.05
 unit       = "%"
 conditions = "VCM = 24 V; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, Shunt voltage gain error GSERR"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "TYP printed +/-0.01 % (typ_pm). MAX printed +/-0.05 %: min = -0.05, max = 0.05 (loader gives fractions). No full-temperature row: drift from gs_drift_25c (SPEC recipe step 2)."
 
 [param.gs_drift_25c]
@@ -594,6 +619,7 @@ max        = 20
 unit       = "ppm/degC"
 conditions = "no row condition; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, Shunt voltage gain error drift GS_DRFT"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "MAX printed +/-20 ppm/degC (no TYP). Test conditions column blank, so the header (25 degC) applies literally, although a drift is normally specified over temperature. Used as the drift term of the SPEC recipe X(T) = X25 + drift x (T - 25). DS ambiguity, open item."
 
 [param.gberr_25c]
@@ -608,6 +634,7 @@ max        = 0.05
 unit       = "%"
 conditions = "table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, VBUS voltage gain error GBERR"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "TYP printed +/-0.01 % (typ_pm). MAX printed +/-0.05 %: min = -0.05, max = 0.05. No own condition: header 25 degC."
 
 [param.gb_drift_25c]
@@ -620,6 +647,7 @@ max        = 20
 unit       = "ppm/degC"
 conditions = "no row condition; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, VBUS voltage gain error drift GB_DRFT"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "MAX printed +/-20 ppm/degC (no TYP). Blank condition: header applies literally (same ambiguity as gs_drift_25c)."
 
 [param.ptme_full]
@@ -632,6 +660,7 @@ max        = 0.5
 unit       = "%"
 conditions = "TA = -40 degC to +125 degC, at full scale"
 cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, Power total measurement error (TME) PTME"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "MAX printed +/-0.5 % (no TYP)."
 
 [param.etme_25c]
@@ -687,6 +716,7 @@ typ        = 195.3125
 unit       = "uV"
 conditions = "Bus voltage; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, 1 LSB step size, Bus voltage"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Same value in Table 7-10 (DS p.23) and Section 8.1.1 (DS p.29)."
 
 [param.lsb_temp_25c]
@@ -907,6 +937,7 @@ max        = 750
 unit       = "uA"
 conditions = "VSENSE = 0 V; table header TA = 25 degC"
 cite       = "DS p.6, 6.5 Electrical Characteristics, POWER SUPPLY, Quiescent current IQ, VSENSE = 0 V"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "TYP 640 uA, MAX 750 uA as printed (MIN blank)."
 
 [param.iq_full]
@@ -918,6 +949,7 @@ max        = 1.1
 unit       = "mA"
 conditions = "VSENSE = 0 V, TA = -40 degC to +125 degC"
 cite       = "DS p.6, 6.5 Electrical Characteristics, POWER SUPPLY, Quiescent current IQ, VSENSE = 0 V, TA = -40 degC to +125 degC"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "MAX only (1.1 mA) printed for this row."
 
 [param.iqsd_25c]
@@ -930,6 +962,7 @@ max        = 5
 unit       = "uA"
 conditions = "Shutdown mode; table header TA = 25 degC"
 cite       = "DS p.6, 6.5 Electrical Characteristics, POWER SUPPLY, Quiescent current, shutdown IQSD"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "TYP 2.8 uA, MAX 5 uA as printed."
 
 [param.tpor_powerup_25c]
@@ -992,6 +1025,7 @@ max        = 0.4
 unit       = "V"
 conditions = "IOL = 1 mA; table header TA = 25 degC"
 cite       = "DS p.6, 6.5 Electrical Characteristics, DIGITAL INPUT / OUTPUT, Logic output level, low VOL, IOL = 1 mA"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed MIN GND (offset 0 from pin GND) and MAX 0.4 V."
 
 [param.voh_25c]
@@ -1006,6 +1040,7 @@ max_ref    = "VS"
 unit       = "V"
 conditions = "IOL = 1 mA; table header TA = 25 degC"
 cite       = "DS p.6, 6.5 Electrical Characteristics, DIGITAL INPUT / OUTPUT, Logic output level, high VOH, IOL = 1 mA"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed MIN VS - 0.4 V and MAX VS: stored as offsets from pin VS. The row's condition prints IOL = 1 mA (not IOH); stored as printed. DS ambiguity, open item."
 
 [param.io_leak_25c]

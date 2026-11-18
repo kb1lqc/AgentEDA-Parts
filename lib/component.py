@@ -13,7 +13,25 @@ from .units import to_si
 
 ROOT = Path(__file__).resolve().parent.parent
 # Param fields that are copied from the TOML as-is.
-META = ("name", "symbol", "kind", "scope", "conditions", "cite", "note", "min_ref", "max_ref", "typ_ref", "curve", "text")
+META = ("name", "symbol", "kind", "scope", "conditions", "cite", "note", "min_ref", "max_ref", "typ_ref", "curve", "text",
+        "verified")
+_USED = {}  # "<Value>:<key>" -> verified (None = unverified), for every row an analysis has read this process
+
+
+def unverified_inputs():
+    """Sorted "<Value>:<key>" of every row read through Part.param/inputs/series (and the helpers built on them) that
+    has no `verified` stamp. A judged PASS that rests on any of them is reported "PASS (UNVERIFIED INPUTS)"."""
+    return sorted(k for k, v in _USED.items() if not v)
+
+
+def used_inputs():
+    """Sorted "<Value>:<key>" of every row read so far (verified or not)."""
+    return sorted(_USED)
+
+
+def reset_inputs():
+    """Forget the rows read so far (one analysis per process is the normal case; tests reset between cases)."""
+    _USED.clear()
 
 
 @dataclass
@@ -35,7 +53,12 @@ class Part:
         if key not in self.params:
             why = f" (the row exists but is restricted to {self.hidden[key]}: use part.select(...).part)" if key in self.hidden else ""
             raise KeyError(f"{self.info.get('value')}: no parameter '{key}'{why}")
-        return self.params[key]
+        return self._used(key)
+
+    def _used(self, key):
+        p = self.params[key]
+        _USED[f"{self.variant or self.info.get('value')}:{key}"] = p.verified
+        return p
 
     def inputs(self, function):
         """Datasheet arguments for calc.<function>, from its INPUTS map: {arg: Param or float}.
@@ -58,7 +81,7 @@ class Part:
         for key, param in self.params.items():
             head, _, tail = key.rpartition("_")
             if head == prefix and tail.isdigit():
-                found[int(tail)] = param
+                found[int(tail)] = self._used(key)
         return dict(sorted(found.items()))
 
     def _bounds(self, key):

@@ -482,6 +482,7 @@ def _check_component(folder):
     out = check_part(part, folder, family=bool(variants)) + check_pins(pins)
     out += finding_messages(rules.cite_findings(data, variants))
     out += finding_messages(rules.cite_sheet_findings(data, variants))
+    out += finding_messages(rules.verified_findings(data, variants))
     for name in sorted({n for _, n in rules.cite_sheets(data, variants) if n.endswith('.pdf')}):
         if not (ROOT / "docs" / "datasheets" / name).exists():
             out.append(("WARN", f"datasheet_file not found: docs/datasheets/{name} (cited sheet; PDFs are not committed)"))

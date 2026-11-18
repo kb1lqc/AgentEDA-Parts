@@ -31,6 +31,8 @@ package_alternates = ["W", "J", "V"]     # other letters: the same part in other
   `Murata product list export <file name>, row <part number>` (the part number exactly as the export prints it, with
   the `#` package placeholder). It is not a datasheet table and says so in every Param `note`; per-dielectric and
   per-size rows still cite the reference sheet (`DS p.`).
+  The catalog Params (capacitance, tolerance, rated_v) carry `verified = "manufacturer-export <export date> ..."`:
+  machine-readable data parsed by tested code, not transcribed; a source without a date leaves them unverified.
 - **Generating the catalog.** `python3 -m lib.catalog murata-gcm <vendor csv> <component dir> [--dielectrics X7R,C0G]`
   keeps the export rows whose part number carries the directory's size+thickness code (`GCM155` -> `155`) and whose
   `Temperature characteristics` column is an allowed dielectric (default: the keys of `[part] tc_param`, so a dielectric

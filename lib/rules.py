@@ -151,6 +151,18 @@ def wiring_findings(folder, root):
 
 # ---------------------------------------------------------------- per component, content (D, E)
 
+VERIFIED_RE = re.compile(r"^\S+ \d{4}-\d{2}-\d{2} \S.*$")
+
+
+def verified_findings(data, variants=None):
+    """`verified` is "<who> <YYYY-MM-DD> <method>" (docs/spec/extract.md, Fields)."""
+    items = [(f"param {k}", t) for k, t in data.get("param", {}).items()]
+    for v, table in (variants or {}).items():
+        items += [(f"variant {v} param {k}", t) for k, t in table.get("param", {}).items()]
+    return [Finding("verified-format", "", loc, f"verified '{t['verified']}' is not '<who> <YYYY-MM-DD> <method>'")
+            for loc, t in items if "verified" in t and not VERIFIED_RE.match(str(t["verified"]))]
+
+
 def cite_sheets(data, variants=None):
     """(location, name) for every cite that names a source sheet in brackets after its page."""
     items = [(f"pin {p.get('number')}", p.get("cite")) for p in data.get("pin", [])]

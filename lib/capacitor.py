@@ -167,17 +167,22 @@ def choose(rows, capacitance, rated_voltage, dielectric, tolerance=None):
 def selection_params(row):
     """(capacitance, tolerance, rated_v) Params for one catalog row, SI. The row's `source` is their cite."""
     delta = row.c * row.tolerance_fraction()
+    # Machine-readable manufacturer export, parsed by tested code: no person or model transcribed these numbers. The
+    # `verified` stamp says so (method), dated by the export; no date in the source -> unverified (fail safe).
+    date = re.search(r"\d{4}-\d{2}-\d{2}", row.source or "")
+    verified = (f"manufacturer-export {date[0]} machine-readable product list parsed by lib.catalog, no transcription"
+                if date else None)
     note = "From the manufacturer catalog (catalog.csv), not a datasheet table. " \
            "Excludes DC-bias, aging and temperature effects: see calc.capacitance_worst_pct / _ppm."
     capacitance = Param(min=row.c - delta, typ=row.c, max=row.c + delta, unit="F", name="Capacitance", symbol="C",
                         kind="electrical", scope="25C", conditions=f"Printed {row.capacitance}, {row.tolerance}",
-                        cite=row.source, note=note)
+                        cite=row.source, note=note, verified=verified)
     frac = row.tolerance_fraction()
     tolerance = Param(min=-frac, max=frac, unit="1", name="Capacitance tolerance", kind="electrical", scope="25C",
                       conditions=f"Printed {row.tolerance}" + (" (absolute, divided by C)" if row.tol_kind == "abs" else ""),
-                      cite=row.source, note=note)
+                      cite=row.source, note=note, verified=verified)
     rated = Param(min=-row.v, max=row.v, unit="V", name="Rated voltage (DC)", kind="rec_op", scope="na",
                   conditions="Voltage between the two terminals (non-polarized; either polarity)", cite=row.source,
                   note=f"Printed {row.rated_voltage} with no MIN/MAX label; stored symmetric because the part is "
-                       "non-polarized.")
+                       "non-polarized.", verified=verified)
     return capacitance, tolerance, rated

@@ -192,6 +192,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = "Absolute maximum, referenced to GND"
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, VS, CS+, CS- to GND"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Reference GND from the row title ('to GND'). Pin-pair rows (CS+ to CS-) are a separate row below."
 check_pins = ["VS", "CS+", "CS-"]
 
@@ -207,6 +208,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = "Absolute maximum, referenced to GND"
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, SRC to GND"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Reference GND from the row title ('to GND')."
 unchecked  = "SRC is the external FET source node; its voltage is set by the external MOSFET and load; owner: module"
 
@@ -222,6 +224,7 @@ max_ref    = "SRC"
 unit       = "V"
 conditions = "Absolute maximum, referenced to SRC"
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, PU, PD, BST to SRC"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Reference SRC from the row title ('to SRC'). The DS prints the same -0.3 V to 19 V for each of the three pins."
 unchecked  = "PU, PD and BST are driven by the part (gate driver and charge pump); owner: module"
 
@@ -237,6 +240,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = "Absolute maximum, referenced to GND"
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, ISCP, TMR, SCP_TEST to GND"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Reference GND from the row title ('to GND'). SCP_TEST is checked; ISCP and TMR are not (below)."
 check_pins = ["SCP_TEST"]
 unchecked  = "ISCP and TMR voltages are set by the internal sources and the external RISCP / CTMR components (an external ISCP bias, if used, must stay <= 3 V: rec_iscp_bias); owner: module"
@@ -253,6 +257,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = "V(VS) > 0 V"
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, EN/UVLO, OV, INP, CS_SEL, V(VS) > 0 V"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Reference GND from the row title (the DS prints the range to GND only for VS > 0). The second row below is the VS <= 0 V case. The DS has no rec-op row for OV (EN/UVLO, INP, CS_SEL have 0-65 V, rec_en_inp_cs_sel); OV usually shares their divider, so 65 V is the practical module bound."
 check_pins = ["EN/UVLO", "OV", "INP", "CS_SEL"]
 
@@ -283,6 +288,7 @@ max_ref    = "CS-"
 unit       = "V"
 conditions = "Absolute maximum, pin pair"
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, CS+ to CS-"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Pin-pair row: the second pin (CS-) is the reference (Defaults table). Checked on the CS+ net. Zener checks each net range independently: declare CS+ and CS- with a correlated (tight) tolerance, or the real mV drop shows as a large worst-case difference (open item)."
 check_pins = ["CS+"]
 
@@ -298,6 +304,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = "Absolute maximum, referenced to GND"
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, FLT, FLT_GD to GND"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Reference GND from the row title. Open drain: the high level is set by the circuit's pull-up rail, so both pins are checked."
 check_pins = ["FLT", "FLT_GD"]  # open drain: the circuit's pull-up rail sets the high level (DS p.3 Table 4-1)
 
@@ -310,6 +317,7 @@ max        = 10
 unit       = "mA"
 conditions = ""
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Sink current, I(FLT)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed MAX only (no MIN column value). A sink-current rating, not a voltage."
 unchecked  = "Current rating, not a voltage check; module must keep V(pull-up) / R(pull-up) < 10 mA; owner: module"
 
@@ -338,6 +346,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = "Absolute maximum, referenced to GND"
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Output Pins, PU, PD, G2, BST to GND"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "The DS prints G2 in this row; G2 is not in the DGX pin table (Table 4-1). Stored as printed; G2 is not a pin of this package."
 unchecked  = "PU, PD and BST are driven by the part (see abs_gate_bst_src); owner: module"
 
@@ -351,6 +360,7 @@ max        = 150
 unit       = "degC"
 conditions = ""
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Operating junction temperature, Tj"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Junction temperature, not ambient. TJ = TA + P x RthJA (RthJA DS p.6, 92.3 degC/W). The module must check the dissipation."
 unchecked  = "TJ rating; needs dissipation; owner: module"
 
@@ -364,6 +374,7 @@ max        = 150
 unit       = "degC"
 conditions = ""
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Storage temperature, Tstg"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 unchecked  = "Storage temperature; owner: assembly"
 
 # ESD ratings: DS p.5, 5.2 ESD Ratings. Printed as +/- values (min = -X, max = X).
@@ -378,6 +389,7 @@ max        = 2000
 unit       = "V"
 conditions = "HBM per AEC Q100-002"
 cite       = "DS p.5, 5.2 ESD Ratings, Human body model (HBM), per AEC Q100-002"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed +/-2000 V; min = -2000, max = 2000 (Defaults table, +/- limit)."
 unchecked  = "ESD rating; owner: assembly"
 
@@ -424,6 +436,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = "Recommended operating, to GND"
 cite       = "DS p.5, 5.3 Recommended Operating Conditions, Input Pins, VS to GND"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Same span as the electrical row vs_op (DS p.6, 5.5 Supply voltage, VS 3.5 to 95 V). Checked here once."
 check_pins = ["VS"]
 
@@ -437,6 +450,7 @@ min_ref    = "GND"
 unit       = "V"
 conditions = "Minimum voltage on the VS pin for short circuit protection"
 cite       = "DS p.5, 5.3 Recommended Operating Conditions, Input Pins, Minimum voltage on VS pin for Short Circuit Protection"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed MIN only (no MAX). Reference GND assumed as for the VS row above; the DS gives no reference in this row. Checked against the VS net (minimum only). scope = partial (waivable warning): the row applies only when short-circuit protection is used; below 4 V the part still operates per rec_vs (3.5 V). A module that disables SCP (CS+, CS-, VS tied, ISCP and TMR to GND, DS p.4 Table 4-1) waives it with waive_rec_vs_scp_min."
 check_pins = ["VS"]
 
@@ -464,6 +478,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = "Recommended operating, to GND"
 cite       = "DS p.5, 5.3 Recommended Operating Conditions, Input Pins, EN/UVLO, INP, CS_SEL to GND"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Reference GND from the row title."
 check_pins = ["EN/UVLO", "INP", "CS_SEL"]
 
@@ -479,6 +494,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = "Recommended operating, to GND"
 cite       = "DS p.5, 5.3 Recommended Operating Conditions, Output Pins, FLT to GND"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Open-drain output of the part; the pull-up rail is set by the module."
 check_pins = ["FLT"]  # open drain: the circuit's pull-up rail sets the high level (DS p.3 Table 4-1)
 
@@ -503,6 +519,7 @@ min        = 0.1
 unit       = "uF"
 conditions = "External capacitor, BST to SRC"
 cite       = "DS p.5, 5.3 Recommended Operating Conditions, External Capacitor, BST to SRC"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed MIN 0.1 uF only. Charge-pump capacitor (see also DS p.17-18 for the sizing equations)."
 unchecked  = "Capacitance requirement, not a voltage check; owner: module"
 
@@ -528,6 +545,7 @@ max        = 125
 unit       = "degC"
 conditions = "Device temperature grade 1, ambient operating temperature range"
 cite       = "DS p.1, Features, AEC-Q100 bullet 'Device temperature grade 1: -40 degC to +125 degC ambient operating temperature range'"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "From a Features bullet, not a table row. The only ambient range printed; the grade is AEC-Q100 grade 1. Checked through the ambient config."
 check_ambient = true
 
@@ -544,6 +562,7 @@ typ        = 92.3
 unit       = "degC/W"
 conditions = "DGX, 19 pins"
 cite       = "DS p.6, 5.4 Thermal Information, RthJA, DGX 19 PINS"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Single printed value; typ only (not a bound). JEDEC board condition not printed in this table."
 
 [param.rth_jc_top]
@@ -643,6 +662,7 @@ max        = 56
 unit       = "uA"
 conditions = "V(EN/UVLO) = 2 V, TJ = -40 to +150 degC"
 cite       = "DS p.6, 5.5 Electrical Characteristics, Supply Voltage, I(GND), V(EN/UVLO) = 2 V"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed TYP 46, MAX 56 uA; no MIN. Quiescent current cannot be negative: the printed max is the worst case."
 
 [param.i_gnd_m40_85]
@@ -666,6 +686,7 @@ max        = 4.3
 unit       = "uA"
 conditions = "V(EN/UVLO) = 0 V, V(SRC) = 0 V"
 cite       = "DS p.6, 5.5 Electrical Characteristics, Supply Voltage, I(SHDN), V(EN/UVLO) = 0 V, V(SRC) = 0 V"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed TYP 1, MAX 4.3 uA; no MIN."
 
 [param.i_rev]
@@ -693,6 +714,7 @@ max        = 1.29
 unit       = "V"
 conditions = ""
 cite       = "DS p.6, 5.5 Electrical Characteristics, Enable, UVLO, V(UVLOR)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.v_uvlof]
 name       = "UVLO threshold voltage, falling (EN/UVLO)"
@@ -705,6 +727,7 @@ max        = 1.19
 unit       = "V"
 conditions = ""
 cite       = "DS p.6, 5.5 Electrical Characteristics, Enable, UVLO, V(UVLOF)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.v_enr]
 name       = "Enable threshold voltage, rising"
@@ -738,6 +761,7 @@ max        = 490
 unit       = "nA"
 conditions = "V(EN/UVLO) = 70 V"
 cite       = "DS p.6, 5.5 Electrical Characteristics, Enable, I(EN/UVLO), V(EN/UVLO) = 70 V"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed TYP 174, MAX 490 nA; no MIN."
 
 [param.v_scp_test_h]
@@ -749,6 +773,7 @@ max        = 2
 unit       = "V"
 conditions = ""
 cite       = "DS p.6, 5.5 Electrical Characteristics, Enable, V(SCP_TEST_H)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed MAX only."
 
 [param.v_scp_test_l]
@@ -787,6 +812,7 @@ max        = 1.28
 unit       = "V"
 conditions = ""
 cite       = "DS p.6, 5.5 Electrical Characteristics, Overvoltage Protection, V(OVR)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "The design example text (DS p.24) uses V(OVR) = 1.225 V; that value is not in this row (see the decision log)."
 
 [param.v_ovf]
@@ -800,6 +826,7 @@ max        = 1.19
 unit       = "V"
 conditions = ""
 cite       = "DS p.6, 5.5 Electrical Characteristics, Overvoltage Protection, V(OVF)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.i_ov]
 name       = "OV input leakage current"
@@ -811,6 +838,7 @@ max        = 205
 unit       = "nA"
 conditions = ""
 cite       = "DS p.6, 5.5 Electrical Characteristics, Overvoltage Protection, I(OV)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed TYP 86, MAX 205 nA; no MIN."
 
 # Charge pump (BST-SRC)
@@ -826,6 +854,7 @@ max        = 555
 unit       = "uA"
 conditions = "V(BST-SRC) = 10 V, V(EN/UVLO) = 2 V"
 cite       = "DS p.6, 5.5 Electrical Characteristics, Charge Pump, I(BST)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Used by the bootstrap delay equation (DS p.14 eq. 1; DS p.14 text quotes 345 uA)."
 
 [param.v_bst_uvlor]
@@ -839,6 +868,7 @@ max        = 10.81
 unit       = "V"
 conditions = "V(EN/UVLO) = 2 V"
 cite       = "DS p.6, 5.5 Electrical Characteristics, Charge Pump, V(BST_UVLOR)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "DS p.14 text: 'V(BST_UVLOR) = 10.81 V (max)' is used in eq. 1."
 
 [param.v_bst_uvlof]
@@ -864,6 +894,7 @@ max        = 12.46
 unit       = "V"
 conditions = "V(EN/UVLO) = 2 V"
 cite       = "DS p.6, 5.5 Electrical Characteristics, Charge Pump, V(BST-SRC_ON)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.v_bst_src_off]
 name       = "Charge pump turn OFF voltage"
@@ -876,6 +907,7 @@ max        = 13.86
 unit       = "V"
 conditions = "V(EN/UVLO) = 2 V"
 cite       = "DS p.6, 5.5 Electrical Characteristics, Charge Pump, V(BST-SRC_OFF)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.v_bst_src_3v5]
 name       = "Charge pump voltage at VS = 3.5 V"
@@ -925,6 +957,7 @@ max        = 8.48
 unit       = "V"
 conditions = ""
 cite       = "DS p.7, 5.5 Electrical Characteristics, Gate Driver Outputs, V(G_GOOD)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 # Short circuit protection (ISCP)
 
@@ -939,6 +972,7 @@ max        = 12.51
 unit       = "uA"
 conditions = ""
 cite       = "DS p.7, 5.5 Electrical Characteristics, Short Circuit Protection, I(ISCP)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "The ISCP bias current row. The equations use the printed 2 uA constant (DS p.17 eq. 5); see the decision log."
 
 [param.v_scp_r140k5]
@@ -952,6 +986,7 @@ max        = 318
 unit       = "mV"
 conditions = "R(ISCP) = 140.5 kohm"
 cite       = "DS p.7, 5.5 Electrical Characteristics, Short Circuit Protection, V(SCP), R(ISCP) = 140.5 kohm"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.v_scp_r28k]
 name       = "SCP threshold, R(ISCP) = 28 kohm"
@@ -964,6 +999,7 @@ max        = 91.6
 unit       = "mV"
 conditions = "R(ISCP) = 28 kohm"
 cite       = "DS p.7, 5.5 Electrical Characteristics, Short Circuit Protection, V(SCP), R(ISCP) = 28 kohm"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.v_scp_r10k5]
 name       = "SCP threshold, R(ISCP) = 10.5 kohm"
@@ -976,6 +1012,7 @@ max        = 48.9
 unit       = "mV"
 conditions = "R(ISCP) = 10.5 kohm"
 cite       = "DS p.7, 5.5 Electrical Characteristics, Short Circuit Protection, V(SCP), R(ISCP) = 10.5 kohm"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.v_scp_r500]
 name       = "SCP threshold, R(ISCP) = 500 ohm"
@@ -988,6 +1025,7 @@ max        = 25.2
 unit       = "mV"
 conditions = "R(ISCP) = 500 ohm"
 cite       = "DS p.7, 5.5 Electrical Characteristics, Short Circuit Protection, V(SCP), R(ISCP) = 500 ohm"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.v_scp_r_open]
 name       = "SCP threshold, R(ISCP) open"
@@ -1062,6 +1100,7 @@ max        = 106
 unit       = "uA"
 conditions = ""
 cite       = "DS p.7, 5.5 Electrical Characteristics, Delay Timer (TMR), I(TMR_SRC_CB)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "DS p.19 eq. 8 and DS p.25 design eq. 11 use I(TMR_SRC_CB). Typ 87 uA is the value eq. 11 prints (see the decision log)."
 
 [param.i_tmr_src_flt]
@@ -1099,6 +1138,7 @@ max        = 1.26
 unit       = "V"
 conditions = ""
 cite       = "DS p.7, 5.5 Electrical Characteristics, Delay Timer (TMR), V(TMR_SC)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.v_tmr_low]
 name       = "TMR input low level"
@@ -1136,6 +1176,7 @@ max        = 107
 unit       = "ohm"
 conditions = ""
 cite       = "DS p.7, 5.5 Electrical Characteristics, Input Control, FLT, FLT_GD Pull-down resistance, R(FLT), R(FLT_GD)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.i_flt_leak]
 name       = "FLT, FLT_GD input leakage current"
@@ -1157,6 +1198,7 @@ max        = 2
 unit       = "V"
 conditions = ""
 cite       = "DS p.7, 5.5 Electrical Characteristics, Input Control, V(INP_H)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed MAX only."
 
 [param.v_inp_l]
@@ -1168,6 +1210,7 @@ min        = 0.8
 unit       = "V"
 conditions = ""
 cite       = "DS p.7, 5.5 Electrical Characteristics, Input Control, V(INP_L)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed MIN only."
 
 [param.i_inp]
@@ -1231,6 +1274,7 @@ max        = 1.68
 unit       = "us"
 conditions = "INP rising to PU rising, CL = 47 nF"
 cite       = "DS p.7, 5.6 Switching Characteristics, tPU(INP_H), CL = 47 nF"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed MIN 0.32, MAX 1.68 us; no TYP."
 
 [param.t_pd_inp_l]
@@ -1256,6 +1300,7 @@ max        = 6.52
 unit       = "us"
 conditions = "EN falling to PD falling, CL = 47 nF"
 cite       = "DS p.7, 5.6 Switching Characteristics, tPD(EN_OFF), CL = 47 nF"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.t_pd_uvlo_off]
 name       = "UVLO turn-OFF propagation delay (to PD and FLT)"
@@ -1290,6 +1335,7 @@ max        = 4
 unit       = "us"
 conditions = "V(CS+ - CS-) rising to V(SCP) to PD falling, CL = 47 nF, C(TMR) = open"
 cite       = "DS p.7, 5.6 Switching Characteristics, tSC, C(TMR) = Open"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed MAX only."
 
 [param.t_sc_pus]
@@ -1335,6 +1381,7 @@ typ        = 120
 unit       = "us"
 conditions = "V(PD-SRC) rising, V(BST_UVLOR), to FLT_GD falling"
 cite       = "DS p.8, 5.6 Switching Characteristics (continued), tPD(FLT_GD) assertion, V(PD-SRC) rising"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed TYP 120 us only. Assertion row."
 
 [param.t_pd_flt_gd_off]

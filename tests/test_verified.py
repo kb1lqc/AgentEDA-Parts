@@ -1,0 +1,77 @@
+"""verified field: loader, the used/unverified input record, and the lib.check format rule."""
+
+import shutil
+import tempfile
+import unittest
+from pathlib import Path
+
+import lib
+from lib import rules
+from lib.check import check_component
+
+ROOT = Path(__file__).resolve().parent.parent
+
+
+class Verified(unittest.TestCase):
+    def setUp(self):
+        lib.reset_inputs()
+        self.addCleanup(lib.reset_inputs)
+
+    def test_loaded_and_recorded(self):
+        p = lib.load("TexasInstruments/TPS48000QDGXQ1")
+        key = next(k for k, v in p.params.items() if v.verified)
+        self.assertRegex(p.param(key).verified, rules.VERIFIED_RE)
+        self.assertEqual(lib.used_inputs(), [f"TPS48000QDGXQ1:{key}"])
+        self.assertEqual(lib.unverified_inputs(), [])
+
+    def test_unverified_row_is_listed(self):
+        p = lib.load("TexasInstruments/TPS48000QDGXQ1")
+        key = next(k for k, v in p.params.items() if not v.verified)
+        p.param(key)
+        self.assertEqual(lib.unverified_inputs(), [f"TPS48000QDGXQ1:{key}"])
+        lib.reset_inputs()
+        self.assertEqual(lib.unverified_inputs(), [])
+
+    def test_inputs_and_series_record(self):
+        w = lib.load("Vishay/WSK2512")
+        w.inputs("resistance_worst")  # tcr, aging, aging_abs rows
+        used = {"WSK2512:tcr_5m_200m", "WSK2512:perf_load_life", "WSK2512:perf_offset_ohm"}
+        self.assertEqual(set(lib.used_inputs()), used)
+        self.assertEqual(lib.unverified_inputs(), sorted(k for k in used if not w.params[k.split(":")[1]].verified))
+        lib.reset_inputs()
+        w.series("no_such_prefix")
+        self.assertEqual(lib.used_inputs(), [])
+
+    def test_catalog_rows_stamped_as_export(self):
+        c = lib.load("Murata/GCM188")
+        row = c.catalog()[0]
+        from lib.capacitor import selection_params
+        for prm in selection_params(row):
+            self.assertRegex(prm.verified, rules.VERIFIED_RE)
+            self.assertTrue(prm.verified.startswith("manufacturer-export 2026-11-14 "))
+        nodate = row.__class__(**{**row.__dict__, "source": "hand typed"}) if hasattr(row, "__dict__") else None
+        if nodate is not None:
+            self.assertIsNone(selection_params(nodate)[0].verified)
+
+    def test_format_rule(self):
+        good = {"param": {"a": {"verified": "jd 2026-11-20 page image"}}}
+        for bad in ("yes", "jd 20261120 page image", "jd 2026-11-20"):
+            self.assertEqual([f.rule for f in rules.verified_findings({"param": {"a": {"verified": bad}}})],
+                             ["verified-format"], bad)
+        self.assertEqual(rules.verified_findings(good), [])
+
+    def test_check_flags_a_bad_stamp(self):
+        with tempfile.TemporaryDirectory() as t:
+            d = Path(t) / "WSK2512"
+            shutil.copytree(ROOT / "components" / "Vishay" / "WSK2512", d)
+            toml = d / "component.toml"
+            s = toml.read_text()
+            i = s.index('verified   = "')
+            j = s.index("\n", i)
+            toml.write_text(s[:i] + 'verified   = "checked"' + s[j:])
+            msgs = [m for _, m in check_component(d)]
+            self.assertTrue(any("verified-format" in m for m in msgs), msgs)
+
+
+if __name__ == "__main__":
+    unittest.main()

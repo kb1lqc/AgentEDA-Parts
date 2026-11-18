@@ -82,6 +82,7 @@ max        = 0.8
 unit       = "mm"
 conditions = "Reflow soldering, chip 1.6x0.8 (+/-0.10), chip code 18"
 cite       = "DS p.27, 2. Land Dimensions, Table 2 Reflow Soldering Method, 1.6x0.8 (+/-0.10), a"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed)."
 
 [param.land_b]
@@ -94,6 +95,7 @@ max        = 0.7
 unit       = "mm"
 conditions = "Reflow soldering, chip 1.6x0.8 (+/-0.10), chip code 18"
 cite       = "DS p.27, 2. Land Dimensions, Table 2 Reflow Soldering Method, 1.6x0.8 (+/-0.10), b"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed)."
 
 [param.land_c]
@@ -106,6 +108,7 @@ max        = 0.8
 unit       = "mm"
 conditions = "Reflow soldering, chip 1.6x0.8 (+/-0.10), chip code 18"
 cite       = "DS p.27, 2. Land Dimensions, Table 2 Reflow Soldering Method, 1.6x0.8 (+/-0.10), c"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed)."
 
 # Per-part rows (GCM188R71H104KA57, from its reference sheet) and X7R rows
@@ -164,6 +167,7 @@ max        = 0.9
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, Type & Dimension, T (0.8+/-0.1)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "min and max are the printed nominal 0.8 -/+ 0.1 (arithmetic)."
 
 [param.dim_e]
@@ -177,6 +181,7 @@ max        = 0.5
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, Type & Dimension, e (0.2 to 0.5)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.dim_g]
 parts = ["GCM188R71H104KA57"]
@@ -188,6 +193,7 @@ min        = 0.5
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, Type & Dimension, g (0.5 min.)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed as a minimum only; no max stored."
 
 # Specifications and Test Methods, initial (25 degC) limits
@@ -234,6 +240,7 @@ text       = "More than 20 N (destruction value)"
 unit       = ""
 conditions = "Speed 0.5 mm/s; chip length 2.5 mm max."
 cite       = "DS p.6, Specifications and Test Methods, No. 24 Beam Load Test"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 # Mechanical and solder tests: capacitance and IR limits after the test (scope na)
 
@@ -512,6 +519,7 @@ max        = 1.7
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, Type & Dimension, L (1.6+/-0.1)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "min and max are the printed nominal 1.6 -/+ 0.1 (arithmetic); the DS prints 1.6+/-0.1."
 
 [param.width]
@@ -526,6 +534,7 @@ max        = 0.9
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, Type & Dimension, W (0.8+/-0.1)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "min and max are the printed nominal 0.8 -/+ 0.1 (arithmetic); the DS prints 0.8+/-0.1."
 
 [param.tc_x7r]
@@ -539,6 +548,7 @@ max        = 15
 unit       = "%"
 conditions = "Ref. temp 25 degC; temp range -55 to 125 degC; capacitance change over temperature"
 cite       = "DS p.2, Rated Value, Temp. coeff. or Cap. Change (-15 to 15 %)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Public STD code X7R (EIA). Capacitance change over temperature, not a DC-bias or aging limit (see the open items above). Read from the reference sheet of the one part this directory has; used for every X7R catalog row because -15 to 15 % over -55 to 125 degC is the X7R class limit the sheet prints for code R7 (open item: confirm for each other X7R part)."
 
 [param.op_temp_x7r]
@@ -551,6 +561,7 @@ max        = 125
 unit       = "degC"
 conditions = ""
 cite       = "DS p.2, Rated Value, Operating Temp. Range (-55 to 125 degC)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 check_ambient = true
 note       = "Read from the reference sheet of the one part this directory has. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every X7R catalog row uses it."
 
@@ -596,6 +607,7 @@ min        = 95
 unit       = "%"
 conditions = "Specifications and Test Methods No.16 (a) test conditions"
 cite       = "DS p.5, Specifications and Test Methods, No.16 Solderability (a)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Assembly acceptance criterion, not a circuit limit."
 
 # C0G rows (dielectric 5C, Murata public code C0G (EIA)). Source: docs/datasheets/GCM1885C1H101GA16-01A-EN.pdf
@@ -613,6 +625,7 @@ max        = 30
 unit       = "ppm/degC"
 conditions = "Ref. temp 25 degC; temp range printed as 25 to 125 degC; coefficient 0 +/-30 ppm/degC"
 cite       = "DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Rated Value, Temp. coeff. or Cap. Change (0+/-30 ppm/degC), Temp. Range (25 to 125 degC)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Public STD code C0G (EIA). A temperature coefficient, not a percent-change class. The DS prints the range 25 to 125 degC only: no coefficient is printed below 25 degC. The -55 to -10 degC capacitance drift is in the Table A rows (capdrift_*_c0g); the -10 to 25 degC segment has no printed number (open item). capacitance_worst_ppm requires dt and refuses values outside 0 to 100 degC (docs/SPEC.md, Capacitor series)."
 
 [param.op_temp_c0g]
@@ -625,6 +638,7 @@ max        = 125
 unit       = "degC"
 conditions = ""
 cite       = "DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Rated Value, Operating Temp. Range (-55 to 125 degC)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 check_ambient = true
 note       = "Read from the C0G reference sheet of GCM1885C1H101GA16. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every C0G catalog row uses it."
 
@@ -668,6 +682,7 @@ max        = 0.25
 unit       = "%"
 conditions = "Reference 25 degC, no bias; measured at -10 degC"
 cite       = "DS p.7 (GCM1885C1H101GA16-01A-EN.pdf), Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -10 degC"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed Max 0.25, Min -0.11: stored as min -0.11, max 0.25 (printed columns). Covers only the -10 degC point."
 
 # Per-part rows: GCM1885C1H101GA16 (100 pF, +/-2 %, DC 50 V, C0G), from the C0G reference sheet.
@@ -738,6 +753,7 @@ max        = 1.7
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, L (1.6+/-0.1)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "min and max are the printed nominal 1.6 -/+ 0.1 (arithmetic)."
 
 [param.width_c0g]
@@ -752,6 +768,7 @@ max        = 0.9
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, W (0.8+/-0.1)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "min and max are the printed nominal 0.8 -/+ 0.1 (arithmetic)."
 
 [param.thickness_t_c0g]
@@ -766,6 +783,7 @@ max        = 0.9
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, T (0.8+/-0.1)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "min and max are the printed nominal 0.8 -/+ 0.1 (arithmetic)."
 
 [param.dim_e_c0g]
@@ -779,6 +797,7 @@ max        = 0.5
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, e (0.2 to 0.5)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.dim_g_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -790,6 +809,7 @@ min        = 0.5
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, g (0.5 min.)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Printed as a minimum only; no max stored."
 
 [param.q_25c_c0g]
@@ -825,6 +845,7 @@ text       = "More than 10000 Mohm (printed 'More than 10000MΩ')"
 unit       = ""
 conditions = "125 degC, rated voltage, charging time 2 min, charge/discharge current 50 mA max"
 cite       = "DS p.5 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 20 Insulation Resistance (IR), High Temperature"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.hte_cap_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -1017,6 +1038,7 @@ text       = "More than 20 N (destruction value)"
 unit       = ""
 conditions = "Speed 0.5 mm/s; chip length 2.5 mm max."
 cite       = "DS p.5 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No. 24 Beam Load Test"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 
 [param.solderability_c0g]
 parts = ["GCM1885C1H101GA16"]
@@ -1027,4 +1049,5 @@ min        = 95
 unit       = "%"
 conditions = "Specifications and Test Methods No.16 (a) test conditions"
 cite       = "DS p.5 (GCM1885C1H101GA16-01A-EN.pdf), Specifications and Test Methods, No.16 Solderability (a)"
+verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 note       = "Assembly acceptance criterion, not a circuit limit."

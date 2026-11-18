@@ -34,3 +34,7 @@ Worst-case method (`wca`), stated so a human can check it by hand:
 - Output: a generated markdown report (inputs with cites, results table, rating checks with PASS/FAIL, plots, and a
   "limits of this analysis" line: DC steady state, 25 °C-only rows, curve estimates).
 - A Zener module takes derate, ambient and waivers from its parent; list every waiver (rationale with a cite) in the report.
+- Verified inputs: every row read through `part.param` / `part.inputs` / `part.series` (and the helpers built on them)
+  is recorded. If `lib.unverified_inputs()` ("<Value>:<key>" of rows without `verified`) is not empty when the report
+  is written, every judged PASS reads `PASS (UNVERIFIED INPUTS)` and the report lists those rows. `lib.used_inputs()`
+  lists all rows read; `lib.reset_inputs()` clears the record.
