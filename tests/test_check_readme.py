@@ -85,9 +85,9 @@ class TestNewChecks(unittest.TestCase):
     def test_bad_ref(self):
         self.assertIn("min_ref 'VSS' is not a [[pin]] name", self.run_edit([('min_ref = "GND"', 'min_ref = "VSS"')]))
 
-    def test_cite_prefix_warning(self):
+    def test_cite_format_is_error(self):
         text = self.run_edit([("DS p.5, Electrical Characteristics, TC", "page 5, TC")])
-        self.assertIn("WARN: param tc: cite should start with", text)
+        self.assertIn("ERROR: [cite-format] param tc: cite 'page 5, TC'", text)
 
     def test_datasheet_file_missing_is_warning(self):
         text = self.run_edit([('step = "none"', 'step = "none"\ndatasheet_file = "docs/datasheets/nope.pdf"')])
@@ -105,7 +105,7 @@ class TestNewChecks(unittest.TestCase):
 
     def test_inputs_good_missing_and_bad(self):
         self.assertEqual(self.run_edit(), "")
-        self.assertEqual(self.run_edit(calc_edits=[('    "vout": {"vref": "vref"},\n', "")]), "WARN: calc.py has no INPUTS")
+        self.assertIn("WARN: calc.py has no INPUTS", self.run_edit(calc_edits=[('    "vout": {"vref": "vref"},\n', "")]))
         bad = self.run_edit(calc_edits=[('"vout": {"vref": "vref"}', '"nofn": {}, "vout": {"vref": "nokey", "zz": "vref"}')])
         self.assertIn("INPUTS: function 'nofn' does not exist", bad)
         self.assertIn("INPUTS: vout.vref -> unknown param key 'nokey'", bad)

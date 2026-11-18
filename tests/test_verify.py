@@ -1,0 +1,197 @@
+"""Tests for tools/verify.py with a fake command runner (no real lib.check, pcb or unittest is run)."""
+
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
+import verify as v  # noqa: E402
+
+
+def write(p, text=""):
+    p = Path(p)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(text)
+
+
+class Fake:
+    """Scripted runner: `replies` maps a command key to (rc, output); `effects` maps a key to a callable run first."""
+
+    def __init__(self, root, **over):
+        self.root = Path(root)
+        self.calls = []
+        self.replies = {
+            "pcb --version": (0, "pcbc 0.4.102\n"),
+            "-m lib.check": (0, "3 components, 0 errors, 0 warnings, 0 tolerated (datasheets absent), 0 allowlisted findings, 0 abstained\n"),
+            "-m lib.zen": (0, ""),
+            "-m lib.readme": (0, ""),
+            "pcb build": (0, "ok\n"),
+            "-m unittest": (0, "Ran 12 tests in 0.1s\n\nOK\n"),
+            "git status": (0, ""),
+        }
+        self.replies.update(over)
+        self.effects = {}
+
+    def __call__(self, cmd, cwd, env=None):
+        key = next((k for k in self.replies if k in " ".join(cmd)), None)
+        self.calls.append(" ".join(cmd))
+        if key in self.effects:
+            self.effects[key]()
+        return self.replies[key] if key else (127, f"unscripted {cmd}")
+
+
+def mkroot(tmp, version="0.4"):
+    root = Path(tmp)
+    write(root / "pcb.toml", f'[workspace]\nrepository = "x"\npcb-version = "{version}"\n')
+    write(root / "components/A/B/pcb.toml")
+    write(root / "components/A/B/component.toml", "x")
+    write(root / "README.md", "r")
+    return root
+
+
+class TestVerify(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = mkroot(self.tmp.name)
+        self.logs = Path(self.tmp.name) / "logs"
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def run_v(self, fake, **kw):
+        kw.setdefault("all_dirs", True)
+        return v.verify(self.root, log_dir=self.logs, runner=fake, **kw)
+
+    def test_pass_line_has_counts(self):
+        rc, lines = self.run_v(Fake(self.root))
+        self.assertEqual(rc, 0)
+        self.assertEqual(lines[0], "PASS: pcb 0.4, components 3, built 1/1, tests 12")
+        self.assertTrue(lines[-1].startswith("logs: "))
+        self.assertTrue((self.logs / "00-pcb-version.log").read_text().startswith("exit 0"))
+
+    def test_pcb_version_mismatch_fails(self):
+        rc, lines = self.run_v(Fake(self.root, **{"pcb --version": (0, "pcbc 0.5.1\n")}))
+        self.assertEqual(rc, 1)
+        self.assertIn("pcb-version 0.4 but installed pcb is 0.5", lines[1])
+
+    def test_pcb_cannot_start_fails(self):
+        rc, lines = self.run_v(Fake(self.root, **{"pcb --version": (127, "cannot start pcb")}))
+        self.assertEqual(rc, 1)
+
+    def test_missing_root_pcb_toml_version_fails(self):
+        (self.root / "pcb.toml").write_text("[workspace]\n")
+        rc, lines = self.run_v(Fake(self.root))
+        self.assertEqual(rc, 1)
+        self.assertIn("pcb-version", lines[1])
+
+    def test_zero_components_fails(self):
+        out = "0 components, 0 errors, 0 warnings, 0 tolerated (datasheets absent), 0 allowlisted findings, 0 abstained\n"
+        rc, lines = self.run_v(Fake(self.root, **{"-m lib.check": (0, out)}))
+        self.assertEqual(rc, 1)
+        self.assertIn("zero components", lines[1])
+
+    def test_check_without_summary_fails(self):
+        rc, _ = self.run_v(Fake(self.root, **{"-m lib.check": (0, "")}))
+        self.assertEqual(rc, 1)
+
+    def test_check_failure_shows_first_five_only(self):
+        out = "".join(f"A/B: ERROR: problem {i}\n" for i in range(8)) + "1 components, 8 errors, 0 warnings\n"
+        rc, lines = self.run_v(Fake(self.root, **{"-m lib.check": (1, out)}))
+        self.assertEqual(rc, 1)
+        self.assertEqual(len([l for l in lines if "problem" in l]), 5)
+        self.assertIn("lib.check: A/B: ERROR: problem 0", lines[1])
+        self.assertNotIn("problem 5", "\n".join(lines))
+
+    def test_failure_line_gets_file_and_line(self):
+        out = "components/A/B/B.zen:12:4 error: bad net\n"
+        rc, lines = self.run_v(Fake(self.root, **{"pcb build": (1, out)}))
+        self.assertEqual(rc, 1)
+        self.assertEqual(lines[1], "components/A/B/B.zen:12 error: bad net")
+
+    def test_build_failure_without_diagnostic_still_fails(self):
+        rc, lines = self.run_v(Fake(self.root, **{"pcb build": (1, "")}))
+        self.assertEqual(rc, 1)
+        self.assertIn("no diagnostic", lines[1])
+
+    def test_generator_changing_files_fails_unless_regen(self):
+        fake = Fake(self.root)
+        fake.effects["-m lib.zen"] = lambda: write(self.root / "components/A/B/B.zen", "new")
+        rc, lines = self.run_v(fake)
+        self.assertEqual(rc, 1)
+        self.assertIn("components/A/B/B.zen:1 changed by lib.zen/lib.readme", lines[1])
+        (self.root / "components/A/B/B.zen").unlink()
+        rc, lines = self.run_v(fake, regen=True)
+        self.assertEqual(rc, 0)
+        self.assertIn("regenerated 1 file(s): components/A/B/B.zen", lines[0])
+
+    def test_generator_rewriting_identical_bytes_passes(self):
+        fake = Fake(self.root)
+        fake.effects["-m lib.readme"] = lambda: write(self.root / "README.md", "r")
+        self.assertEqual(self.run_v(fake)[0], 0)
+
+    def test_readme_change_is_detected(self):
+        fake = Fake(self.root)
+        fake.effects["-m lib.readme"] = lambda: write(self.root / "README.md", "changed")
+        rc, lines = self.run_v(fake)
+        self.assertEqual(rc, 1)
+        self.assertIn("README.md:1", lines[1])
+
+    def test_no_changed_dirs_fails_closed(self):
+        rc, lines = self.run_v(Fake(self.root), all_dirs=False)
+        self.assertEqual(rc, 1)
+        self.assertIn("no component dirs to build", lines[1])
+
+    def test_changed_dirs_from_git_status(self):
+        fake = Fake(self.root, **{"git status": (0, " M components/A/B/component.toml\n?? components/C/D/new.txt\n M lib/x.py\n")})
+        write(self.root / "components/C/D/new.txt")
+        rc, lines = self.run_v(fake, all_dirs=False)
+        self.assertEqual(rc, 0)
+        self.assertIn("built 2/2", lines[0])
+        self.assertEqual([c for c in fake.calls if c.startswith("pcb build")],
+                         ["pcb build -Wstyle -Dwarnings components/A/B", "pcb build -Wstyle -Dwarnings components/C/D"])
+
+    def test_explicit_dirs_are_built(self):
+        fake = Fake(self.root)
+        rc, lines = self.run_v(fake, dirs=["components/A/B"], all_dirs=False)
+        self.assertEqual(rc, 0)
+        self.assertIn("built 1/1", lines[0])
+
+    def test_missing_dir_fails(self):
+        rc, lines = self.run_v(Fake(self.root), dirs=["components/X/Y"], all_dirs=False)
+        self.assertEqual(rc, 1)
+        self.assertIn("components/X/Y:1 not a directory", lines[1])
+
+    def test_zero_tests_fails(self):
+        for out in ("Ran 0 tests in 0.0s\n\nNO TESTS RAN\n", "boom\n"):
+            rc, lines = self.run_v(Fake(self.root, **{"-m unittest": (0, out)}))
+            self.assertEqual(rc, 1, out)
+            self.assertIn("no tests ran", lines[1])
+
+    def test_failing_tests_fail(self):
+        rc, lines = self.run_v(Fake(self.root, **{"-m unittest": (1, "FAIL: test_x (tests.test_a.A)\nRan 3 tests\n")}))
+        self.assertEqual(rc, 1)
+        self.assertIn("FAIL: test_x", lines[1])
+
+    def test_unrunnable_command_is_127(self):
+        rc, out = v.run_cmd(["/nonexistent/binary-xyz"], self.tmp.name)
+        self.assertEqual(rc, 127)
+
+    def test_deterministic_output(self):
+        a = self.run_v(Fake(self.root))
+        b = self.run_v(Fake(self.root))
+        self.assertEqual(a, b)
+
+    def test_clean_pycache(self):
+        write(self.root / "lib/__pycache__/x.pyc")
+        write(self.root / "components/A/__pycache__/x.pyc")
+        v.clean_pycache(self.root)
+        self.assertFalse(list(self.root.rglob("__pycache__")))
+
+    def test_pcb_major_minor(self):
+        self.assertEqual(v.pcb_major_minor("pcbc 0.4.102"), "0.4")
+        self.assertIsNone(v.pcb_major_minor("nothing"))
+
+
+if __name__ == "__main__":
+    unittest.main()
