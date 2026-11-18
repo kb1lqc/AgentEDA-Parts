@@ -9,7 +9,7 @@ Worst case = every input at every min/max corner (lib.wca); nominal = every inpu
 
 from pathlib import Path
 
-from lib import Param, load, plot_band, table, wca
+from lib import Param, inputs_section, load, plot_band, table, verdict, wca
 
 ina = load("TexasInstruments/INA821IDGK")
 shunt = load("Vishay/WSK2512R0250D")
@@ -125,7 +125,7 @@ def main():
         "",
         table(checks),
         "",
-        "Pass/fail: " + ", ".join(f"{name}: {'PASS' if good else 'FAIL'}" for (name, _, _), good in zip(checks, ok)),
+        "Pass/fail: " + ", ".join(f"{name}: {verdict(good)}" for (name, _, _), good in zip(checks, ok)),
         "",
         "![Vout](current_sense_vout.png)",
         "",
@@ -134,6 +134,7 @@ def main():
         "Limits of this analysis: DC steady state only; the input common-mode and output swing rows are 25 degC "
         "values; the shunt rating above 70 degC comes from a curve read off the derating graph.",
         "",
+        *inputs_section(),
     ]
     (OUT / "current_sense.md").write_text("\n".join(md))
     print("\n".join(md))

@@ -43,3 +43,27 @@ def plot_band(fn, name, values, out_png, xlabel="", ylabel="", title="", **kwarg
     fig.savefig(out_png, dpi=120)
     plt.close(fig)
     return out_png
+
+
+def verdict(ok):
+    """'FAIL', 'PASS', or 'PASS (UNVERIFIED INPUTS)' when any row read so far has no `verified` stamp
+    (docs/spec/lib-api.md). Call it after the analysis has read every input it judges with."""
+    from .component import unverified_inputs
+    if not ok:
+        return "FAIL"
+    return "PASS (UNVERIFIED INPUTS)" if unverified_inputs() else "PASS"
+
+
+def inputs_section():
+    """Markdown lines for the report: how many library rows the analysis read and which have no `verified` stamp."""
+    from .component import unverified_inputs, used_inputs
+    used, unv = used_inputs(), unverified_inputs()
+    lines = ["## Input verification", ""]
+    if not unv:
+        lines.append(f"{len(used)} library rows read; every one carries a `verified` stamp (an independent check against "
+                     "the datasheet page image, or a machine-readable manufacturer export).")
+    else:
+        lines.append(f"{len(used)} library rows read; {len(unv)} have no `verified` stamp, so every PASS that rests on "
+                     "them reads PASS (UNVERIFIED INPUTS):")
+        lines += [""] + [f"- `{k}`" for k in unv]
+    return lines + [""]

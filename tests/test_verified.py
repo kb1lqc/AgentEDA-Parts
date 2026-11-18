@@ -53,6 +53,17 @@ class Verified(unittest.TestCase):
         if nodate is not None:
             self.assertIsNone(selection_params(nodate)[0].verified)
 
+    def test_verdict_and_section(self):
+        p = lib.load("TexasInstruments/TPS48000QDGXQ1")
+        self.assertEqual(lib.verdict(False), "FAIL")
+        p.param(next(k for k, v in p.params.items() if v.verified))
+        self.assertEqual(lib.verdict(True), "PASS")
+        self.assertIn("every one carries", "\n".join(lib.inputs_section()))
+        bad = next(k for k, v in p.params.items() if not v.verified)
+        p.param(bad)
+        self.assertEqual(lib.verdict(True), "PASS (UNVERIFIED INPUTS)")
+        self.assertIn(f"- `TPS48000QDGXQ1:{bad}`", lib.inputs_section())
+
     def test_format_rule(self):
         good = {"param": {"a": {"verified": "jd 2026-11-20 page image"}}}
         for bad in ("yes", "jd 20261120 page image", "jd 2026-11-20"):

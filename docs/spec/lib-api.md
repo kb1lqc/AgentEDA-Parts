@@ -37,4 +37,5 @@ Worst-case method (`wca`), stated so a human can check it by hand:
 - Verified inputs: every row read through `part.param` / `part.inputs` / `part.series` (and the helpers built on them)
   is recorded. If `lib.unverified_inputs()` ("<Value>:<key>" of rows without `verified`) is not empty when the report
   is written, every judged PASS reads `PASS (UNVERIFIED INPUTS)` and the report lists those rows. `lib.used_inputs()`
-  lists all rows read; `lib.reset_inputs()` clears the record.
+  lists all rows read; `lib.reset_inputs()` clears the record. `lib.verdict(ok)` gives the right word;
+  `lib.inputs_section()` gives the report's "Input verification" section.
