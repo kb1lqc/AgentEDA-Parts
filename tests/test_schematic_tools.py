@@ -29,7 +29,8 @@ class TestSexpr(unittest.TestCase):
 
     def test_roundtrip_fixture_and_ina(self):
         for p in [FIX] + ([INA / "INA.kicad_sch", INA / "INA229HighSideMonitor_bench.kicad_sch"] if INA.exists() else []):
-            t = p.read_text(newline="")
+            with open(p, encoding="utf-8", newline="") as f:  # Path.read_text(newline=) needs Python 3.13; repo is 3.11+
+                t = f.read()
             self.assertEqual(kx.dumps(kx.loads(t)), t, p.name)
 
     def test_values(self):

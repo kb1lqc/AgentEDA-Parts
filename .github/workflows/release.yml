@@ -1,0 +1,55 @@
+name: release
+# Manual release from main. It runs the full gate, asks `pcb publish --check` which component tags the current main
+# needs, and creates exactly those (annotated, name and message as printed), plus an optional library tag vX.Y.Z.
+# Dry run by default: the plan appears in the run summary and nothing is pushed.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Only show the release plan"
+        type: boolean
+        default: true
+      version:
+        description: "Optional library release tag, e.g. v0.7.0"
+        type: string
+        default: ""
+permissions:
+  contents: write
+concurrency:
+  group: release
+  cancel-in-progress: false
+env:
+  PCB_VERSION: v0.4.102
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Tools
+        run: |
+          pip install --quiet matplotlib
+          sudo apt-get install -y --no-install-recommends poppler-utils > /dev/null
+          .github/scripts/install-pcb.sh
+      - name: Gate (tools/verify.py --all)
+        run: python3 tools/verify.py --all --log-dir "$RUNNER_TEMP/verify-logs"
+      - name: Plan (pcb publish --check)
+        run: pcb publish --check > "$RUNNER_TEMP/plan.json"
+      - name: Tag
+        env:
+          VERSION: ${{ inputs.version }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          args=("$RUNNER_TEMP/plan.json")
+          [ -n "$VERSION" ] && args+=(--version "$VERSION" --label zener-library)
+          [ "$DRY_RUN" = "false" ] && args+=(--push)
+          python3 .github/scripts/release.py "${args[@]}" | tee -a "$GITHUB_STEP_SUMMARY"

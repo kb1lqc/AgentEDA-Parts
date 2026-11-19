@@ -1,0 +1,43 @@
+name: verify
+# Every PR and every push to main runs the library's own gate, tools/verify.py --all: lib.check (data, pins, land
+# patterns, check rows, cites, verified stamps), wrapper and README regeneration (must change nothing), a strict
+# pcb build of every component, and the unit tests. The datasheet PDFs are not in the repo; their absence is tolerated.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  PCB_VERSION: v0.4.102
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Tools (matplotlib, poppler, pcb ${{ env.PCB_VERSION }})
+        run: |
+          pip install --quiet matplotlib
+          sudo apt-get install -y --no-install-recommends poppler-utils > /dev/null
+          .github/scripts/install-pcb.sh
+      - name: tools/verify.py --all
+        run: |
+          set -o pipefail
+          python3 tools/verify.py --all --log-dir "$RUNNER_TEMP/verify-logs" | tee "$RUNNER_TEMP/verify.out"
+      - name: Summary
+        if: always()
+        run: python3 .github/scripts/summary.py library "$RUNNER_TEMP/verify.out" >> "$GITHUB_STEP_SUMMARY"
+      - name: Logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verify-logs
+          path: ${{ runner.temp }}/verify-logs
