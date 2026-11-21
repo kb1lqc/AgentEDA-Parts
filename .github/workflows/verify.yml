@@ -20,9 +20,17 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # check_stamps reads files at the PR base
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Human stamps name the PR author (tools/check_stamps.py)
+        if: github.event_name == 'pull_request'
+        env:
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: python3 tools/check_stamps.py --author "$AUTHOR" --base "$BASE" --head HEAD
       - name: Tools (matplotlib, poppler, pcb ${{ env.PCB_VERSION }})
         run: |
           pip install --quiet matplotlib

@@ -8,6 +8,7 @@ __pycache__/
 # Copyrighted or third-party downloads: kept locally, never uploaded (cites point to their pages)
 docs/datasheets/
 docs/vendor/
+.review-cache/
 *_unused/
 
 # Drop folder for new parts before import

@@ -333,10 +333,10 @@ class TestCommittedCatalogDecode(unittest.TestCase):
     def test_unedited_catalogs_pass(self):
         # The git-ignored datasheet PDFs may be absent (CI, a release checkout): lib.check tolerates that warning, and
         # so does this test. Any other message still fails.
-        from lib.check import TOLERATED
+        from lib.check import TOLERATED_ALL
         for name in ("GCM155", "GCM188"):
             msgs = messages(Path(__file__).parent.parent / "components" / "Murata" / name)
-            self.assertEqual([m for m in msgs if TOLERATED not in m], [])
+            self.assertEqual([m for m in msgs if not any(t in m for t in TOLERATED_ALL)], [])
 
     def test_each_column_edit_is_an_error(self):
         v = "GCM1555C1H101FA16"  # C0G, 100 pF, +/-1 %, 50 V, thickness 0.5 mm

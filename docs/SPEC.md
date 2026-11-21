@@ -23,6 +23,7 @@ the file that now holds it. Load only the file your role needs.
 | Series wrapper | docs/spec/wrapper.md |
 | Capacitor wrapper | docs/spec/wrapper.md |
 | Tests (harness and CASES) | .claude/skills/zener-wrapper/SKILL.md, section 2 |
+| Datasheet review record (`review/`, ledger states, images, stamp format) | docs/spec/review.md |
 | Using a part (lib API); Worst-case method (`wca`) | docs/spec/lib-api.md |
 | Validation; README "Limits of this data" | enforced in `lib/check.py`, `lib/readme.py` (not prose) |
 | Goal; rationale; history | docs/notes/spec-rationale.md (humans only) |

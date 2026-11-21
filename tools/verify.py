@@ -11,8 +11,12 @@ Steps, in order, each judged by exit code:
   5. pcb build -Wstyle -Dwarnings D for each component dir D: the dirs given, else all with --all, else every
      components/<Mfr>/<Value> with a change in `git status` (none found = FAIL: nothing was built)
   6. python3 -m unittest discover -s tests   ("Ran 0 tests" or no "Ran N tests" line = FAIL)
+Before 2: python3 tools/ds_review.py (docs/spec/review.md) on the dirs given, every part with --all, else changed dirs
+plus parts with no review/; non-zero exit = FAIL; the files it changes under review/ are listed, never a FAIL; its mode
+line and lib.check's (evidence mode with the PDF, ledger-only mode without) are printed in the PASS line.
 lib.zen and lib.readme must leave components/** and README.md byte-identical (content hashes before and after). A
 difference is a FAIL unless --regen is given; then the changed files are listed and the run still passes.
+A PDF tracked by git or under components/ is a FAIL (datasheets live in git-ignored docs/datasheets/).
 Output: one PASS line with counts, or the first 5 failures as `file:line message` (`step: line` when the tool prints no
 location). Full logs: --log-dir (default: a new $TMPDIR/zl-verify-* per run), one file per step; the log path is printed last.
 __pycache__ directories are removed afterwards. Nothing is committed or restored.
@@ -147,8 +151,40 @@ def verify(root, dirs=None, all_dirs=False, regen=False, log_dir=None, runner=ru
         return finish()
     counts["pcb"] = f"{have}"
 
+    # 1b. no datasheet PDF may be committed or sit in a component dir (vendor copyright; docs/spec/review.md)
+    rc, out = runner(["git", "ls-files", "*.pdf"], root)
+    tracked = [ln for ln in out.splitlines() if ln.strip()] if rc == 0 else []
+    if rc:
+        fails.append("git ls-files: cannot list tracked PDFs")
+    loose = sorted(str(p.relative_to(root)) for p in (root / "components").rglob("*") if p.suffix.lower() == ".pdf")
+    fails.extend(f"{p}:1 PDF is tracked by git or under components/; move it to docs/datasheets/ (git-ignored)"
+                 for p in sorted(set(tracked + loose)))
+    if fails:
+        return finish()
+
+    # 1c. datasheet review records (docs/spec/review.md), before lib.check so it checks fresh records and cache
+    # images: changes are listed, never a FAIL; a bad exit is a FAIL
+    review_before = {k: h for k, h in tree_hashes(root).items() if "/review/" in k}
+    scope = [str(d) for d in dirs] if dirs else (["--all"] if all_dirs else [])
+    rc, out = step("ds_review", [sys.executable, "tools/ds_review.py"] + scope)
+    if rc == 0:
+        rchanged = diff_hashes(review_before, {k: h for k, h in tree_hashes(root).items() if "/review/" in k})
+        parts = sorted({"/".join(c.split("/")[1:3]) for c in rchanged})
+        if rchanged:
+            notes.append(f"review: {len(rchanged)} file(s) changed in {len(parts)} part(s): " + ", ".join(parts[:10])
+                         + (" ..." if len(parts) > 10 else ""))
+        # the human's next step, on the line every agent pastes: human-stamped rows that changed (docs/briefs/ds-review.md)
+        for d, n in re.findall(r"^components/(\S+): .*\| delta (\d+)", out, re.M):
+            notes.append(f"SHOW THE HUMAN .review-cache/{d}/DELTA.md ({n} row(s) need review)")
+        notes += re.findall(r"^(review: .*)$", out, re.M)  # the mode that ran (evidence or ledger-only)
+        m = re.search(r"^(\S+): .*\| NOT_RENDERED", out, re.M)
+        if m:
+            notes.append("review: NOT_RENDERED (PDF absent) in " + ", ".join(
+                re.findall(r"^(\S+): .*\| NOT_RENDERED", out, re.M)[:10]))
+
     # 2. lib.check
     rc, out = step("lib.check", [sys.executable, "-m", "lib.check"])
+    notes += [f"lib.check {ln}" for ln in re.findall(r"^(review: .*)$", out, re.M)]
     m = re.search(r"^(\d+) components, (\d+) errors, (\d+) warnings", out, re.M)
     if not m:
         fails.append("lib.check: no summary line printed")

@@ -9,7 +9,7 @@
 - **description**: 0402 (1005 metric) 0.1 W +/-1 % thick film chip resistor, ERJ-2RKF series (10 ohm to 1 Mohm, E24/E96)
 - **category**: resistor_thick_film
 - **package**: 0402 (1005 metric)
-- **datasheet_url**: https://industrial.panasonic.com/cdbs/www-data/pdf/RDA0000/AOA0000C304.pdf
+- **datasheet_url**: [https://industrial.panasonic.com/cdbs/www-data/pdf/RDA0000/AOA0000C304.pdf](https://industrial.panasonic.com/cdbs/www-data/pdf/RDA0000/AOA0000C304.pdf)
 - **datasheet_file**: docs/datasheets/AOA0000C304.pdf
 - **datasheet_rev**: 29-May-25 (page footers, pp.1-4)
 - **datasheet_date**: 2025-05-29

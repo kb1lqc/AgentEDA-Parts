@@ -10,7 +10,7 @@
 - **description**: 100 V automotive low-IQ high-side driver with reverse polarity, short-circuit protection and diagnostics, VSSOP-19 (DGX), TPS4800-Q1 data sheet
 - **category**: high_side_driver
 - **package**: VSSOP-19 (DGX), 5.1 x 3.0 mm nominal (DS p.1 Package Information)
-- **datasheet_url**: https://www.ti.com/lit/ds/symlink/tps4800-q1.pdf
+- **datasheet_url**: [https://www.ti.com/lit/ds/symlink/tps4800-q1.pdf](https://www.ti.com/lit/ds/symlink/tps4800-q1.pdf)
 - **datasheet_file**: docs/datasheets/tps4800-q1.pdf
 - **datasheet_rev**: SLUSEZ1B Rev. B
 - **datasheet_date**: 2026-03

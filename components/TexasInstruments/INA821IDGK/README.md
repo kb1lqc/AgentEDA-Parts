@@ -10,7 +10,7 @@
 - **description**: Precision instrumentation amplifier, 4.5-36 V
 - **category**: instrumentation_amplifier
 - **package**: VSSOP-8 (DGK0008A)
-- **datasheet_url**: https://www.ti.com/lit/ds/symlink/ina821.pdf
+- **datasheet_url**: [https://www.ti.com/lit/ds/symlink/ina821.pdf](https://www.ti.com/lit/ds/symlink/ina821.pdf)
 - **datasheet_file**: docs/datasheets/ina821.pdf
 - **datasheet_rev**: SBOS893D
 - **datasheet_date**: 2020-06

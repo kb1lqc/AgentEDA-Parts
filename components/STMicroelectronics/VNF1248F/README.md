@@ -10,7 +10,7 @@
 - **description**: High-side switch controller with intelligent fuse protection, 6-60 V (70 V transient), AEC-Q100, QFN32L 5x5 mm
 - **category**: high_side_controller
 - **package**: QFN32L 5x5 mm Epad, wettable flanks (DS p.69 Figure 22, DS p.70 Table 65)
-- **datasheet_url**: https://www.st.com/resource/en/datasheet/vnf1248f.pdf
+- **datasheet_url**: [https://www.st.com/resource/en/datasheet/vnf1248f.pdf](https://www.st.com/resource/en/datasheet/vnf1248f.pdf)
 - **datasheet_file**: docs/datasheets/DS_vnf1248f.pdf
 - **datasheet_rev**: Rev 8
 - **datasheet_date**: 2026-07

@@ -1,4 +1,5 @@
 import tempfile
+from unittest import mock
 import unittest
 from pathlib import Path
 from shutil import copytree
@@ -93,6 +94,29 @@ class TestNewChecks(unittest.TestCase):
         text = self.run_edit([('step = "none"', 'step = "none"\ndatasheet_file = "docs/datasheets/nope.pdf"')])
         self.assertIn("WARN: datasheet_file not found", text)
         self.assertNotIn("ERROR", text)
+
+    def test_datasheet_url_empty_is_tolerated_warn(self):
+        text = self.run_edit([('datasheet_url = "https://example.com/ldo1.pdf"', 'datasheet_url = ""')])
+        self.assertIn("WARN: datasheet_url empty (record the vendor URL; open item)", text)
+        self.assertNotIn("missing field", text)
+        self.assertNotIn("ERROR", text)
+
+    def test_datasheet_url_bad_scheme_is_error(self):
+        text = self.run_edit([('datasheet_url = "https://example.com/ldo1.pdf"', 'datasheet_url = "www.ti.com/x.pdf"')])
+        self.assertIn("ERROR: datasheet_url must start with http:// or https://", text)
+
+    def test_tolerated_warnings_do_not_fail_main(self):
+        import contextlib
+        import io
+        from lib import check
+        with tempfile.TemporaryDirectory() as d:
+            copy = copy_fixture(d, [('datasheet_url = "https://example.com/ldo1.pdf"', 'datasheet_url = ""')])
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                with mock.patch.object(check.rules, "wiring_findings", return_value=[]):
+                    code = check.main([str(copy)])
+        self.assertEqual(code, 0, out.getvalue())
+        self.assertIn("0 errors, 0 warnings, 1 tolerated", out.getvalue())
 
     def test_bad_import(self):
         text = self.run_edit(calc_edits=[("def vout", "import os\nfrom math import pi\n\n\ndef vout")])
@@ -224,7 +248,127 @@ class TestLoadNew(unittest.TestCase):
             to_param({"sym": True, "min": 1, "unit": "V"})
 
 
+class TestLedger(unittest.TestCase):
+    """lib.check on review/: ledger-only checks always; cache images only when the PDF is on this machine."""
+
+    def ledger(self, d, rows=None, files=None, pdf=True, raw=None, stamps=None, raw_inputs=""):
+        """root/components/Acme/LDO1 with a review.toml holding a correct row per Param, `rows` merged in (key ->
+        fields), cache files in root/.review-cache/Acme/LDO1/, and the PDF in docs/datasheets/ unless pdf=False."""
+        import json
+        import tomllib
+        from lib.component import row_hash
+        root = Path(d)
+        copy = root / "components" / "Acme" / "LDO1"
+        copy.parent.mkdir(parents=True)
+        copytree(FIX / "LDO1", copy, ignore=lambda *_: ["__pycache__"])
+        ct = copy / "component.toml"
+        for key, stamp in (stamps or {}).items():  # a `verified` line after the row's header
+            ct.write_text(ct.read_text().replace(f"[param.{key}]\n", f'[param.{key}]\nverified = "{stamp}"\n', 1))
+        params = tomllib.loads(ct.read_text())["param"]
+        table = {k: {"state": "NEW", "hash": row_hash(t)} for k, t in params.items()}
+        for k, stamp in (stamps or {}).items():
+            table[k].update(state="MACHINE_CHECKED", stamp=stamp, stamp_hash=table[k]["hash"])
+        for k, extra in (rows or {}).items():
+            table.setdefault(k, {}).update(extra)
+        text = raw if raw is not None else '[inputs]\ndatasheet_file = "docs/datasheets/ldo1.pdf"\n' + raw_inputs + "".join(
+            f"[row.{k}]\n" + "".join(f"{f} = {json.dumps(v)}\n" for f, v in r.items()) for k, r in table.items())
+        (copy / "review").mkdir()
+        (copy / "review" / "review.toml").write_text(text)
+        for name, data in (files or {}).items():
+            f = root / ".review-cache" / "Acme" / "LDO1" / name
+            f.parent.mkdir(parents=True, exist_ok=True)
+            f.write_bytes(data)
+        if pdf:
+            (root / "docs" / "datasheets").mkdir(parents=True)
+            (root / "docs" / "datasheets" / "ldo1.pdf").write_bytes(b"%PDF")
+        return copy
+
+    def errors(self, copy):
+        return "\n".join(m for m in messages(copy) if m.startswith("ERROR") and "review" in m)
+
+    def test_stale_note_not_counted(self):
+        import contextlib
+        import io
+        from lib import check
+        with tempfile.TemporaryDirectory() as d:
+            copy = self.ledger(d, {"vref": {"state": "STALE", "stamp_hash": "old"},
+                                   "vos": {"state": "PDF_CHANGED", "pdf_sha256": "pin"}},
+                               stamps={"vref": "bob 2026-01-01 page image", "vin_abs": "bob 2026-01-01 page image"},
+                               raw_inputs='sheets = { "ldo1.pdf" = "now" }\n')
+            self.assertEqual(self.errors(copy), "")
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                with mock.patch.object(check.rules, "wiring_findings", return_value=[]):
+                    check.main([str(copy)])
+        text = out.getvalue()
+        self.assertIn("REVIEW: LDO1: vref is STALE", text)
+        self.assertIn("REVIEW: LDO1: vos is PDF_CHANGED", text)
+        self.assertNotIn("vin_abs", text)
+        self.assertIn("review: evidence mode (PDF present) in 1 part(s)", text)
+
+    def test_cache_image_missing_and_hash_mismatch_with_pdf(self):
+        import hashlib
+        good = hashlib.sha256(b"png").hexdigest()
+        row = {"vref": {"image": "evidence/a.png", "image_sha256": good, "header_image": "evidence/h.png",
+                        "header_sha256": good}}
+        with tempfile.TemporaryDirectory() as d:
+            text = self.errors(self.ledger(d, row, {"evidence/h.png": b"png"}))
+        self.assertIn(".review-cache/Acme/LDO1/evidence/a.png missing (vref; PDF present): rerun python3 tools/ds_review.py", text)
+        with tempfile.TemporaryDirectory() as d:
+            text = self.errors(self.ledger(d, row, {"evidence/a.png": b"other", "evidence/h.png": b"png"}))
+        self.assertIn("evidence/a.png sha256 differs from review.toml (vref): delete it and rerun", text)
+        self.assertNotIn("h.png", text)
+        with tempfile.TemporaryDirectory() as d:
+            self.assertEqual(self.errors(self.ledger(d, row, {"evidence/a.png": b"png", "evidence/h.png": b"png"})), "")
+
+    def test_ledger_only_mode_without_pdf(self):
+        from lib import check
+        row = {"vref": {"image": "evidence/a.png", "image_sha256": "0" * 64}}
+        with tempfile.TemporaryDirectory() as d:
+            check.REVIEW_MODES.clear()
+            self.assertEqual(self.errors(self.ledger(d, row, pdf=False)), "")  # no cache, no PDF: images not checked
+            self.assertEqual(check.review_mode_line(), "review: ledger-only mode (no local PDF) in 1 part(s): LDO1")
+
+    def test_row_hash_stamp_and_committed_png(self):
+        with tempfile.TemporaryDirectory() as d:
+            text = self.errors(self.ledger(d, {"vref": {"hash": "x"}, "vos": {"stamp": "bob 2026-11-20 x"}}, pdf=False))
+        self.assertIn("row vref is missing or older than component.toml", text)
+        self.assertIn("row vos: stamp differs from its verified line", text)
+        with tempfile.TemporaryDirectory() as d:
+            copy = self.ledger(d, pdf=False)
+            for name in ("evidence/a.png", "params/vref.md", "DELTA.md", "github-issue.md", "unmapped.md", "README.md"):
+                (copy / "review" / name).parent.mkdir(exist_ok=True)
+                (copy / "review" / name).write_bytes(b"x")
+            (copy / "review" / ".DS_Store").write_bytes(b"x")  # OS litter (git-ignored) is not a finding
+            text = self.errors(copy)
+            for name in ("evidence/a.png", "params/vref.md", "DELTA.md", "github-issue.md", "unmapped.md", "README.md"):
+                self.assertIn(f"review/{name}: only review/review.toml is committed", text)
+            self.assertNotIn(".DS_Store", text)
+
+    def test_state_is_recomputed_never_trusted(self):
+        machine = "sonnet-audit 2026-11-18 blind page-image reading"
+        with tempfile.TemporaryDirectory() as d:
+            self.assertEqual(self.errors(self.ledger(d, stamps={"vref": machine}, pdf=False)), "")
+        cases = ({"vref": {"state": "HUMAN_VERIFIED"}}, {"vref": {"state": "BOGUS"}}, {"vos": {"state": "HUMAN_VERIFIED"}},
+                 {"pins": {"state": "HUMAN_VERIFIED"}})
+        for rows in cases:
+            with self.subTest(rows=rows), tempfile.TemporaryDirectory() as d:
+                text = self.errors(self.ledger(d, rows, stamps={"vref": machine}, pdf=False))
+                key = next(iter(rows))
+                self.assertIn(f"row {key}: ", text)
+                self.assertTrue("but the stamp and pins give" in text or "must be 'NOT_COVERED'" in text, text)
+
+    def test_invalid_toml_is_error(self):
+        with tempfile.TemporaryDirectory() as d:
+            text = self.errors(self.ledger(d, raw="[row.vref\nstate = "))
+        self.assertIn("ERROR: review/review.toml or component.toml is not valid TOML", text)
+
+
 class TestReadme(unittest.TestCase):
+    def test_datasheet_url_is_link(self):
+        text = readme.build(FIX / "LDO1")
+        self.assertIn("- **datasheet_url**: [https://example.com/ldo1.pdf](https://example.com/ldo1.pdf)", text)
+
     def test_new_rendering(self):
         text = readme.build(FIX / "LDO1")
         self.assertIn("| Output offset | VOS |  | \u00b110 | \u00b140 | uV |", text)  # sym

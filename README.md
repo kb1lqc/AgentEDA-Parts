@@ -125,6 +125,8 @@ A human verifies a part by opening its datasheet next to its README: every row a
 
 ## Add a part
 
+Step-by-step guide for new contributors, including human verification: [CONTRIBUTING.md](CONTRIBUTING.md).
+
 1. Put the datasheet PDF in `docs/datasheets/` and the vendor KiCad/STEP download in `docs/vendor/<Value>/`
    (both are git-ignored).
 2. Fix up the symbol and footprint per docs/KICAD.md into `components/<Manufacturer>/<Value>/`.
@@ -134,4 +136,4 @@ A human verifies a part by opening its datasheet next to its README: every row a
    `python3 -m lib.check` clean, `python3 -m lib.zen`, `python3 -m lib.readme`.
 5. Add `tests/zen/<Value>_harness.zen` and its cases in `tests/test_zen.py`; all tests pass.
 6. Have a second reviewer check every number against the page images.
-A short guide to the workflow and part types is [docs/WORKFLOW.md](docs/WORKFLOW.md). The full procedure, with defaults for every judgement call, is in [CLAUDE.md](CLAUDE.md).
+A short guide to the workflow and part types is [docs/notes/workflow.md](docs/notes/workflow.md). The full procedure, with defaults for every judgement call, is in [CLAUDE.md](CLAUDE.md).

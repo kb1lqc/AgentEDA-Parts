@@ -4,6 +4,8 @@ import re
 import sys
 import tempfile
 import tomllib
+import contextlib
+import io
 import unittest
 from pathlib import Path
 
@@ -27,6 +29,9 @@ def vendor(root, value="P1", mods=("fp.kicad_mod",), syms=("s.kicad_sym",), step
         write(root / "docs/vendor" / value / n, "step " + n)
 
 
+URL = "https://example.com/p1.pdf"
+
+
 class TestScaffold(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -36,7 +41,7 @@ class TestScaffold(unittest.TestCase):
         self.tmp.cleanup()
 
     def go(self, mfr="Acme", value="P1"):
-        return sc.scaffold(self.root, mfr, value)
+        return sc.scaffold(self.root, mfr, value, URL)
 
     def dest(self, value="P1"):
         return self.root / "components/Acme" / value
@@ -112,7 +117,7 @@ class TestScaffold(unittest.TestCase):
     def test_bad_names_fail(self):
         vendor(self.root)
         for mfr, val in (("", "P1"), ("Acme", ""), ("../x", "P1"), ("Acme", ".."), ("a/b", "P1")):
-            self.assertEqual(sc.scaffold(self.root, mfr, val)[0], 1, (mfr, val))
+            self.assertEqual(sc.scaffold(self.root, mfr, val, URL)[0], 1, (mfr, val))
 
     def test_vendor_unused_dir_is_not_read(self):
         vendor(self.root)
@@ -125,9 +130,10 @@ class TestScaffold(unittest.TestCase):
         data = tomllib.loads((self.dest() / "component.toml").read_text())
         for f in check.PART_FIELDS:
             self.assertIn(f, data["part"])
-        empty = [f for f in ("value", "mpn", "manufacturer", "description", "category", "package", "datasheet_url",
+        empty = [f for f in ("value", "mpn", "manufacturer", "description", "category", "package",
                              "datasheet_rev", "datasheet_date") if data["part"][f] == ""]
-        self.assertEqual(len(empty), 9)
+        self.assertEqual(len(empty), 8)
+        self.assertEqual(data["part"]["datasheet_url"], URL)
         self.assertEqual(data["pin"], [{"number": "", "name": "", "type": "", "function": "", "cite": ""}])
 
     def test_scaffold_is_rejected_by_lib_check(self):
@@ -146,13 +152,23 @@ class TestScaffold(unittest.TestCase):
         errors = [m for lvl, m in check.check_component(self.dest()) if lvl == "ERROR"]
         self.assertTrue(any("missing 'name'" in m for m in errors), errors)
 
+    def test_datasheet_url_required_and_http(self):
+        vendor(self.root)
+        for url in (None, "", "ftp://x/p1.pdf", "docs/datasheets/p1.pdf", 'https://x/"a'):
+            rc, lines = sc.scaffold(self.root, "Acme", "P1", url)
+            self.assertEqual(rc, 1, url)
+            self.assertIn("datasheet_url | FAIL | missing or not http(s): give --datasheet-url", "\n".join(lines))
+            self.assertFalse(self.dest().exists())
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(sc.main(["Acme", "P1", "--root", str(self.root)]), 1)
+
     def test_deterministic(self):
         vendor(self.root)
         other = tempfile.TemporaryDirectory()
         try:
             vendor(Path(other.name))
-            a = sc.scaffold(self.root, "Acme", "P1")
-            b = sc.scaffold(Path(other.name), "Acme", "P1")
+            a = sc.scaffold(self.root, "Acme", "P1", URL)
+            b = sc.scaffold(Path(other.name), "Acme", "P1", URL)
             self.assertEqual(a, b)
             for n in ("component.toml", "pcb.toml", "P1.kicad_sym", "P1.kicad_mod", "P1.step"):
                 self.assertEqual((self.dest() / n).read_bytes(), (Path(other.name) / "components/Acme/P1" / n).read_bytes())

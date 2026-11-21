@@ -10,7 +10,7 @@
 - **description**: 85 V, 20-bit power/energy/charge monitor with SPI interface
 - **category**: power_monitor
 - **package**: VSSOP-10 (DGS0010A)
-- **datasheet_url**: https://www.ti.com/lit/ds/symlink/ina229.pdf
+- **datasheet_url**: [https://www.ti.com/lit/ds/symlink/ina229.pdf](https://www.ti.com/lit/ds/symlink/ina229.pdf)
 - **datasheet_file**: docs/datasheets/ina229.pdf
 - **datasheet_rev**: SLYS023A
 - **datasheet_date**: 2022-05

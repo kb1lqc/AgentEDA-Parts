@@ -46,7 +46,7 @@ manufacturer   = "Texas Instruments"
 description    = "Precision instrumentation amplifier, 4.5-36 V"
 category       = "instrumentation_amplifier"
 package        = "VSSOP-8 (DGK0008A)"
-datasheet_url  = "https://www.ti.com/lit/ds/symlink/ina821.pdf"
+datasheet_url  = "https://www.ti.com/lit/ds/symlink/ina821.pdf"  # http(s) link to the vendor document, recorded not fetched; empty is a tolerated warning until supplied
 datasheet_file = "docs/datasheets/ina821.pdf"
 datasheet_rev  = "SBOS893D"
 datasheet_date = "2020-06"
@@ -96,7 +96,7 @@ note       = "Specified by characterization (DS note 3)"   # optional
 | `dielectric` | no | Capacitor series only: the row applies to catalog parts of that dielectric (`"X7R"`); absent = all (see "Capacitor series") |
 | `parts` | no | Capacitor series only: list of catalog values (MPN without package letter) the row applies to; absent = all. A row has `dielectric` or `parts`, not both |
 | `note` | no | Footnotes, characterization notes, ambiguity |
-| `verified` | no | `"<who> <YYYY-MM-DD> <method>"`: an independent check of this row against the DS page image after extraction (a person, or a blind cross-model audit). Never set by the extractor of the row. A judged PASS resting on a row without it reports `PASS (UNVERIFIED INPUTS)` (`lib-api.md`) |
+| `verified` | no | `"<who> <YYYY-MM-DD> <method>"`: an independent check of this row against the DS page image after extraction (a person, or a blind cross-model audit). Never set by the extractor of the row. A row whose `review/review.toml` state is STALE or PDF_CHANGED (`review.md`) counts as unverified even with a stamp. A judged PASS resting on a row without it reports `PASS (UNVERIFIED INPUTS)` (`lib-api.md`) |
 | `sym` | no | `true` if the DS prints an unsigned magnitude bound for a quantity that can have either sign (VOS, IB, IOS, offset drift: TI prints VOS "40 uV" max, meaning ±40 uV). Store `max` (and `typ`) as printed; the loader sets min = -max. Say why in `note`. Never for a quantity that cannot be negative (IQ), and never for a printed `±X` (that is `min = -X, max = X`) |
 | `check_pins` | no | Zener wrapper: list of `[[pin]]` names whose net voltage must stay within this row's min/max (with `min_ref`/`max_ref` resolved to those pins' nets). Voltage rows only. See "Zener wrapper" |
 | `check_ambient` | no | Zener wrapper: `true` checks the instance's `ambient` config against this row (degC, min and max required) |

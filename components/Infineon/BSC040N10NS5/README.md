@@ -9,7 +9,7 @@
 - **description**: 100 V N-channel OptiMOS 5 power MOSFET, 136 A, 4.0 mohm max at VGS=10 V, PG-TDSON-8 (SuperSO8)
 - **category**: mosfet
 - **package**: PG-TDSON-8 (SuperSO8)
-- **datasheet_url**: https://www.infineon.com
+- **datasheet_url**: [https://www.infineon.com](https://www.infineon.com)
 - **datasheet_file**: docs/datasheets/infineon/infineon-bsc040n10ns5-datasheet-en.pdf
 - **datasheet_rev**: Rev.2.4
 - **datasheet_date**: 2020-05-15

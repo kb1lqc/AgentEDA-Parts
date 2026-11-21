@@ -115,7 +115,7 @@ class TestMain(unittest.TestCase):
     def test_no_other_warning_in_the_repo_today(self):
         """Every committed component passes with 0 warnings (the datasheet_file warning is the only tolerated one)."""
         for folder in check.find_components([]):
-            warns = [m for lvl, m in check.check_component(folder, raw=True) if lvl == "WARN" and check.TOLERATED not in m]
+            warns = [m for lvl, m in check.check_component(folder, raw=True) if lvl == "WARN" and not any(t in m for t in check.TOLERATED_ALL)]
             self.assertEqual(warns, [], folder.name)
 
     def test_real_repo_passes_with_no_stale_entries(self):

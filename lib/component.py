@@ -1,7 +1,10 @@
 """Load a component directory: component.toml, calc.py, parameters in SI."""
 
 import dataclasses
+import hashlib
 import importlib.util
+import json
+import re
 import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -16,12 +19,143 @@ ROOT = Path(__file__).resolve().parent.parent
 META = ("name", "symbol", "kind", "scope", "conditions", "cite", "note", "min_ref", "max_ref", "typ_ref", "curve", "text",
         "verified")
 _USED = {}  # "<Value>:<key>" -> verified (None = unverified), for every row an analysis has read this process
+_ROWS = {}  # same keys -> {dir, review_key, stamp, state, cite, reason} for lib.human_review_needed()
+HUMAN = "human:"  # a stamp whose who starts with this claims a human check (docs/spec/review.md); anything else is machine
+GITHUB_LOGIN = r"[A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38}"  # 1-39 chars, alnum and single inner hyphens
+HUMAN_RE = re.compile(r"^human:" + GITHUB_LOGIN + r" \d{4}-\d{2}-\d{2} page-image ds_review (?P<pdf>[0-9a-f]{12}) row (?P<row>[0-9a-f]{12})\Z")
+
+
+_LEDGER_BAD = ("STALE", "PDF_CHANGED")
+
+
+def _ledger_unverified(path):
+    """Param keys whose review/review.toml row state is STALE or PDF_CHANGED (none when the file is absent or unreadable;
+    lib.check reports a bad ledger)."""
+    f = Path(path) / "review" / "review.toml"
+    try:
+        with open(f, "rb") as fh:
+            rows = tomllib.load(fh).get("row", {})
+    except (OSError, tomllib.TOMLDecodeError):
+        return set()
+    return {k for k, r in rows.items() if isinstance(r, dict) and r.get("state") in _LEDGER_BAD}
 
 
 def _record(label, key, verified):
     """Record one row read. Unverified is sticky: a later verified read of the same key never clears it."""
     k = f"{label}:{key}"
     _USED[k] = None if (k in _USED and not _USED[k]) else verified
+
+
+def _read_toml(f):
+    try:
+        with open(f, "rb") as fh:
+            return tomllib.load(fh)
+    except (OSError, tomllib.TOMLDecodeError):
+        return None
+
+
+_SHA = {}  # (file, size, mtime_ns) -> SHA-256, one hash per PDF per process
+
+
+def _file_sha(f):
+    st = f.stat()
+    k = (str(f), st.st_size, st.st_mtime_ns)
+    if k not in _SHA:
+        _SHA[k] = hashlib.sha256(f.read_bytes()).hexdigest()
+    return _SHA[k]
+
+
+def row_hash(table):
+    """The ledger's row hash (docs/spec/review.md): SHA-256 of the [param] table without `verified`, compact sorted JSON."""
+    t = {k: v for k, v in table.items() if k != "verified"}
+    return hashlib.sha256(json.dumps(t, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
+
+
+LEDGER_STATES = ("HUMAN_VERIFIED", "MACHINE_CHECKED", "STALE", "PDF_CHANGED", "NEW", "UNVERIFIED", "NOT_COVERED")
+
+
+def ledger_state_of(h, stamp, stamp_hash, pin, P):
+    """The review.toml state of a Param row (docs/spec/review.md): h = row hash, stamp = its `verified`, stamp_hash and
+    pin = the ledger's pins, P = the PDF SHA-256 ("" when unknown). Shared by tools/ds_review.py and lib.check."""
+    if stamp:
+        m = HUMAN_RE.match(stamp)
+        if h != stamp_hash or (m and m["row"] != h[:12]):
+            return "STALE"
+        if P and ((pin and pin != P) or (m and m["pdf"] != P[:12])):
+            return "PDF_CHANGED"
+        if stamp.startswith(HUMAN):
+            return "HUMAN_VERIFIED" if m else "UNVERIFIED"  # a malformed human stamp verifies nothing
+        return "MACHINE_CHECKED"  # sonnet-audit, manufacturer-export, ...: never a human check
+    if P and pin and pin != P:
+        return "PDF_CHANGED"
+    return "UNVERIFIED" if stamp_hash else "NEW"
+
+
+def _repo_root(path):
+    """The repo holding a component dir: the parent of the nearest `components/` above it (None if there is none)."""
+    return next((d.parent for d in Path(path).resolve().parents if d.name == "components"), None)
+
+
+def _review(path, review_key, stamp):
+    """(ledger state, reason) for one row read; reason None = a current human stamp (docs/spec/review.md "Runs")."""
+    path = Path(path)
+    ledger = _read_toml(path / "review" / "review.toml") or {}
+    row = ledger.get("row", {}).get(review_key) if review_key else None
+    row = row if isinstance(row, dict) else None
+    state = row.get("state") if row else None
+    if state in _LEDGER_BAD:
+        return state, state
+    if not stamp:
+        return state, "no stamp"
+    if not str(stamp).startswith(HUMAN):
+        return state, "machine stamp"
+    m = HUMAN_RE.match(str(stamp))
+    if not m:
+        return state, "human stamp: malformed"
+    if not row or not row.get("hash") or state == "NOT_COVERED":
+        return state, "no review record"
+    table = ((_read_toml(path / "component.toml") or {}).get("param") or {}).get(review_key)
+    if table is None or row_hash(table)[:12] != m["row"]:
+        return state, "human stamp: row changed"
+    inp = ledger.get("inputs", {})
+    main = Path(inp.get("datasheet_file", "")).name
+    sheet = row.get("sheet") or main
+    want = (inp.get("sheets") or {}).get(sheet) or (inp.get("pdf_sha256") if sheet == main else None)
+    root = _repo_root(path)
+    dsf = inp.get("datasheet_file")
+    pdf = ((root / dsf if sheet == main and dsf else root / "docs" / "datasheets" / sheet)
+           if root and sheet else None)  # absent PDF (CI): ledger SHA only
+    if not want or want[:12] != m["pdf"] or (pdf and pdf.is_file() and _file_sha(pdf)[:12] != m["pdf"]):
+        return state, "human stamp: PDF changed"
+    return state, None
+
+
+def _note(label, key, path, review_key, param):
+    """Record where a read row lives, for human_review_needed. A row once needing review stays that way (sticky)."""
+    k = f"{label}:{key}"
+    state, reason = _review(path, review_key, param.verified)
+    e = {"dir": str(path), "review_key": review_key, "stamp": param.verified, "state": state, "cite": param.cite,
+         "reason": reason}
+    if k not in _ROWS or not _ROWS[k]["reason"]:
+        _ROWS[k] = e
+    return reason
+
+
+def human_review_needed():
+    """Rows read so far without a current human stamp, sorted by input: dicts with input ("<label>:<key>"), value
+    (label), key, dir (component directory), review_key (review.toml row; None for catalog.csv rows), ref
+    ("<dir name>:<review_key>" for tools/stamp.py; None for catalog and variants.toml rows), stamp, state (ledger), cite and
+    reason ("STALE", "PDF_CHANGED", "no stamp", "machine stamp", "human stamp: malformed", "no review record",
+    "human stamp: row changed", "human stamp: PDF changed"). A human stamp is current only when it matches HUMAN_RE,
+    its row hash is the row's recomputed hash, its PDF SHA is the ledger's and the local PDF's, and a ledger row exists."""
+    out = []
+    for k, e in sorted(_ROWS.items()):
+        if e["reason"]:
+            label, _, key = k.rpartition(":")
+            rk = e["review_key"]
+            ref = f"{Path(e['dir']).name}:{rk}" if rk and not rk.startswith("variant.") else None
+            out.append({"input": k, "value": label, "key": key, "ref": ref, **e})
+    return out
 
 
 def unverified_inputs():
@@ -38,6 +172,7 @@ def used_inputs():
 def reset_inputs():
     """Forget the rows read so far (one analysis per process is the normal case; tests reset between cases)."""
     _USED.clear()
+    _ROWS.clear()
 
 
 @dataclass
@@ -65,8 +200,20 @@ class Part:
 
     def _used(self, key):
         p = self.params[key]
-        _record(self._label(), self.aliases.get(key, key), p.verified)
+        k = self.aliases.get(key, key)
+        reason = _note(self._label(), k, self.path, self._review_key(k), p)
+        broken = reason and str(p.verified or "").startswith(HUMAN)  # a human stamp failing its binding: unverified
+        _record(self._label(), k, None if broken or k in _ledger_unverified(self.path) else p.verified)
         return p
+
+    def _review_key(self, key):
+        """review.toml row of a TOML key: a variants.toml override is its own (NOT_COVERED) row; None for a row not in
+        the TOML (select(): capacitance, tolerance, rated_v come from catalog.csv)."""
+        if key not in self.raw.get("param", {}):
+            return None
+        if self.variant and key in variants_of(self.path).get(self.variant, {}).get("param", {}):
+            return f"variant.{self.variant}.{key}"
+        return key
 
     def _label(self):
         base = self.variant or self.info.get("value")
@@ -204,8 +351,11 @@ class Part:
         tc_key = self.info["tc_param"][dielectric]
         params.update(capacitance=cap, tolerance=tol, rated_v=rated, tc=params[tc_key])
         label = f"{self.info.get('value')}[{row.value}]"
-        _record(label, "capacitance", cap.verified)  # handed out directly as sel.capacitance / sel.rated_voltage
-        _record(label, "rated_v", rated.verified)
+        bad = _ledger_unverified(self.path)
+        _record(label, "capacitance", None if "capacitance" in bad else cap.verified)  # handed out as sel.capacitance / sel.rated_voltage
+        _record(label, "rated_v", None if "rated_v" in bad else rated.verified)
+        _note(label, "capacitance", self.path, None, cap)  # catalog.csv rows: no review row
+        _note(label, "rated_v", self.path, None, rated)
         letter, alts = self.info["package_default"], self.info["package_alternates"]
         return Selection(row=row, value=row.value, mpn=row.value + letter, alternates=[row.value + a for a in alts],
                          dielectric=dielectric, tolerance=row.tolerance, thickness=row.thickness, capacitance=cap,

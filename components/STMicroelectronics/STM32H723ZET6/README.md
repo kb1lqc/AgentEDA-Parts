@@ -10,7 +10,7 @@
 - **description**: Arm Cortex-M7 MCU, 550 MHz, 512 KB flash, LQFP144 (20 x 20 mm), -40 to 85 degC
 - **category**: microcontroller
 - **package**: LQFP144 (20 x 20 mm, 0.5 mm pitch), ECOPACK2
-- **datasheet_url**: https://www.st.com/resource/en/datasheet/stm32h723ze.pdf
+- **datasheet_url**: [https://www.st.com/resource/en/datasheet/stm32h723ze.pdf](https://www.st.com/resource/en/datasheet/stm32h723ze.pdf)
 - **datasheet_file**: docs/datasheets/stm32h723ze.pdf
 - **datasheet_rev**: DS13313 Rev 5
 - **datasheet_date**: 2025-05
