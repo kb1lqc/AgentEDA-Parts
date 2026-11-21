@@ -12,7 +12,8 @@ Steps, in order, each judged by exit code:
      components/<Mfr>/<Value> with a change in `git status` (none found = FAIL: nothing was built)
   6. python3 -m unittest discover -s tests   ("Ran 0 tests" or no "Ran N tests" line = FAIL)
 Before 2: python3 tools/ds_review.py (docs/spec/review.md) on the dirs given, every part with --all, else changed dirs
-plus parts with no review/; non-zero exit = FAIL; the files it changes under review/ are listed, never a FAIL; its mode
+plus parts with no review/; non-zero exit = FAIL; a committed review.toml it changes is a FAIL unless --regen (then
+listed), so a stale record never passes CI by being regenerated in the runner; its mode
 line and lib.check's (evidence mode with the PDF, ledger-only mode without) are printed in the PASS line.
 lib.zen and lib.readme must leave components/** and README.md byte-identical (content hashes before and after). A
 difference is a FAIL unless --regen is given; then the changed files are listed and the run still passes.
@@ -163,14 +164,17 @@ def verify(root, dirs=None, all_dirs=False, regen=False, log_dir=None, runner=ru
         return finish()
 
     # 1c. datasheet review records (docs/spec/review.md), before lib.check so it checks fresh records and cache
-    # images: changes are listed, never a FAIL; a bad exit is a FAIL
+    # images: a changed committed record is a FAIL unless --regen (CI must not pass by regenerating it); a bad exit is a FAIL
     review_before = {k: h for k, h in tree_hashes(root).items() if "/review/" in k}
     scope = [str(d) for d in dirs] if dirs else (["--all"] if all_dirs else [])
     rc, out = step("ds_review", [sys.executable, "tools/ds_review.py"] + scope)
     if rc == 0:
         rchanged = diff_hashes(review_before, {k: h for k, h in tree_hashes(root).items() if "/review/" in k})
         parts = sorted({"/".join(c.split("/")[1:3]) for c in rchanged})
-        if rchanged:
+        if rchanged and not regen:
+            fails.extend(f"{c}:1 changed by ds_review (committed review record is stale; rerun with --regen and commit it)"
+                         for c in rchanged)
+        elif rchanged:
             notes.append(f"review: {len(rchanged)} file(s) changed in {len(parts)} part(s): " + ", ".join(parts[:10])
                          + (" ..." if len(parts) > 10 else ""))
         # the human's next step, on the line every agent pastes: human-stamped rows that changed (docs/briefs/ds-review.md)

@@ -83,6 +83,8 @@ Read `docs/notes/workflow.md` first. It shows the part types (single part, famil
    With no folder names, it checks the parts you changed. Expected: one line that starts with `PASS`. If it fails,
    it prints the first 5 problems and a log path. Fix them and run it again. If you changed no part, it fails with
    `nothing was built`: pass the folder, e.g. `python3 tools/verify.py components/<Mfr>/<Value>`.
+   If it says a `review.toml` is stale (expected after you change a part, or for a new part), run it again with
+   `--regen` and commit the updated `review.toml`. CI fails a PR whose `review.toml` is stale.
 9. **Open a pull request.** Push the branch and open the PR with `gh pr create`. CI runs `tools/verify.py --all`.
    The review record (see below) lists rows that still need a human check. Those rows do not fail CI.
 
@@ -136,7 +138,8 @@ Check each of these against the page:
 ### Three outcomes
 
 - **Matches:** stamp the row (below).
-- **Wrong:** fix the TOML with the correct number and cite. Run `tools/verify.py`. Never stamp a wrong row.
+- **Wrong:** fix the TOML with the correct number and cite. Run `tools/verify.py --regen` and commit `review.toml` too.
+  Never stamp a wrong row.
 - **Unclear:** leave the row alone. Open an issue. The issue text can use `.review-cache/<Mfr>/<Value>/github-issue.md` if it exists.
 
 ### Stamp the row
@@ -167,17 +170,17 @@ If you later edit the row, or the PDF changes, the stamp stops matching. The row
 longer matches the row) or `PDF_CHANGED` (the PDF file differs). You must check the row again and stamp it again.
 Stamping is not automatic.
 
-Then run the check again, and commit:
+Then run the check again with `--regen` (it records your stamp in `review.toml`), and commit both files:
 
 ```sh
-python3 tools/verify.py components/<Mfr>/<Value>
+python3 tools/verify.py --regen components/<Mfr>/<Value>
 ```
 
 Expected output from `tools/stamp.py` (one line per row, then a `next:` line):
 
 ```
 INA229AIDGS:vin_diff_abs: (no stamp) -> human:<github-login> <date> page-image ds_review <pdf12> row <row12>
-next: python3 tools/verify.py components/TexasInstruments/INA229AIDGS
+next: python3 tools/verify.py --regen components/TexasInstruments/INA229AIDGS
 ```
 
 CI runs `tools/check_stamps.py` on every pull request. It fails the PR if an added human stamp names anyone
