@@ -11,7 +11,7 @@ datasheet_rev = "SLYS023A"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
 pages = 47
 text_layer = true
-component_sha256 = "1d0819697d64671c7483f92e9b243e21cde2fc124a36522e8480af652752a807"
+component_sha256 = "60e9a1b040bd7f56239e4b985a493bf3d4717873ed5bbc0d10ba2b9f118b4611"
 render = "complete"
 backfill = "git blame"
 sheets = { "ina229.pdf" = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484" }
@@ -151,14 +151,13 @@ text_snippet = "over operating free-air temperature range (unless otherwise note
 stamped_toml = "[param.vio_abs]\nname       = \"Digital input/output voltage, MOSI, MISO, SCLK, ALERT\"\nsymbol     = \"VIO\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -0.3\nmin_ref    = \"GND\"\nmax        = 0.3\nmax_ref    = \"VS\"\nunit       = \"V\"\nconditions = \"over operating free-air temperature range (unless otherwise noted)\"\ncite       = \"DS p.3, 6.1 Absolute Maximum Ratings, VIO, MOSI, MISO, SCLK, ALERT\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed GND - 0.3 V (MIN) and VS + 0.3 V (MAX): min_ref = GND, max_ref = VS. CS is not in this row (DS omission, open item): CS is not checked.\"\ncheck_pins = [\"MOSI\", \"SCLK\", \"ALERT\"]\nunchecked  = \"MISO not checked: push-pull output driven by the part; owner: module. CS: not listed in the DS VIO row (DS omission); no rating stored, open item\""
 
 [row.iin_abs]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "no MIN/TYP/MAX header on the cited page; row found by symbol; footnotes shown"
 hash = "3f8a9a3f56b04865614718818756a95e9e376aee4945faf3f7c82de9a74b1e65"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 3f8a9a3f56b0"
 stamp_hash = "3f8a9a3f56b04865614718818756a95e9e376aee4945faf3f7c82de9a74b1e65"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
-baseline = true
 printed_page = 3
 pdf_page = 3
 toml_lines = "189-200"
@@ -178,17 +177,16 @@ foot_sha256 = "aa187e1e8127a838b91dfaf9130bcbceb7d450841811206c82e00ff2e20555d5"
 foot_box = [50.7, 641.5, 549.8, 699.5]
 foot_key = "34035c4adef305ab"
 text_snippet = "over operating free-air temperature range (unless otherwise noted)(1)\n                                                                                                                         MIN                 MAX           UNIT\n IIN                    Input current into any pin                                                                                               5          mA"
-stamped_toml = "[param.iin_abs]\nname       = \"Input current into any pin\"\nsymbol     = \"IIN\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmax        = 5\nunit       = \"mA\"\nconditions = \"over operating free-air temperature range (unless otherwise noted)\"\ncite       = \"DS p.3, 6.1 Absolute Maximum Ratings, IIN, Input current into any pin\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"MAX column only (MIN blank), stored as max.\"\nunchecked  = \"current rating, not a voltage (the wrapper checks voltages only); owner: board\""
+stamped_toml = "[param.iin_abs]\nname       = \"Input current into any pin\"\nsymbol     = \"IIN\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmax        = 5\nunit       = \"mA\"\nconditions = \"over operating free-air temperature range (unless otherwise noted)\"\ncite       = \"DS p.3, 6.1 Absolute Maximum Ratings, IIN, Input current into any pin\"\nverified   = \"human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 3f8a9a3f56b0\"\nnote       = \"MAX column only (MIN blank), stored as max.\"\nunchecked  = \"current rating, not a voltage (the wrapper checks voltages only); owner: board\""
 
 [row.iout_abs]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "no MIN/TYP/MAX header on the cited page; row found by symbol; footnotes shown"
 hash = "123f4a7268dd0af71e9ad5c70ba4853e2ed101ac1b13f2e17f3da17037ec7a67"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 123f4a7268dd"
 stamp_hash = "123f4a7268dd0af71e9ad5c70ba4853e2ed101ac1b13f2e17f3da17037ec7a67"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
-baseline = true
 printed_page = 3
 pdf_page = 3
 toml_lines = "202-213"
@@ -208,17 +206,16 @@ foot_sha256 = "aa187e1e8127a838b91dfaf9130bcbceb7d450841811206c82e00ff2e20555d5"
 foot_box = [50.7, 641.5, 549.8, 699.5]
 foot_key = "34035c4adef305ab"
 text_snippet = "over operating free-air temperature range (unless otherwise noted)(1)\n                                                                                                                         MIN                 MAX           UNIT\n IOUT                   Digital output current                                                                                                  10          mA"
-stamped_toml = "[param.iout_abs]\nname       = \"Digital output current\"\nsymbol     = \"IOUT\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmax        = 10\nunit       = \"mA\"\nconditions = \"over operating free-air temperature range (unless otherwise noted)\"\ncite       = \"DS p.3, 6.1 Absolute Maximum Ratings, IOUT, Digital output current\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"MAX column only (MIN blank), stored as max.\"\nunchecked  = \"current rating, not a voltage (the wrapper checks voltages only); owner: module\""
+stamped_toml = "[param.iout_abs]\nname       = \"Digital output current\"\nsymbol     = \"IOUT\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmax        = 10\nunit       = \"mA\"\nconditions = \"over operating free-air temperature range (unless otherwise noted)\"\ncite       = \"DS p.3, 6.1 Absolute Maximum Ratings, IOUT, Digital output current\"\nverified   = \"human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 123f4a7268dd\"\nnote       = \"MAX column only (MIN blank), stored as max.\"\nunchecked  = \"current rating, not a voltage (the wrapper checks voltages only); owner: module\""
 
 [row.tj_abs]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "no MIN/TYP/MAX header on the cited page; row found by symbol; footnotes shown"
 hash = "55e2de600bf767ee042b3c428f18911ed18f738de2524bdc195b69f5d0b28892"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 55e2de600bf7"
 stamp_hash = "55e2de600bf767ee042b3c428f18911ed18f738de2524bdc195b69f5d0b28892"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
-baseline = true
 printed_page = 3
 pdf_page = 3
 toml_lines = "215-225"
@@ -238,7 +235,7 @@ foot_sha256 = "aa187e1e8127a838b91dfaf9130bcbceb7d450841811206c82e00ff2e20555d5"
 foot_box = [50.7, 641.5, 549.8, 699.5]
 foot_key = "34035c4adef305ab"
 text_snippet = "over operating free-air temperature range (unless otherwise noted)(1)\n                                                                                                                         MIN                 MAX           UNIT\n TJ                     Junction temperature                                                                                                  150           \u00b0C"
-stamped_toml = "[param.tj_abs]\nname       = \"Junction temperature\"\nsymbol     = \"TJ\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmax        = 150\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.3, 6.1 Absolute Maximum Ratings, TJ, Junction temperature\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nunchecked  = \"needs dissipation x RthetaJA; owner: module\""
+stamped_toml = "[param.tj_abs]\nname       = \"Junction temperature\"\nsymbol     = \"TJ\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmax        = 150\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.3, 6.1 Absolute Maximum Ratings, TJ, Junction temperature\"\nverified   = \"human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 55e2de600bf7\"\nunchecked  = \"needs dissipation x RthetaJA; owner: module\""
 
 [row.tstg_abs]
 state = "MACHINE_CHECKED"
@@ -271,14 +268,13 @@ text_snippet = "over operating free-air temperature range (unless otherwise note
 stamped_toml = "[param.tstg_abs]\nname       = \"Storage temperature\"\nsymbol     = \"Tstg\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -65\nmax        = 150\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.3, 6.1 Absolute Maximum Ratings, Tstg, Storage temperature\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nunchecked  = \"owner: assembly\""
 
 [row.esd_hbm]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "no MIN/TYP/MAX header on the cited page; row found by symbol, row group of 7 lines; footnotes shown"
 hash = "f194854b32de841ab85abe0373d4481de186fc6171d105a972d97e76793f1db6"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row f194854b32de"
 stamp_hash = "f194854b32de841ab85abe0373d4481de186fc6171d105a972d97e76793f1db6"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
-baseline = true
 printed_page = 4
 pdf_page = 4
 toml_lines = "244-256"
@@ -298,17 +294,16 @@ foot_sha256 = "b7339f1c6424134dfd9aefd2a0c1d964c08859d3dba7fa60b3557d7340bb960a"
 foot_box = [50.7, 152.6, 548.2, 182.3]
 foot_key = "e9a3ff4e0fc89f16"
 text_snippet = "                                                                                                                        VALUE          UNIT\n                                                  Human body model (HBM), per ANSI/ESDA/JEDEC JS-001, all\n(header line not matched)\n                                                  pins(1)\n    V(ESD)        Electrostatic discharge                                                                                                V\n                                                  Charged device model (CDM), per JEDEC specification JESD22-\n(header line not matched)\n                                                  C101, all pins(2)"
-stamped_toml = "[param.esd_hbm]\nname       = \"Electrostatic discharge, human body model\"\nsymbol     = \"V(ESD)\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -2000\nmax        = 2000\nunit       = \"V\"\nconditions = \"HBM per ANSI/ESDA/JEDEC JS-001, all pins\"\ncite       = \"DS p.4, 6.2 ESD Ratings, Human body model (HBM), V(ESD)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed +/-2000 V. DS footnote (1): JEDEC JEP155 500 V HBM allows safe manufacturing.\"\nunchecked  = \"owner: assembly\""
+stamped_toml = "[param.esd_hbm]\nname       = \"Electrostatic discharge, human body model\"\nsymbol     = \"V(ESD)\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -2000\nmax        = 2000\nunit       = \"V\"\nconditions = \"HBM per ANSI/ESDA/JEDEC JS-001, all pins\"\ncite       = \"DS p.4, 6.2 ESD Ratings, Human body model (HBM), V(ESD)\"\nverified   = \"human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row f194854b32de\"\nnote       = \"Printed +/-2000 V. DS footnote (1): JEDEC JEP155 500 V HBM allows safe manufacturing.\"\nunchecked  = \"owner: assembly\""
 
 [row.esd_cdm]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "no MIN/TYP/MAX header on the cited page; row found by symbol, row group of 7 lines; footnotes shown"
 hash = "7b737799f45880abed9d88f4a66db3328a3867ab05b9d430e92a4ae6b5a77cd2"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 7b737799f458"
 stamp_hash = "7b737799f45880abed9d88f4a66db3328a3867ab05b9d430e92a4ae6b5a77cd2"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
-baseline = true
 printed_page = 4
 pdf_page = 4
 toml_lines = "258-270"
@@ -328,7 +323,7 @@ foot_sha256 = "b7339f1c6424134dfd9aefd2a0c1d964c08859d3dba7fa60b3557d7340bb960a"
 foot_box = [50.7, 152.6, 548.2, 182.3]
 foot_key = "e9a3ff4e0fc89f16"
 text_snippet = "                                                                                                                        VALUE          UNIT\n                                                  Human body model (HBM), per ANSI/ESDA/JEDEC JS-001, all\n(header line not matched)\n                                                  pins(1)\n    V(ESD)        Electrostatic discharge                                                                                                V\n                                                  Charged device model (CDM), per JEDEC specification JESD22-\n(header line not matched)\n                                                  C101, all pins(2)"
-stamped_toml = "[param.esd_cdm]\nname       = \"Electrostatic discharge, charged device model\"\nsymbol     = \"V(ESD)\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -1000\nmax        = 1000\nunit       = \"V\"\nconditions = \"CDM per JEDEC JESD22-C101, all pins\"\ncite       = \"DS p.4, 6.2 ESD Ratings, Charged device model (CDM), V(ESD)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed +/-1000 V. DS footnote (2): JEDEC JEP157 250 V CDM allows safe manufacturing.\"\nunchecked  = \"owner: assembly\""
+stamped_toml = "[param.esd_cdm]\nname       = \"Electrostatic discharge, charged device model\"\nsymbol     = \"V(ESD)\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -1000\nmax        = 1000\nunit       = \"V\"\nconditions = \"CDM per JEDEC JESD22-C101, all pins\"\ncite       = \"DS p.4, 6.2 ESD Ratings, Charged device model (CDM), V(ESD)\"\nverified   = \"human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 7b737799f458\"\nnote       = \"Printed +/-1000 V. DS footnote (2): JEDEC JEP157 250 V CDM allows safe manufacturing.\"\nunchecked  = \"owner: assembly\""
 
 [row.vcm_rec]
 state = "MACHINE_CHECKED"
@@ -383,14 +378,13 @@ text_snippet = "over operating free-air temperature range (unless otherwise note
 stamped_toml = "[param.vs_rec]\nname       = \"Operating supply range\"\nsymbol     = \"VS\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = 2.7\nmax        = 5.5\nunit       = \"V\"\nconditions = \"over operating free-air temperature range (unless otherwise noted)\"\ncite       = \"DS p.4, 6.3 Recommended Operating Conditions, VS, Operating supply range\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"No reference pin printed; checked against system 0 V (a floating GND is not modelled).\"\ncheck_pins = [\"VS\"]"
 
 [row.ta_rec]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "no MIN/TYP/MAX header on the cited page; row found by symbol; no footnote marker on the row or header"
 hash = "52aa06462869a6ac2ba64110048ea13fcc868c7820b91177b07202c59b5fc020"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 52aa06462869"
 stamp_hash = "52aa06462869a6ac2ba64110048ea13fcc868c7820b91177b07202c59b5fc020"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
-baseline = true
 printed_page = 4
 pdf_page = 4
 toml_lines = "304-315"
@@ -406,7 +400,7 @@ header_sha256 = "1c4ea6ada43449cc3a5be939e30ae0c8298ba5776e06fb5bc8fc877e7843203
 header_box = [50.7, 187.4, 548.0, 232.3]
 header_key = "46c0c8a6e0bea2ac"
 text_snippet = "over operating free-air temperature range (unless otherwise noted)\n                                                                                                   MIN            NOM        MAX       UNIT\n    TA            Ambient temperature                                                               \u201340                       125        \u00b0C"
-stamped_toml = "[param.ta_rec]\nname       = \"Ambient temperature\"\nsymbol     = \"TA\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = -40\nmax        = 125\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.4, 6.3 Recommended Operating Conditions, TA, Ambient temperature\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\ncheck_ambient = true"
+stamped_toml = "[param.ta_rec]\nname       = \"Ambient temperature\"\nsymbol     = \"TA\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = -40\nmax        = 125\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.4, 6.3 Recommended Operating Conditions, TA, Ambient temperature\"\nverified   = \"human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 52aa06462869\"\ncheck_ambient = true"
 
 [row.rtheta_ja]
 state = "MACHINE_CHECKED"
@@ -791,14 +785,13 @@ text_snippet = " PSRR       Shunt offset voltage vs power supply    VS = 2.7 V t
 stamped_toml = "[param.vos_bus_psrr_25c]\nname       = \"VBUS offset voltage vs power supply\"\nsymbol     = \"PSRR\"\nkind       = \"electrical\"\nscope      = \"25C\"\ntyp        = 0.25\ntyp_pm     = true\nunit       = \"mV/V\"\nconditions = \"VS = 2.7 V to 5.5 V; table header TA = 25 degC\"\ncite       = \"DS p.5, 6.5 Electrical Characteristics, INPUT, VBUS offset voltage vs power supply PSRR\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed +/-0.25 mV/V in TYP (MAX blank); stored as printed (typ_pm). No temperature condition: header 25 degC.\""
 
 [row.ib_25c]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "row uses convention 'sym'; row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "e2a6aaad0bc2447bdc68d30833e72317c34b3f51da0820d6d48bdbbf6c76cbe6"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row e2a6aaad0bc2"
 stamp_hash = "e2a6aaad0bc2447bdc68d30833e72317c34b3f51da0820d6d48bdbbf6c76cbe6"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "547-559"
@@ -815,17 +808,16 @@ header_box = [50.7, 69.8, 555.8, 131.6]
 header_key = "0b9ea0506bb32407"
 text_snippet = "at TA = 25 \u00b0C, VS = 3.3 V, VSENSE = VIN+ \u2013 VIN\u2013 = 0 V, VCM = VIN\u2013 = 48 V (unless otherwise noted)\n                    PARAMETER                                     TEST CONDITIONS                    MIN        TYP     MAX     UNIT\n INPUT\n IB         Input bias current                      Either input, IN+ or IN\u2013, VCM = 85 V                         0.1      2.5    nA"
 text_cells = { max = "2.5", min = "", typ = "0.1", unit = "nA" }
-stamped_toml = "[param.ib_25c]\nname       = \"Input bias current\"\nsymbol     = \"IB\"\nkind       = \"electrical\"\nscope      = \"25C\"\nsym        = true\ntyp        = 0.1\nmax        = 2.5\nunit       = \"nA\"\nconditions = \"Either input, IN+ or IN-, VCM = 85 V; table header TA = 25 degC\"\ncite       = \"DS p.5, 6.5 Electrical Characteristics, INPUT, Input bias current IB\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"DS prints an unsigned magnitude for a quantity that can be either sign: sym = true (min = -max), printed TYP kept as typ_spread. Single value at 25 degC.\""
+stamped_toml = "[param.ib_25c]\nname       = \"Input bias current\"\nsymbol     = \"IB\"\nkind       = \"electrical\"\nscope      = \"25C\"\nsym        = true\ntyp        = 0.1\nmax        = 2.5\nunit       = \"nA\"\nconditions = \"Either input, IN+ or IN-, VCM = 85 V; table header TA = 25 degC\"\ncite       = \"DS p.5, 6.5 Electrical Characteristics, INPUT, Input bias current IB\"\nverified   = \"human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row e2a6aaad0bc2\"\nnote       = \"DS prints an unsigned magnitude for a quantity that can be either sign: sym = true (min = -max), printed TYP kept as typ_spread. Single value at 25 degC.\""
 
 [row.zvbus_25c]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "AGREE_TEXT_CHECK"
 reason = "one clean line; min/typ/max and unit equal; row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "ea7513e4227c65ce1d7fdf9895348dcb8b316b8d10c7c40c74adc87ffc041872"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row ea7513e4227c"
 stamp_hash = "ea7513e4227c65ce1d7fdf9895348dcb8b316b8d10c7c40c74adc87ffc041872"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "561-572"
@@ -842,7 +834,7 @@ header_box = [50.7, 69.8, 555.8, 131.6]
 header_key = "0b9ea0506bb32407"
 text_snippet = "at TA = 25 \u00b0C, VS = 3.3 V, VSENSE = VIN+ \u2013 VIN\u2013 = 0 V, VCM = VIN\u2013 = 48 V (unless otherwise noted)\n                    PARAMETER                                     TEST CONDITIONS                    MIN        TYP     MAX     UNIT\n INPUT\n ZVBUS      VBUS pin input impedance                Active mode                                       0.8         1       1.2    M\u03a9"
 text_cells = { max = "1.2", min = "0.8", typ = "1", unit = "M\u03a9" }
-stamped_toml = "[param.zvbus_25c]\nname       = \"VBUS pin input impedance\"\nsymbol     = \"ZVBUS\"\nkind       = \"electrical\"\nscope      = \"25C\"\nmin        = 0.8\ntyp        = 1\nmax        = 1.2\nunit       = \"Mohm\"\nconditions = \"Active mode; table header TA = 25 degC\"\ncite       = \"DS p.5, 6.5 Electrical Characteristics, INPUT, VBUS pin input impedance ZVBUS\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\""
+stamped_toml = "[param.zvbus_25c]\nname       = \"VBUS pin input impedance\"\nsymbol     = \"ZVBUS\"\nkind       = \"electrical\"\nscope      = \"25C\"\nmin        = 0.8\ntyp        = 1\nmax        = 1.2\nunit       = \"Mohm\"\nconditions = \"Active mode; table header TA = 25 degC\"\ncite       = \"DS p.5, 6.5 Electrical Characteristics, INPUT, VBUS pin input impedance ZVBUS\"\nverified   = \"human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row ea7513e4227c\""
 
 [row.ivbus_leak_25c]
 state = "NEW"
@@ -891,14 +883,13 @@ text_snippet = "at TA = 25 \u00b0C, VS = 3.3 V, VSENSE = VIN+ \u2013 VIN\u2013 =
 text_cells = { max = "", min = "", typ = "92", unit = "k\u03a9" }
 
 [row.gserr_25c]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "row uses convention 'typ_pm'; row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "0ba818fb9fde4933f6f004684b2ea92ef495cc5154e21f1c4e79e218f0577779"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 0ba818fb9fde"
 stamp_hash = "0ba818fb9fde4933f6f004684b2ea92ef495cc5154e21f1c4e79e218f0577779"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "597-610"
@@ -915,17 +906,16 @@ header_box = [50.7, 69.8, 555.8, 131.6]
 header_key = "0b9ea0506bb32407"
 text_snippet = "at TA = 25 \u00b0C, VS = 3.3 V, VSENSE = VIN+ \u2013 VIN\u2013 = 0 V, VCM = VIN\u2013 = 48 V (unless otherwise noted)\n                    PARAMETER                                     TEST CONDITIONS                    MIN        TYP     MAX     UNIT\n INPUT\n GSERR      Shunt voltage gain error                VCM = 24 V                                                 \u00b10.01    \u00b10.05    %"
 text_cells = { max = "\u00b10.05", min = "", typ = "\u00b10.01", unit = "%" }
-stamped_toml = "[param.gserr_25c]\nname       = \"Shunt voltage gain error\"\nsymbol     = \"GSERR\"\nkind       = \"electrical\"\nscope      = \"25C\"\ntyp        = 0.01\ntyp_pm     = true\nmin        = -0.05\nmax        = 0.05\nunit       = \"%\"\nconditions = \"VCM = 24 V; table header TA = 25 degC\"\ncite       = \"DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, Shunt voltage gain error GSERR\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"TYP printed +/-0.01 % (typ_pm). MAX printed +/-0.05 %: min = -0.05, max = 0.05 (loader gives fractions). No full-temperature row: drift from gs_drift_25c (SPEC recipe step 2).\""
+stamped_toml = "[param.gserr_25c]\nname       = \"Shunt voltage gain error\"\nsymbol     = \"GSERR\"\nkind       = \"electrical\"\nscope      = \"25C\"\ntyp        = 0.01\ntyp_pm     = true\nmin        = -0.05\nmax        = 0.05\nunit       = \"%\"\nconditions = \"VCM = 24 V; table header TA = 25 degC\"\ncite       = \"DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, Shunt voltage gain error GSERR\"\nverified   = \"human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 0ba818fb9fde\"\nnote       = \"TYP printed +/-0.01 % (typ_pm). MAX printed +/-0.05 %: min = -0.05, max = 0.05 (loader gives fractions). No full-temperature row: drift from gs_drift_25c (SPEC recipe step 2).\""
 
 [row.gs_drift_25c]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "unit 'ppm/degC' not comparable; row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "d1170d2dc9d7ccc7911de8f13b107e6878e416351e4cf408d77e4daa78a2e798"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row d1170d2dc9d7"
 stamp_hash = "d1170d2dc9d7ccc7911de8f13b107e6878e416351e4cf408d77e4daa78a2e798"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "612-623"
@@ -942,17 +932,16 @@ header_box = [50.7, 69.8, 555.8, 131.6]
 header_key = "0b9ea0506bb32407"
 text_snippet = "at TA = 25 \u00b0C, VS = 3.3 V, VSENSE = VIN+ \u2013 VIN\u2013 = 0 V, VCM = VIN\u2013 = 48 V (unless otherwise noted)\n                    PARAMETER                                     TEST CONDITIONS                    MIN        TYP     MAX     UNIT\n INPUT\n GS_DRFT    Shunt voltage gain error drift                                                                               \u00b120 ppm/\u00b0C"
 text_cells = { max = "\u00b120", min = "", typ = "", unit = "ppm/\u00b0C" }
-stamped_toml = "[param.gs_drift_25c]\nname       = \"Shunt voltage gain error drift\"\nsymbol     = \"GS_DRFT\"\nkind       = \"electrical\"\nscope      = \"25C\"\nmin        = -20\nmax        = 20\nunit       = \"ppm/degC\"\nconditions = \"no row condition; table header TA = 25 degC\"\ncite       = \"DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, Shunt voltage gain error drift GS_DRFT\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"MAX printed +/-20 ppm/degC (no TYP). Test conditions column blank, so the header (25 degC) applies literally, although a drift is normally specified over temperature. Used as the drift term of the SPEC recipe X(T) = X25 + drift x (T - 25). DS ambiguity, open item.\""
+stamped_toml = "[param.gs_drift_25c]\nname       = \"Shunt voltage gain error drift\"\nsymbol     = \"GS_DRFT\"\nkind       = \"electrical\"\nscope      = \"25C\"\nmin        = -20\nmax        = 20\nunit       = \"ppm/degC\"\nconditions = \"no row condition; table header TA = 25 degC\"\ncite       = \"DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, Shunt voltage gain error drift GS_DRFT\"\nverified   = \"human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row d1170d2dc9d7\"\nnote       = \"MAX printed +/-20 ppm/degC (no TYP). Test conditions column blank, so the header (25 degC) applies literally, although a drift is normally specified over temperature. Used as the drift term of the SPEC recipe X(T) = X25 + drift x (T - 25). DS ambiguity, open item.\""
 
 [row.gberr_25c]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "row uses convention 'typ_pm'; row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "2f5e9a8bc5775e4a503158184937602cd2f2340dd699d3b60b8ede1711ece0af"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 2f5e9a8bc577"
 stamp_hash = "2f5e9a8bc5775e4a503158184937602cd2f2340dd699d3b60b8ede1711ece0af"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "625-638"
@@ -969,17 +958,16 @@ header_box = [50.7, 69.8, 555.8, 131.6]
 header_key = "0b9ea0506bb32407"
 text_snippet = "at TA = 25 \u00b0C, VS = 3.3 V, VSENSE = VIN+ \u2013 VIN\u2013 = 0 V, VCM = VIN\u2013 = 48 V (unless otherwise noted)\n                    PARAMETER                                     TEST CONDITIONS                    MIN        TYP     MAX     UNIT\n INPUT\n GBERR      VBUS voltage gain error                                                                            \u00b10.01    \u00b10.05    %"
 text_cells = { max = "\u00b10.05", min = "", typ = "\u00b10.01", unit = "%" }
-stamped_toml = "[param.gberr_25c]\nname       = \"VBUS voltage gain error\"\nsymbol     = \"GBERR\"\nkind       = \"electrical\"\nscope      = \"25C\"\ntyp        = 0.01\ntyp_pm     = true\nmin        = -0.05\nmax        = 0.05\nunit       = \"%\"\nconditions = \"table header TA = 25 degC\"\ncite       = \"DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, VBUS voltage gain error GBERR\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"TYP printed +/-0.01 % (typ_pm). MAX printed +/-0.05 %: min = -0.05, max = 0.05. No own condition: header 25 degC.\""
+stamped_toml = "[param.gberr_25c]\nname       = \"VBUS voltage gain error\"\nsymbol     = \"GBERR\"\nkind       = \"electrical\"\nscope      = \"25C\"\ntyp        = 0.01\ntyp_pm     = true\nmin        = -0.05\nmax        = 0.05\nunit       = \"%\"\nconditions = \"table header TA = 25 degC\"\ncite       = \"DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, VBUS voltage gain error GBERR\"\nverified   = \"human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 2f5e9a8bc577\"\nnote       = \"TYP printed +/-0.01 % (typ_pm). MAX printed +/-0.05 %: min = -0.05, max = 0.05. No own condition: header 25 degC.\""
 
 [row.gb_drift_25c]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "unit 'ppm/degC' not comparable; row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "9e8bddd71a6cec8cb7c3ab1eed255dd8fc642e0ef7973f112ef64019f641c8cc"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 9e8bddd71a6c"
 stamp_hash = "9e8bddd71a6cec8cb7c3ab1eed255dd8fc642e0ef7973f112ef64019f641c8cc"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "640-651"
@@ -996,17 +984,16 @@ header_box = [50.7, 69.8, 555.8, 131.6]
 header_key = "0b9ea0506bb32407"
 text_snippet = "at TA = 25 \u00b0C, VS = 3.3 V, VSENSE = VIN+ \u2013 VIN\u2013 = 0 V, VCM = VIN\u2013 = 48 V (unless otherwise noted)\n                    PARAMETER                                     TEST CONDITIONS                    MIN        TYP     MAX     UNIT\n INPUT\n GB_DRFT    VBUS voltage gain error drift                                                                                \u00b120 ppm/\u00b0C"
 text_cells = { max = "\u00b120", min = "", typ = "", unit = "ppm/\u00b0C" }
-stamped_toml = "[param.gb_drift_25c]\nname       = \"VBUS voltage gain error drift\"\nsymbol     = \"GB_DRFT\"\nkind       = \"electrical\"\nscope      = \"25C\"\nmin        = -20\nmax        = 20\nunit       = \"ppm/degC\"\nconditions = \"no row condition; table header TA = 25 degC\"\ncite       = \"DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, VBUS voltage gain error drift GB_DRFT\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"MAX printed +/-20 ppm/degC (no TYP). Blank condition: header applies literally (same ambiguity as gs_drift_25c).\""
+stamped_toml = "[param.gb_drift_25c]\nname       = \"VBUS voltage gain error drift\"\nsymbol     = \"GB_DRFT\"\nkind       = \"electrical\"\nscope      = \"25C\"\nmin        = -20\nmax        = 20\nunit       = \"ppm/degC\"\nconditions = \"no row condition; table header TA = 25 degC\"\ncite       = \"DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, VBUS voltage gain error drift GB_DRFT\"\nverified   = \"human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 9e8bddd71a6c\"\nnote       = \"MAX printed +/-20 ppm/degC (no TYP). Blank condition: header applies literally (same ambiguity as gs_drift_25c).\""
 
 [row.ptme_full]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "unit '%' not comparable; row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "a06d0cfc2c5e05736a5968c2371122072b1c78f7722bda872601143ccd42ebd5"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row a06d0cfc2c5e"
 stamp_hash = "a06d0cfc2c5e05736a5968c2371122072b1c78f7722bda872601143ccd42ebd5"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "653-664"
@@ -1023,7 +1010,7 @@ header_box = [50.7, 69.8, 555.8, 131.6]
 header_key = "0b9ea0506bb32407"
 text_snippet = "at TA = 25 \u00b0C, VS = 3.3 V, VSENSE = VIN+ \u2013 VIN\u2013 = 0 V, VCM = VIN\u2013 = 48 V (unless otherwise noted)\n                    PARAMETER                                     TEST CONDITIONS                    MIN        TYP     MAX     UNIT\n INPUT\n PTME       Power total measurement error (TME)     TA = \u201340\u00b0C to +125\u00b0C, at full scale                                  \u00b10.5    %"
 text_cells = { max = "\u00b10.5", min = "", typ = "", unit = "%" }
-stamped_toml = "[param.ptme_full]\nname       = \"Power total measurement error (TME)\"\nsymbol     = \"PTME\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = -0.5\nmax        = 0.5\nunit       = \"%\"\nconditions = \"TA = -40 degC to +125 degC, at full scale\"\ncite       = \"DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, Power total measurement error (TME) PTME\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"MAX printed +/-0.5 % (no TYP).\""
+stamped_toml = "[param.ptme_full]\nname       = \"Power total measurement error (TME)\"\nsymbol     = \"PTME\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = -0.5\nmax        = 0.5\nunit       = \"%\"\nconditions = \"TA = -40 degC to +125 degC, at full scale\"\ncite       = \"DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, Power total measurement error (TME) PTME\"\nverified   = \"human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row a06d0cfc2c5e\"\nnote       = \"MAX printed +/-0.5 % (no TYP).\""
 
 [row.etme_25c]
 state = "NEW"
@@ -1509,14 +1496,13 @@ text_snippet = "at TA = 25 \u00b0C, VS = 3.3 V, VSENSE = VIN+ \u2013 VIN\u2013 =
 text_cells = { max = "5.5", min = "2.7", typ = "", unit = "V" }
 
 [row.iq_25c]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "symbol line carries no numbers (multi-line row); row found by symbol (table_xcheck match), row group of 3 lines; no footnote marker on the row or header"
 hash = "91632f34e49b37453d4741ccb811046084ff7741dfa5b388a13728a0d1aa3a86"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 91632f34e49b"
 stamp_hash = "91632f34e49b37453d4741ccb811046084ff7741dfa5b388a13728a0d1aa3a86"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
-baseline = true
 printed_page = 6
 pdf_page = 6
 toml_lines = "930-941"
@@ -1532,17 +1518,16 @@ header_sha256 = "aa6277ce93aca784e1f7ab17918419c2b8592a1f983e9bf30b7b7ef784e2a78
 header_box = [50.7, 67.6, 551.7, 127.6]
 header_key = "5ae60e8d3b352af5"
 text_snippet = "at TA = 25 \u00b0C, VS = 3.3 V, VSENSE = VIN+ \u2013 VIN\u2013 = 0 V, VCM = VIN\u2013 = 48 V (unless otherwise noted)\n                        PARAMETER                                    TEST CONDITIONS           MIN        TYP        MAX      UNIT\n    TEMPERATURE SENSOR\n                                                      VSENSE = 0 V                                         640         750      \u00b5A\n    IQ          Quiescent current\n                                                      VSENSE = 0 V, TA = \u201340\u00b0C to +125\u00b0C                               1.1     mA"
-stamped_toml = "[param.iq_25c]\nname       = \"Quiescent current\"\nsymbol     = \"IQ\"\nkind       = \"electrical\"\nscope      = \"25C\"\ntyp        = 640\nmax        = 750\nunit       = \"uA\"\nconditions = \"VSENSE = 0 V; table header TA = 25 degC\"\ncite       = \"DS p.6, 6.5 Electrical Characteristics, POWER SUPPLY, Quiescent current IQ, VSENSE = 0 V\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"TYP 640 uA, MAX 750 uA as printed (MIN blank).\""
+stamped_toml = "[param.iq_25c]\nname       = \"Quiescent current\"\nsymbol     = \"IQ\"\nkind       = \"electrical\"\nscope      = \"25C\"\ntyp        = 640\nmax        = 750\nunit       = \"uA\"\nconditions = \"VSENSE = 0 V; table header TA = 25 degC\"\ncite       = \"DS p.6, 6.5 Electrical Characteristics, POWER SUPPLY, Quiescent current IQ, VSENSE = 0 V\"\nverified   = \"human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 91632f34e49b\"\nnote       = \"TYP 640 uA, MAX 750 uA as printed (MIN blank).\""
 
 [row.iq_full]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "symbol line carries no numbers (multi-line row); row found by symbol (table_xcheck match), row group of 3 lines; no footnote marker on the row or header"
 hash = "bd29d0c130ed336380e5aaad6a76dd162a958bfb385b56ee9053268faeb66252"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row bd29d0c130ed"
 stamp_hash = "bd29d0c130ed336380e5aaad6a76dd162a958bfb385b56ee9053268faeb66252"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
-baseline = true
 printed_page = 6
 pdf_page = 6
 toml_lines = "943-953"
@@ -1558,17 +1543,16 @@ header_sha256 = "aa6277ce93aca784e1f7ab17918419c2b8592a1f983e9bf30b7b7ef784e2a78
 header_box = [50.7, 67.6, 551.7, 127.6]
 header_key = "5ae60e8d3b352af5"
 text_snippet = "at TA = 25 \u00b0C, VS = 3.3 V, VSENSE = VIN+ \u2013 VIN\u2013 = 0 V, VCM = VIN\u2013 = 48 V (unless otherwise noted)\n                        PARAMETER                                    TEST CONDITIONS           MIN        TYP        MAX      UNIT\n    TEMPERATURE SENSOR\n                                                      VSENSE = 0 V                                         640         750      \u00b5A\n    IQ          Quiescent current\n                                                      VSENSE = 0 V, TA = \u201340\u00b0C to +125\u00b0C                               1.1     mA"
-stamped_toml = "[param.iq_full]\nname       = \"Quiescent current, full temperature\"\nsymbol     = \"IQ\"\nkind       = \"electrical\"\nscope      = \"full\"\nmax        = 1.1\nunit       = \"mA\"\nconditions = \"VSENSE = 0 V, TA = -40 degC to +125 degC\"\ncite       = \"DS p.6, 6.5 Electrical Characteristics, POWER SUPPLY, Quiescent current IQ, VSENSE = 0 V, TA = -40 degC to +125 degC\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"MAX only (1.1 mA) printed for this row.\""
+stamped_toml = "[param.iq_full]\nname       = \"Quiescent current, full temperature\"\nsymbol     = \"IQ\"\nkind       = \"electrical\"\nscope      = \"full\"\nmax        = 1.1\nunit       = \"mA\"\nconditions = \"VSENSE = 0 V, TA = -40 degC to +125 degC\"\ncite       = \"DS p.6, 6.5 Electrical Characteristics, POWER SUPPLY, Quiescent current IQ, VSENSE = 0 V, TA = -40 degC to +125 degC\"\nverified   = \"human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row bd29d0c130ed\"\nnote       = \"MAX only (1.1 mA) printed for this row.\""
 
 [row.iqsd_25c]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "adjacent line without its own symbol (multi-line name/conditions or sub-row); row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "4ffa43104d092fcd6ab7a1a59cb0e2733e4a239bb0aed7364ff37065d74fc6ab"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 4ffa43104d09"
 stamp_hash = "4ffa43104d092fcd6ab7a1a59cb0e2733e4a239bb0aed7364ff37065d74fc6ab"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
-baseline = true
 printed_page = 6
 pdf_page = 6
 toml_lines = "955-966"
@@ -1585,7 +1569,7 @@ header_box = [50.7, 67.6, 551.7, 127.6]
 header_key = "5ae60e8d3b352af5"
 text_snippet = "at TA = 25 \u00b0C, VS = 3.3 V, VSENSE = VIN+ \u2013 VIN\u2013 = 0 V, VCM = VIN\u2013 = 48 V (unless otherwise noted)\n                        PARAMETER                                    TEST CONDITIONS           MIN        TYP        MAX      UNIT\n    TEMPERATURE SENSOR\n    IQSD        Quiescent current, shutdown           Shutdown mode                                         2.8          5      \u00b5A"
 text_cells = { max = "5", min = "", typ = "2.8", unit = "\u00b5A" }
-stamped_toml = "[param.iqsd_25c]\nname       = \"Quiescent current, shutdown\"\nsymbol     = \"IQSD\"\nkind       = \"electrical\"\nscope      = \"25C\"\ntyp        = 2.8\nmax        = 5\nunit       = \"uA\"\nconditions = \"Shutdown mode; table header TA = 25 degC\"\ncite       = \"DS p.6, 6.5 Electrical Characteristics, POWER SUPPLY, Quiescent current, shutdown IQSD\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"TYP 2.8 uA, MAX 5 uA as printed.\""
+stamped_toml = "[param.iqsd_25c]\nname       = \"Quiescent current, shutdown\"\nsymbol     = \"IQSD\"\nkind       = \"electrical\"\nscope      = \"25C\"\ntyp        = 2.8\nmax        = 5\nunit       = \"uA\"\nconditions = \"Shutdown mode; table header TA = 25 degC\"\ncite       = \"DS p.6, 6.5 Electrical Characteristics, POWER SUPPLY, Quiescent current, shutdown IQSD\"\nverified   = \"human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 4ffa43104d09\"\nnote       = \"TYP 2.8 uA, MAX 5 uA as printed.\""
 
 [row.tpor_powerup_25c]
 state = "NEW"

@@ -195,7 +195,7 @@ max        = 5
 unit       = "mA"
 conditions = "over operating free-air temperature range (unless otherwise noted)"
 cite       = "DS p.3, 6.1 Absolute Maximum Ratings, IIN, Input current into any pin"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 3f8a9a3f56b0"
 note       = "MAX column only (MIN blank), stored as max."
 unchecked  = "current rating, not a voltage (the wrapper checks voltages only); owner: board"
 
@@ -208,7 +208,7 @@ max        = 10
 unit       = "mA"
 conditions = "over operating free-air temperature range (unless otherwise noted)"
 cite       = "DS p.3, 6.1 Absolute Maximum Ratings, IOUT, Digital output current"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 123f4a7268dd"
 note       = "MAX column only (MIN blank), stored as max."
 unchecked  = "current rating, not a voltage (the wrapper checks voltages only); owner: module"
 
@@ -221,7 +221,7 @@ max        = 150
 unit       = "degC"
 conditions = ""
 cite       = "DS p.3, 6.1 Absolute Maximum Ratings, TJ, Junction temperature"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 55e2de600bf7"
 unchecked  = "needs dissipation x RthetaJA; owner: module"
 
 [param.tstg_abs]
@@ -251,7 +251,7 @@ max        = 2000
 unit       = "V"
 conditions = "HBM per ANSI/ESDA/JEDEC JS-001, all pins"
 cite       = "DS p.4, 6.2 ESD Ratings, Human body model (HBM), V(ESD)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row f194854b32de"
 note       = "Printed +/-2000 V. DS footnote (1): JEDEC JEP155 500 V HBM allows safe manufacturing."
 unchecked  = "owner: assembly"
 
@@ -265,7 +265,7 @@ max        = 1000
 unit       = "V"
 conditions = "CDM per JEDEC JESD22-C101, all pins"
 cite       = "DS p.4, 6.2 ESD Ratings, Charged device model (CDM), V(ESD)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 7b737799f458"
 note       = "Printed +/-1000 V. DS footnote (2): JEDEC JEP157 250 V CDM allows safe manufacturing."
 unchecked  = "owner: assembly"
 
@@ -311,7 +311,7 @@ max        = 125
 unit       = "degC"
 conditions = ""
 cite       = "DS p.4, 6.3 Recommended Operating Conditions, TA, Ambient temperature"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 52aa06462869"
 check_ambient = true
 
 # ---------------------------------------------------------------- thermal information (DGS column only)
@@ -555,7 +555,7 @@ max        = 2.5
 unit       = "nA"
 conditions = "Either input, IN+ or IN-, VCM = 85 V; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Input bias current IB"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row e2a6aaad0bc2"
 note       = "DS prints an unsigned magnitude for a quantity that can be either sign: sym = true (min = -max), printed TYP kept as typ_spread. Single value at 25 degC."
 
 [param.zvbus_25c]
@@ -569,7 +569,7 @@ max        = 1.2
 unit       = "Mohm"
 conditions = "Active mode; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, VBUS pin input impedance ZVBUS"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row ea7513e4227c"
 
 [param.ivbus_leak_25c]
 name       = "VBUS pin leakage current"
@@ -606,7 +606,7 @@ max        = 0.05
 unit       = "%"
 conditions = "VCM = 24 V; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, Shunt voltage gain error GSERR"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 0ba818fb9fde"
 note       = "TYP printed +/-0.01 % (typ_pm). MAX printed +/-0.05 %: min = -0.05, max = 0.05 (loader gives fractions). No full-temperature row: drift from gs_drift_25c (SPEC recipe step 2)."
 
 [param.gs_drift_25c]
@@ -619,7 +619,7 @@ max        = 20
 unit       = "ppm/degC"
 conditions = "no row condition; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, Shunt voltage gain error drift GS_DRFT"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row d1170d2dc9d7"
 note       = "MAX printed +/-20 ppm/degC (no TYP). Test conditions column blank, so the header (25 degC) applies literally, although a drift is normally specified over temperature. Used as the drift term of the SPEC recipe X(T) = X25 + drift x (T - 25). DS ambiguity, open item."
 
 [param.gberr_25c]
@@ -634,7 +634,7 @@ max        = 0.05
 unit       = "%"
 conditions = "table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, VBUS voltage gain error GBERR"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 2f5e9a8bc577"
 note       = "TYP printed +/-0.01 % (typ_pm). MAX printed +/-0.05 %: min = -0.05, max = 0.05. No own condition: header 25 degC."
 
 [param.gb_drift_25c]
@@ -647,7 +647,7 @@ max        = 20
 unit       = "ppm/degC"
 conditions = "no row condition; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, VBUS voltage gain error drift GB_DRFT"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 9e8bddd71a6c"
 note       = "MAX printed +/-20 ppm/degC (no TYP). Blank condition: header applies literally (same ambiguity as gs_drift_25c)."
 
 [param.ptme_full]
@@ -660,7 +660,7 @@ max        = 0.5
 unit       = "%"
 conditions = "TA = -40 degC to +125 degC, at full scale"
 cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, Power total measurement error (TME) PTME"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row a06d0cfc2c5e"
 note       = "MAX printed +/-0.5 % (no TYP)."
 
 [param.etme_25c]
@@ -937,7 +937,7 @@ max        = 750
 unit       = "uA"
 conditions = "VSENSE = 0 V; table header TA = 25 degC"
 cite       = "DS p.6, 6.5 Electrical Characteristics, POWER SUPPLY, Quiescent current IQ, VSENSE = 0 V"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 91632f34e49b"
 note       = "TYP 640 uA, MAX 750 uA as printed (MIN blank)."
 
 [param.iq_full]
@@ -949,7 +949,7 @@ max        = 1.1
 unit       = "mA"
 conditions = "VSENSE = 0 V, TA = -40 degC to +125 degC"
 cite       = "DS p.6, 6.5 Electrical Characteristics, POWER SUPPLY, Quiescent current IQ, VSENSE = 0 V, TA = -40 degC to +125 degC"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row bd29d0c130ed"
 note       = "MAX only (1.1 mA) printed for this row."
 
 [param.iqsd_25c]
@@ -962,7 +962,7 @@ max        = 5
 unit       = "uA"
 conditions = "Shutdown mode; table header TA = 25 degC"
 cite       = "DS p.6, 6.5 Electrical Characteristics, POWER SUPPLY, Quiescent current, shutdown IQSD"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 4ffa43104d09"
 note       = "TYP 2.8 uA, MAX 5 uA as printed."
 
 [param.tpor_powerup_25c]
