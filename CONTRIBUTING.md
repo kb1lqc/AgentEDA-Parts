@@ -90,108 +90,77 @@ Read `docs/notes/workflow.md` first. It shows the part types (single part, famil
 
 ## Verify parameters (the human check)
 
-### Where the list comes from
+### One command, tick, click
 
-- **For a part in this repo:** run `python3 tools/verify.py components/<Mfr>/<Value>`, then open
-  `.review-cache/<Mfr>/<Value>/README.md` (local only; needs the PDF). It has a table of rows to review, and `DELTA.md`
-  next to it lists human-stamped rows that changed since their stamp. Only `review/review.toml` is committed.
-- **For circuit blocks:** the `human-review-packet` artifact from the circuit-blocks CI run. It has one HTML page per
-  block. See the circuit-blocks `CONTRIBUTING.md`.
+In your own terminal (not an agent's), from the library root, with the datasheet PDFs in `docs/datasheets/`:
 
-### Read one item
+```sh
+python3 tools/review.py --block INA229HighSideMonitor   # the rows a circuit block reads
+python3 tools/review.py INA229AIDGS                     # or every row of one or more parts
+```
 
-For each row, open `.review-cache/<Mfr>/<Value>/params/<key>.md`. It is local only: page images are vendor excerpts and
-are never committed. `python3 tools/verify.py` (or `python3 tools/ds_review.py components/<Mfr>/<Value>`) builds it
-when the datasheet PDF is in `docs/datasheets/`. It shows:
+`--block` reads the block's `library-inputs.json` from the circuit-blocks checkout next to this one (`../ina229`, else
+`../circuit-blocks`; or `--blocks-repo <path>`). A page opens in your browser:
 
-- the TOML lines as committed,
-- the evidence image (the table row, cut from the PDF page),
-- the source page (printed page and PDF page).
+- Each part has a status line, for example `INA229AIDGS: 16 of 35 used rows checked`. A part is released for the block
+  when every row it uses is checked.
+- Only the rows still to check are shown, easiest first. Each has the datasheet crops (table header, the row,
+  footnotes, or the table or page), the committed TOML, a link to the datasheet page and one tick box.
+- Rows under "Fix first" or "Not in the review record" have no tick box: fix the row or its cite first.
+- Rows already checked, and rows the block does not use, are folded away at the end of each part.
 
-The ledger, `review/review.toml`, records each row's state: `HUMAN_VERIFIED` (a current human stamp),
-`MACHINE_CHECKED` (a machine stamp, not a human check), `NEW`, `STALE`, `PDF_CHANGED`, `UNVERIFIED` or `NOT_COVERED`.
-
-In the circuit-blocks packet, each row sits in one tier. A **row crop** is the image of one table row cut from the
-datasheet page. The **text check** (`AGREE_TEXT_CHECK`) compares the TOML numbers with the PDF's text layer only. It is
-not a human check. The tier tells you how much to trust the row crop:
-
-| Tier | Meaning | What to do |
-|---|---|---|
-| Fix first | DISAGREE, NOT_FOUND, or an old record | Fix the cite or the TOML first. Do not stamp. |
-| Tier 1 | Automatic row crop, and the text check agrees | Check the image against the TOML. |
-| Tier 2 | Automatic row crop, text check unsure | Read the image closely. |
-| Tier 3 | Table or page image, not a single row | Read the table header and footnotes too. |
-| Page lookup | No usable image | Open the PDF page yourself. |
-| No review record | The row has no record yet | Ask the maintainer, or run `tools/verify.py` in the zener-library checkout for that part. Do not stamp. |
+Compare each row with the image, tick the ones that match, and press **Stamp N rows and open PR**. The tool then
+shows each command as it runs it: it needs a clean working tree (untracked files are fine), fetches `origin`, makes a
+branch `review/<parts>-<login>-<date>` from `origin/main`, runs `tools/stamp.py` on the ticked rows, runs
+`tools/verify.py --regen` on those parts, commits their `component.toml`, `review/review.toml` and `README.md`,
+pushes and opens the PR with `gh`. If `stamp.py` refuses, it goes back to your branch and deletes the new one. If
+`verify` fails, it stops and leaves the branch for you, uncommitted. `--dry-run` is for a person trying the
+page: it shows the commands and runs none. Agents don't run `review.py` (`.claude/settings.json` denies it; its
+`CLAUDECODE` refusal lets only `--dry-run` through, for the tests).
 
 ### What to compare
 
-Check each of these against the page:
-
 - value, and sign (a minus sign matters)
 - unit
-- min, typ and max columns, in the right column
+- min, typ and max, in the right column (read the table header image)
 - conditions (temperature, voltage, load, package)
 - footnotes that change the value
 - the cite: right table, right page, right row name
 
 ### Three outcomes
 
-- **Matches:** stamp the row (below).
-- **Wrong:** fix the TOML with the correct number and cite. Run `tools/verify.py --regen` and commit `review.toml` too.
-  Never stamp a wrong row.
-- **Unclear:** leave the row alone. Open an issue. The issue text can use `.review-cache/<Mfr>/<Value>/github-issue.md` if it exists.
+- **Matches:** tick it.
+- **Wrong:** leave it unticked. Fix the TOML with the correct number and cite, run `tools/verify.py --regen`, and
+  commit `review.toml` too. Never stamp a wrong row.
+- **Unclear:** leave it unticked and open an issue (`.review-cache/<Mfr>/<Value>/github-issue.md` has the text).
 
-### Stamp the row
+### What a stamp is
 
-Stamp only the rows you looked at, on the page image, in the PDF. Never stamp a row you did not look at.
-
-```sh
-python3 tools/stamp.py INA229AIDGS:vin_diff_abs
-```
-
-Refer to a row as `<Value>:<key>`. Several rows at once: put one `<Value>:<key>` per line in a file outside the repo,
-and run `python3 tools/stamp.py --from <file>` (`# comments` allowed).
-
-Your GitHub login is read from `gh` (`gh api user --jq .login`). To use another login, add `--who <github-login>`.
-
-It writes one line in the row, with a placeholder for each value:
+Each stamped row gets one line, bound to the datasheet file and the row's numbers:
 
 ```toml
 verified   = "human:<github-login> <YYYY-MM-DD> page-image ds_review <pdf-sha256 first 12> row <row-hash first 12>"
 ```
 
-- The login is the person who checked.
-- The date is the day of the check.
-- The PDF hash ties the stamp to the exact datasheet file.
-- The row hash ties the stamp to the exact numbers.
+If the row or the PDF changes later, the stamp stops matching and the row needs a check again. A stamp is an
+accountability record (who says they checked, against which file and numbers), not proof. CI (`tools/check_stamps.py`)
+fails a PR whose added human stamp names anyone other than the PR author, so stamp only as yourself. Agents are blocked
+from `tools/stamp.py` and `tools/review.py` (both refuse when `CLAUDECODE` is set, and `.claude/settings.json` denies
+them), but a stamp typed by hand passes if it reproduces both hashes; `main` needs branch protection that requires a PR.
 
-If you later edit the row, or the PDF changes, the stamp stops matching. The row goes back to `STALE` (the stamp no
-longer matches the row) or `PDF_CHANGED` (the PDF file differs). You must check the row again and stamp it again.
-Stamping is not automatic.
+### Fallback: stamp by hand
 
-Then run the check again with `--regen` (it records your stamp in `review.toml`), and commit both files:
+The evidence for one part is in `.review-cache/<Mfr>/<Value>/` (local only; `python3 tools/verify.py
+components/<Mfr>/<Value>` builds it): `README.md` lists the rows, `params/<key>.md` shows each row's TOML, crop and
+page. Then:
 
 ```sh
-python3 tools/verify.py --regen components/<Mfr>/<Value>
+python3 tools/stamp.py INA229AIDGS:vin_diff_abs      # or --from <file> with one <Value>:<key> per line
+python3 tools/verify.py --regen components/TexasInstruments/INA229AIDGS
 ```
 
-Expected output from `tools/stamp.py` (one line per row, then a `next:` line):
-
-```
-INA229AIDGS:vin_diff_abs: (no stamp) -> human:<github-login> <date> page-image ds_review <pdf12> row <row12>
-next: python3 tools/verify.py --regen components/TexasInstruments/INA229AIDGS
-```
-
-CI runs `tools/check_stamps.py` on every pull request. It fails the PR if an added human stamp names anyone
-other than the PR author. Stamp only as your own GitHub login, and never stamp another person's check.
-
-What a stamp is: an accountability record (who says they checked, against which file and numbers), not proof. Agents
-are blocked from `tools/stamp.py` (it refuses when `CLAUDECODE` is set, and `.claude/settings.json` denies it), but a
-stamp typed by hand passes if it reproduces both hashes. The stamp check runs only on pull requests, so `main` needs
-branch protection that requires a PR. Signed commits with a hardware key are the planned stronger control.
-
-Open the PR with the stamps and the TOML fixes together, or in separate PRs. Name the rows you checked in the PR text.
+Commit `component.toml`, `review/review.toml` and `README.md`, and name the rows in the PR text. `--who
+<github-login>` overrides the login read from `gh api user`.
 
 ## Troubleshooting: `tools/stamp.py` refusals
 

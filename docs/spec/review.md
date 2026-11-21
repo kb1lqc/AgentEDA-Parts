@@ -3,8 +3,7 @@
 Written only by `tools/ds_review.py` (run by `tools/verify.py`); enforced by `tests/test_ds_review.py` and `lib.check`.
 Committed: `components/<Mfr>/<Value>/review/review.toml` (ledger) only; lib.check FAILs on any other file there. Local only,
 git-ignored `.review-cache/<Mfr>/<Value>/`: `README.md` (legend, counts, rows to review), `DELTA.md` (human-stamped rows now STALE or PDF_CHANGED, with the TOML diff),
-`github-issue.md`, `unmapped.md`, `params/<key>.md`, `evidence/` (row crop `<key>_p<n>.png`; per table `[<sheet>_]head_`/`foot_p<n>_y<a>-<b>_x<c>-<d>.png`;
-fallbacks `[<sheet>_]page_p<n>.png`, `table_p<n>_y<top>.png`; n = PDF page).
+`github-issue.md`, `unmapped.md`, `params/<key>.md`, `evidence/` (row crop `<key>_p<n>.png`; per table `[<sheet>_]head_`/`foot_p<n>_y<a>-<b>_x<c>-<d>.png`; fallbacks `[<sheet>_]page_p<n>.png`, `table_p<n>_y<top>.png`; n = PDF page).
 
 ## Images
 Only `pdftoppm -gray` renders of the local PDF the cite names (`datasheet_file`, or the sheet in brackets); no pixel
@@ -13,18 +12,15 @@ its row group (continuation lines that start no new row, <= 16). The table's hea
 its footnotes (marker on the row or header) are shared images at the row's width (table region + 6 pt) and dpi, shown
 above and below it: column roles are read on the header image. Fallback (no text layer, rotated page, page range, no or
 several matches, longer group, no unit cell in the group): the `ds_index` table, else the full page; status UNSURE.
-150 dpi; 200 when the table's smallest glyph < 7 pt. 4-bit gray PNG, 80 KB budget (listed, not a FAIL); tEXt `Source
-Title Revision Page Copyright SHA256`, no time.
+150 dpi; 200 when the table's smallest glyph < 7 pt. 4-bit gray PNG, 80 KB budget (listed, not a FAIL); tEXt `Source Title Revision Page Copyright SHA256`, no time.
 
 ## Check status (per run; never a verification)
-`AGREE_TEXT_CHECK` text-layer min/typ/max/unit equal (`table_xcheck`) · `DISAGREE` · `UNSURE` · `NOT_FOUND` (cite missing,
-unparseable, sheet missing or page not located). A fallback image forces UNSURE.
+`AGREE_TEXT_CHECK` text-layer min/typ/max/unit equal (`table_xcheck`) · `DISAGREE` · `UNSURE` · `NOT_FOUND` (cite missing, unparseable, sheet missing or page not located). A fallback image forces UNSURE.
 
 ## Ledger state (per row; pins change only when a stamp is added or its text changes)
 `HUMAN_VERIFIED` `human:` stamp, `hash == stamp_hash`, pins and the stamp's row/PDF hashes match · `MACHINE_CHECKED` any other
 stamp, pins match (never a human check) · `STALE` hash or the stamp's row hash differs · `PDF_CHANGED` the PDF differs from
-the pin or the stamp · `NEW` never stamped · `UNVERIFIED` stamp removed or malformed `human:` · `NOT_COVERED` variants.toml
-rows, catalog.csv, resistor-series values (not reviewed; never claim full coverage).
+the pin or the stamp · `NEW` never stamped · `UNVERIFIED` stamp removed or malformed `human:` · `NOT_COVERED` variants.toml rows, catalog.csv, resistor-series values (not reviewed; never claim full coverage).
 Row hash: SHA-256 of `json.dumps(table without verified, sort_keys=True, separators=(",", ":"))`. `pdf_sha256` pins the
 PDF when the row first entered the ledger or was (re)stamped. Backfill: a stamp is pinned to the current hash
 (`baseline = true`) unless the row's hash at the commit that added the stamp line (git blame) differs: then STALE.
@@ -38,3 +34,7 @@ Render a cache image only when its `render_key` (PDF SHA, page, box, dpi, tool v
 Stamp: `verified = "<who> <YYYY-MM-DD> <method>"`. `tools/stamp.py` writes `human:<github-login> <date> page-image ds_review <pdf12> row <row-hash[:12]>` (login from `gh api user`; it refuses when CLAUDECODE is set, and `.claude/settings.json` denies it to agents). CI checks pull requests (`tools/check_stamps.py`): a new or changed human stamp must name the PR author.
 `lib.human_review_needed()` counts a human stamp current only in that format, with its row hash = the row's, its PDF SHA = the ledger's and the local PDF's (ledger only without the PDF), and a ledger row; otherwise it is unverified. `lib.unverified_inputs()` (the verdict's UNVERIFIED INPUTS) counts rows with no stamp or a broken one, plus STALE and PDF_CHANGED rows; machine stamps still pass it, and human review is reported separately by `lib.human_review_needed()` (a follow-up will make the verdict require human stamps).
 `lib.check` FAILs on a stale row hash, a stamp differing from `verified`, any file but review.toml under review/, and (evidence mode) a missing or changed cache image. Limits: a stamp is an accountability record, not proof; a hand-typed stamp passes if it reproduces both hashes; `main` needs branch protection requiring PRs; hardware-key signed commits are the planned stronger control.
+
+
+## Human view (`lib/review_status.py`, `tools/review.py`, README `Checked` column; never shows ledger states)
+`checked`: ledger `HUMAN_VERIFIED` and a current human stamp (the rule of `lib.human_review_needed()`; READMEs use the ledger only, so they are the same with or without PDF and cache) · `needs check`: any other row a block uses (circuit-blocks `benches/<B>/docs/design-analysis/library-inputs.json`; with no block named, every other row) · `reference`: not used by any block in scope. Per part and block: "<Value>: k of n used rows checked"; released when k == n > 0. `tools/review.py` shows only `needs check` rows (easiest first; rows `tools/stamp.py` would refuse are shown without a tick box) and stamps the ticked rows on a new branch, then opens the PR.

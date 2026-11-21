@@ -23,7 +23,16 @@
       "Bash(python3 */tools/stamp.py*)",
       "Bash(python3.* *tools/stamp.py*)",
       "Bash(*/tools/stamp.py*)",
-      "Bash(*tools/stamp.py*)"
+      "Bash(*tools/stamp.py*)",
+      "Bash(python tools/review.py:*)",
+      "Bash(python3 tools/review.py:*)",
+      "Bash(./tools/review.py:*)",
+      "Bash(tools/review.py:*)",
+      "Bash(python */tools/review.py*)",
+      "Bash(python3 */tools/review.py*)",
+      "Bash(python3.* *tools/review.py*)",
+      "Bash(*/tools/review.py*)",
+      "Bash(*tools/review.py*)"
     ]
   }
 }

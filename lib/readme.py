@@ -6,11 +6,13 @@ import tomllib
 
 from . import capacitor, series
 from .check import find_components
+from .review_status import checked_rows
 from .component import load, load_calc, merge_variant, restriction, run_example, variants_of
 from .units import eng
 
 HEADER = "<!-- GENERATED - do not edit. Run: python3 -m lib.readme -->"
 KINDS = ["abs_max", "rec_op", "electrical", "thermal", "mechanical"]
+PARAM_HEADERS = ["Parameter", "Symbol", "Min", "Typ", "Max", "Unit", "Conditions", "Cite", "Checked"]
 PART_ORDER = ["mpn", "alternates", "manufacturer", "description", "category", "package", "datasheet_url",
               "datasheet_file", "datasheet_rev", "datasheet_date", "temp_grade", "kicad_symbol",
               "kicad_footprint", "step"]
@@ -43,10 +45,11 @@ def shown(t, field):
     return f"{value} (rel. {ref})" if ref else value
 
 
-def param_rows(params, kind):
-    """Rows for one kind of parameter table, in TOML order."""
+def param_rows(params, kind, checked=None):
+    """Rows for one kind of parameter table, in TOML order. checked: {key: (login, date)} (lib.review_status)."""
     rows = []
-    for t in params.values():
+    checked = checked or {}
+    for key, t in params.items():
         if t.get("kind") != kind:
             continue
         cond = t.get("conditions", "") + (f" Variants: {', '.join(t['variants'])}." if t.get("variants") else "")
@@ -55,7 +58,8 @@ def param_rows(params, kind):
         cond += f" Note: {t['note']}" if t.get("note") else ""
         cite = t.get("cite", "") + (" (curve)" if t.get("curve") else "")
         rows.append([t.get("name", ""), t.get("symbol", ""), shown(t, "min"), shown(t, "typ"), shown(t, "max"),
-                     t.get("unit", ""), cond.strip(), cite])
+                     t.get("unit", ""), cond.strip(), cite,
+                     "checked ({}, {})".format(*checked[key]) if key in checked else ""])
     return rows
 
 
@@ -157,7 +161,7 @@ def variant_sections(variants):
         rows = [r for kind in KINDS for r in param_rows(v.get("param", {}), kind)]
         if rows:
             text += f"\n## Variant-specific parameters: {name}\n\n"
-            text += md_table(["Parameter", "Symbol", "Min", "Typ", "Max", "Unit", "Conditions", "Cite"], rows)
+            text += md_table(PARAM_HEADERS, rows)
     return text
 
 
@@ -253,7 +257,9 @@ def build(folder):
         data = tomllib.load(f)
     variants = variants_of(folder)
     part, shared = data.get("part", {}), data.get("param", {})
-    text = f"{HEADER}\n\n# {part.get('value', folder.name)}\n\n## Part\n\n"
+    checked = checked_rows(folder, local_pdf=False)  # ledger only: the README never depends on a local PDF or cache
+    text = f"{HEADER}\n\n# {part.get('value', folder.name)}\n\n"
+    text += f"Checked by a person: {len(checked)} of {len(shared)} rows (docs/spec/review.md).\n\n## Part\n\n"
     for key in PART_ORDER:
         if key in part:
             val = f"[{part[key]}]({part[key]})" if key == "datasheet_url" and part[key] else part[key]
@@ -269,10 +275,10 @@ def build(folder):
     pin_rows = [[p.get(k, "") for k in ("number", "name", "type", "function", "cite")] for p in data.get("pin", [])]
     text += md_table(["Pin", "Name", "Type", "Function", "Cite"], pin_rows)
     for kind in KINDS:
-        rows = param_rows(shared, kind)
+        rows = param_rows(shared, kind, checked)
         if rows:
             text += f"\n## Parameters: {kind}\n\n"
-            text += md_table(["Parameter", "Symbol", "Min", "Typ", "Max", "Unit", "Conditions", "Cite"], rows)
+            text += md_table(PARAM_HEADERS, rows)
     text += variant_sections(variants)
     every = list(shared.values()) + [t for v in variants.values() for t in v.get("param", {}).values()]
     text += "\n## Limits of this data\n\n" + limits_line(every)
