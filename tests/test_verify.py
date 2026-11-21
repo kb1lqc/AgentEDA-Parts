@@ -244,16 +244,25 @@ class TestVerify(unittest.TestCase):
         self.assertEqual(rc, 1)
         self.assertIn("poppler not found", lines[1])
 
-    def test_review_changes_are_listed_not_failed(self):
+    def test_stale_review_record_fails_without_regen(self):
+        # a PR that changes a part but not its review.toml must not pass by ds_review regenerating it in the runner
         fake = Fake(self.root)
         fake.effects["tools/ds_review.py"] = lambda: write(self.root / "components/A/B/review/review.toml", "d")
         rc, lines = self.run_v(fake)
+        self.assertEqual(rc, 1, lines)
+        self.assertIn("components/A/B/review/review.toml:1 changed by ds_review", lines[1])
+        self.assertIn("--regen", lines[1])
+
+    def test_review_changes_are_listed_with_regen(self):
+        fake = Fake(self.root)
+        fake.effects["tools/ds_review.py"] = lambda: write(self.root / "components/A/B/review/review.toml", "d")
+        rc, lines = self.run_v(fake, regen=True)
         self.assertEqual(rc, 0, lines)
         self.assertIn("review: 1 file(s) changed in 1 part(s): A/B", lines[0])
         self.assertNotIn("SHOW THE HUMAN", lines[0])  # no part reported a delta
         fake.replies["tools/ds_review.py"] = (0, "components/A/B: UNSURE=3 | STALE=3 | fallback 0 | renders 0 | changed 1"
                                                  " | delta 3\nsummary: 1 component(s)\n")
-        rc, lines = self.run_v(fake)
+        rc, lines = self.run_v(fake, regen=True)
         self.assertIn("SHOW THE HUMAN .review-cache/A/B/DELTA.md (3 row(s) need review)", lines[0])
 
 

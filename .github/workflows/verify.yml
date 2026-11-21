@@ -1,7 +1,8 @@
 name: verify
-# Every PR and every push to main runs the library's own gate, tools/verify.py --all: lib.check (data, pins, land
-# patterns, check rows, cites, verified stamps), wrapper and README regeneration (must change nothing), a strict
-# pcb build of every component, and the unit tests. The datasheet PDFs are not in the repo; their absence is tolerated.
+# PRs: every new or changed human stamp must name the PR author (tools/check_stamps.py). Every PR, push to main and
+# manual run: tools/verify.py --all: ds_review (ledger-only, no PDFs here) and lib.zen/lib.readme must leave the
+# committed review.toml, wrappers and READMEs unchanged; lib.check (data, pins, land patterns, cites, stamps, ledger
+# states); a strict pcb build of every component; the unit tests. Datasheet image hashes are checked only where PDFs exist.
 on:
   pull_request:
   push:

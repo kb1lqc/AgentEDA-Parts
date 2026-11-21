@@ -13,7 +13,7 @@ Each row gets `verified = "human:<github-login> <YYYY-MM-DD> page-image ds_revie
 no review/review.toml row, ledger `hash` != the row's hash (re-run tools/verify.py), status DISAGREE or NOT_FOUND, a
 missing or changed local cache image (.review-cache/, image_sha256), a local PDF missing or not the ledger's `sheets`
 SHA-256, or CLAUDECODE set (an agent's shell). Line endings and a comment on a replaced verified line are kept.
-Exit 0 = written, 1 = refused. Then run tools/verify.py on the part.
+Exit 0 = written, 1 = refused. Then run tools/verify.py --regen on the part (it re-pins the stamp in review.toml).
 """
 
 import argparse
@@ -192,7 +192,7 @@ def stamp(root, who, refs, today=None):
         for tmp in temps.values():
             if os.path.exists(tmp):
                 os.unlink(tmp)
-    out.append("next: python3 tools/verify.py " + " ".join(str(d.relative_to(root)) for d in plan))
+    out.append("next: python3 tools/verify.py --regen " + " ".join(str(d.relative_to(root)) for d in plan))
     return 0, out
 
 
