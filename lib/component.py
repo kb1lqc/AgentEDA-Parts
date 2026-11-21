@@ -96,10 +96,12 @@ def _repo_root(path):
     return next((d.parent for d in Path(path).resolve().parents if d.name == "components"), None)
 
 
-def _review(path, review_key, stamp):
-    """(ledger state, reason) for one row read; reason None = a current human stamp (docs/spec/review.md "Runs")."""
+def _review(path, review_key, stamp, local_pdf=True, ledger=None, params=None):
+    """(ledger state, reason) for one row read; reason None = a current human stamp (docs/spec/review.md "Runs").
+    local_pdf=False: ledger only (no local PDF check), so generated files do not depend on the machine. ledger and
+    params: the parsed review.toml and component.toml [param] (read from path when None)."""
     path = Path(path)
-    ledger = _read_toml(path / "review" / "review.toml") or {}
+    ledger = (_read_toml(path / "review" / "review.toml") or {}) if ledger is None else ledger
     row = ledger.get("row", {}).get(review_key) if review_key else None
     row = row if isinstance(row, dict) else None
     state = row.get("state") if row else None
@@ -114,7 +116,9 @@ def _review(path, review_key, stamp):
         return state, "human stamp: malformed"
     if not row or not row.get("hash") or state == "NOT_COVERED":
         return state, "no review record"
-    table = ((_read_toml(path / "component.toml") or {}).get("param") or {}).get(review_key)
+    if params is None:
+        params = (_read_toml(path / "component.toml") or {}).get("param") or {}
+    table = params.get(review_key)
     if table is None or row_hash(table)[:12] != m["row"]:
         return state, "human stamp: row changed"
     inp = ledger.get("inputs", {})
@@ -124,7 +128,7 @@ def _review(path, review_key, stamp):
     root = _repo_root(path)
     dsf = inp.get("datasheet_file")
     pdf = ((root / dsf if sheet == main and dsf else root / "docs" / "datasheets" / sheet)
-           if root and sheet else None)  # absent PDF (CI): ledger SHA only
+           if root and sheet and local_pdf else None)  # absent PDF (CI): ledger SHA only
     if not want or want[:12] != m["pdf"] or (pdf and pdf.is_file() and _file_sha(pdf)[:12] != m["pdf"]):
         return state, "human stamp: PDF changed"
     return state, None
