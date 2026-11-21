@@ -9,7 +9,7 @@
 - **description**: -100 V P-channel OptiMOS Power-Transistor, logic level, -32 A, 75 mohm max at VGS = -10 V, PG-TDSON-8 (SuperSO8)
 - **category**: mosfet
 - **package**: PG-TDSON-8 (SuperSO8)
-- **datasheet_url**: https://www.infineon.com
+- **datasheet_url**: [https://www.infineon.com](https://www.infineon.com)
 - **datasheet_file**: docs/datasheets/infineon/infineon-isc750p10lm-datasheet-en.pdf
 - **datasheet_rev**: Rev.2.0
 - **datasheet_date**: 2022-10-13

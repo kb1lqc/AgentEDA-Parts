@@ -233,7 +233,8 @@ def line_symbol_x(lab, h):
     return out
 
 
-def one_row(row, sym, lines, hlist):
+def locate(sym, lines, hlist):
+    """[(line index, line, header)] of the table lines under a MIN/TYP/MAX header whose symbol word equals `sym`."""
     want = re.sub(r"\s+", "", norm_minus(sym))
     cands = []
     for i, ln in enumerate(lines):
@@ -245,6 +246,11 @@ def one_row(row, sym, lines, hlist):
             continue
         if any(sym_at(lab, k) == want for k, _x in line_symbol_x(lab, h)):
             cands.append((i, ln, h))
+    return cands
+
+
+def one_row(row, sym, lines, hlist):
+    cands = locate(sym, lines, hlist)
     if not cands:
         return "UNSURE", "symbol not found as the first/Symbol-column word of any table line"
     if len(cands) > 1:

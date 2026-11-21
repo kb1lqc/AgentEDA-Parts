@@ -1,6 +1,7 @@
 """Validate component.toml files: python3 -m lib.check [component paths...]"""
 
 import ast
+import hashlib
 import inspect
 import re
 import sys
@@ -8,7 +9,7 @@ import tomllib
 from pathlib import Path
 
 from . import capacitor, catalog, kicad, rules, series
-from .component import ROOT, load_calc, merge_variant, run_example, variants_of
+from .component import ROOT, _repo_root, ledger_state_of, load_calc, merge_variant, row_hash, run_example, variants_of
 from .units import to_si
 
 PART_FIELDS = ["value", "mpn", "manufacturer", "description", "category", "package", "datasheet_url",
@@ -36,13 +37,18 @@ def check_part(part, folder, family=False):
     for f in PART_FIELDS:
         if (family or part.get("series")) and f == "mpn":
             continue
-        if f not in part:
+        if f not in part and f != "datasheet_url":  # datasheet_url: missing or empty is the tolerated warning below
             out.append(("ERROR", f"[part] missing field '{f}'"))
     if part.get("value", folder.name) != folder.name:
         out.append(("ERROR", f"[part] value '{part['value']}' differs from directory '{folder.name}'"))
     for f in ("kicad_symbol", "kicad_footprint"):
         if f in part and not (folder / part[f]).exists():
             out.append(("ERROR", f"{f} file not found: {part[f]}"))
+    url = part.get("datasheet_url", "")
+    if not url:
+        out.append(("WARN", "datasheet_url empty (record the vendor URL; open item)"))
+    elif not str(url).startswith(("http://", "https://")):
+        out.append(("ERROR", f"datasheet_url must start with http:// or https:// (got '{url}')"))
     if part.get("datasheet_file") and not (ROOT / part["datasheet_file"]).exists():
         out.append(("WARN", f"datasheet_file not found: {part['datasheet_file']} (PDFs are not committed)"))
     step = part.get("step", "none")
@@ -462,6 +468,108 @@ def abstentions(folder):
     return notes
 
 
+def _ledger_rows(f):
+    with open(f, "rb") as fh:
+        return tomllib.load(fh).get("row", {})
+
+
+REVIEW_MODES = {}  # component dir -> (mode, images matched); check_ledger fills it, main prints one mode line
+
+
+def check_ledger(folder):
+    """review/ (docs/spec/review.md). Always (ledger-only mode): valid TOML, nothing but review.toml under review/, a row per
+    Param whose hash is the row's and whose stamp is its `verified`. Evidence mode (the row's PDF is in
+    docs/datasheets/): its cache images (.review-cache/<Mfr>/<Value>/) exist with the ledger's SHA-256."""
+    folder = Path(folder)
+    f = folder / "review" / "review.toml"
+    if not f.exists():
+        return []
+    rerun = f"rerun python3 tools/ds_review.py {folder}"
+    try:
+        with open(f, "rb") as fh:
+            ledger = tomllib.load(fh)
+        with open(folder / "component.toml", "rb") as fh:
+            params = tomllib.load(fh).get("param", {})
+    except (OSError, tomllib.TOMLDecodeError) as e:
+        return [("ERROR", f"review/review.toml or component.toml is not valid TOML ({e}): {rerun}")]
+    out = [("ERROR", f"review/{p.relative_to(folder / 'review')}: only review/review.toml is committed (page images and "
+                     f"generated pages live in the git-ignored .review-cache/); delete it and {rerun}")
+           for p in sorted((folder / "review").rglob("*")) if p.is_file() and p.name != "review.toml"
+           and not p.name.startswith(".")]
+    rows, inp = ledger.get("row", {}), ledger.get("inputs", {})
+    main = Path(inp.get("datasheet_file", "")).name
+    for key, table in params.items():
+        r = rows.get(key)
+        if not isinstance(r, dict) or r.get("hash") != row_hash(table):
+            out.append(("ERROR", f"review/review.toml row {key} is missing or older than component.toml: {rerun}"))
+        elif (r.get("stamp") or "") != (table.get("verified") or ""):
+            out.append(("ERROR", f"review/review.toml row {key}: stamp differs from its verified line: {rerun}"))
+        else:  # the state follows from the stamp, the row hash and the ledger's pins; never trust the written word
+            P = (inp.get("sheets") or {}).get(r.get("sheet") or main, "")
+            want = ledger_state_of(r["hash"], r.get("stamp") or "", r.get("stamp_hash") or "", r.get("pdf_sha256") or "", P)
+            if r.get("state") != want:
+                out.append(("ERROR", f"review/review.toml row {key}: state {r.get('state')!r} but the stamp and pins give "
+                                     f"{want!r}: {rerun}"))
+    for key, r in rows.items():
+        if key not in params and (not isinstance(r, dict) or r.get("state") != "NOT_COVERED"):
+            out.append(("ERROR", f"review/review.toml row {key}: not a Param, so its state must be 'NOT_COVERED': {rerun}"))
+    root = _repo_root(folder) or ROOT
+    cache = root / ".review-cache" / folder.resolve().relative_to(root / "components") if _repo_root(folder) else None
+
+    def pdf(sheet):  # the main datasheet at its datasheet_file path, other sheets in docs/datasheets/
+        return root / inp["datasheet_file"] if sheet == main and inp.get("datasheet_file") else root / "docs" / "datasheets" / sheet
+    present, absent, matched = set(), set(), set()
+    for key, r in rows.items():
+        if not isinstance(r, dict) or not r.get("image"):
+            continue
+        sheet = r.get("sheet") or main
+        if not pdf(sheet).is_file() or cache is None:
+            absent.add(sheet)
+            continue
+        present.add(sheet)
+        for field, sha_field in (("image", "image_sha256"), ("header_image", "header_sha256"), ("foot_image", "foot_sha256")):
+            image = r.get(field, "")
+            if not image:
+                continue
+            img = cache / image
+            if not img.is_file():
+                out.append(("ERROR", f"{img.relative_to(root)} missing ({key}; PDF present): {rerun} to render it"))
+            elif hashlib.sha256(img.read_bytes()).hexdigest() != r.get(sha_field, ""):
+                out.append(("ERROR", f"{img.relative_to(root)} sha256 differs from review.toml ({key}): delete it and {rerun}"))
+            else:
+                matched.add(image)
+    if not present and not absent:  # no row has an image: the main PDF decides
+        (present if main and pdf(main).is_file() else absent).add(main)
+    REVIEW_MODES[str(folder)] = ("evidence" if present and not absent else "partial" if present else "ledger-only", len(matched))
+    return out
+
+
+def review_mode_line():
+    """The mode check_ledger ran in, so a run without PDFs never reads as an evidence check."""
+    modes = list(REVIEW_MODES.items())
+    ev = [m for _, m in modes if m[0] != "ledger-only"]
+    lo = [Path(d).name for d, m in modes if m[0] == "ledger-only"]
+    pa = [Path(d).name for d, m in modes if m[0] == "partial"]
+    out = []
+    if ev:
+        out.append(f"evidence mode (PDF present) in {len(ev)} part(s): {sum(m[1] for m in ev)} cache image(s) matched the "
+                   f"ledger" + (f"; partial (a sheet missing): {', '.join(pa)}" if pa else ""))
+    if lo:
+        out.append(f"ledger-only mode (no local PDF) in {len(lo)} part(s): {', '.join(lo)}")
+    return "review: " + ("; ".join(out) or "no review records")
+
+
+def ledger_notes(folder):
+    """Non-failing REVIEW notes for rows whose review state is STALE or PDF_CHANGED."""
+    f = Path(folder) / "review" / "review.toml"
+    try:
+        rows = _ledger_rows(f)
+    except (OSError, tomllib.TOMLDecodeError):
+        return []
+    return [f"{Path(folder).name}: {k} is {r['state']} (counts as unverified; rerun python3 tools/ds_review.py {folder})"
+            for k, r in rows.items() if isinstance(r, dict) and r.get("state") in ("STALE", "PDF_CHANGED")]
+
+
 def _check_component(folder):
     """All checks for one component directory. Returns [(level, message), ...].
 
@@ -479,7 +587,7 @@ def _check_component(folder):
     except tomllib.TOMLDecodeError as e:
         return [("ERROR", f"component.toml or variants.toml is not valid TOML: {e}")]
     part, pins = data.get("part", {}), data.get("pin", [])
-    out = check_part(part, folder, family=bool(variants)) + check_pins(pins)
+    out = check_part(part, folder, family=bool(variants)) + check_pins(pins) + check_ledger(folder)
     out += finding_messages(rules.cite_findings(data, variants))
     out += finding_messages(rules.cite_sheet_findings(data, variants))
     out += finding_messages(rules.verified_findings(data, variants))
@@ -518,7 +626,7 @@ def _check_component(folder):
 
 def check_variant(merged, own, pin_names, calc):
     """Checks for one variant: required [part] fields, its override rows, INPUTS resolving in its merged params."""
-    out = [("ERROR", f"[part] missing field '{f}'") for f in PART_FIELDS if f not in merged["part"]]
+    out = [("ERROR", f"[part] missing field '{f}'") for f in PART_FIELDS if f not in merged["part"] and f != "datasheet_url"]
     for f in ("mpn", "alternates", "temp_grade"):  # inherited values would silently be wrong for some variants
         if f not in own:
             out.append(("ERROR", f"must set its own {f} in variants.toml"))
@@ -534,13 +642,15 @@ def find_components(args):
     return [Path(a).parent if a.endswith("component.toml") else Path(a) for a in args]
 
 
-TOLERATED = "datasheet_file not found"  # PDFs are git-ignored: the only WARN that does not fail the exit code
+TOLERATED = "datasheet_file not found"  # PDFs are git-ignored
+TOLERATED_ALL = (TOLERATED, "datasheet_url empty")  # the only WARNs that do not fail the exit code
 
 
 def collect(folders, root, full):
     """(findings, other messages) over all folders. findings are rules.Finding; other messages are (label, level, msg)
     for the older checks. Rule findings from check_component are tagged with the component; full adds repo-level rules."""
-    findings, others, notes = [], [], []
+    findings, others, notes, reviews = [], [], [], []
+    REVIEW_MODES.clear()
     for folder in folders:
         part = f"{folder.parent.name}/{folder.name}"
         for level, msg in check_component(folder, raw=True):
@@ -551,9 +661,10 @@ def collect(folders, root, full):
                 others.append((part, level, msg))
         findings += rules.wiring_findings(folder, root)
         notes += abstentions(folder)
+        reviews += ledger_notes(folder)
     if full:
         findings += rules.repo_findings(root) + rules.zen_lint_findings(root)
-    return findings, others, notes
+    return findings, others, notes, reviews
 
 
 def main(argv=None):
@@ -561,13 +672,13 @@ def main(argv=None):
     file, a stale allowlist entry, or zero components found)."""
     args = sys.argv[1:] if argv is None else argv
     folders = find_components(args)
-    findings, others, notes = collect(folders, ROOT, full=not args)
+    findings, others, notes, reviews = collect(folders, ROOT, full=not args)
     errors = warns = tolerated = 0
     if not folders:
         print("ERROR: no components found (components/*/*/component.toml); nothing was checked")
         errors += 1
     for part, level, msg in others:
-        if level == "WARN" and TOLERATED in msg:
+        if level == "WARN" and any(t in msg for t in TOLERATED_ALL):
             tolerated += 1
             continue
         print(f"{part}: {level}: {msg}")
@@ -575,6 +686,9 @@ def main(argv=None):
         warns += level == "WARN"
     for n in notes:
         print(f"ABSTAIN: {n}")
+    for n in reviews:
+        print(f"REVIEW: {n}")
+    print(review_mode_line())
     abstained = len(notes)
     violations, allowed, stale = rules.apply_allowlist(findings, rules.load_allowlist())
     for f in violations:

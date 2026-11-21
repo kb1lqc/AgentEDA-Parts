@@ -107,5 +107,111 @@ class Verified(unittest.TestCase):
             self.assertTrue(any("verified-format" in m for m in msgs), msgs)
 
 
+class LedgerStale(unittest.TestCase):
+    def setUp(self):
+        lib.reset_inputs()
+        self.addCleanup(lib.reset_inputs)
+
+    def make(self, d, state):
+        copy = Path(d) / "LDO1"
+        shutil.copytree(ROOT / "tests" / "fixtures" / "Acme" / "LDO1", copy)
+        t = copy / "component.toml"
+        t.write_text(t.read_text().replace('cite = "DS p.5, Electrical Characteristics, VREF"',
+                                           'cite = "DS p.5, Electrical Characteristics, VREF"\nverified = "bob 2026-01-01 page image"'))
+        (copy / "review").mkdir()
+        (copy / "review" / "review.toml").write_text(f'[inputs]\npdf_sha256 = "x"\n[row.vref]\nstate = "{state}"\nimage = ""\nimage_sha256 = ""\n')
+        return copy
+
+    def test_stale_and_pdf_changed_count_unverified(self):
+        for state, bad in (("STALE", True), ("PDF_CHANGED", True), ("MACHINE_CHECKED", False)):
+            lib.reset_inputs()
+            with tempfile.TemporaryDirectory() as d:
+                lib.load(str(self.make(d, state))).param("vref")
+            self.assertEqual(lib.unverified_inputs(), ["LDO1:vref"] if bad else [], state)
+
+    def test_no_ledger_no_effect(self):
+        with tempfile.TemporaryDirectory() as d:
+            copy = self.make(d, "STALE")
+            shutil.rmtree(copy / "review")
+            lib.load(str(copy)).param("vref")
+        self.assertEqual(lib.unverified_inputs(), [])
+
+
+class HumanReview(unittest.TestCase):
+    """lib.human_review_needed: a row is human-checked only with a `human:` stamp and a ledger state that is not bad."""
+
+    def setUp(self):
+        lib.reset_inputs()
+        self.addCleanup(lib.reset_inputs)
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.d = Path(self.tmp.name) / "LDO1"
+        shutil.copytree(ROOT / "tests" / "fixtures" / "Acme" / "LDO1", self.d, ignore=shutil.ignore_patterns("__pycache__"))
+
+    def stamp(self, key_cite, stamp):
+        t = self.d / "component.toml"
+        t.write_text(t.read_text().replace(key_cite, f'{key_cite}\nverified = "{stamp}"', 1))
+
+    def ledger(self, **states):
+        (self.d / "review").mkdir(exist_ok=True)
+        rows = "".join(f'[row.{k}]\nstate = "{v}"\nimage = ""\nimage_sha256 = ""\n' for k, v in states.items())
+        (self.d / "review" / "review.toml").write_text('[inputs]\npdf_sha256 = "x"\n' + rows)
+
+    def test_reasons(self):
+        self.stamp('cite = "DS p.5, Electrical Characteristics, VREF"', "human:bob 2026-11-20 page-image ds_review abc")
+        self.stamp('cite = "DS p.5, Electrical Characteristics, VOS"', "sonnet-audit 2026-11-18 blind reading")
+        self.stamp('cite = "DS p.4, Absolute Maximum Ratings, VIN"', "bob 2026-11-20 page-image ds_review abc")
+        p = lib.load(str(self.d))
+        for k in ("vref", "vos", "vin_abs", "gain_err"):
+            p.param(k)
+        got = {e["key"]: e["reason"] for e in lib.human_review_needed()}
+        # vref: human prefix without the row-hash binding -> malformed; a who without the prefix is a machine stamp
+        self.assertEqual(got, {"vref": "human stamp: malformed", "vos": "machine stamp", "vin_abs": "machine stamp",
+                               "gain_err": "no stamp"})
+        e = next(e for e in lib.human_review_needed() if e["key"] == "gain_err")
+        self.assertEqual((e["input"], e["value"], e["dir"], e["ref"], e["review_key"], e["state"]),
+                         ("LDO1:gain_err", "LDO1", str(self.d), "LDO1:gain_err", "gain_err", None))
+        self.assertTrue(e["cite"].startswith("DS p."))
+        lib.reset_inputs()
+        self.assertEqual(lib.human_review_needed(), [])
+
+    def test_bad_ledger_state_overrides_human_stamp(self):
+        self.stamp('cite = "DS p.5, Electrical Characteristics, VREF"', "human:bob 2026-11-20 page-image ds_review abc")
+        for state, want in (("STALE", "STALE"), ("PDF_CHANGED", "PDF_CHANGED"), ("HUMAN_VERIFIED", "human stamp: malformed")):
+            lib.reset_inputs()
+            self.ledger(vref=state)
+            lib.load(str(self.d)).param("vref")
+            self.assertEqual([e["reason"] for e in lib.human_review_needed()], [want], state)
+
+    def test_sticky(self):
+        p = lib.load(str(self.d))
+        p.param("vref")
+        import dataclasses
+        q = dataclasses.replace(p, params={**p.params, "vref": dataclasses.replace(p.params["vref"], verified="human:x 2026-11-20 y")})
+        q.param("vref")
+        self.assertEqual([e["reason"] for e in lib.human_review_needed()], ["no stamp"])
+
+    def test_family_series_and_selection_rows(self):
+        f = lib.load("AnalogDevices/LTC4364MS", variant="LTC4364CMS-1")
+        f.param("dvsns_0c125c")  # variants.toml override: its own review row, not the shared one
+        f.param("abs_vcc")
+        c = lib.load("Murata/GCM188")
+        x7r = next(r for r in c.catalog() if r.dielectric == "X7R")
+        sel = c.select(x7r.capacitance, x7r.rated_voltage, "X7R", x7r.tolerance)
+        sel.part.param("tc")
+        sel.part.param("tolerance")
+        lib.load("Vishay/WSK2512").tcr(10e-3)
+        rows = {r["input"]: r for r in lib.human_review_needed()}
+        ov = rows["LTC4364CMS-1:dvsns_0c125c"]
+        self.assertEqual((ov["review_key"], ov["ref"]), ("variant.LTC4364CMS-1.dvsns_0c125c", None))
+        self.assertEqual(rows["LTC4364CMS-1:abs_vcc"]["ref"], "LTC4364MS:abs_vcc")
+        cap = rows[f"GCM188[{x7r.value}]:capacitance"]
+        self.assertEqual((cap["review_key"], cap["ref"], cap["reason"]), (None, None, "machine stamp"))
+        self.assertEqual(rows[f"GCM188[{x7r.value}]:tc_x7r"]["ref"], "GCM188:tc_x7r")
+        self.assertEqual(rows[f"GCM188[{x7r.value}]:tolerance"]["review_key"], None)  # catalog row, not a TOML row
+        self.assertEqual(rows["WSK2512:tcr_5m_200m"]["ref"], "WSK2512:tcr_5m_200m")
+        self.assertEqual(set(rows) - set(lib.used_inputs()), set())
+
+
 if __name__ == "__main__":
     unittest.main()

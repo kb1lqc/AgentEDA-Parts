@@ -1,0 +1,3 @@
+#!/bin/sh
+# Optional: cp tools/pre-commit .git/hooks/pre-commit (docs/briefs/ds-review.md). Not installed automatically.
+exec python3 tools/verify.py

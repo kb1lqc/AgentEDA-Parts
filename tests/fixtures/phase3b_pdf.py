@@ -5,9 +5,10 @@ def _esc(s):
     return s.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
 
 
-def build_pdf(pages, scanned=(), rotate=()):
+def build_pdf(pages, scanned=(), rotate=(), rules=()):
     """pages: list of lists of (x, y_from_top, size, text). Text is latin-1 (WinAnsi); y measured from the top of a
-    612x792 page. scanned: 1-based page numbers that are an image only (no text layer) instead of the text."""
+    612x792 page. scanned: 1-based page numbers that are an image only (no text layer) instead of the text.
+    rules: (page, x0, y_from_top, x1, gray) horizontal 0.8 pt table rules (gray 0 = black, 0.75 = light)."""
     objs = []  # bytes bodies, object number = index + 1
 
     def add(b):
@@ -27,6 +28,9 @@ def build_pdf(pages, scanned=(), rotate=()):
             parts = []
             for x, y, size, text in items:
                 parts.append("BT /F1 %g Tf %g %g Td (%s) Tj ET" % (size, x, 792 - y, _esc(text)))
+            for pg, x0, y, x1, gray in rules:
+                if pg == n:
+                    parts.append("%g g %g %g %g 0.8 re f 0 g" % (gray, x0, 792 - y - 0.4, x1 - x0))
             content = "\n".join(parts).encode("latin-1")
         c = add(b"<< /Length %d >>\nstream\n" % len(content) + content + b"\nendstream")
         p = add(("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] %s /Contents %d 0 R /Resources << /Font << /F1 %d 0 R >> "

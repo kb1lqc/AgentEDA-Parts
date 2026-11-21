@@ -8,7 +8,7 @@
 - **description**: Bidirectional current-sense amplifier, -5 V to 110 V common mode, 2.7 V to 20 V supply, VSSOP-8 (DGK)
 - **category**: current_sense_amplifier
 - **package**: VSSOP-8 (DGK0008A)
-- **datasheet_url**: https://www.ti.com/lit/ds/symlink/ina241a.pdf
+- **datasheet_url**: [https://www.ti.com/lit/ds/symlink/ina241a.pdf](https://www.ti.com/lit/ds/symlink/ina241a.pdf)
 - **datasheet_file**: docs/datasheets/ina241a.pdf
 - **datasheet_rev**: SBOSA30D
 - **datasheet_date**: 2024-12

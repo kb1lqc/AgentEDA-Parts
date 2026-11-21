@@ -8,7 +8,7 @@
 - **description**: Surge stopper with ideal diode, 4-80 V, MSOP-16 (MS); -1 latch-off or -2 auto-retry, C/I/H grade
 - **category**: surge_stopper
 - **package**: MSOP-16 (MS), LTC DWG 05-08-1669 Rev A
-- **datasheet_url**: https://www.analog.com/media/en/technical-documentation/data-sheets/ltc4364-1-4364-2.pdf
+- **datasheet_url**: [https://www.analog.com/media/en/technical-documentation/data-sheets/ltc4364-1-4364-2.pdf](https://www.analog.com/media/en/technical-documentation/data-sheets/ltc4364-1-4364-2.pdf)
 - **datasheet_file**: docs/datasheets/ltc4364.pdf
 - **datasheet_rev**: Rev. B
 - **datasheet_date**: 2023-01

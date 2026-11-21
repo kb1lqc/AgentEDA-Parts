@@ -22,10 +22,9 @@ Reference packages: `components/TexasInstruments/INA821IDGK/` (amplifier), `.../
 - pcb 0.4.x. The shim self-updates; `pcb +0.4.101 <cmd>` pins a version.
 - After every change, from the repo root: `python3 tools/verify.py` (builds the changed component dirs; `--all`, or
   list dirs; `--regen` when a generator change is intended). It runs `lib.check`, `lib.zen`, `lib.readme`,
-  `pcb build -Wstyle -Dwarnings`, unittest by exit code, fails closed, removes `__pycache__/`, and prints one PASS line
-  or the first 5 failures plus a log path. Only `datasheet_file not found` is tolerated (counted). `lib.check` message
-  names the fix. New part dir: `python3 tools/scaffold.py <Mfr> <Value>`. A hook formats edited `.zen` and checks edited
-  components.
+  `tools/ds_review.py`, `pcb build -Wstyle -Dwarnings`, unittest by exit code, fails closed, prints one PASS line or the
+  first 5 failures plus a log path. Tolerated (counted): `datasheet_file not found`, `datasheet_url empty`. New part
+  dir: `python3 tools/scaffold.py <Mfr> <Value> --datasheet-url <url>`. A hook formats `.zen`, checks edited parts.
 
 ## Roles (give each agent its brief path, the datasheet path, a scratch dir, its writable files)
 - Extractor (Haiku, one per part): `docs/briefs/extractor.md`.
@@ -37,9 +36,9 @@ Reference packages: `components/TexasInstruments/INA821IDGK/` (amplifier), `.../
 - At most two Sonnet agents at once.
 
 ## Component procedure (one Value per directory)
-0. **Pre-flight.** Datasheet, vendor files (symbol, footprint, STEP), `pdftoppm`, python3 3.11+ with matplotlib.
-   Missing items I must supply: ONE message listing all with exact paths; continue without them, except a missing datasheet: stop. STEP missing:
-   `step = "none"`, open item.
+0. **Pre-flight.** Datasheet, datasheet URL (scaffold `--datasheet-url`), vendor files (symbol, footprint, STEP),
+   `pdftoppm`, python3 3.11+ with matplotlib. Missing items I must supply: ONE message listing all with exact paths;
+   continue without them, except a missing datasheet: stop. STEP missing: `step = "none"`, open item.
 1. **Intake.** Revision, date, MPN decode, lifecycle as printed. Several packages, grades or options and none named:
    Stop. Same-package orderables: family dir (`docs/spec/family.md`); MLCC: `docs/spec/capacitor.md`; resistor
    series: `docs/spec/series.md`.
@@ -65,5 +64,6 @@ footprint; pin count or position conflict in the DS; missing NC/EP wording; two 
 6. README Zener checks table; `grep -rn 'waive_[a-z_0-9]*=' --include='*.zen' . | grep -v '/.pcb/'`.
 7. Decision Log (default | case | open item); open items (DS ambiguities, 25 C-only and curve values,
    revision/PCN/lifecycle, lead finish, second sources, 3D-model pin-1 check).
+8. `.review-cache/<Mfr>/<Value>/DELTA.md` rows listed for the human (key, state, status; `docs/briefs/ds-review.md`).
 
 Modules: `ee-design`, `schematic-style`, `zener-wrapper` section 3. Examples: `docs/spec/lib-api.md`.

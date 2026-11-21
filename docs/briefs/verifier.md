@@ -19,6 +19,8 @@ Procedure:
    it cites.
 5. Check the defaults table was applied (signs, `sym`, `typ_pm`, `tol_pct`, `scope`, `curve`, `text`, NC pins).
 
+Use the local `.review-cache/<Mfr>/<Value>/params/<key>.md` crops as a start, never as the check; see `docs/briefs/ds-review.md`.
+
 Report problems only, one per line: `file:line | key | problem | what the page image shows | exact fix`. If there are
 none, say "no problems" and list the pages you rendered.
 

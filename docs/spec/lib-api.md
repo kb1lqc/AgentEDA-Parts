@@ -37,7 +37,9 @@ Worst-case method (`wca`), stated so a human can check it by hand:
 - Verified inputs: every row read through `part.param` / `part.inputs` / `part.series` / `part.select` (and the helpers
   built on them) is recorded; read rows only through these, never `part.params[...]`. An unverified read stays listed even
   if the same row is read verified later; a selected capacitor records as `<Value>[<catalog value>]:<key>`, its `tc` as
-  the dielectric's own row. If `lib.unverified_inputs()` ("<Value>:<key>" of rows without `verified`) is not empty when the report
+  the dielectric's own row. If `lib.unverified_inputs()` ("<Value>:<key>" of rows without `verified`, or whose `review/review.toml` state is STALE or PDF_CHANGED) is not empty when the report
   is written, every judged PASS reads `PASS (UNVERIFIED INPUTS)` and the report lists those rows. `lib.used_inputs()`
   lists all rows read; `lib.reset_inputs()` clears the record. `lib.verdict(ok)` gives the right word;
-  `lib.inputs_section()` gives the report's "Input verification" section.
+  `lib.inputs_section()` gives the report's "Input verification" section. `lib.human_review_needed()` lists the rows read without a current
+  human stamp (`human:<name> ... row <hash12>`, bound to the row and PDF hashes; docs/spec/review.md): dicts with input, value, key, dir, review_key, ref (for
+  `tools/stamp.py`), stamp, state, cite, reason.

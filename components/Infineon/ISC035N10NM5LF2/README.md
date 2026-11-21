@@ -9,7 +9,7 @@
 - **description**: 100 V N-channel OptiMOS 5 Linear FET 2 (hot swap / e-fuse), 164 A, 3.5 mohm max, PG-TDSON-8-59
 - **category**: mosfet
 - **package**: PG-TDSON-8-59
-- **datasheet_url**: https://www.infineon.com
+- **datasheet_url**: [https://www.infineon.com](https://www.infineon.com)
 - **datasheet_file**: docs/datasheets/infineon/infineon-isc035n10nm5lf2-datasheet-en.pdf
 - **datasheet_rev**: Revision 2.3
 - **datasheet_date**: 2025-11-07

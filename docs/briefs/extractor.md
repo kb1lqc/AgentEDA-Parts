@@ -21,6 +21,8 @@ Procedure:
 6. Intake: datasheet revision and date, MPN decode (package, grade, finish, packaging, MSL), lifecycle as printed.
    Compare land pattern vs footprint pads; courtyard, pin-1 marker, STEP status.
 
+Review records: `docs/briefs/ds-review.md` (never write `verified`; never edit `review/`).
+
 Report: params per kind, pin table with cites, equations with cites, EXAMPLES results, the check selection, every
 judgement call and DS ambiguity, land-pattern comparison, open items.
 

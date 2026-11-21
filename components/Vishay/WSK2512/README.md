@@ -9,7 +9,7 @@
 - **description**: 0.005 to 0.2 ohm (decade values) +/-0.1 % / +/-0.5 % / +/-1.0 % 1 W 4-terminal (Kelvin) Power Metal Strip current-sense resistor series, 2512
 - **category**: current_sense_resistor
 - **package**: 2512 (4-terminal Kelvin, Power Metal Strip)
-- **datasheet_url**: https://www.vishay.com/doc?30108
+- **datasheet_url**: [https://www.vishay.com/doc?30108](https://www.vishay.com/doc?30108)
 - **datasheet_file**: docs/datasheets/wsk2512.pdf
 - **datasheet_rev**: 11-Dec-2023 (Document 30108)
 - **datasheet_date**: 2023-12-11

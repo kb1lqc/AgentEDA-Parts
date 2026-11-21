@@ -2,7 +2,7 @@
 """Create a part scaffold: components/<Mfr>/<Value>/ with an empty pcb.toml, a component.toml template and the vendor
 KiCad files. Exit 0 = created (items OK, or UNSURE for a missing STEP), 1 = FAIL (nothing is written).
 
-Usage (repo root): python3 tools/scaffold.py <Mfr> <Value> [--root R]
+Usage (repo root): python3 tools/scaffold.py <Mfr> <Value> --datasheet-url <vendor http(s) URL> [--root R]
 
 Vendor files come from docs/vendor/<Value>/ (the N density lives there; L and M are moved to <Value>_unused/, which is
 never read). Exactly one *.kicad_sym is required. *.kicad_mod: one, or among several exactly one ending -N, or exactly
@@ -10,10 +10,12 @@ one not ending -L/-M; otherwise FAIL (ambiguous). STEP (*.step, *.stp): zero = U
 docs/CLAUDE.md "STEP missing"); several = FAIL. Files are copied as <Value>.kicad_sym / .kicad_mod / .step.
 The component.toml template lists every field of docs/spec/extract.md with an EMPTY value and one empty [[pin]]:
 `python3 -m lib.check` rejects it until the part is filled in, so a scaffold cannot pass as a part. FAIL if the
-directory exists, a vendor file is missing or ambiguous, or Mfr/Value is not a plain directory name.
+directory exists, a vendor file is missing or ambiguous, Mfr/Value is not a plain directory name, or the datasheet URL
+is missing or not http(s) (it is recorded in datasheet_url, never fetched; docs/spec/review.md).
 Output (sorted, no timestamps): one `item | status | reason` line each, then a summary line.
 """
 import argparse
+import re
 import shutil
 import sys
 from pathlib import Path
@@ -28,7 +30,7 @@ manufacturer    = ""   # as printed in the datasheet
 description     = ""   # one line
 category        = ""   # snake_case part kind
 package         = ""   # package name and drawing code as printed
-datasheet_url   = ""
+datasheet_url   = "{url}"   # recorded from --datasheet-url, not fetched
 datasheet_file  = "docs/datasheets/<file>.pdf"   # git-ignored; replace <file>
 datasheet_rev   = ""   # document number / revision as printed
 datasheet_date  = ""   # YYYY-MM as printed
@@ -62,9 +64,11 @@ def pick_mod(mods):
     return plain[0] if len(plain) == 1 else None
 
 
-def plan(root, mfr, value):
+def plan(root, mfr, value, url=None):
     """([(item, status, reason)], copies) where copies = [(src, dst name)]; any FAIL means do nothing."""
     items, copies = [], []
+    if not url or not re.match(r"^https?://\S+$", url) or '"' in url:
+        items.append(("datasheet_url", "FAIL", "missing or not http(s): give --datasheet-url <vendor URL of the PDF>"))
     for label, name in (("Mfr", mfr), ("Value", value)):
         if not name or name.startswith(".") or "/" in name or "\\" in name or name in ("..", "."):
             items.append((label, "FAIL", f"not a plain directory name: {name!r}"))
@@ -99,17 +103,17 @@ def plan(root, mfr, value):
     return items, copies
 
 
-def scaffold(root, mfr, value):
+def scaffold(root, mfr, value, url=None):
     """Create the scaffold. Returns (exit code, output lines)."""
     root = Path(root)
-    items, copies = plan(root, mfr, value)
+    items, copies = plan(root, mfr, value, url)
     if not any(s == "FAIL" for _, s, _ in items):
         dest = root / "components" / mfr / value
         has_step = any(d.endswith(".step") for _, d in copies)
         try:
             dest.mkdir(parents=True)
             (dest / "pcb.toml").write_text("")
-            (dest / "component.toml").write_text(TEMPLATE.format(value=value, step=f"{value}.step" if has_step else "none"))
+            (dest / "component.toml").write_text(TEMPLATE.format(value=value, url=url, step=f"{value}.step" if has_step else "none"))
             for src, name in copies:
                 shutil.copyfile(src, dest / name)
         except OSError as e:
@@ -128,9 +132,10 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("mfr")
     ap.add_argument("value")
+    ap.add_argument("--datasheet-url", help="vendor http(s) URL of the datasheet PDF (required; recorded, not fetched)")
     ap.add_argument("--root", default=Path(__file__).resolve().parent.parent)
     a = ap.parse_args(argv)
-    rc, lines = scaffold(Path(a.root).resolve(), a.mfr, a.value)
+    rc, lines = scaffold(Path(a.root).resolve(), a.mfr, a.value, a.datasheet_url)
     print("\n".join(lines))
     return rc
 

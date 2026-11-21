@@ -256,7 +256,8 @@ def build(folder):
     text = f"{HEADER}\n\n# {part.get('value', folder.name)}\n\n## Part\n\n"
     for key in PART_ORDER:
         if key in part:
-            text += f"- **{key}**: {part[key]}\n"
+            val = f"[{part[key]}]({part[key]})" if key == "datasheet_url" and part[key] else part[key]
+            text += f"- **{key}**: {val}\n"
     if variants:
         text += "\n## Variants\n\nShared data below applies to every variant unless a row names its variants.\n\n"
         text += variants_table(part, variants)

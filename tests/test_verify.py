@@ -29,6 +29,8 @@ class Fake:
             "pcb build": (0, "ok\n"),
             "-m unittest": (0, "Ran 12 tests in 0.1s\n\nOK\n"),
             "git status": (0, ""),
+            "git ls-files": (0, ""),
+            "tools/ds_review.py": (0, "summary: 1 component(s), 0 render(s), 0 file(s) changed\n"),
         }
         self.replies.update(over)
         self.effects = {}
@@ -204,6 +206,55 @@ class TestVerify(unittest.TestCase):
     def test_pcb_major_minor(self):
         self.assertEqual(v.pcb_major_minor("pcbc 0.4.102"), "0.4")
         self.assertIsNone(v.pcb_major_minor("nothing"))
+
+    # ds_review step and PDF guard (docs/spec/review.md)
+    def test_tracked_pdf_fails(self):
+        rc, lines = self.run_v(Fake(self.root, **{"git ls-files": (0, "docs/x.pdf\n")}))
+        self.assertEqual(rc, 1)
+        self.assertIn("docs/x.pdf:1 PDF is tracked", lines[1])
+
+    def test_pdf_under_components_fails(self):
+        write(self.root / "components/A/B/review/copy.pdf", "%PDF")
+        rc, lines = self.run_v(Fake(self.root))
+        self.assertEqual(rc, 1)
+        self.assertIn("components/A/B/review/copy.pdf:1", lines[1])
+
+    def test_ds_review_runs_before_lib_check_with_scope(self):
+        fake = Fake(self.root)
+        self.run_v(fake, all_dirs=False, dirs=["components/A/B"])
+        i = next(n for n, c in enumerate(fake.calls) if "tools/ds_review.py" in c)
+        self.assertTrue(fake.calls[i].endswith("tools/ds_review.py components/A/B"))
+        self.assertGreater(next(n for n, c in enumerate(fake.calls) if "-m lib.check" in c), i)  # checks fresh records
+        fake = Fake(self.root)
+        self.run_v(fake)
+        self.assertTrue(any(c.endswith("tools/ds_review.py --all") for c in fake.calls))
+
+    def test_review_mode_lines_reach_the_pass_line(self):
+        fake = Fake(self.root, **{
+            "tools/ds_review.py": (0, "summary: 1 component(s)\nreview: ledger-only mode (no local PDF) in 1 part(s): B\n"),
+            "-m lib.check": (0, "review: ledger-only mode (no local PDF) in 1 part(s): B\n3 components, 0 errors, 0 warnings, "
+                                "0 tolerated (datasheets absent), 0 allowlisted findings, 0 abstained\n")})
+        rc, lines = self.run_v(fake)
+        self.assertEqual(rc, 0, lines)
+        self.assertIn("; review: ledger-only mode (no local PDF) in 1 part(s): B", lines[0])
+        self.assertIn("; lib.check review: ledger-only mode", lines[0])
+
+    def test_ds_review_failure_fails(self):
+        rc, lines = self.run_v(Fake(self.root, **{"tools/ds_review.py": (1, "FAIL: poppler not found (pdftoppm)\n")}))
+        self.assertEqual(rc, 1)
+        self.assertIn("poppler not found", lines[1])
+
+    def test_review_changes_are_listed_not_failed(self):
+        fake = Fake(self.root)
+        fake.effects["tools/ds_review.py"] = lambda: write(self.root / "components/A/B/review/review.toml", "d")
+        rc, lines = self.run_v(fake)
+        self.assertEqual(rc, 0, lines)
+        self.assertIn("review: 1 file(s) changed in 1 part(s): A/B", lines[0])
+        self.assertNotIn("SHOW THE HUMAN", lines[0])  # no part reported a delta
+        fake.replies["tools/ds_review.py"] = (0, "components/A/B: UNSURE=3 | STALE=3 | fallback 0 | renders 0 | changed 1"
+                                                 " | delta 3\nsummary: 1 component(s)\n")
+        rc, lines = self.run_v(fake)
+        self.assertIn("SHOW THE HUMAN .review-cache/A/B/DELTA.md (3 row(s) need review)", lines[0])
 
 
 if __name__ == "__main__":
