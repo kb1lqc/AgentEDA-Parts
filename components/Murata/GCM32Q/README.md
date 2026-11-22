@@ -2,7 +2,7 @@
 
 # GCM32Q
 
-Checked by a person: 0 of 5 rows that matter (6 rows in all). Review: python3 tools/review.py GCM32Q; 3 used values not covered (catalog.csv, series)
+Released: all 5 rows that matter checked (6 rows in all); 3 used values not covered (catalog.csv, series).
 
 ## Part
 
@@ -41,7 +41,7 @@ Checked by a person: 0 of 5 rows that matter (6 rows in all). Review: python3 to
 
 | Parameter | Symbol | Min | Typ | Max | Unit | Conditions | Cite | Checked |
 |---|---|---|---|---|---|---|---|---|
-| Operating temperature range |  | -55 |  | 125 | degC | Applies to: dielectric X7R. Note: Read from the 1210 X7R sheet GCM32ER71C226ME19-01A. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every X7R catalog row uses it. | DS p.2 (GCM32ER71C226ME19-01A-EN.pdf), Rated Value, Operating Temp. Range (-55 to 125 degC) |  |
+| Operating temperature range |  | -55 |  | 125 | degC | Applies to: dielectric X7R. Note: Read from the 1210 X7R sheet GCM32ER71C226ME19-01A. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every X7R catalog row uses it. | DS p.2 (GCM32ER71C226ME19-01A-EN.pdf), Rated Value, Operating Temp. Range (-55 to 125 degC) | checked (kb1lqc, 2026-11-22) |
 
 ## Parameters: electrical
 
@@ -53,9 +53,9 @@ Checked by a person: 0 of 5 rows that matter (6 rows in all). Review: python3 to
 
 | Parameter | Symbol | Min | Typ | Max | Unit | Conditions | Cite | Checked |
 |---|---|---|---|---|---|---|---|---|
-| Land pattern dimension a (reflow) | a | 2.0 |  | 2.4 | mm | Reflow soldering, chip 3.2x2.5, code 32 Note: Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed). | DS p.28 (GCM32ER71C226ME19-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, a |  |
-| Land pattern dimension b (reflow) | b | 1.0 |  | 1.2 | mm | Reflow soldering, chip 3.2x2.5, code 32 Note: Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed). | DS p.28 (GCM32ER71C226ME19-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, b |  |
-| Land pattern dimension c (reflow) | c | 1.8 |  | 2.3 | mm | Reflow soldering, chip 3.2x2.5, code 32 Note: Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed). | DS p.28 (GCM32ER71C226ME19-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, c |  |
+| Land pattern dimension a (reflow) | a | 2.0 |  | 2.4 | mm | Reflow soldering, chip 3.2x2.5, code 32 Note: Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed). | DS p.28 (GCM32ER71C226ME19-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, a | checked (kb1lqc, 2026-11-22) |
+| Land pattern dimension b (reflow) | b | 1.0 |  | 1.2 | mm | Reflow soldering, chip 3.2x2.5, code 32 Note: Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed). | DS p.28 (GCM32ER71C226ME19-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, b | checked (kb1lqc, 2026-11-22) |
+| Land pattern dimension c (reflow) | c | 1.8 |  | 2.3 | mm | Reflow soldering, chip 3.2x2.5, code 32 Note: Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed). | DS p.28 (GCM32ER71C226ME19-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, c | checked (kb1lqc, 2026-11-22) |
 
 ## Limits of this data
 

@@ -92,6 +92,7 @@ max        = 2.4
 unit       = "mm"
 conditions = "Reflow soldering, chip 3.2x2.5, code 32"
 cite       = "DS p.28 (GCM32ER71C226ME19-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, a"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 7276cd9d7e54 row 59ce756e3e23"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed)."
 
 [param.land_b]
@@ -104,6 +105,7 @@ max        = 1.2
 unit       = "mm"
 conditions = "Reflow soldering, chip 3.2x2.5, code 32"
 cite       = "DS p.28 (GCM32ER71C226ME19-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, b"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 7276cd9d7e54 row f76a9f0c4582"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed)."
 
 [param.land_c]
@@ -116,6 +118,7 @@ max        = 2.3
 unit       = "mm"
 conditions = "Reflow soldering, chip 3.2x2.5, code 32"
 cite       = "DS p.28 (GCM32ER71C226ME19-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, c"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 7276cd9d7e54 row 75b6f69143ee"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed)."
 
 # X7R dielectric rows (dielectric X7R, Murata public code R7 / X7R (EIA)). Source: the 1210 X7R reference sheet
@@ -144,5 +147,9 @@ max        = 125
 unit       = "degC"
 conditions = ""
 cite       = "DS p.2 (GCM32ER71C226ME19-01A-EN.pdf), Rated Value, Operating Temp. Range (-55 to 125 degC)"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 7276cd9d7e54 row e53fccd1fbf9"
 check_ambient = true
 note       = "Read from the 1210 X7R sheet GCM32ER71C226ME19-01A. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every X7R catalog row uses it."
+
+[pinout]
+verified = "human:kb1lqc 2026-11-22 page-image pinout d1a871dac5c7 pins b78130ca19ed"

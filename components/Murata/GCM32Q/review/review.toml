@@ -11,14 +11,16 @@ datasheet_rev = "00B"
 pdf_sha256 = "d1a871dac5c7bad631c82801e50cabdb4f8f1124b362823f31b3eca1eff4b2fc"
 pages = 34
 text_layer = true
-component_sha256 = "21344fb00dc0189fb244cab1c9b6771dc864ba5a0deb6a71e21c886ed1107989"
+component_sha256 = "f10be6e901126adf5661dacdd36ee0dacc8b0b516889ee59f6a118ae4dfc2baf"
 render = "complete"
 backfill = "git blame"
 sheets = { "GCM32ER71C226ME19-01A-EN.pdf" = "7276cd9d7e5409cb34fae381aa71b729ef43910e8a1fdfa8b0d8d8924c873744", "GCM32Q7U2J682JX01-00B-EN.pdf" = "d1a871dac5c7bad631c82801e50cabdb4f8f1124b362823f31b3eca1eff4b2fc" }
 
 [pinout]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 hash = "b78130ca19ed0eade2fb8cbf7eb362327e8855e063f1ae174954c0bdb57b1a3b"
+stamp = "human:kb1lqc 2026-11-22 page-image pinout d1a871dac5c7 pins b78130ca19ed"
+stamp_hash = "b78130ca19ed0eade2fb8cbf7eb362327e8855e063f1ae174954c0bdb57b1a3b"
 pdf_sha256 = "d1a871dac5c7bad631c82801e50cabdb4f8f1124b362823f31b3eca1eff4b2fc"
 
 [[pinout.page]]
@@ -30,15 +32,17 @@ dpi = 150
 render_key = "5ed11108b0f25dfb"
 
 [row.land_a]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'a' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "59ce756e3e2361fe278eba47464d2c5c5b85d8fa6a71eaa785e0fea4b565067d"
+stamp = "human:kb1lqc 2026-11-22 page-image ds_review 7276cd9d7e54 row 59ce756e3e23"
+stamp_hash = "59ce756e3e2361fe278eba47464d2c5c5b85d8fa6a71eaa785e0fea4b565067d"
 pdf_sha256 = "7276cd9d7e5409cb34fae381aa71b729ef43910e8a1fdfa8b0d8d8924c873744"
 sheet = "GCM32ER71C226ME19-01A-EN.pdf"
 printed_page = 28
 pdf_page = 28
-toml_lines = "85-95"
+toml_lines = "85-96"
 image = "evidence/GCM32ER71C226ME19-01A-EN_page_p28.png"
 image_sha256 = "a1f3aa49abfb41a78a0d7b12963eca939563da350b2a001c1db356f7873741aa"
 image_bytes = 47615
@@ -47,17 +51,20 @@ crop_box = "full_page"
 dpi = 150
 render_key = "1b1fa450387d1473"
 text_snippet = "                               Series                                                Chip(L\u00d7W)                             a              b              c\n                         Flow soldering can only be used for products with a chip size of 1.6x0.8mm to 3.2x1.6mm.                                                  (in mm)\n                               Series                                                                                       a             b              c"
+stamped_toml = "[param.land_a]\nname       = \"Land pattern dimension a (reflow)\"\nsymbol     = \"a\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 2.0\nmax        = 2.4\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 3.2x2.5, code 32\"\ncite       = \"DS p.28 (GCM32ER71C226ME19-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, a\"\nverified   = \"human:kb1lqc 2026-11-22 page-image ds_review 7276cd9d7e54 row 59ce756e3e23\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed).\""
 
 [row.land_b]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'b' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "f76a9f0c4582ae7f08d7816e367f160e8ece401aa93a6654f377f021e7372ef5"
+stamp = "human:kb1lqc 2026-11-22 page-image ds_review 7276cd9d7e54 row f76a9f0c4582"
+stamp_hash = "f76a9f0c4582ae7f08d7816e367f160e8ece401aa93a6654f377f021e7372ef5"
 pdf_sha256 = "7276cd9d7e5409cb34fae381aa71b729ef43910e8a1fdfa8b0d8d8924c873744"
 sheet = "GCM32ER71C226ME19-01A-EN.pdf"
 printed_page = 28
 pdf_page = 28
-toml_lines = "97-107"
+toml_lines = "98-109"
 image = "evidence/GCM32ER71C226ME19-01A-EN_page_p28.png"
 image_sha256 = "a1f3aa49abfb41a78a0d7b12963eca939563da350b2a001c1db356f7873741aa"
 image_bytes = 47615
@@ -66,17 +73,20 @@ crop_box = "full_page"
 dpi = 150
 render_key = "1b1fa450387d1473"
 text_snippet = "                               Series                                                Chip(L\u00d7W)                             a              b              c\n                               Series                                                                                       a             b              c"
+stamped_toml = "[param.land_b]\nname       = \"Land pattern dimension b (reflow)\"\nsymbol     = \"b\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.0\nmax        = 1.2\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 3.2x2.5, code 32\"\ncite       = \"DS p.28 (GCM32ER71C226ME19-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, b\"\nverified   = \"human:kb1lqc 2026-11-22 page-image ds_review 7276cd9d7e54 row f76a9f0c4582\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed).\""
 
 [row.land_c]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'c' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "75b6f69143eede898525b0c98f592404c21a06319c7029a0af1ffa13bdb4415d"
+stamp = "human:kb1lqc 2026-11-22 page-image ds_review 7276cd9d7e54 row 75b6f69143ee"
+stamp_hash = "75b6f69143eede898525b0c98f592404c21a06319c7029a0af1ffa13bdb4415d"
 pdf_sha256 = "7276cd9d7e5409cb34fae381aa71b729ef43910e8a1fdfa8b0d8d8924c873744"
 sheet = "GCM32ER71C226ME19-01A-EN.pdf"
 printed_page = 28
 pdf_page = 28
-toml_lines = "109-119"
+toml_lines = "111-122"
 image = "evidence/GCM32ER71C226ME19-01A-EN_page_p28.png"
 image_sha256 = "a1f3aa49abfb41a78a0d7b12963eca939563da350b2a001c1db356f7873741aa"
 image_bytes = 47615
@@ -85,6 +95,7 @@ crop_box = "full_page"
 dpi = 150
 render_key = "1b1fa450387d1473"
 text_snippet = "                               Series                                                Chip(L\u00d7W)                             a              b              c\n                               Series                                                                                       a             b              c"
+stamped_toml = "[param.land_c]\nname       = \"Land pattern dimension c (reflow)\"\nsymbol     = \"c\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.8\nmax        = 2.3\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 3.2x2.5, code 32\"\ncite       = \"DS p.28 (GCM32ER71C226ME19-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 3.2x2.5, c\"\nverified   = \"human:kb1lqc 2026-11-22 page-image ds_review 7276cd9d7e54 row 75b6f69143ee\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed).\""
 
 [row.tc_x7r]
 state = "NEW"
@@ -95,7 +106,7 @@ pdf_sha256 = "7276cd9d7e5409cb34fae381aa71b729ef43910e8a1fdfa8b0d8d8924c873744"
 sheet = "GCM32ER71C226ME19-01A-EN.pdf"
 printed_page = 2
 pdf_page = 2
-toml_lines = "124-135"
+toml_lines = "127-138"
 image = "evidence/GCM32ER71C226ME19-01A-EN_page_p2.png"
 image_sha256 = "93752aa67ad00f0c57a203f8b6cbb19be75c9f9e6ad1a6f154e08fa3aaf99847"
 image_bytes = 45632
@@ -106,15 +117,17 @@ render_key = "244f4e07fa305969"
 text_snippet = "(no text-layer line located)"
 
 [row.op_temp_x7r]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "e53fccd1fbf96c5ed756bb0dd88956520728d69a2c5c384b3df5fa94cd4f63aa"
+stamp = "human:kb1lqc 2026-11-22 page-image ds_review 7276cd9d7e54 row e53fccd1fbf9"
+stamp_hash = "e53fccd1fbf96c5ed756bb0dd88956520728d69a2c5c384b3df5fa94cd4f63aa"
 pdf_sha256 = "7276cd9d7e5409cb34fae381aa71b729ef43910e8a1fdfa8b0d8d8924c873744"
 sheet = "GCM32ER71C226ME19-01A-EN.pdf"
 printed_page = 2
 pdf_page = 2
-toml_lines = "137-148"
+toml_lines = "140-152"
 image = "evidence/GCM32ER71C226ME19-01A-EN_page_p2.png"
 image_sha256 = "93752aa67ad00f0c57a203f8b6cbb19be75c9f9e6ad1a6f154e08fa3aaf99847"
 image_bytes = 45632
@@ -123,6 +136,7 @@ crop_box = "full_page"
 dpi = 150
 render_key = "244f4e07fa305969"
 text_snippet = "(no text-layer line located)"
+stamped_toml = "[param.op_temp_x7r]\ndielectric = \"X7R\"\nname       = \"Operating temperature range\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = -55\nmax        = 125\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.2 (GCM32ER71C226ME19-01A-EN.pdf), Rated Value, Operating Temp. Range (-55 to 125 degC)\"\nverified   = \"human:kb1lqc 2026-11-22 page-image ds_review 7276cd9d7e54 row e53fccd1fbf9\"\ncheck_ambient = true\nnote       = \"Read from the 1210 X7R sheet GCM32ER71C226ME19-01A. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every X7R catalog row uses it.\""
 
 [row.catalog]
 state = "NOT_COVERED"

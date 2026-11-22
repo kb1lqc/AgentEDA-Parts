@@ -42,7 +42,7 @@ match the datasheet image, and press one button to stamp them and open the PR. S
 | Murata/GCM31M | 0 of 16 | `python3 tools/review.py GCM31M` |
 | Murata/GCM32D | 0 of 20 | `python3 tools/review.py GCM32D` |
 | Murata/GCM32E | 0 of 20 | `python3 tools/review.py GCM32E` |
-| Murata/GCM32Q | 0 of 5 | `python3 tools/review.py GCM32Q` |
+| Murata/GCM32Q | released | `python3 tools/review.py GCM32Q` |
 | Panasonic/ERA-2AEB | 0 of 17 | `python3 tools/review.py ERA-2AEB` |
 | Panasonic/ERA-3AEB | 0 of 17 | `python3 tools/review.py ERA-3AEB` |
 | Panasonic/ERA-6AEB | 0 of 17 | `python3 tools/review.py ERA-6AEB` |
