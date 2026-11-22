@@ -121,7 +121,7 @@ max        = 6
 unit       = "V"
 conditions = "over operating free-air temperature range (unless otherwise noted)"
 cite       = "DS p.3, 6.1 Absolute Maximum Ratings, Supply voltage VS"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 386c808a6b10 row c121af98dcd3"
 note       = "Only a MAX is printed (MIN column blank). No reference pin printed; checked against system 0 V (a floating GND is not modelled)."
 unchecked  = "covered by vs_rec (2.7 V to 5.5 V, error), which is stricter"
 
@@ -137,7 +137,7 @@ max_ref    = "IN-"
 unit       = "V"
 conditions = "over operating free-air temperature range (unless otherwise noted)"
 cite       = "DS p.3, 6.1 Absolute Maximum Ratings, VIN+, VIN- Differential (VIN+) - (VIN-)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 386c808a6b10 row 468c878f3a30"
 note       = "Pin-pair row: the value is V(IN+), the reference is IN- (second pin as reference). Footnote (2) on the same table: VIN+ and VIN- are the voltages at the IN+ and IN- pins. check_pins IN+ with IN- as reference."
 check_pins = ["IN+"]
 
@@ -151,7 +151,7 @@ max        = 85
 unit       = "V"
 conditions = "over operating free-air temperature range (unless otherwise noted)"
 cite       = "DS p.3, 6.1 Absolute Maximum Ratings, VIN+, VIN- Common-mode"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 386c808a6b10 row 644e29c22ba2"
 note       = "Same limits as vcm_rec (DS p.4, 6.3). No reference pin printed (DS p.12, 7.3.1 gives -0.3 V to +85 V at the input pins with no reference); checked against system 0 V (a floating GND is not modelled)."
 check_pins = ["IN+", "IN-"]
 
@@ -181,7 +181,7 @@ max_ref    = "VS"
 unit       = "V"
 conditions = "over operating free-air temperature range (unless otherwise noted)"
 cite       = "DS p.3, 6.1 Absolute Maximum Ratings, VIO, MOSI, MISO, SCLK, ALERT"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 386c808a6b10 row a41531a90383"
 note       = "Printed GND - 0.3 V (MIN) and VS + 0.3 V (MAX): min_ref = GND, max_ref = VS. CS is not in this row (DS omission, open item): CS is not checked."
 check_pins = ["MOSI", "SCLK", "ALERT"]
 unchecked  = "MISO not checked: push-pull output driven by the part; owner: module. CS: not listed in the DS VIO row (DS omission); no rating stored, open item"
@@ -283,7 +283,7 @@ max        = 85
 unit       = "V"
 conditions = "over operating free-air temperature range (unless otherwise noted)"
 cite       = "DS p.4, 6.3 Recommended Operating Conditions, VCM, Common-mode input range"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 386c808a6b10 row 914926babad7"
 note       = "No reference pin printed; checked against system 0 V (a floating GND is not modelled)."
 check_pins = ["IN+", "IN-"]
 
@@ -297,7 +297,7 @@ max        = 5.5
 unit       = "V"
 conditions = "over operating free-air temperature range (unless otherwise noted)"
 cite       = "DS p.4, 6.3 Recommended Operating Conditions, VS, Operating supply range"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 386c808a6b10 row c44821b5136a"
 note       = "No reference pin printed; checked against system 0 V (a floating GND is not modelled)."
 check_pins = ["VS"]
 
@@ -339,6 +339,7 @@ typ        = 66.4
 unit       = "degC/W"
 conditions = "DGS (VSSOP), 10 pins"
 cite       = "DS p.4, 6.4 Thermal Information, RthetaJC(top), DGS (VSSOP) 10 PINS"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 386c808a6b10 row 4a82a5f94ba5"
 note       = "Single printed value (no min or max), stored as typ."
 
 [param.rtheta_jb]
@@ -454,7 +455,7 @@ max        = 1
 unit       = "uV"
 conditions = "VCM = 48 V, TCT > 280 us; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Shunt offset voltage Vos, VCM = 48 V"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 386c808a6b10 row 1501acac95a7"
 note       = "TYP printed +/-0.3 uV (spread around zero: typ_pm). MAX printed +/-1 uV: min = -1, max = 1. No temperature condition: header 25 degC. The full-temperature offset comes from vos_drift_full (SPEC recipe step 2)."
 
 [param.vos_vcm0_25c]
@@ -484,7 +485,7 @@ max        = 10
 unit       = "nV/degC"
 conditions = "TA = -40 degC to +125 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, INPUT, Shunt offset voltage drift dVos/dT"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 386c808a6b10 row c92f4282a717"
 note       = "TYP printed +/-2 nV/degC (typ_pm); MAX printed +/-10 nV/degC: min = -10, max = 10."
 
 [param.vos_psrr_full]
@@ -696,6 +697,7 @@ typ        = 312.5
 unit       = "nV"
 conditions = "Shunt voltage, ADCRANGE = 0; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, 1 LSB step size, Shunt voltage ADCRANGE = 0"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 386c808a6b10 row c9c362dcd13c"
 note       = "Same value in Table 7-9 (DS p.23) and Section 8.1.1 (DS p.29)."
 
 [param.lsb_vshunt_adcr1_25c]
@@ -716,7 +718,7 @@ typ        = 195.3125
 unit       = "uV"
 conditions = "Bus voltage; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, 1 LSB step size, Bus voltage"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 386c808a6b10 row a3183c405451"
 note       = "Same value in Table 7-10 (DS p.23) and Section 8.1.1 (DS p.29)."
 
 [param.lsb_temp_25c]
@@ -727,6 +729,7 @@ typ        = 7.8125
 unit       = "mdegC"
 conditions = "Temperature; table header TA = 25 degC"
 cite       = "DS p.5, 6.5 Electrical Characteristics, DC ACCURACY, 1 LSB step size, Temperature"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 386c808a6b10 row 53fdeea693b6"
 note       = "Printed 7.8125 m degC/LSB (DS p.5, p.24 Table 7-11); stored as printed."
 
 [param.tct_0h_25c]
@@ -1078,3 +1081,6 @@ unit       = "ppm/degC"
 conditions = ""
 cite       = "DS p.23, 7.6.1.4 Shunt Temperature Coefficient (SHUNT_TEMPCO) Register, Table 7-8, TEMPCO (3FFFh = 16383 ppm/degC)"
 note       = "Register range 0h = 0 ppm/degC to 16383 ppm/degC (Table 7-8). Section 7.3.5 (DS p.16) says the full scale is 16384 ppm/degC. The DS contradicts itself (16383 vs 16384); the register table value is stored. DS ambiguity, open item."
+
+[pinout]
+verified = "human:kb1lqc 2026-11-22 page-image pinout 386c808a6b10 pins d790b80b8811"
