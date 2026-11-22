@@ -87,6 +87,7 @@ Read `docs/notes/workflow.md` first. It shows the part types (single part, famil
    `--regen` and commit the updated `review.toml`. CI fails a PR whose `review.toml` is stale.
 9. **Open a pull request.** Push the branch and open the PR with `gh pr create`. CI runs `tools/verify.py --all`.
    The review record (see below) lists rows that still need a human check. Those rows do not fail CI.
+   A bot comment on the PR (`tools/pr_status.py`, workflow `review-status`) shows `<k> of <n> rows that matter checked` for each part the PR changes, with the `tools/review.py` command.
 
 ## Verify parameters (the human check)
 

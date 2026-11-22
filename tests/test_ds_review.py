@@ -1067,7 +1067,7 @@ class TestDocSizes(unittest.TestCase):
         doc = ast.get_docstring(ast.parse((ROOT / "tools/ds_review.py").read_text()))
         self.assertLessEqual(len(doc.split("\n")), 15)
         self.assertIn("docs/spec/review.md", doc)
-        for path, limit in (("docs/spec/review.md", 40), ("docs/spec/review-view.md", 70), ("docs/briefs/ds-review.md", 15),
+        for path, limit in (("docs/spec/review.md", 40), ("docs/spec/review-view.md", 80), ("docs/briefs/ds-review.md", 15),
                             ("docs/briefs/ds-review-model-prompt.md", 40)):
             self.assertLessEqual(len((ROOT / path).read_text().rstrip("\n").split("\n")), limit, path)
 

@@ -1,0 +1,43 @@
+name: review-status
+# Pull requests from this repo (not forks: their token is read-only): one comment marked <!-- review-status -->,
+# created or updated in place, listing the review status of each component directory the PR changes
+# (tools/pr_status.py: ledger only, never stamps). No component changed: an existing comment is deleted.
+# PR data reaches the shell only through env vars.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+  pull-requests: write
+concurrency:
+  group: review-status-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  comment:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # pr_status reads the diff against the PR base
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Post, update or delete the comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          python3 tools/pr_status.py --base "$BASE" > "$RUNNER_TEMP/comment.md"
+          id=$(gh api --paginate "repos/$REPO/issues/$PR/comments" \
+            --jq '.[] | select(.body | contains("<!-- review-status -->")) | .id' | head -n 1)
+          if [ ! -s "$RUNNER_TEMP/comment.md" ]; then
+            [ -z "$id" ] || gh api -X DELETE "repos/$REPO/issues/comments/$id"
+          elif [ -n "$id" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$id" -F body=@"$RUNNER_TEMP/comment.md" > /dev/null
+          else
+            gh api -X POST "repos/$REPO/issues/$PR/comments" -F body=@"$RUNNER_TEMP/comment.md" > /dev/null
+          fi
