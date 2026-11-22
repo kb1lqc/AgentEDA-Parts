@@ -67,3 +67,7 @@ footprint; pin count or position conflict in the DS; missing NC/EP wording; two 
 8. `.review-cache/<Mfr>/<Value>/DELTA.md` rows listed for the human (key, state, status; `docs/briefs/ds-review.md`).
 
 Modules: `ee-design`, `schematic-style`, `zener-wrapper` section 3. Examples: `docs/spec/lib-api.md`.
+
+## Agent skills
+Issues: GitHub (`gh`), default triage labels. Domain docs: single-context, created lazily.
+See `docs/agents/issue-tracker.md`, `triage-labels.md`, `domain.md`.
