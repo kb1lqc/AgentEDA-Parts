@@ -358,7 +358,7 @@ min        = 0.5
 max        = 0.6
 unit       = "mm"
 conditions = "Recommended land pattern (not a tolerance on the body)"
-cite       = "DS PDF p.1, DMM0000COL17 (Panasonic land-pattern document), Recommended land pattern, 'High precision type (ERA, ERJPC/PB)' key, row 0402 (1005), column a"
+cite       = "DS p.1 (DMM0000COL17.pdf), Panasonic land-pattern document, Recommended land pattern, 'High precision type (ERA, ERJPC/PB)' key, row 0402 (1005), column a"
 note       = "Printed as a range. The land table is one table for the listed categories; the ERA key line is printed above it. The footprint uses the middle of the range (pads 0.475 x 0.5 mm at +/-0.5125 mm)."
 
 [param.land_b]
@@ -370,7 +370,7 @@ min        = 1.4
 max        = 1.6
 unit       = "mm"
 conditions = "Recommended land pattern (not a tolerance on the body)"
-cite       = "DS PDF p.1, DMM0000COL17 (Panasonic land-pattern document), Recommended land pattern, 'High precision type (ERA, ERJPC/PB)' key, row 0402 (1005), column b"
+cite       = "DS p.1 (DMM0000COL17.pdf), Panasonic land-pattern document, Recommended land pattern, 'High precision type (ERA, ERJPC/PB)' key, row 0402 (1005), column b"
 note       = "Printed as a range. The land table is one table for the listed categories; the ERA key line is printed above it. The footprint uses the middle of the range (pads 0.475 x 0.5 mm at +/-0.5125 mm)."
 
 [param.land_c]
@@ -382,5 +382,5 @@ min        = 0.4
 max        = 0.6
 unit       = "mm"
 conditions = "Recommended land pattern (not a tolerance on the body)"
-cite       = "DS PDF p.1, DMM0000COL17 (Panasonic land-pattern document), Recommended land pattern, 'High precision type (ERA, ERJPC/PB)' key, row 0402 (1005), column c"
+cite       = "DS p.1 (DMM0000COL17.pdf), Panasonic land-pattern document, Recommended land pattern, 'High precision type (ERA, ERJPC/PB)' key, row 0402 (1005), column c"
 note       = "Printed as a range. The land table is one table for the listed categories; the ERA key line is printed above it. The footprint uses the middle of the range (pads 0.475 x 0.5 mm at +/-0.5125 mm)."

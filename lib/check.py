@@ -9,7 +9,8 @@ import tomllib
 from pathlib import Path
 
 from . import capacitor, catalog, kicad, rules, series
-from .component import ROOT, _repo_root, ledger_state_of, load_calc, merge_variant, row_hash, run_example, variants_of
+from .component import (ROOT, _repo_root, ledger_state_of, load_calc, merge_variant, pinout_hash, row_hash, run_example,
+                        variants_of)
 from .units import to_si
 
 PART_FIELDS = ["value", "mpn", "manufacturer", "description", "category", "package", "datasheet_url",
@@ -112,6 +113,9 @@ def check_param(key, t, pin_names=(), used_by_series=False):
         out.append(("ERROR", f"{label}: kind '{t['kind']}' not one of {sorted(KINDS)}"))
     if t.get("scope") not in SCOPES and "scope" in t:
         out.append(("ERROR", f"{label}: scope '{t['scope']}' not one of {sorted(SCOPES)}"))
+    if key == "pinout":
+        out.append(("ERROR", f"{label}: [param.pinout] is reserved for the pin table's review row; rename this row "
+                             f"(for example 'pinout_note') in component.toml, calc.py INPUTS and examples"))
     out.extend(check_tol_pct(label, t) + check_series(label, key, t))
     has_number = any(f in t for f in ("min", "typ", "max"))
     if has_number == ("text" in t):  # both or neither
@@ -489,7 +493,8 @@ def check_ledger(folder):
         with open(f, "rb") as fh:
             ledger = tomllib.load(fh)
         with open(folder / "component.toml", "rb") as fh:
-            params = tomllib.load(fh).get("param", {})
+            comp = tomllib.load(fh)
+        params = comp.get("param", {})
     except (OSError, tomllib.TOMLDecodeError) as e:
         return [("ERROR", f"review/review.toml or component.toml is not valid TOML ({e}): {rerun}")]
     out = [("ERROR", f"review/{p.relative_to(folder / 'review')}: only review/review.toml is committed (page images and "
@@ -510,6 +515,21 @@ def check_ledger(folder):
             if r.get("state") != want:
                 out.append(("ERROR", f"review/review.toml row {key}: state {r.get('state')!r} but the stamp and pins give "
                                      f"{want!r}: {rerun}"))
+    pins, pr = comp.get("pin"), ledger.get("pinout")
+    if pins:  # the pinout record (docs/spec/review-view.md "Pinout stamp"), checked like a row
+        stamp = (comp.get("pinout") or {}).get("verified") or ""
+        if not isinstance(pr, dict) or pr.get("hash") != pinout_hash(pins):
+            out.append(("ERROR", f"review/review.toml pinout is missing or older than component.toml: {rerun}"))
+        elif (pr.get("stamp") or "") != stamp:
+            out.append(("ERROR", f"review/review.toml pinout: stamp differs from its verified line: {rerun}"))
+        else:
+            P = (inp.get("sheets") or {}).get(main, "")  # the pinout stamp binds the main PDF
+            want = ledger_state_of(pr["hash"], stamp, pr.get("stamp_hash") or "", pr.get("pdf_sha256") or "", P, pinout=True)
+            if pr.get("state") != want:
+                out.append(("ERROR", f"review/review.toml pinout: state {pr.get('state')!r} but the stamp and pins give "
+                                     f"{want!r}: {rerun}"))
+    elif pr is not None:
+        out.append(("ERROR", f"review/review.toml has a pinout record but component.toml has no [[pin]]: {rerun}"))
     for key, r in rows.items():
         if key not in params and (not isinstance(r, dict) or r.get("state") != "NOT_COVERED"):
             out.append(("ERROR", f"review/review.toml row {key}: not a Param, so its state must be 'NOT_COVERED': {rerun}"))
@@ -519,7 +539,8 @@ def check_ledger(folder):
     def pdf(sheet):  # the main datasheet at its datasheet_file path, other sheets in docs/datasheets/
         return root / inp["datasheet_file"] if sheet == main and inp.get("datasheet_file") else root / "docs" / "datasheets" / sheet
     present, absent, matched = set(), set(), set()
-    for key, r in rows.items():
+    pages = [pg for pg in pr.get("page", []) if isinstance(pg, dict)] if isinstance(pr, dict) else []  # every cited page
+    for key, r in list(rows.items()) + [("pinout", pg) for pg in pages]:
         if not isinstance(r, dict) or not r.get("image"):
             continue
         sheet = r.get("sheet") or main
@@ -570,6 +591,21 @@ def ledger_notes(folder):
             for k, r in rows.items() if isinstance(r, dict) and r.get("state") in ("STALE", "PDF_CHANGED")]
 
 
+def sheet_names(folder, root):
+    """PDF names a cite of this part may name: the sheets its committed review.toml records (so CI knows them) plus the
+    PDFs in root/docs/datasheets/ when that directory exists locally."""
+    names = set()
+    try:
+        with open(Path(folder) / "review" / "review.toml", "rb") as f:
+            names |= set((tomllib.load(f).get("inputs") or {}).get("sheets") or {})
+    except (OSError, tomllib.TOMLDecodeError):
+        pass
+    d = Path(root) / "docs" / "datasheets"
+    if d.is_dir():
+        names |= {p.name for p in d.glob("*.pdf")}
+    return names
+
+
 def _check_component(folder):
     """All checks for one component directory. Returns [(level, message), ...].
 
@@ -590,6 +626,7 @@ def _check_component(folder):
     out = check_part(part, folder, family=bool(variants)) + check_pins(pins) + check_ledger(folder)
     out += finding_messages(rules.cite_findings(data, variants))
     out += finding_messages(rules.cite_sheet_findings(data, variants))
+    out += finding_messages(rules.cite_unbracketed_findings(data, sheet_names(folder, ROOT), variants))
     out += finding_messages(rules.verified_findings(data, variants))
     for name in sorted({n for _, n in rules.cite_sheets(data, variants) if n.endswith('.pdf')}):
         if not (ROOT / "docs" / "datasheets" / name).exists():

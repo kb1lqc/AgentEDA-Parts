@@ -16,6 +16,19 @@ render = "complete"
 backfill = "git blame"
 sheets = { "AOA0000C304.pdf" = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378" }
 
+[pinout]
+state = "NEW"
+hash = "0b6eb34da570119a641a4a2599f5a7b74fd4989de8109718bf0757d38e304169"
+pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
+
+[[pinout.page]]
+pdf_page = 3
+image = "evidence/pinout_p3.png"
+image_sha256 = "6a28f9989959cfb222d474e4438173b9819a5dc52a09871fc13deb9e403b97b7"
+image_bytes = 109548
+dpi = 200
+render_key = "3db725f16ecf781f"
+
 [row.p70]
 state = "NEW"
 status = "UNSURE"
@@ -432,11 +445,6 @@ text_snippet = "(no text-layer line located)"
 state = "NOT_COVERED"
 status = "UNSURE"
 reason = "resistor-series values and MPN rule (calc.py) are not reviewed by ds_review"
-
-[row.pins]
-state = "NOT_COVERED"
-status = "UNSURE"
-reason = "[[pin]] rows are not reviewed by ds_review"
 
 [row.calc]
 state = "NOT_COVERED"

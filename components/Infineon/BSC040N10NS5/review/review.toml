@@ -16,6 +16,19 @@ render = "complete"
 backfill = "git blame"
 sheets = { "infineon-bsc040n10ns5-datasheet-en.pdf" = "9ae3b45be3256cadb288a4d16b3ebe6cedb3bb0da7851b0c6d4b6a11391ffb0e" }
 
+[pinout]
+state = "NEW"
+hash = "c943891f527d4634de828784cb0e29d0014bd7e78e1395c2f6f0298eea661762"
+pdf_sha256 = "9ae3b45be3256cadb288a4d16b3ebe6cedb3bb0da7851b0c6d4b6a11391ffb0e"
+
+[[pinout.page]]
+pdf_page = 1
+image = "evidence/pinout_p1.png"
+image_sha256 = "770fb32afd49d8a6adb6bd4f722190e2757cf2d09352f5a34b4c741759d331b1"
+image_bytes = 73074
+dpi = 200
+render_key = "6844f453fb351577"
+
 [row.vds_rating]
 state = "NEW"
 status = "UNSURE"
@@ -1089,11 +1102,6 @@ header_box = [36.5, 73.6, 575.2, 127.0]
 header_key = "14b5e1c041046ea4"
 text_snippet = "                                                                      Values\n   Parameter                                       Symbol                             Unit   Note\u0002/\u0002Test\u0002Condition\n                                                              Min.    Typ.     Max.\n   Reverse recovery charge          1)\n                                                   Qrr        -       90       180    nC     VR=50\u0002V,\u0002IF=50A,\u0002diF/dt=100\u0002A/\u00b5s"
 text_cells = { max = "180", min = "-", typ = "90", unit = "nC" }
-
-[row.pins]
-state = "NOT_COVERED"
-status = "UNSURE"
-reason = "[[pin]] rows are not reviewed by ds_review"
 
 [row.calc]
 state = "NOT_COVERED"

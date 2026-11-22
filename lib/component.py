@@ -23,6 +23,12 @@ _ROWS = {}  # same keys -> {dir, review_key, stamp, state, cite, reason} for lib
 HUMAN = "human:"  # a stamp whose who starts with this claims a human check (docs/spec/review.md); anything else is machine
 GITHUB_LOGIN = r"[A-Za-z0-9](?:[A-Za-z0-9]|-(?=[A-Za-z0-9])){0,38}"  # 1-39 chars, alnum and single inner hyphens
 HUMAN_RE = re.compile(r"^human:" + GITHUB_LOGIN + r" \d{4}-\d{2}-\d{2} page-image ds_review (?P<pdf>[0-9a-f]{12}) row (?P<row>[0-9a-f]{12})\Z")
+PINOUT_RE = re.compile(r"^human:" + GITHUB_LOGIN + r" \d{4}-\d{2}-\d{2} page-image pinout (?P<pdf>[0-9a-f]{12}) pins (?P<row>[0-9a-f]{12})\Z")
+
+
+def pinout_hash(pins):
+    """The pinout's hash (docs/spec/review-view.md "Pinout stamp"): SHA-256 of the [[pin]] list as compact sorted JSON."""
+    return hashlib.sha256(json.dumps(list(pins or []), sort_keys=True, separators=(",", ":")).encode()).hexdigest()
 
 
 _LEDGER_BAD = ("STALE", "PDF_CHANGED")
@@ -74,11 +80,12 @@ def row_hash(table):
 LEDGER_STATES = ("HUMAN_VERIFIED", "MACHINE_CHECKED", "STALE", "PDF_CHANGED", "NEW", "UNVERIFIED", "NOT_COVERED")
 
 
-def ledger_state_of(h, stamp, stamp_hash, pin, P):
+def ledger_state_of(h, stamp, stamp_hash, pin, P, pinout=False):
     """The review.toml state of a Param row (docs/spec/review.md): h = row hash, stamp = its `verified`, stamp_hash and
-    pin = the ledger's pins, P = the PDF SHA-256 ("" when unknown). Shared by tools/ds_review.py and lib.check."""
+    pin = the ledger's pins, P = the PDF SHA-256 ("" when unknown). pinout=True: h is the pins hash and the stamp the
+    pinout format. Shared by tools/ds_review.py and lib.check."""
     if stamp:
-        m = HUMAN_RE.match(stamp)
+        m = (PINOUT_RE if pinout else HUMAN_RE).match(stamp)
         if h != stamp_hash or (m and m["row"] != h[:12]):
             return "STALE"
         if P and ((pin and pin != P) or (m and m["pdf"] != P[:12])):
@@ -102,7 +109,8 @@ def _review(path, review_key, stamp, local_pdf=True, ledger=None, params=None):
     params: the parsed review.toml and component.toml [param] (read from path when None)."""
     path = Path(path)
     ledger = (_read_toml(path / "review" / "review.toml") or {}) if ledger is None else ledger
-    row = ledger.get("row", {}).get(review_key) if review_key else None
+    pin = review_key == "pinout"  # the pinout record is [pinout], its stamp binds the [[pin]] list's hash
+    row = (ledger.get("pinout") if pin else ledger.get("row", {}).get(review_key)) if review_key else None
     row = row if isinstance(row, dict) else None
     state = row.get("state") if row else None
     if state in _LEDGER_BAD:
@@ -111,26 +119,38 @@ def _review(path, review_key, stamp, local_pdf=True, ledger=None, params=None):
         return state, "no stamp"
     if not str(stamp).startswith(HUMAN):
         return state, "machine stamp"
-    m = HUMAN_RE.match(str(stamp))
+    m = (PINOUT_RE if pin else HUMAN_RE).match(str(stamp))
     if not m:
         return state, "human stamp: malformed"
     if not row or not row.get("hash") or state == "NOT_COVERED":
         return state, "no review record"
-    if params is None:
-        params = (_read_toml(path / "component.toml") or {}).get("param") or {}
-    table = params.get(review_key)
-    if table is None or row_hash(table)[:12] != m["row"]:
+    if pin:
+        cur = pinout_hash((_read_toml(path / "component.toml") or {}).get("pin"))
+    else:
+        if params is None:
+            params = (_read_toml(path / "component.toml") or {}).get("param") or {}
+        table = params.get(review_key)
+        cur = row_hash(table) if table is not None else None
+    if cur is None or cur[:12] != m["row"]:
         return state, "human stamp: row changed"
     inp = ledger.get("inputs", {})
     main = Path(inp.get("datasheet_file", "")).name
-    sheet = row.get("sheet") or main
+    sheet = row.get("sheet") or main  # the pinout record has none: its stamp binds the main PDF
     want = (inp.get("sheets") or {}).get(sheet) or (inp.get("pdf_sha256") if sheet == main else None)
     root = _repo_root(path)
     dsf = inp.get("datasheet_file")
-    pdf = ((root / dsf if sheet == main and dsf else root / "docs" / "datasheets" / sheet)
-           if root and sheet and local_pdf else None)  # absent PDF (CI): ledger SHA only
+
+    def local(name):  # absent PDF (CI): ledger SHA only
+        return ((root / dsf if name == main and dsf else root / "docs" / "datasheets" / name)
+                if root and name and local_pdf else None)
+    pdf = local(sheet)
     if not want or want[:12] != m["pdf"] or (pdf and pdf.is_file() and _file_sha(pdf)[:12] != m["pdf"]):
         return state, "human stamp: PDF changed"
+    for pg in (row.get("page") or []) if pin else []:  # another sheet a pin cites: its PDF must be the rendered one
+        name = pg.get("sheet") or main
+        other, pinned = local(name), (inp.get("sheets") or {}).get(name)
+        if name != main and (not pinned or (other and other.is_file() and _file_sha(other) != pinned)):
+            return state, "human stamp: PDF changed"
     return state, None
 
 

@@ -2,15 +2,20 @@
 """Check datasheet rows on one local page, then stamp them and open the PR with one button. Run by the PERSON who checks.
 
 Usage (library repo root):
+  python3 tools/review.py                                       every part
+  python3 tools/review.py <Value> [<Value> ...]                 these parts
   python3 tools/review.py --block <Block> [--blocks-repo DIR]   the rows a circuit block reads
-  python3 tools/review.py <Value> [<Value> ...]                 every row of these parts
 --block reads <blocks repo>/benches/<Block>/docs/design-analysis/library-inputs.json (written by the block's
 analysis.py). Default blocks repo: ../ina229 if it exists, else ../circuit-blocks.
 
-Each row is checked (a current human stamp), needs check, or reference (not used by the block): docs/spec/review.md
-"Human view". The page (127.0.0.1, random port, random token in the URL) shows per part "<Value>: k of n used rows
-checked" and only the rows to check, easiest first, with the evidence crops from .review-cache/ (tools/ds_review.py
-runs first when a part has no cache; it needs the local PDF). Tick the rows that match the datasheet image and press
+Each row is checked (a current human stamp), needs check, or reference: docs/spec/review.md "Human view" (the rows
+that matter; --block only narrows the page, never a part's status; the pinout is a row, stamped `<Value>:pinout`). The
+page (127.0.0.1, random port, random token in the URL) shows a status line per part ("<Value>: k of n rows that matter
+checked"), then per part (fewest rows to check first, released parts folded) the rows to check in three sections (Limits,
+Used by equations, Pins & package): the statement card (title, value, conditions, temperature, used by; the note
+folded under "How we read it"), the crops or the located full page from .review-cache/ (each image file is served
+once, by token URL; tools/ds_review.py runs first when a part has no cache, it needs the local PDF) and one tick box, none when
+stamp.py would refuse the row. Tick the rows whose statement matches the datasheet image and press
 "Stamp N rows and open PR". With the library tree clean (untracked files allowed) it runs, showing each command:
 git fetch origin; git switch -c review/<parts>-<login>-<YYYYMMDD>[-n] origin/main; tools/stamp.py --from <list>
 (a refusal switches back and deletes the new branch); tools/verify.py --regen <parts> (a FAIL leaves the branch,
@@ -21,8 +26,8 @@ Exit 0 = PR opened (or Done pressed), 1 = refused or a step failed.
 """
 
 import argparse
-import base64
 import datetime
+import hashlib
 import html
 import json
 import os
@@ -43,7 +48,6 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import stamp as S  # noqa: E402  (check_row: the exact rule stamp.py applies, so a tickable row is a stampable row)
 from lib import review_status as RS  # noqa: E402
-from lib.readme import shown  # noqa: E402  (min/typ/max as the README prints them)
 
 ROOT = Path(__file__).resolve().parent.parent
 AGENT = ("refused: running inside Claude Code (CLAUDECODE is set); a person must run review.py in their own shell "
@@ -102,9 +106,17 @@ def block_inputs(blocks_repo, block):
 
 def classify(root, d, key, ledger, params):
     """(tier, why, images) of one row that needs a check; images = [(cache-relative path, caption)]."""
+    if key == "pinout":
+        _, _, why = S.check_row(root, d.name, "pinout")
+        if why:
+            return "fix", why, []
+        pages = [pg for pg in ledger["pinout"].get("page", []) if pg.get("image")]  # every page a pin cites
+        return "tier 3", "", [(pg["image"], f"pin table page {pg['pdf_page']}") for pg in pages]
     if key not in params:
         return "none", ("variant row: variants.toml rows are not reviewed" if key.startswith("variant.")
                         else "catalog row (catalog.csv): not reviewed"), []
+    if not RS.values_text(params[key]):
+        return "fix", RS.statement(d, key), []  # a row with no min, typ or max: nothing to compare, no tick box
     _, _, why = S.check_row(root, d.name, key)
     if why:
         return "fix", why, []
@@ -113,21 +125,47 @@ def classify(root, d, key, ledger, params):
         imgs = [(row.get("header_image"), "table header"), (row.get("image"), "row"), (row.get("foot_image"), "footnotes")]
         tier = "tier 1" if row.get("status") == "AGREE_TEXT_CHECK" else "tier 2"
         return tier, row.get("reason", ""), [(p, c) for p, c in imgs if p]
+    loc = locate_entry(root, d, key)
+    if loc:  # the full page of the cited sheet with boxes (item["locate"]); the ledger image stamp hashes goes below it
+        ev = row.get("image")
+        same = ev and Path(ev).as_posix() == Path(loc["image"]).as_posix()
+        shown = [(ev, "evidence the stamp records")] if ev and not same and (cache_dir(root, d) / ev).is_file() else []
+        return "tier 3", row.get("reason", ""), shown
     cache = cache_dir(root, d)
     imgs = [(row["image"], "table or page")] if row.get("image") and (cache / row["image"]).is_file() else []
-    page = f"evidence/page_p{row.get('pdf_page')}.png"
+    pre = re.sub(r"[^A-Za-z0-9_.-]", "_", Path(row["sheet"]).stem) + "_" if row.get("sheet") else ""
+    page = f"evidence/{pre}page_p{row.get('pdf_page')}.png"  # the cited sheet's page, never the main file's
     if row.get("pdf_page") and page != row.get("image") and (cache / page).is_file():
         imgs.append((page, "full page"))
     return ("tier 3" if imgs else "page"), row.get("reason", ""), imgs
 
 
-def page_link(ledger, part, row):
-    """(text, url or None): local file, PDF page and printed page; url#page=N when the URL is a direct PDF link."""
+def locate_entry(root, d, key):
+    """The cached Locate data of a row (.review-cache/<Mfr>/<Value>/locate.json: image, boxes in percent of the page;
+    docs/spec/review-view.md "Page"): at most 5 well-formed boxes, or None when there is none or its image is gone."""
+    cache = cache_dir(root, d)
+    try:
+        e = json.loads((cache / "locate.json").read_text())["rows"][key]
+        ok = isinstance(e, dict) and isinstance(e.get("image"), str) and (cache / e["image"]).is_file()
+    except (OSError, ValueError, KeyError, TypeError, AttributeError):
+        return None
+    if not ok:
+        return None
+    boxes = [b for b in e.get("boxes") or [] if isinstance(b, dict) and isinstance(b.get("box"), list) and len(b["box"]) == 4
+             and all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in b["box"])]
+    return {**e, "boxes": boxes[:5]}
+
+
+def page_link(ledger, part, row, pages=None):
+    """(text, url or None): local file, PDF page and printed page; url#page=N when the URL is a direct PDF link. pages:
+    every PDF page a pinout cites (listed in the text; the link goes to the first)."""
     inp = ledger.get("inputs", {})
     main = Path(inp.get("datasheet_file") or part.get("datasheet_file") or "").name
     sheet = (row or {}).get("sheet") or main
     pdf_page, printed = (row or {}).get("pdf_page"), (row or {}).get("printed_page")
-    text = f"docs/datasheets/{sheet or 'n/a'}, PDF page {pdf_page or 'n/a'}" + (f" (printed page {printed})" if printed else "")
+    shown_pages = ", ".join(str(n) for n in pages) if pages and len(pages) > 1 else None  # a pinout citing several pages
+    text = (f"docs/datasheets/{sheet or 'n/a'}, PDF " + (f"pages {shown_pages}" if shown_pages else f"page {pdf_page or 'n/a'}")
+            + (f" (printed page {printed})" if printed and not shown_pages else ""))
     url = inp.get("datasheet_url") or part.get("datasheet_url")
     if not url or sheet != main:
         return text, None
@@ -135,40 +173,58 @@ def page_link(ledger, part, row):
     return text, f"{url}#page={pdf_page}" if direct and pdf_page else url
 
 
-def check_line(t):
-    """'Check: max 0.1 W (Rated power at 70 degC); <cite>': the committed numbers in plain form."""
-    vals = ", ".join(f"{f} {shown(t, f)}" for f in ("min", "typ", "max") if shown(t, f))
-    name = f" ({t['name']})" if t.get("name") else ""
-    return f"Check: {vals or 'no number'} {t.get('unit', '')}".rstrip() + f"{name}; {t.get('cite', 'no cite')}"
+SECTIONS = ("Limits", "Used by equations", "Pins & package")
+
+
+def section_of(why):
+    """The page section of a row from RS.matters reasons (docs/spec/review-view.md "Page"); a row outside the part's
+    [param] rows (variant, catalog) is a used value."""
+    why = why or []
+    if "pinout" in why or "mechanical" in why:
+        return SECTIONS[2]
+    return SECTIONS[0] if "abs_max" in why or "thermal" in why else SECTIONS[1]
+
+
+def all_parts(root):
+    """Every component directory (a family is one directory), sorted by path."""
+    return sorted(p.parent for p in (Path(root) / "components").glob("*/*/component.toml"))
 
 
 def build_model(root, used_by_dir):
     """Per part (sorted by name): dict with dir, value, status line, released, items (rows to check), checked
-    [(key, login, date)] and reference keys. used_by_dir: {dir: set of rows, or None = use unknown}."""
+    [(key, login, date)] and reference keys. used_by_dir: {dir: set of rows a block reads, or None = no narrowing}.
+    Counts and `released` never depend on the block; it only narrows items (a block row outside the part's [param]
+    rows is listed as not reviewable)."""
     parts = []
     for d in sorted(used_by_dir, key=lambda p: Path(p).name):
         d = Path(d)
         used = used_by_dir[d]
-        status = RS.statuses(d, used)
-        line, released = RS.summary(d.name, status, used is not None)
+        rev = RS.review(d, root)
+        status = rev["status"]
+        line, released = RS.summary(d.name, rev)
         ledger, comp = read_toml(d / "review" / "review.toml"), read_toml(d / "component.toml")
         params, done = comp.get("param", {}), RS.checked_rows(d)
         items = []
-        for key, s in status.items():
-            if s != RS.NEEDS:
-                continue
+        shown_keys = [k for k, s in status.items() if s == RS.NEEDS and (used is None or k in used)]
+        shown_keys += sorted(k for k in (used or ()) if k not in status)
+        for key in shown_keys:
             tier, why, imgs = classify(root, d, key, ledger, params)
-            row = ledger.get("row", {}).get(key)
+            pin_pages = [pg for pg in ledger.get("pinout", {}).get("page", []) if isinstance(pg, dict)] if key == "pinout" else []
+            row = (pin_pages[0] if pin_pages else None) if key == "pinout" else ledger.get("row", {}).get(key)
             items.append({"ref": f"{d.name}:{key}", "key": key, "tier": tier, "why": why, "images": imgs,
                           "name": params.get(key, {}).get("name", ""), "part": d.name,
-                          "check": check_line(params[key]) if key in params else "",
+                          "locate": None if key == "pinout" or tier not in TICKABLE or (row or {}).get("crop") == "auto"
+                          else locate_entry(root, d, key),
+                          "statement": RS.statement(d, key, root) if key == "pinout" or key in params else "",
+                          "card": RS.statement_card(d, key, root) if key == "pinout" or key in params else None,
+                          "section": section_of(rev["matters"].get(key)),
                           "toml": toml_block(d / "component.toml", f"[param.{key}]") if key in params else "",
-                          "page": page_link(ledger, comp.get("part", {}), row if isinstance(row, dict) else None)})
+                          "page": page_link(ledger, comp.get("part", {}), row if isinstance(row, dict) else None,
+                                            [pg["pdf_page"] for pg in pin_pages])})
         order = {t: n for n, (t, _) in enumerate(TIERS)}
-        items.sort(key=lambda i: (order[i["tier"]], i["key"]))
-        rows = [s for s in status.values() if s != RS.REFERENCE]
+        items.sort(key=lambda i: (SECTIONS.index(i["section"]), order[i["tier"]], i["key"]))
         parts.append({"dir": d, "value": d.name, "line": line, "released": released, "items": items,
-                      "k": rows.count(RS.CHECKED), "n": len(rows), "used_known": used is not None,
+                      "k": rev["k"], "n": rev["n"], "used_known": used is not None,
                       "checked": [(k, *done[k]) for k, s in status.items() if s == RS.CHECKED],
                       "reference": [k for k, s in status.items() if s == RS.REFERENCE]})
     return parts
@@ -200,8 +256,13 @@ body{background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,sans-serif;ma
 h2{border-bottom:2px solid var(--line);padding-bottom:4px;margin-top:2em}h3{font-size:1em;margin:1.4em 0 .4em}
 .item{background:var(--card);border:1px solid var(--line);border-radius:6px;margin:12px 0;padding:10px 14px}
 .item.done{border-color:var(--ok);border-width:2px}.mute{color:var(--mute)}.warn{color:var(--warn)}
+table.stmt{border-collapse:collapse;margin:4px 0}.stmt th{text-align:left;color:var(--mute);font-weight:normal;padding:1px 14px 1px 0}
+.stmt td{padding:1px 14px 1px 0}.card summary{cursor:pointer}
 pre{background:var(--code);padding:8px;overflow-x:auto;font-size:13px;white-space:pre-wrap}
 img{max-width:100%;display:block;margin:4px 0;background:#fff;border:1px solid var(--line)}
+.loc{overflow:auto;max-height:60vh;border:1px solid var(--line);cursor:zoom-out}.loc.full{overflow:visible;max-height:none}
+.pg{position:relative}.loc.full .pg{width:100%!important}.pg img{max-width:none;width:100%;margin:0;border:0}
+.box{position:absolute;box-sizing:border-box;border:2px solid #e5251d;background:rgba(229,37,29,.14);pointer-events:none}
 label.pick{display:inline-block;margin:4px 0;padding:4px 10px;border:1px solid var(--ok);border-radius:4px;cursor:pointer}
 label.pick input{transform:scale(1.3);margin-right:8px}
 #bar{position:sticky;bottom:0;background:var(--bg);border-top:2px solid var(--ok);padding:8px 0}
@@ -230,82 +291,139 @@ go.addEventListener('click',async function(){
   say('\n(the review server has stopped; run tools/review.py again for more rows)\n');
 });
 [].forEach.call(document.querySelectorAll('img.big'),function(i){i.addEventListener('click',function(){i.classList.toggle('full')})});
+[].forEach.call(document.querySelectorAll('.loc'),function(l){
+  function aim(){if(l.classList.contains('full'))return; var p=l.firstChild;
+    l.scrollLeft=l.dataset.cx/100*p.offsetWidth-l.clientWidth/2; l.scrollTop=l.dataset.cy/100*p.offsetHeight-l.clientHeight/2}
+  l.addEventListener('click',function(){l.classList.toggle('full'); aim()});
+  l.querySelector('img').addEventListener('load',aim); aim()});
 done.addEventListener('click',function(){fetch('/done?t='+T,{method:'POST'}).then(function(){say('closed\n')})});
 update();
 })();
 """
 
 
-def render(title, parts, token, root, notes=(), block=None):
-    """The page: a summary box (one line per part, overall line), then every part's rows to check in one list,
-    easiest first across parts, then per part its checked and reference rows collapsed."""
-    esc, cache = html.escape, {}
+WARN = "⚠ "
+
+
+def card_html(card):
+    """The statement card (RS.statement_card): bold title, a small label/value table (the pinout: its pin table), the note
+    folded under "How we read it" (open, with a warning sign, when card["note_open"]). All text is html-escaped."""
+    esc = html.escape
+    out = [f'<div class="card"><p><b>{esc(card["title"])}</b></p>']
+    if card.get("fix"):
+        out.append(f'<p class="warn">{esc(card["fix"])}</p>')
+    if card.get("pins") is not None:
+        out.append('<table class="stmt"><tr><th>Pin</th><th>Name</th><th>Type</th><th>Function</th></tr>'
+                   + "".join("<tr>" + "".join(f"<td>{esc(str(c))}</td>" for c in pin) + "</tr>" for pin in card["pins"])
+                   + "</table>")
+    elif card.get("lines"):
+        out.append('<table class="stmt">' + "".join(f"<tr><th>{esc(k)}</th><td>{esc(v)}</td></tr>" for k, v in card["lines"])
+                   + "</table>")
+    if card.get("note"):
+        opened = bool(card.get("note_open"))
+        out.append(f'<details{" open" if opened else ""}><summary>{WARN if opened else ""}'
+                   f'How we read it</summary><p>{esc(card["note"])}</p></details>')
+    return "".join(out) + "</div>"
+
+
+def render(title, parts, token, root, notes=(), block=None, images=None):
+    """The page: a status line per part, then per part (fewest rows to check first; released parts folded) three
+    sections (Limits, Used by equations, Pins & package) of rows: statement, crops, one tick box. Images are served
+    by token-protected URL (/img/<id>); each distinct file is one entry of `images` ({id: Path}), however many rows
+    show it."""
+    esc = html.escape
+    images = {} if images is None else images
+
+    def register(d, rel, caption):
+        """(image id, None), or (None, warning html). One id per file: every row showing it uses the same URL."""
+        cache = cache_dir(root, d).resolve()
+        p = (cache / rel).resolve()
+        if not p.is_relative_to(cache):  # never register or serve a file outside .review-cache/<Mfr>/<Value>/
+            return None, f'<p class="warn">no image ({esc(caption)}): its path is outside the review cache, not shown</p>'
+        if not p.is_file():
+            return None, f'<p class="warn">no image ({esc(caption)}): run python3 tools/ds_review.py {esc(str(Path(d).relative_to(root)))}</p>'
+        iid = hashlib.sha256(str(p).encode()).hexdigest()[:16]
+        images[iid] = p
+        return iid, None
 
     def img(d, rel, caption, big):
-        p = cache_dir(root, d) / rel
-        if not p.is_file():
-            return f'<p class="warn">no image ({esc(caption)}): run python3 tools/ds_review.py {esc(str(Path(d).relative_to(root)))}</p>'
-        if p not in cache:
-            cache[p] = base64.b64encode(p.read_bytes()).decode()
+        iid, warn = register(d, rel, caption)
+        if warn:
+            return warn
         hint = " (click to enlarge)" if big else ""
         return (f'<p class="mute small">{esc(caption)}{hint}</p><img{" class=big" if big else ""} '
-                f'src="data:image/png;base64,{cache[p]}" alt="{esc(caption)}">')
+                f'src="/img/{iid}?t={esc(token)}" alt="{esc(caption)}">')
 
-    def count(part, tiers):
-        return sum(1 for i in part["items"] if i["tier"] in tiers)
+    def page_view(d, loc):
+        """The full page of the cited sheet; the browser draws the boxes over it (percent of the page, no pixel edits),
+        opened zoomed and scrolled to them; a click shows the whole page. No box: say so, plain page."""
+        boxes = loc["boxes"]
+        if not boxes:
+            return '<p class="warn">row not located, find it on the page</p>' + img(d, loc["image"], "datasheet page", True)
+        iid, warn = register(d, loc["image"], "datasheet page")
+        if warn:
+            return warn
+        xs0, ys0 = min(b["box"][0] for b in boxes), min(b["box"][1] for b in boxes)
+        xs1, ys1 = max(b["box"][2] for b in boxes), max(b["box"][3] for b in boxes)
+        zoom = round(min(3.0, max(1.5, 95 / (xs1 - xs0 + 4))), 2)
+        marks = "".join(
+            f'<div class="box" style="left:{b["box"][0]}%;top:{b["box"][1]}%;width:{round(b["box"][2] - b["box"][0], 2)}%;'
+            f'height:{round(b["box"][3] - b["box"][1], 2)}%" title="{esc(str(b.get("text", "")))}"></div>' for b in boxes)
+        return (f'<p class="mute small">Datasheet page: {len(boxes)} box{"" if len(boxes) == 1 else "es"} mark where the row prints '
+                "(click to show the whole page)</p>"
+                f'<div class="loc" data-cx="{round((xs0 + xs1) / 2, 2)}" data-cy="{round((ys0 + ys1) / 2, 2)}">'
+                f'<div class="pg" style="width:{round(zoom * 100)}%"><img src="/img/{iid}?t={esc(token)}" alt="datasheet page">'
+                f"{marks}</div></div>")
 
-    known = all(p["used_known"] for p in parts)
     k, n = sum(p["k"] for p in parts), sum(p["n"] for p in parts)
-    summary = [f"<p><b>{k} of {n} {'used rows' if known else 'rows'} checked</b></p>"]
+    summary = [f"<p><b>{k} of {n} rows that matter checked</b></p>"]
     for p in parts:
-        bits = [f"{count(p, ('tier 1', 'tier 2'))} quick (row image)", f"{count(p, ('tier 3', 'page'))} need the page"]
-        if count(p, ("fix", "none")):
-            bits.append(f"{count(p, ('fix', 'none'))} cannot be ticked yet")
-        text = f"{p['line']}; " + ", ".join(bits)
-        if p["released"]:
-            text = f"{p['line']}. Released for {block or 'these rows'}."
+        text = f"{p['line']}. Released for {block or 'these rows'}." if p["released"] else p["line"]
         summary.append(f'<p><a href="#part-{esc(p["value"])}">{esc(text)}</a></p>')
     body = [f"<h1>{esc(title)}</h1>", '<div id="summary">' + "\n".join(summary) + "</div>",
-            "<p>Rows are listed easiest first. For each row, compare the <b>Check</b> line with the datasheet image: "
-            "value and sign, unit, the right column (table header), conditions, footnotes. Tick only rows you "
-            "checked on the image; leave wrong or unclear rows unticked. Then press the button at the bottom.</p>"]
+            "<p>For each row, compare the statement with the datasheet image: values and sign, the right column "
+            "(table header), conditions, temperature scope, unit, and whether the library uses the row that way. Tick "
+            "only rows whose statement matches the image; leave wrong or unclear rows unticked. Then press the button "
+            "at the bottom.</p>"]
     body += [f'<p class="mute small">{esc(x)}</p>' for x in notes]
-    items = [(p, i) for p in parts for i in p["items"]]
-    for tier, heading in TIERS:
-        group = [(p, i) for p, i in items if i["tier"] == tier]
-        if not group:
-            continue
-        body.append(f"<h2>{esc(heading)} ({len(group)})</h2>")
-        for p, i in group:
-            out = [f'<div class="item" id="row-{esc(i["ref"])}"><b>{esc(i["part"])}</b> · {esc(i["key"])}<br>']
-            if tier in TICKABLE:
-                out.append(f'<label class="pick"><input type="checkbox" class="ok" value="{esc(i["ref"])}">'
-                           "matches the datasheet</label>")
-            if i["check"]:
-                out.append(f"<p><b>{esc(i['check'])}</b></p>")
-            text, url = i["page"]
-            out.append(f'<p class="small">Datasheet: {esc(text)}'
-                       + (f'; <a href="{esc(url)}" target="_blank" rel="noreferrer noopener">open the page</a>' if url else "")
-                       + "</p>")
-            if i["why"]:
-                out.append(f'<p class="{"warn" if tier in ("fix", "none") else "mute small"}">{esc(i["why"])}</p>')
-            out += [img(p["dir"], rel, cap, cap in ("table or page", "full page")) for rel, cap in i["images"]]
-            if i["toml"]:
-                out.append(f"<details><summary>Full TOML</summary><pre>{esc(i['toml'])}</pre></details>")
-            out.append("</div>")
-            body.append("\n".join(out))
-    body.append("<h2>Parts</h2>")
-    for p in parts:
+    shown_parts = sorted((p for p in parts if p["items"] and not p["released"]), key=lambda p: (p["n"] - p["k"], p["value"]))  # the whole part's needs-check count
+    folded = [p for p in parts if p not in shown_parts]
+    for p in shown_parts:
+        body.append(f'<h2 id="part-{esc(p["value"])}">{esc(p["line"])}</h2>')
+        for section in SECTIONS:
+            group = [i for i in p["items"] if i["section"] == section]
+            if not group:
+                continue
+            body.append(f"<h3>{esc(section)} ({len(group)})</h3>")
+            for i in group:
+                out = [f'<div class="item" id="row-{esc(i["ref"])}"><b>{esc(i["part"])}</b> · {esc(i["key"])}<br>']
+                if i["tier"] in TICKABLE:
+                    out.append(f'<label class="pick"><input type="checkbox" class="ok" value="{esc(i["ref"])}">'
+                               "matches the datasheet</label>")
+                if i.get("card"):
+                    out.append(card_html(i["card"]))
+                text, url = i["page"]
+                out.append(f'<p class="small">Datasheet: {esc(text)}'
+                           + (f'; <a href="{esc(url)}" target="_blank" rel="noreferrer noopener">open the page</a>' if url else "")
+                           + "</p>")
+                if i["why"]:
+                    out.append(f'<p class="{"warn" if i["tier"] in ("fix", "none") else "mute small"}">{esc(i["why"])}</p>')
+                if i.get("locate"):
+                    out.append(page_view(p["dir"], i["locate"]))
+                out += [img(p["dir"], rel, cap, cap in ("table or page", "full page", "evidence the stamp records") or cap.startswith("pin table page"))
+                        for rel, cap in i["images"]]
+                if i["toml"]:
+                    out.append(f"<details><summary>Full TOML</summary><pre>{esc(i['toml'])}</pre></details>")
+                out.append("</div>")
+                body.append("\n".join(out))
         ck, ref = p["checked"], p["reference"]
-        body.append(f'<h3 id="part-{esc(p["value"])}">{esc(p["line"])}'
-                    + (f". Released for {esc(block or 'these rows')}." if p["released"] else "") + "</h3>")
-        if p["items"]:
-            body.append("<p class=small>To check: " + ", ".join(
-                f'<a href="#row-{esc(i["ref"])}">{esc(i["key"])}</a>' for i in p["items"]) + "</p>")
         if ck or ref:
-            body.append(f"<details><summary>Already checked: {len(ck)} rows; not used by this block: {len(ref)} rows</summary>"
+            body.append(f"<details><summary>Already checked: {len(ck)} rows; other rows (reference): {len(ref)} rows</summary>"
                         + (f"<p>Checked: {esc(', '.join(f'{k} ({w}, {d})' for k, w, d in ck))}</p>" if ck else "")
-                        + (f"<p>Not used: {esc(', '.join(ref))}</p>" if ref else "") + "</details>")
+                        + (f"<p>Reference: {esc(', '.join(ref))}</p>" if ref else "") + "</details>")
+    if folded:
+        body.append(f"<details><summary>Released parts or parts with nothing to check ({len(folded)})</summary>"
+                    + "".join(f'<p id="part-{esc(p["value"])}">{esc(p["line"])}</p>' for p in folded) + "</details>")
     body.append('<div id="bar"><button id="go" disabled>Stamp 0 rows and open PR</button>'
                 '<button id="done">Done (stop the server)</button><pre id="log" hidden></pre></div>')
     return ("<!doctype html><html lang=en><head><meta charset=utf-8>"
@@ -443,8 +561,8 @@ class App:
     """One page, one stamp job. GET /?t=<token> serves the page; POST /stamp?t=<token> (JSON {"refs": [...]}, only
     tickable refs) streams the job's lines; POST /done?t=<token> stops. Wrong token, Host or Origin: 403."""
 
-    def __init__(self, page, tickable, job):
-        self.page, self.tickable, self.job = page, set(tickable), job
+    def __init__(self, page, tickable, job, images=None):
+        self.page, self.tickable, self.job, self.images = page, set(tickable), job, images or {}
         self.token = secrets.token_urlsafe(24)
         self.lock, self.started, self.finished = threading.Lock(), False, threading.Event()
         self.rc = 1
@@ -459,12 +577,13 @@ class App:
             def log_message(self, *a):
                 pass
 
-            def reply(self, code, text, ctype="text/plain; charset=utf-8"):
-                b = text.encode()
+            def reply(self, code, text, ctype="text/plain; charset=utf-8", cache="no-store"):
+                b = text if isinstance(text, bytes) else text.encode()
                 self.send_response(code)
                 self.send_header("Content-Type", ctype)
                 self.send_header("Content-Length", str(len(b)))
-                self.send_header("Cache-Control", "no-store")
+                self.send_header("Cache-Control", cache)
+                self.send_header("X-Content-Type-Options", "nosniff")
                 self.end_headers()
                 self.wfile.write(b)
 
@@ -482,6 +601,12 @@ class App:
                 path = self.allowed(False)
                 if path == "/":
                     self.reply(200, app.page.replace("{TOKEN}", app.token), "text/html; charset=utf-8")
+                elif path and path.startswith("/img/") and path[5:] in app.images:
+                    try:
+                        data = app.images[path[5:]].read_bytes()
+                    except OSError:
+                        return self.reply(404, "not found")
+                    self.reply(200, data, "image/png", "private, max-age=3600")  # one fetch per image file
                 elif path:
                     self.reply(404, "not found")
 
@@ -557,8 +682,8 @@ def main(argv=None):
     if os.environ.get("CLAUDECODE") and not a.dry_run:
         print(AGENT)
         return 1
-    if bool(a.block) == bool(a.values):
-        ap.error("give --block <Block> or one or more <Value>, not both")
+    if a.block and a.values:
+        ap.error("give --block <Block> or <Value> ..., not both (no argument: every part)")
     root = Path(a.root).resolve()
     notes = []
     try:
@@ -574,7 +699,9 @@ def main(argv=None):
                 if d is None:
                     raise ValueError(f"no single components/*/{v}/")
                 used[d] = None
-            title = "Rows to check: " + ", ".join(a.values)
+            if not a.values:
+                used = {d: None for d in all_parts(root)}
+            title = "Rows to check: " + (", ".join(a.values) or "every part")
     except (ValueError, OSError) as e:
         print(f"refused: {e}")
         return 1
@@ -592,7 +719,8 @@ def main(argv=None):
         if a.dry_run:
             emit("(dry run: each command is shown, none is run)")
         return publish(root, dirs, refs, run, emit)
-    app = App(render(title, parts, "{TOKEN}", root, notes, a.block), tickable, job)
+    images = {}
+    app = App(render(title, parts, "{TOKEN}", root, notes, a.block, images), tickable, job, images)
     print(f"review page: {app.url}\n(stops after the stamp run, or press Done; Ctrl-C to quit)", flush=True)
     if not a.no_browser:
         webbrowser.open(app.url)

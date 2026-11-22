@@ -16,6 +16,19 @@ render = "complete"
 backfill = "git blame"
 sheets = { "ina229.pdf" = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484" }
 
+[pinout]
+state = "NEW"
+hash = "d790b80b8811fa913d66eb00cebec45137ec51fa79b1bbc383a0c3bdba5f0039"
+pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
+
+[[pinout.page]]
+pdf_page = 3
+image = "evidence/pinout_p3.png"
+image_sha256 = "4157723978c115f8771804a2fa2bf09c184cc7fc6fd83918550500852459d63c"
+image_bytes = 89694
+dpi = 200
+render_key = "f2e30ca02d957493"
+
 [row.vs_abs]
 state = "MACHINE_CHECKED"
 status = "UNSURE"
@@ -1777,11 +1790,6 @@ header_sha256 = "2d0c09a5f91e567eccd09d729fed16a2aa06ec776e88b67ed6918fb3e386c12
 header_box = [50.7, 224.9, 550.1, 254.1]
 header_key = "481ddc1ae518d4db"
 text_snippet = "      Bit       Field                         Type      Reset        Description\n     13-0       TEMPCO                        R/W       0h           Temperature coefficient of the shunt for temperature compensation\n                                                                     correction. Calculated with respect to +25 \u00b0C.\n                                                                     The full scale value of the register is 16383 ppm/\u00b0C.\n                                                                     The 16 bit register provides a resolution of 1ppm/\u00b0C/LSB\n                                                                     0h = 0 ppm/\u00b0C\n                                                                     3FFFh = 16383 ppm/\u00b0C"
-
-[row.pins]
-state = "NOT_COVERED"
-status = "UNSURE"
-reason = "[[pin]] rows are not reviewed by ds_review"
 
 [row.calc]
 state = "NOT_COVERED"

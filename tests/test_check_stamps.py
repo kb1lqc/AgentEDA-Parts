@@ -68,6 +68,16 @@ class Repo(unittest.TestCase):
         out = self.flagged({X: BASE}, {X: BASE + f'verified = "{BOB}"\n'})
         self.assertEqual(out, f"{X}:4: human stamp names bob, but the PR author is alice")
 
+    def test_pinout_stamp_names_the_author_like_a_row_stamp(self):
+        pin = lambda who: f'[pinout]\nverified = "human:{who} 2026-11-20 page-image pinout 0123456789ab pins ba9876543210"\n'  # noqa: E731
+        self.flagged({X: BASE}, {X: BASE + pin("bob")})
+        self.fresh()
+        self.assertEqual(self.run_c({X: BASE}, {X: BASE + pin("alice")})[0], 0)
+        self.fresh()
+        self.flagged({X: BASE + pin("alice")}, {X: BASE + pin("bob")})  # a changed pinout stamp
+        self.fresh()
+        self.assertEqual(self.run_c({X: BASE + pin("bob")}, {X: BASE + pin("bob") + "# x\n"})[0], 0)  # unchanged
+
     def test_preexisting_and_removed_stamps_ignored(self):
         rc, out = self.run_c({X: BASE + f'verified = "{BOB}"\n'}, {X: BASE + f'verified = "{BOB}"\nnote = "x"\n'})
         self.assertEqual(rc, 0, out)

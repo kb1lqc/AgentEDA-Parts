@@ -16,6 +16,27 @@ render = "complete"
 backfill = "git blame"
 sheets = { "ltc4364.pdf" = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940" }
 
+[pinout]
+state = "NEW"
+hash = "baf54f43b03cae5a1a7d16d026d629e1696c3b7aebebc7f291dd5d7fede5e52a"
+pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
+
+[[pinout.page]]
+pdf_page = 8
+image = "evidence/pinout_p8.png"
+image_sha256 = "bfee078d3f5a9c79ed0d33f5b6b4c839082dfbd427ee84a7434e77131149840a"
+image_bytes = 180262
+dpi = 150
+render_key = "9795a38426605819"
+
+[[pinout.page]]
+pdf_page = 9
+image = "evidence/pinout_p9.png"
+image_sha256 = "a2838761db6a6e8a9abe99f5b891ed0a92d7cad376660363b127bcf14937f847"
+image_bytes = 106861
+dpi = 150
+render_key = "d59b8eb1173f9873"
+
 [row.abs_vcc]
 state = "NEW"
 status = "UNSURE"
@@ -1708,11 +1729,6 @@ reason = "variants.toml row: family variants are not reviewed by ds_review"
 state = "NOT_COVERED"
 status = "UNSURE"
 reason = "variants.toml row: family variants are not reviewed by ds_review"
-
-[row.pins]
-state = "NOT_COVERED"
-status = "UNSURE"
-reason = "[[pin]] rows are not reviewed by ds_review"
 
 [row.calc]
 state = "NOT_COVERED"

@@ -11,7 +11,7 @@ sys.path.insert(0, str(ROOT / "tests"))
 import stamp as S  # noqa: E402
 import lib  # noqa: E402
 from lib import component as lib_component  # noqa: E402
-from test_ds_review import COMP, Base  # noqa: E402
+from test_ds_review import BODY, COMP, Base, PinBase  # noqa: E402
 
 DAY = datetime.date(2026, 11, 20)
 
@@ -200,6 +200,95 @@ class Stamp(Base):
         f = self.root / COMP / "component.toml"
         f.write_text(self.toml() + "\n[param.broken\n")
         self.refused("X:vos", why="not valid TOML")
+
+
+class StampPinout(PinBase):
+    """`<Value>:pinout` (docs/spec/review-view.md "Pinout stamp"): same refusals as a row."""
+
+    def setUp(self):
+        no_agent(self)
+        super().setUp()
+        self.assertEqual(self.run_r()[0], 0)
+        self.sha = self.ledger()["inputs"]["pdf_sha256"][:12]
+
+    def toml(self):
+        return (self.root / COMP / "component.toml").read_text()
+
+    def stamp(self, *refs, who="alice"):
+        return S.stamp(self.root, who, list(refs), today=DAY)
+
+    def refused(self, *refs, why=""):
+        before = self.toml()
+        rc, out = self.stamp(*refs)
+        self.assertEqual(rc, 1, out)
+        self.assertEqual(self.toml(), before, "a refusal must write nothing")
+        self.assertIn(why, "\n".join(out))
+
+    def test_writes_the_exact_pinout_stamp_and_repins(self):
+        before = tomllib.loads(self.toml())
+        rc, out = self.stamp("X:pinout", "X:iq")
+        self.assertEqual(rc, 0, out)
+        want = f"human:alice 2026-11-20 page-image pinout {self.sha} pins {self.pins_hash()[:12]}"
+        after = tomllib.loads(self.toml())
+        self.assertEqual(after["pinout"], {"verified": want})
+        self.assertRegex(want, lib_component.PINOUT_RE)
+        del after["pinout"]
+        after["param"]["iq"].pop("verified")
+        self.assertEqual(after, before, "only the two stamps change")
+        self.assertIn("X:pinout: (no stamp) -> " + want, out)
+        self.assertEqual(self.run_r()[0], 0)
+        self.assertEqual(self.ledger()["pinout"]["state"], "HUMAN_VERIFIED")
+        rc, out = self.stamp("X:pinout")  # again: the old stamp is replaced, one [pinout] table
+        self.assertEqual(rc, 0, out)
+        self.assertEqual(self.toml().count("[pinout]"), 1)
+        self.assertIn("X:pinout: " + want + " -> " + want, out)
+
+    def test_machine_stamp_is_replaced_in_place(self):
+        p = self.root / COMP / "component.toml"
+        p.write_text(self.toml() + '\n[pinout]\n# note\nverified = "sonnet-audit 2026-11-18 pins"  # keep\n')
+        self.assertEqual(self.stamp("X:pinout")[0], 0)
+        self.assertRegex(self.toml(), r'\[pinout\]\n# note\nverified = "human:alice [^"]+"  # keep\n')
+
+    def test_refusals_write_nothing(self):
+        pdf = self.root / "docs/datasheets/x.pdf"
+        self.edit('function = "Input"', 'function = "In"')  # pins edited after the record
+        self.refused("X:pinout", why="older than the committed pins")
+        self.run_r()
+        img = self.cdir / self.ledger()["pinout"]["page"][0]["image"]
+        img.write_bytes(img.read_bytes() + b"x")
+        self.refused("X:pinout", why="evidence image differs")
+        img.unlink()
+        self.refused("X:pinout", why="no local evidence image")
+        self.run_r()
+        pdf.write_bytes(pdf.read_bytes() + b"\n% changed\n")
+        self.refused("X:pinout", why="differs from the PDF")
+        pdf.unlink()
+        self.refused("X:pinout", why="missing")
+        import shutil
+        shutil.rmtree(self.rdir)
+        self.refused("X:pinout", why="no readable review/review.toml")
+
+    def test_every_pinout_page_image_is_checked(self):
+        self.edit('function = "Output"\ncite = "DS p.4, Pin Functions"', 'function = "Output"\ncite = "DS p.1, Pin Functions"')
+        self.run_r()
+        first, second = (self.cdir / g["image"] for g in self.ledger()["pinout"]["page"])
+        self.assertNotEqual(first, second)
+        good = second.read_bytes()
+        second.write_bytes(good + b"x")  # the second page only: a check of the first image alone would pass
+        self.refused("X:pinout", why="evidence image differs")
+        second.unlink()
+        self.refused("X:pinout", why="no local evidence image")
+        second.write_bytes(good)
+        self.assertEqual(self.stamp("X:pinout")[0], 0)
+
+    def test_no_pins_and_all_or_nothing_and_agent(self):
+        import os
+        self.refused("X:pinout", "X:vos_bad", why="status DISAGREE")
+        self.make(BODY)
+        self.run_r()
+        self.refused("X:pinout", why="no [[pin]]")
+        os.environ["CLAUDECODE"] = "1"
+        self.assertEqual(self.stamp("X:pinout"), (1, [S.AGENT]))
 
 
 class HumanCurrent(Base):

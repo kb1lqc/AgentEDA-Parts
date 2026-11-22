@@ -6,7 +6,9 @@ Usage (repo root):
   python3 tools/stamp.py [--who <github-login>] <Value>:<key> [...] [--from FILE] [--root R]
 --who defaults to your GitHub login (`gh api user --jq .login`); library CI requires it to equal the PR author.
 <Value> is the component directory name (components/<Mfr>/<Value>/), <key> the [param.<key>] row; FILE holds one
-<Value>:<key> per line (blank lines and # comments ignored).
+<Value>:<key> per line (blank lines and # comments ignored). <Value>:pinout stamps the pin table: [pinout] verified =
+"human:<github-login> <YYYY-MM-DD> page-image pinout <pdf-sha256[:12]> pins <pins-hash[:12]>" (docs/spec/review-view.md),
+refused like a row (no [[pin]], record older than the pins, image or PDF missing or changed).
 
 Each row gets `verified = "human:<github-login> <YYYY-MM-DD> page-image ds_review <pdf-sha256[:12]> row <row-hash[:12]>"`
 (replacing any stamp; row hash as review.toml's). All or nothing; refused: unknown component or key, unreadable TOML,
@@ -29,7 +31,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ds_review import row_hash, sha256_file  # noqa: E402  (the ledger's own hash, so the comparison is exact)
-from lib.component import GITHUB_LOGIN  # noqa: E402  (the stamp's name part, as lib checks it)
+from lib.component import GITHUB_LOGIN, pinout_hash  # noqa: E402  (the stamp's name part, as lib checks it)
 
 WHO_RE = re.compile(f"^{GITHUB_LOGIN}\\Z")
 AGENT = "refused: running inside Claude Code (CLAUDECODE is set); a person must run stamp.py in their own shell"
@@ -59,47 +61,59 @@ def component_dir(root, value):
 
 
 def check_row(root, value, key):
-    """(component dir, stamp suffix "<pdf12> row <row12>", None) for a row that may be stamped, else (None, None, reason)."""
+    """(component dir, stamp suffix "<pdf12> row <row12>", None) for a row that may be stamped, else (None, None, reason).
+    key "pinout": the pin list (suffix "<pdf12> pins <pins12>"; docs/spec/review-view.md "Pinout stamp")."""
     d = component_dir(root, value)
     if d is None:
         return None, None, f"no component directory components/*/{value}/ (use the directory name, not a variant)"
+    pin = key == "pinout"
     try:
-        table = tomllib.loads((d / "component.toml").read_bytes().decode()).get("param", {}).get(key)
+        data = tomllib.loads((d / "component.toml").read_bytes().decode())
     except (UnicodeDecodeError, tomllib.TOMLDecodeError) as e:
         return None, None, f"{d.name}/component.toml is not valid TOML ({e})"
-    if table is None:
-        return None, None, f"no [param.{key}] in {d.name}/component.toml"
+    table = data.get("pin") if pin else data.get("param", {}).get(key)
+    if not table:
+        return None, None, f"no [[pin]] in {d.name}/component.toml" if pin else f"no [param.{key}] in {d.name}/component.toml"
     try:
         with open(d / "review" / "review.toml", "rb") as f:
             ledger = tomllib.load(f)
     except (OSError, tomllib.TOMLDecodeError):
         return None, None, "no readable review/review.toml (no review record)"
-    row = ledger.get("row", {}).get(key)
+    row = ledger.get("pinout") if pin else ledger.get("row", {}).get(key)
     if not isinstance(row, dict) or not row.get("hash"):
         return None, None, "no review record for this row"
-    h = row_hash(table)
+    h = pinout_hash(table) if pin else row_hash(table)
     if row["hash"] != h:
-        return None, None, "review record is older than the committed row: run tools/verify.py and check again"
+        return None, None, ("review record is older than the committed " + ("pins" if pin else "row")
+                            + ": run tools/verify.py and check again")
     if row.get("status") in REFUSE_STATUS:
         return None, None, f"status {row['status']}: fix the row before stamping"
     cache = Path(root) / ".review-cache" / d.relative_to(Path(root) / "components")
-    img = cache / row["image"] if row.get("image") else None
-    if img is None or not img.is_file():
-        return None, None, f"no local evidence image for this row: run python3 tools/ds_review.py {d.relative_to(root)}"
-    if sha256_file(img) != row.get("image_sha256"):
-        return None, None, "evidence image differs from the ledger's image_sha256: run tools/verify.py"
     inp = ledger.get("inputs", {})
-    sheet = row.get("sheet") or Path(inp.get("datasheet_file", "")).name
-    want = inp.get("sheets", {}).get(sheet)
     dsf = inp.get("datasheet_file", "")
-    pdf = Path(root) / (dsf if dsf and sheet == Path(dsf).name else f"docs/datasheets/{sheet}")
-    if not sheet or not want:
+    main = Path(dsf).name
+    recs = [pg for pg in row.get("page", []) if isinstance(pg, dict)] if pin else [row]  # the pinout: every cited page
+    if not recs:
+        return None, None, f"no local evidence image for this row: run python3 tools/ds_review.py {d.relative_to(root)}"
+    for rec in recs:
+        img = cache / rec["image"] if rec.get("image") else None
+        if img is None or not img.is_file():
+            return None, None, f"no local evidence image for this row: run python3 tools/ds_review.py {d.relative_to(root)}"
+        if sha256_file(img) != rec.get("image_sha256"):
+            return None, None, "evidence image differs from the ledger's image_sha256: run tools/verify.py"
+        sheet = rec.get("sheet") or main
+        want = inp.get("sheets", {}).get(sheet)
+        pdf = Path(root) / (dsf if dsf and sheet == main else f"docs/datasheets/{sheet}")
+        if not sheet or not want:
+            return None, None, "ledger names no PDF SHA-256 for this row's sheet"
+        if not pdf.is_file():
+            return None, None, f"local PDF {pdf.relative_to(root)} missing"
+        if sha256_file(pdf) != want:
+            return None, None, f"{pdf.relative_to(root)} differs from the PDF the evidence was rendered from (SHA-256)"
+    want = inp.get("sheets", {}).get(main if pin else recs[0].get("sheet") or main)  # the stamp binds the main PDF (a row: its sheet)
+    if not want:
         return None, None, "ledger names no PDF SHA-256 for this row's sheet"
-    if not pdf.is_file():
-        return None, None, f"local PDF {pdf.relative_to(root)} missing"
-    if sha256_file(pdf) != want:
-        return None, None, f"{pdf.relative_to(root)} differs from the PDF the evidence was rendered from (SHA-256)"
-    return d, f"{want[:12]} row {h[:12]}", None
+    return d, f"{want[:12]} {'pins' if pin else 'row'} {h[:12]}", None
 
 
 def set_stamp(text, key, stamp):
@@ -135,6 +149,35 @@ def set_stamp(text, key, stamp):
     return out
 
 
+def set_pinout_stamp(text, stamp):
+    """component.toml text with `verified = "<stamp>"` in [pinout] (the line replaced keeping a trailing comment and the
+    line ending, else inserted under the header; the table appended when absent). ValueError when the edit is not that."""
+    lines = text.split("\n")
+    start = next((i for i, ln in enumerate(lines) if ln.strip() == "[pinout]"), None)
+    if start is None:
+        out = text.rstrip("\n") + f'\n\n[pinout]\nverified = "{stamp}"\n'
+    else:
+        end = next((i for i in range(start + 1, len(lines)) if lines[i].lstrip().startswith("[")), len(lines))
+        old = next((i for i in range(start + 1, end) if re.match(r"\s*verified\s*=", lines[i])), None)
+        if old is None:
+            cr = "\r" if lines[start].endswith("\r") else ""
+            lines.insert(start + 1, f'verified = "{stamp}"{cr}')
+        else:
+            m = VERIFIED_LINE.match(lines[old])
+            if not m:
+                raise ValueError("[pinout]: verified line is not a one-line string")
+            lines[old] = f'{m.group(1)}"{stamp}"{m.group(3)}'
+        out = "\n".join(lines)
+    try:
+        before, after = tomllib.loads(text), tomllib.loads(out)
+    except tomllib.TOMLDecodeError as e:
+        raise ValueError(f"not valid TOML ({e})")
+    before["pinout"] = {**before.get("pinout", {}), "verified": stamp}
+    if before != after:
+        raise ValueError("[pinout]: edit would change more than the stamp")
+    return out
+
+
 def read_refs(args_refs, from_file):
     refs = list(args_refs)
     if from_file:
@@ -164,19 +207,21 @@ def stamp(root, who, refs, today=None):
         if why:
             bad.append(f"refused {ref}: {why}")
         else:
-            plan.setdefault(d, []).append((key, f"human:{who} {date} page-image ds_review {suffix}"))
+            method = "pinout" if key == "pinout" else "ds_review"
+            plan.setdefault(d, []).append((key, f"human:{who} {date} page-image {method} {suffix}"))
     if bad:
         return 1, bad + ["nothing written"]
     out, new = [], {}
     for d, rows in plan.items():
         text = (d / "component.toml").read_bytes().decode()
-        old = tomllib.loads(text)["param"]
+        old = tomllib.loads(text)
         for key, s in rows:
             try:
-                text = set_stamp(text, key, s)
+                text = set_pinout_stamp(text, s) if key == "pinout" else set_stamp(text, key, s)
             except ValueError as e:
                 return 1, [f"refused {d.name}:{key}: {e}", "nothing written"]
-            out.append(f"{d.name}:{key}: {old[key].get('verified') or '(no stamp)'} -> {s}")
+            was = (old.get("pinout") if key == "pinout" else old["param"][key]) or {}
+            out.append(f"{d.name}:{key}: {was.get('verified') or '(no stamp)'} -> {s}")
         new[d] = text
     temps = {}
     try:

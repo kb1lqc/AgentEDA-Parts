@@ -2,7 +2,7 @@
 
 # TPS48000QDGXQ1
 
-Checked by a person: 0 of 93 rows (docs/spec/review.md).
+Checked by a person: 0 of 30 rows that matter (94 rows in all). Review: python3 tools/review.py TPS48000QDGXQ1
 
 ## Part
 

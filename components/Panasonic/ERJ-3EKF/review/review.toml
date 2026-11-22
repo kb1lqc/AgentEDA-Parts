@@ -16,6 +16,19 @@ render = "complete"
 backfill = "git blame"
 sheets = { "AOA0000C304.pdf" = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378" }
 
+[pinout]
+state = "NEW"
+hash = "0b6eb34da570119a641a4a2599f5a7b74fd4989de8109718bf0757d38e304169"
+pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
+
+[[pinout.page]]
+pdf_page = 3
+image = "evidence/pinout_p3.png"
+image_sha256 = "0ad0b3fc0e5472979bf0aae57bc64e4ad7a05c71e45ff544d1ff2056dcc55a64"
+image_bytes = 109548
+dpi = 200
+render_key = "3db725f16ecf781f"
+
 [row.p70]
 state = "MACHINE_CHECKED"
 status = "UNSURE"
@@ -492,11 +505,6 @@ stamped_toml = "[param.mass]\nname       = \"Mass (reference)\"\nkind       = \"
 state = "NOT_COVERED"
 status = "UNSURE"
 reason = "resistor-series values and MPN rule (calc.py) are not reviewed by ds_review"
-
-[row.pins]
-state = "NOT_COVERED"
-status = "UNSURE"
-reason = "[[pin]] rows are not reviewed by ds_review"
 
 [row.calc]
 state = "NOT_COVERED"

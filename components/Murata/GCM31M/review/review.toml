@@ -16,6 +16,19 @@ render = "complete"
 backfill = "git blame"
 sheets = { "GCM31CR71E475KA55-01A-EN.pdf" = "87ece5c944c1c8178de10ba9fd8104632693922446e6828f68a54aa5844e87aa", "GCM31M5C1H433FA16-01A-EN.pdf" = "a194b36d6d104ab4d78b1cb509cb1e80db279d3f35c30e828ffa2708e37bcfdd" }
 
+[pinout]
+state = "NEW"
+hash = "b78130ca19ed0eade2fb8cbf7eb362327e8855e063f1ae174954c0bdb57b1a3b"
+pdf_sha256 = "a194b36d6d104ab4d78b1cb509cb1e80db279d3f35c30e828ffa2708e37bcfdd"
+
+[[pinout.page]]
+pdf_page = 2
+image = "evidence/pinout_p2.png"
+image_sha256 = "8f1d4eb3cdb0024e83b12d79efcafae1bcaf1c145f2f71246b382344457942e5"
+image_bytes = 46579
+dpi = 150
+render_key = "4e253d1b7fbb3043"
+
 [row.land_a_020]
 state = "NEW"
 status = "UNSURE"
@@ -833,11 +846,6 @@ reason = "catalog.csv (18 rows): catalog values are not reviewed by ds_review"
 state = "NOT_COVERED"
 status = "UNSURE"
 reason = "capacitor-series values and MPN rule (calc.py) are not reviewed by ds_review"
-
-[row.pins]
-state = "NOT_COVERED"
-status = "UNSURE"
-reason = "[[pin]] rows are not reviewed by ds_review"
 
 [row.calc]
 state = "NOT_COVERED"

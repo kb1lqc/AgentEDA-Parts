@@ -16,6 +16,19 @@ render = "complete"
 backfill = "git blame"
 sheets = { "DS_vnf1248f.pdf" = "e2f7393d34e5ab4a67767987b7a5731ee10cb0102787d1ee79947f89132a2df5" }
 
+[pinout]
+state = "NEW"
+hash = "00783b3e4512a60e2c61a3761a231cab50c260cb92654dfcbdab0a1069da1271"
+pdf_sha256 = "e2f7393d34e5ab4a67767987b7a5731ee10cb0102787d1ee79947f89132a2df5"
+
+[[pinout.page]]
+pdf_page = 4
+image = "evidence/pinout_p4.png"
+image_sha256 = "0cae1cd77fd52877cfa4c9ad9f0e93fd37b1b0673990857f3269de22b1a8d78d"
+image_bytes = 64566
+dpi = 150
+render_key = "0c6c182c1500e503"
+
 [row.abs_vs]
 state = "NEW"
 status = "UNSURE"
@@ -6340,11 +6353,6 @@ header_sha256 = "43d897d328dd9d35c40d50a3407097db8bb987a58b57d9e73b4f1ceb5f6aa9e
 header_box = [36.5, 95.9, 556.9, 144.6]
 header_key = "0a603669698b4b79"
 text_snippet = "                        Symbol                                Parameter                            Test conditions        Min.   Typ. Max.      Unit\n                                         Entering threshold of current sense undervoltage\n                                                                                               CS_UV_RETRY_T = 01b        -5%    250    5%       \u03bcs\n                  tCS_UV_RETRY_TIME Current sense fault clear autoretry time\n                                                                                               CS_UV_RETRY_T = 10b        -5%    500    5%       \u03bcs\n                                                                                               CS_UV_RETRY_T = 11b        -5%    1000   5%       \u03bcs"
-
-[row.pins]
-state = "NOT_COVERED"
-status = "UNSURE"
-reason = "[[pin]] rows are not reviewed by ds_review"
 
 [row.calc]
 state = "NOT_COVERED"

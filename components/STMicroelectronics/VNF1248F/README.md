@@ -2,7 +2,7 @@
 
 # VNF1248F
 
-Checked by a person: 0 of 297 rows (docs/spec/review.md).
+Checked by a person: 0 of 35 rows that matter (298 rows in all). Review: python3 tools/review.py VNF1248F
 
 ## Part
 

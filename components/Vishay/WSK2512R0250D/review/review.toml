@@ -16,6 +16,19 @@ render = "complete"
 backfill = "git blame"
 sheets = { "wsk2512.pdf" = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff" }
 
+[pinout]
+state = "NEW"
+hash = "9ac15ff224f59a3e8365ee3969b932931b5fe72237da395f3b7c5e4cbdbb31b8"
+pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
+
+[[pinout.page]]
+pdf_page = 3
+image = "evidence/pinout_p3.png"
+image_sha256 = "b3a9d02474f538d0ee91b442da4140743dbcb95d9d17dd28ab42ca8dbcb3b858"
+image_bytes = 96194
+dpi = 200
+render_key = "864036f6422b4d41"
+
 [row.r_nom]
 state = "NEW"
 status = "UNSURE"
@@ -609,11 +622,6 @@ crop_box = "full_page"
 dpi = 200
 render_key = "df462fe45c5ec28f"
 text_snippet = "(no text-layer line located)"
-
-[row.pins]
-state = "NOT_COVERED"
-status = "UNSURE"
-reason = "[[pin]] rows are not reviewed by ds_review"
 
 [row.calc]
 state = "NOT_COVERED"

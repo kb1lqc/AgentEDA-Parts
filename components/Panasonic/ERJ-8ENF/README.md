@@ -2,7 +2,7 @@
 
 # ERJ-8ENF
 
-Checked by a person: 0 of 27 rows (docs/spec/review.md).
+Checked by a person: 0 of 17 rows that matter (28 rows in all). Review: python3 tools/review.py ERJ-8ENF
 
 ## Part
 
@@ -86,9 +86,9 @@ Rated voltage at decade values, computed from `p70`, `v_limit` and the formula a
 | Terminal width, b | b | 0.3 | 0.5 | 0.7 | mm | Note: Printed 0.50+/-0.20. NRFND row. | DS p.11, Dimensions (mm) table, row ERJ8EN (1206), column b |  |
 | Terminal thickness, T | T | 0.5 | 0.6 | 0.7 | mm | Note: Printed 0.60+/-0.10. NRFND row. | DS p.11, Dimensions (mm) table, row ERJ8EN (1206), column T |  |
 | Mass (reference) |  |  | 10 |  | mg | Reference value, per part Note: 10 g per 1000 pcs = 10 mg per part (per-part value in mg keeps the printed digits). Reference only, not a bound. NRFND row. | DS p.11, Dimensions (mm) table, row ERJ8EN (1206), Mass (Weight) (Reference) (g/1000 pcs) = 10 |  |
-| Land pattern dimension a (DS land pattern table, rectangular type) | a | 2.0 |  | 2.4 | mm | Recommended land pattern (not a tolerance on the body) Note: Printed as a range. Inferred meaning: inner gap between lands (inferred; letter label only). The footprint uses the middle of the range. | DS PDF p.1, DMM0000COL17 (Panasonic land-pattern document), Recommended land pattern, 'General purpose type (ERJ)' key, row 1206 (3216), column a |  |
-| Land pattern dimension b (DS land pattern table, rectangular type) | b | 4.4 |  | 5.0 | mm | Recommended land pattern (not a tolerance on the body) Note: Printed as a range. Inferred meaning: outer span of the two lands (inferred). The footprint uses the middle of the range. | DS PDF p.1, DMM0000COL17 (Panasonic land-pattern document), Recommended land pattern, 'General purpose type (ERJ)' key, row 1206 (3216), column b |  |
-| Land pattern dimension c (DS land pattern table, rectangular type) | c | 1.2 |  | 1.8 | mm | Recommended land pattern (not a tolerance on the body) Note: Printed as a range. Inferred meaning: land width (inferred). The footprint uses the middle of the range. | DS PDF p.1, DMM0000COL17 (Panasonic land-pattern document), Recommended land pattern, 'General purpose type (ERJ)' key, row 1206 (3216), column c |  |
+| Land pattern dimension a (DS land pattern table, rectangular type) | a | 2.0 |  | 2.4 | mm | Recommended land pattern (not a tolerance on the body) Note: Printed as a range. Inferred meaning: inner gap between lands (inferred; letter label only). The footprint uses the middle of the range. | DS p.1 (DMM0000COL17.pdf), Panasonic land-pattern document, Recommended land pattern, 'General purpose type (ERJ)' key, row 1206 (3216), column a |  |
+| Land pattern dimension b (DS land pattern table, rectangular type) | b | 4.4 |  | 5.0 | mm | Recommended land pattern (not a tolerance on the body) Note: Printed as a range. Inferred meaning: outer span of the two lands (inferred). The footprint uses the middle of the range. | DS p.1 (DMM0000COL17.pdf), Panasonic land-pattern document, Recommended land pattern, 'General purpose type (ERJ)' key, row 1206 (3216), column b |  |
+| Land pattern dimension c (DS land pattern table, rectangular type) | c | 1.2 |  | 1.8 | mm | Recommended land pattern (not a tolerance on the body) Note: Printed as a range. Inferred meaning: land width (inferred). The footprint uses the middle of the range. | DS p.1 (DMM0000COL17.pdf), Panasonic land-pattern document, Recommended land pattern, 'General purpose type (ERJ)' key, row 1206 (3216), column c |  |
 
 ## Limits of this data
 

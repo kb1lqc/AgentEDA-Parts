@@ -95,21 +95,28 @@ Read `docs/notes/workflow.md` first. It shows the part types (single part, famil
 In your own terminal (not an agent's), from the library root, with the datasheet PDFs in `docs/datasheets/`:
 
 ```sh
-python3 tools/review.py --block INA229HighSideMonitor   # the rows a circuit block reads
-python3 tools/review.py INA229AIDGS                     # or every row of one or more parts
+python3 tools/review.py                                 # every part
+python3 tools/review.py INA229AIDGS                     # or one or more parts
+python3 tools/review.py --block INA229HighSideMonitor   # or only the rows a circuit block reads
 ```
 
 `--block` reads the block's `library-inputs.json` from the circuit-blocks checkout next to this one (`../ina229`, else
-`../circuit-blocks`; or `--blocks-repo <path>`). A page opens in your browser:
+`../circuit-blocks`; or `--blocks-repo <path>`); it narrows the page, never a part's status. A page opens in your
+browser:
 
-- Each part has a status line, for example `INA229AIDGS: 16 of 35 used rows checked`. A part is released for the block
-  when every row it uses is checked.
-- Only the rows still to check are shown, easiest first. Each has the datasheet crops (table header, the row,
-  footnotes, or the table or page), the committed TOML, a link to the datasheet page and one tick box.
-- Rows under "Fix first" or "Not in the review record" have no tick box: fix the row or its cite first.
-- Rows already checked, and rows the block does not use, are folded away at the end of each part.
+- First a status line per part, in the form `<Value>: <k> of <n> rows that matter checked` (k checked, n rows that
+  matter; the numbers change as rows are stamped, so none are quoted here). The rows that matter are
+  the absolute maximums, mechanical rows, junction-to-case and maximum junction temperature, every value the library
+  uses (calc.py, examples, Zener checks) and the pinout. A part is released when all of them are checked.
+- Then, per part (fewest rows to check first; released parts folded away), three sections: Limits, Used by equations,
+  Pins & package. Each row shows its statement (values, column, conditions, scope, unit, where the library uses it),
+  the datasheet crops (table header, the row, footnotes; for the pinout every page its pins cite) and one tick box. Each
+  image is loaded once however many rows show it.
+- The pinout is one row: tick it when the pin table (number, name, type, function) matches the pin table pages.
+- A row with no tick box (shown with the reason) cannot be stamped yet: fix the row or its cite (a row with no
+  min, typ or max shows `Fix first` and still counts as a row to check), or run `python3 tools/verify.py`.
 
-Compare each row with the image, tick the ones that match, and press **Stamp N rows and open PR**. The tool then
+Compare each statement with its image, tick the rows that match, and press **Stamp N rows and open PR**. The tool then
 shows each command as it runs it: it needs a clean working tree (untracked files are fine), fetches `origin`, makes a
 branch `review/<parts>-<login>-<date>` from `origin/main`, runs `tools/stamp.py` on the ticked rows, runs
 `tools/verify.py --regen` on those parts, commits their `component.toml`, `review/review.toml` and `README.md`,
@@ -142,7 +149,14 @@ Each stamped row gets one line, bound to the datasheet file and the row's number
 verified   = "human:<github-login> <YYYY-MM-DD> page-image ds_review <pdf-sha256 first 12> row <row-hash first 12>"
 ```
 
-If the row or the PDF changes later, the stamp stops matching and the row needs a check again. A stamp is an
+The pinout has its own table in `component.toml`, bound to the pin list and the PDF:
+
+```toml
+[pinout]
+verified = "human:<github-login> <YYYY-MM-DD> page-image pinout <pdf-sha256 first 12> pins <pins-hash first 12>"
+```
+
+If the row (or any pin) or the PDF changes later, the stamp stops matching and the row needs a check again. A stamp is an
 accountability record (who says they checked, against which file and numbers), not proof. CI (`tools/check_stamps.py`)
 fails a PR whose added human stamp names anyone other than the PR author, so stamp only as yourself. Agents are blocked
 from `tools/stamp.py` and `tools/review.py` (both refuse when `CLAUDECODE` is set, and `.claude/settings.json` denies
@@ -155,7 +169,7 @@ components/<Mfr>/<Value>` builds it): `README.md` lists the rows, `params/<key>.
 page. Then:
 
 ```sh
-python3 tools/stamp.py INA229AIDGS:vin_diff_abs      # or --from <file> with one <Value>:<key> per line
+python3 tools/stamp.py INA229AIDGS:vin_diff_abs INA229AIDGS:pinout   # or --from <file>, one <Value>:<key> per line
 python3 tools/verify.py --regen components/TexasInstruments/INA229AIDGS
 ```
 
@@ -173,9 +187,9 @@ Stamping is all or nothing. If one row is refused, no row is written.
 - `expected <Value>:<key>`: write the row as `Value:key`, with one colon.
 - `no component directory`: use the folder name, not a variant name.
 - `component.toml is not valid TOML`: fix the file first.
-- `no [param.<key>] in component.toml`: the key is wrong. Check the spelling.
+- `no [param.<key>] in component.toml`: the key is wrong. Check the spelling. `no [[pin]]`: `<Value>:pinout` needs pins.
 - `no readable review/review.toml (no review record)`, or `no review record for this row`: run `python3 tools/verify.py` for the folder.
-- `review record is older than the committed row`: run `python3 tools/verify.py`, then stamp again.
+- `review record is older than the committed row` (or `pins`): run `python3 tools/verify.py`, then stamp again.
 - `status DISAGREE` or `status NOT_FOUND`: fix the row or its cite first. Do not stamp.
 - `running inside Claude Code (CLAUDECODE is set)`: run `tools/stamp.py` yourself, in your own terminal.
 - `no local evidence image for this row`: run `python3 tools/verify.py` (needs the PDF in `docs/datasheets/`).

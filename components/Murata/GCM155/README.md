@@ -2,7 +2,7 @@
 
 # GCM155
 
-Checked by a person: 0 of 70 rows (docs/spec/review.md).
+Checked by a person: 0 of 20 rows that matter (71 rows in all). Review: python3 tools/review.py GCM155; 3 used values not covered (catalog.csv, series)
 
 ## Part
 

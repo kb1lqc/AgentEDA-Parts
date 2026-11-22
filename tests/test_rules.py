@@ -231,6 +231,23 @@ class TestCite(unittest.TestCase):
         trav = {"param": {"a": {"cite": "DS p.7 (../secret.pdf), Table A, 5C"}}}
         self.assertEqual([x.rule for x in rules.cite_sheet_findings(trav)], ["cite-sheet"])
 
+    def test_cite_naming_a_known_sheet_needs_the_bracket_form(self):
+        names = {"DMM0000COL17.pdf", "ina229.pdf", "a.pdf"}
+        bad = {"param": {"a": {"cite": "DS p.1, DMM0000COL17 land pattern, row 0805"},
+                         "b": {"cite": "DS p.1 (DMM0000COL17.pdf), land pattern, see also DMM0000COL17"},
+                         "c": {"cite": "DS p.1, table in DMM0000COL17.pdf, row 0805"}}}
+        f = rules.cite_unbracketed_findings(bad, names)
+        self.assertEqual([(x.rule, x.location) for x in f], [("cite-sheet-bracket", "param a"),
+                         ("cite-sheet-bracket", "param b"), ("cite-sheet-bracket", "param c")])
+        self.assertIn("DS p.<n> (DMM0000COL17.pdf), ...", f[0].message)  # the message states the fix
+        good = {"param": {"a": {"cite": "DS p.1 (DMM0000COL17.pdf), land pattern, row 0805"},
+                          "b": {"cite": "DS p.4, 6.5 Electrical Characteristics, row a"},  # short stems are ignored
+                          "c": {"cite": "DS p.4, Table, XDMM0000COL17Y"}}}  # not the whole token
+        self.assertEqual(rules.cite_unbracketed_findings(good, names), [])
+        self.assertEqual(rules.cite_unbracketed_findings(bad, set()), [])
+        pin = {"pin": [{"number": "2", "cite": "DS p.3, ina229 pin table"}]}
+        self.assertEqual([x.location for x in rules.cite_unbracketed_findings(pin, names)], ["pin 2"])
+
     def test_variant_cites_checked(self):
         f = rules.cite_findings({}, {"V1": {"param": {"a": {"cite": "nope"}}}})
         self.assertEqual(f[0].location, "variant V1 param a")

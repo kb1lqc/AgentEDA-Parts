@@ -16,6 +16,19 @@ render = "complete"
 backfill = "git blame"
 sheets = { "infineon-isc750p10lm-datasheet-en.pdf" = "5de61e12ecca6fb69fe00d517f7530d1e3b7bbee65c29902de80244f957ddbb8" }
 
+[pinout]
+state = "NEW"
+hash = "0be497fcab2befaf99a14d0161b11b6169f3a08ad7523cc686511ccbef30d3fb"
+pdf_sha256 = "5de61e12ecca6fb69fe00d517f7530d1e3b7bbee65c29902de80244f957ddbb8"
+
+[[pinout.page]]
+pdf_page = 1
+image = "evidence/pinout_p1.png"
+image_sha256 = "79807161e67adf2470accb3a37c224ea65f0a6a9d8c2347d4d1903e1059f8025"
+image_bytes = 70242
+dpi = 200
+render_key = "127ce4d85b30f3ae"
+
 [row.vds_rating]
 state = "NEW"
 status = "UNSURE"
@@ -1026,11 +1039,6 @@ header_box = [36.5, 73.6, 588.0, 127.0]
 header_key = "9a0b76e22653860c"
 text_snippet = "                                                                      Values\n   Parameter                                       Symbol                             Unit   Note\u0002/\u0002Test\u0002Condition\n                                                              Min.    Typ.     Max.\n   Reverse recovery charge          1)\n                                                   Qrr        -       -290     580    nC     VR=-50\u0002V,\u0002IF=-25\u0002A,\u0002diF/dt=-100\u0002A/\u00b5s"
 text_cells = { max = "580", min = "-", typ = "-290", unit = "nC" }
-
-[row.pins]
-state = "NOT_COVERED"
-status = "UNSURE"
-reason = "[[pin]] rows are not reviewed by ds_review"
 
 [row.calc]
 state = "NOT_COVERED"

@@ -16,6 +16,19 @@ render = "complete"
 backfill = "git blame"
 sheets = { "ina821.pdf" = "9acfe455263ae271eded98664a83bd2eddb44a8b9be260eba6455cd3f4fb6d56" }
 
+[pinout]
+state = "NEW"
+hash = "9bad2271a0758394ea5a3ea88ea89e94d39348422d41fe85b088e217a091a476"
+pdf_sha256 = "9acfe455263ae271eded98664a83bd2eddb44a8b9be260eba6455cd3f4fb6d56"
+
+[[pinout.page]]
+pdf_page = 4
+image = "evidence/pinout_p4.png"
+image_sha256 = "686a803ec1fde25d67b0fed9f4ce635add7170fa68245589bf492b51ad73750e"
+image_bytes = 48366
+dpi = 200
+render_key = "d123212458668f24"
+
 [row.vs_abs]
 state = "NEW"
 status = "UNSURE"
@@ -1694,11 +1707,6 @@ header_sha256 = "cbf275dc57b75f35d6607d4d9911f9ef9773e744605e1a936c3ac0948e728e7
 header_box = [48.0, 69.1, 552.9, 118.5]
 header_key = "e5d1b00198a19ac5"
 text_snippet = "at TA = 25\u00b0C, VS = \u00b115 V, RL = 10 k\u2126, VREF = 0 V, and G = 1 (unless otherwise noted)\n           PARAMETER                                       TEST CONDITIONS                          MIN              TYP          MAX     UNIT\n                                    VIN = 0 V                                                                        600           650\nIQ        Quiescent current                                                                                                                \u00b5A\n                                    vs temperature, TA = \u201340\u00b0C to +125\u00b0C                                                           870"
-
-[row.pins]
-state = "NOT_COVERED"
-status = "UNSURE"
-reason = "[[pin]] rows are not reviewed by ds_review"
 
 [row.calc]
 state = "NOT_COVERED"

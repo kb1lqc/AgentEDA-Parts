@@ -2,7 +2,7 @@
 
 # ERJ-3EKF
 
-Checked by a person: 0 of 24 rows (docs/spec/review.md).
+Checked by a person: 0 of 14 rows that matter (25 rows in all). Review: python3 tools/review.py ERJ-3EKF
 
 ## Part
 
