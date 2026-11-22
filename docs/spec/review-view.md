@@ -63,3 +63,10 @@ pin cites, in page order: sheet (only when not the main file), pdf_page, image (
 render), image_sha256, image_bytes, dpi, render_key. Same states and checks as a row (`HUMAN_VERIFIED`, `STALE` when
 any pin changes, `PDF_CHANGED`, `NEW`); a STALE or PDF_CHANGED human pinout is listed in DELTA.md and github-issue.md
 like a row. `tools/stamp.py <Value>:pinout` writes it; `tools/check_stamps.py` checks it like a row stamp.
+
+## PR comment (`tools/pr_status.py`, `.github/workflows/review-status.yml`)
+On a pull request from this repo (not a fork), one comment marked `<!-- review-status -->`, created or updated in
+place (never duplicated): one line per component directory the PR changes, `<Value>: released` or `<Value>: <k> of
+<n> rows that matter checked`, plus `; <c> used values not covered` when c > 0, then `Review: python3 tools/review.py
+<Values>`. Computed like the READMEs (ledger only, committed files, no PDFs); never stamps. No changed component: no
+comment (an existing one is deleted). Workflow permissions: contents read, pull-requests write.
