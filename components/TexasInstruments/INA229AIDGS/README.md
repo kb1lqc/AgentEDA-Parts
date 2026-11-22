@@ -2,7 +2,7 @@
 
 # INA229AIDGS
 
-Checked by a person: 8 of 23 rows that matter (76 rows in all). Review: python3 tools/review.py INA229AIDGS
+Checked by a person: 10 of 23 rows that matter (76 rows in all). Review: python3 tools/review.py INA229AIDGS
 
 ## Part
 
@@ -43,12 +43,12 @@ Checked by a person: 8 of 23 rows that matter (76 rows in all). Review: python3 
 | Supply voltage | VS |  |  | 6 | V | over operating free-air temperature range (unless otherwise noted) Note: Only a MAX is printed (MIN column blank). No reference pin printed; checked against system 0 V (a floating GND is not modelled). | DS p.3, 6.1 Absolute Maximum Ratings, Supply voltage VS |  |
 | Differential input voltage, (VIN+) - (VIN-) | VIN+, VIN- | -40 (rel. IN-) |  | 40 (rel. IN-) | V | over operating free-air temperature range (unless otherwise noted) Note: Pin-pair row: the value is V(IN+), the reference is IN- (second pin as reference). Footnote (2) on the same table: VIN+ and VIN- are the voltages at the IN+ and IN- pins. check_pins IN+ with IN- as reference. | DS p.3, 6.1 Absolute Maximum Ratings, VIN+, VIN- Differential (VIN+) - (VIN-) |  |
 | Common-mode input voltage, VIN+ and VIN- | VIN+, VIN- | -0.3 |  | 85 | V | over operating free-air temperature range (unless otherwise noted) Note: Same limits as vcm_rec (DS p.4, 6.3). No reference pin printed (DS p.12, 7.3.1 gives -0.3 V to +85 V at the input pins with no reference); checked against system 0 V (a floating GND is not modelled). | DS p.3, 6.1 Absolute Maximum Ratings, VIN+, VIN- Common-mode |  |
-| Bus voltage input, VBUS | VBUS | -0.3 |  | 85 | V | over operating free-air temperature range (unless otherwise noted) Note: No reference pin printed; checked against system 0 V (a floating GND is not modelled). | DS p.3, 6.1 Absolute Maximum Ratings, VBUS |  |
+| Bus voltage input, VBUS | VBUS | -0.3 |  | 85 | V | over operating free-air temperature range (unless otherwise noted) Note: No reference pin printed; checked against system 0 V (a floating GND is not modelled). | DS p.3, 6.1 Absolute Maximum Ratings, VBUS | checked (kb1lqc, 2026-11-22) |
 | Digital input/output voltage, MOSI, MISO, SCLK, ALERT | VIO | -0.3 (rel. GND) |  | 0.3 (rel. VS) | V | over operating free-air temperature range (unless otherwise noted) Note: Printed GND - 0.3 V (MIN) and VS + 0.3 V (MAX): min_ref = GND, max_ref = VS. CS is not in this row (DS omission, open item): CS is not checked. | DS p.3, 6.1 Absolute Maximum Ratings, VIO, MOSI, MISO, SCLK, ALERT |  |
 | Input current into any pin | IIN |  |  | 5 | mA | over operating free-air temperature range (unless otherwise noted) Note: MAX column only (MIN blank), stored as max. | DS p.3, 6.1 Absolute Maximum Ratings, IIN, Input current into any pin | checked (kb1lqc, 2026-11-20) |
 | Digital output current | IOUT |  |  | 10 | mA | over operating free-air temperature range (unless otherwise noted) Note: MAX column only (MIN blank), stored as max. | DS p.3, 6.1 Absolute Maximum Ratings, IOUT, Digital output current | checked (kb1lqc, 2026-11-20) |
 | Junction temperature | TJ |  |  | 150 | degC |  | DS p.3, 6.1 Absolute Maximum Ratings, TJ, Junction temperature | checked (kb1lqc, 2026-11-20) |
-| Storage temperature | Tstg | -65 |  | 150 | degC |  | DS p.3, 6.1 Absolute Maximum Ratings, Tstg, Storage temperature |  |
+| Storage temperature | Tstg | -65 |  | 150 | degC |  | DS p.3, 6.1 Absolute Maximum Ratings, Tstg, Storage temperature | checked (kb1lqc, 2026-11-22) |
 | Electrostatic discharge, human body model | V(ESD) | -2000 |  | 2000 | V | HBM per ANSI/ESDA/JEDEC JS-001, all pins Note: Printed +/-2000 V. DS footnote (1): JEDEC JEP155 500 V HBM allows safe manufacturing. | DS p.4, 6.2 ESD Ratings, Human body model (HBM), V(ESD) | checked (kb1lqc, 2026-11-20) |
 | Electrostatic discharge, charged device model | V(ESD) | -1000 |  | 1000 | V | CDM per JEDEC JESD22-C101, all pins Note: Printed +/-1000 V. DS footnote (2): JEDEC JEP157 250 V CDM allows safe manufacturing. | DS p.4, 6.2 ESD Ratings, Charged device model (CDM), V(ESD) | checked (kb1lqc, 2026-11-20) |
 
