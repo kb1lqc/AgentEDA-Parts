@@ -19,7 +19,7 @@ stamp.py would refuse the row. Tick the rows whose statement matches the datashe
 "Stamp N rows and open PR". With the library tree clean (untracked files allowed) it runs, showing each command:
 git fetch origin; git switch -c review/<parts>-<login>-<YYYYMMDD>[-n] origin/main; tools/stamp.py --from <list>
 (a refusal switches back and deletes the new branch); tools/verify.py --regen <parts> (a FAIL leaves the branch,
-uncommitted, for you); git commit of those parts' component.toml, review/review.toml and README.md; git push -u origin
+uncommitted, for you); git commit of those parts' component.toml, review/review.toml and README.md, plus the top-level README.md status table; git push -u origin
 <branch>; gh pr create. Then the server exits. --dry-run is for a person trying the page; agents don't run review.py
 (.claude/settings.json denies it; the CLAUDECODE refusal lets only --dry-run through, so the tests can drive it).
 Exit 0 = PR opened (or Done pressed), 1 = refused or a step failed.
@@ -503,6 +503,7 @@ def publish(root, dirs, refs, run, emit, today=None, python=sys.executable):
                     f"or discard them with git restore . && git switch {prev}.", out)
     rc, out = sh("git", "status", "--porcelain")
     allowed = {f"{r}/{n}" for r in rel for n in ("component.toml", "review/review.toml", "README.md")}
+    allowed.add("README.md")  # the top-level status table, rewritten by verify.py --regen (lib.readme.update_top)
     changed = [ln[3:] for ln in out.splitlines() if ln.strip() and not ln.startswith("??")]
     extra = [p for p in changed if p not in allowed]
     if rc or extra or not changed:
