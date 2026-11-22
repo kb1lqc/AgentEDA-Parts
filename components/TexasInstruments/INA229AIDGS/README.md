@@ -2,7 +2,7 @@
 
 # INA229AIDGS
 
-Checked by a person: 16 of 75 rows (docs/spec/review.md).
+Checked by a person: 8 of 23 rows that matter (76 rows in all). Review: python3 tools/review.py INA229AIDGS
 
 ## Part
 

@@ -36,5 +36,5 @@ Stamp: `verified = "<who> <YYYY-MM-DD> <method>"`. `tools/stamp.py` writes `huma
 `lib.check` FAILs on a stale row hash, a stamp differing from `verified`, any file but review.toml under review/, and (evidence mode) a missing or changed cache image. Limits: a stamp is an accountability record, not proof; a hand-typed stamp passes if it reproduces both hashes; `main` needs branch protection requiring PRs; hardware-key signed commits are the planned stronger control.
 
 
-## Human view (`lib/review_status.py`, `tools/review.py`, README `Checked` column; never shows ledger states)
-`checked`: ledger `HUMAN_VERIFIED` and a current human stamp (the rule of `lib.human_review_needed()`; READMEs use the ledger only, so they are the same with or without PDF and cache) · `needs check`: any other row a block uses (circuit-blocks `benches/<B>/docs/design-analysis/library-inputs.json`; with no block named, every other row) · `reference`: not used by any block in scope. Per part and block: "<Value>: k of n used rows checked"; released when k == n > 0. `tools/review.py` shows only `needs check` rows (easiest first; rows `tools/stamp.py` would refuse are shown without a tick box) and stamps the ticked rows on a new branch, then opens the PR.
+## Human view
+Rows that matter, per-part status, statements, the review page and the pinout stamp: `docs/spec/review-view.md`.

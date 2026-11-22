@@ -16,6 +16,19 @@ render = "complete"
 backfill = "git blame"
 sheets = { "infineon-isc035n10nm5lf2-datasheet-en.pdf" = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94" }
 
+[pinout]
+state = "NEW"
+hash = "532281e140938e22acf7e27a177d54b11069305e595aa041b6768f80fe6d2e72"
+pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
+
+[[pinout.page]]
+pdf_page = 1
+image = "evidence/pinout_p1.png"
+image_sha256 = "363e98f94b713c931154e0977e066eb24aecedda675909b083297b9efb58c61e"
+image_bytes = 71709
+dpi = 200
+render_key = "61a05b661adab4ca"
+
 [row.vds_rating]
 state = "MACHINE_CHECKED"
 status = "UNSURE"
@@ -2971,11 +2984,6 @@ crop_box = [37.5, 331.4, 557.8, 782.9]
 dpi = 150
 render_key = "fe54ecb86a812043"
 text_snippet = " Reverse recovery charge 10)                      Qrr                    72         144        nC"
-
-[row.pins]
-state = "NOT_COVERED"
-status = "UNSURE"
-reason = "[[pin]] rows are not reviewed by ds_review"
 
 [row.calc]
 state = "NOT_COVERED"

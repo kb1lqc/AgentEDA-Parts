@@ -16,6 +16,27 @@ render = "complete"
 backfill = "git blame"
 sheets = { "tps4800-q1.pdf" = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839" }
 
+[pinout]
+state = "NEW"
+hash = "285bf2bbd55af7b02edd7de70d370f90b0d912cf6dee6e76b4decfd7078326e0"
+pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
+
+[[pinout.page]]
+pdf_page = 3
+image = "evidence/pinout_p3.png"
+image_sha256 = "0adea55f8c3e6d4b2cfe22cb60ea075fc7f1c3f41eb71ad8053ab35400096fd0"
+image_bytes = 97297
+dpi = 200
+render_key = "bbd65543b53f09c7"
+
+[[pinout.page]]
+pdf_page = 4
+image = "evidence/pinout_p4.png"
+image_sha256 = "6f9b0dd96f7febb033b43b8fbb5c1c37ffabed74a9b086931e36521d266553e1"
+image_bytes = 85341
+dpi = 200
+render_key = "2e0fd4728529690c"
+
 [row.abs_vs_cs_gnd]
 state = "MACHINE_CHECKED"
 status = "UNSURE"
@@ -2099,11 +2120,6 @@ crop_box = "full_page"
 dpi = 200
 render_key = "5ef163a39cf2e671"
 text_snippet = "ITMR is internal pull-up current of 80\u03bcA."
-
-[row.pins]
-state = "NOT_COVERED"
-status = "UNSURE"
-reason = "[[pin]] rows are not reviewed by ds_review"
 
 [row.calc]
 state = "NOT_COVERED"

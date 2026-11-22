@@ -3,6 +3,7 @@ import ast
 import contextlib
 import hashlib
 import io
+import json
 import os
 import re
 import shutil
@@ -231,7 +232,7 @@ class TestRecords(Base):
         self.make(prow("vos", "VOS", "uV", typ=10, max=35))
         self.run_r()
         self.assertFalse((self.cdir / "github-issue.md").exists())
-        self.assertIn("NOT_COVERED", self.ledger()["row"]["pins"]["state"])
+        self.assertIn("NOT_COVERED", self.ledger()["row"]["calc"]["state"])
 
     def test_page_links_and_stamp_template(self):
         self.run_r()
@@ -481,6 +482,111 @@ class TestImages(Base):
         self.assertFalse((self.cdir / "evidence/page_p2.png").exists())  # unreferenced image removed
 
 
+def locate_pages():
+    """datasheet_pages() plus: a Landing line printing 0.90 to 1.40 and a symbol-only ZLAB/Gadget line on page 2, and
+    eight lines printing 7 on page 3."""
+    pages = fx.datasheet_pages()
+    pages[1] = pages[1] + [(40, 440, 8, "ZLAB"), (80, 440, 8, "Gadget"),
+                           (40, 455, 8, "Landing"), (300, 455, 8, "0.90"), (340, 455, 8, "to"), (380, 455, 8, "1.40"),
+                           (40, 470, 8, "Far"), (300, 470, 8, "2.20"), (340, 470, 8, "9"), (380, 470, 8, "3.30"),
+                           (40, 485, 8, "Near"), (300, 485, 8, "2.20"), (340, 485, 8, "to"), (380, 485, 8, "3.30"),
+                           (40, 500, 8, "Tol"), (300, 500, 8, "\u00b150"),
+                           (40, 515, 8, "Mixed"), (300, 515, 8, "-50"), (340, 515, 8, "7"), (380, 515, 8, "50")]
+    pages[2] = pages[2] + [t for n in range(8) for t in ((40, 120 + 15 * n, 8, "Many %d" % n), (400, 120 + 15 * n, 8, "7"))]
+    return pages
+
+
+LOCATE_BODY = (prow("land", "QQ", "mm", min=0.9, max=1.4)                       # numbers: 0.9 prints as 0.90
+               + prow("zlab", "ZLAB", "V", cite="DS p.2, 6.5 Electrical Characteristics, row Gadget", typ=99)  # symbol+label
+               + prow("nope", "NOPEX", "V", typ=987654)                         # nowhere
+               + prow("many", "MANY", "V", cite="DS p.3, 6.5 Electrical Characteristics (continued), x", typ=7)
+               + prow("adj", "ADJ", "mm", min=2.2, max=3.3)                     # two lines hold both; only "Near" is adjacent
+               + prow("pm", "PM", "mm", min=-50, max=50)                        # "Tol \u00b150" is adjacent; "-50 7 50" is not
+               + prow("vos", "VOS", "uV", typ=10, max=35))                      # auto crop: no locate entry
+
+
+class TestLocate(Base):
+    """docs/spec/review-view.md, Locate: display-only boxes over the full page of the cited sheet and page."""
+
+    def setUp(self):
+        super().setUp()
+        self.make(LOCATE_BODY, pdf=fx.build_pdf(locate_pages()))
+        self.assertEqual(self.run_r()[0], 0)
+
+    def loc(self):
+        return json.loads((self.cdir / "locate.json").read_text())["rows"]
+
+    def test_boxes_by_number_value_and_the_full_page_image(self):
+        e = self.loc()["land"]
+        self.assertEqual((e["how"], e["pdf_page"], e["sheet"]), ("numbers", 2, ""))
+        self.assertEqual(len(e["boxes"]), 1)
+        self.assertIn("Landing", e["boxes"][0]["text"])
+        x0, y0, x1, y1 = e["boxes"][0]["box"]  # percent of the page
+        self.assertAlmostEqual((y0 + y1) / 2, 459 / 792 * 100, delta=2.5)
+        self.assertLess(x0, 10)
+        self.assertGreater(x1, 60)
+        self.assertEqual(e["image"], "evidence/locate_p2.png")
+        self.assertRegex(e["render_key"], r"^[0-9a-f]{16}$")
+        self.assertEqual(R.png_info(self.cdir / e["image"])["ihdr"][:2], (1275, 1650))  # 150 dpi, the whole page
+
+    def test_adjacent_and_in_order_lines_win(self):
+        a = self.loc()["adj"]
+        self.assertEqual((a["how"], len(a["boxes"])), ("numbers", 1))
+        self.assertIn("Near", a["boxes"][0]["text"])
+        p = self.loc()["pm"]
+        self.assertEqual((p["how"], len(p["boxes"])), ("numbers", 1))
+        self.assertIn("Tol", p["boxes"][0]["text"])
+        doc = R.Doc(self.root / "docs/datasheets/x.pdf", "x.pdf")  # no line prints them in order: every line holding them stays
+        how, boxes = R.locate_boxes({"min": 3.3, "max": 2.2, "symbol": "ADJ"}, doc, 2)
+        self.assertEqual((how, len(boxes)), ("numbers", 2))
+
+    def test_row_label_and_symbol_fallback_and_not_located(self):
+        z = self.loc()["zlab"]
+        self.assertEqual((z["how"], len(z["boxes"])), ("symbol", 1))
+        self.assertIn("ZLAB Gadget", z["boxes"][0]["text"])
+        n = self.loc()["nope"]
+        self.assertEqual((n["how"], n["boxes"]), ("none", []))
+        self.assertTrue((self.cdir / n["image"]).is_file())  # still the full page of the cited page
+
+    def test_at_most_five_boxes_and_auto_rows_have_none(self):
+        m = self.loc()["many"]
+        self.assertEqual((m["how"], len(m["boxes"])), ("numbers", 5))
+        self.assertNotIn("vos", self.loc())
+        self.assertEqual(self.rows()["vos"]["crop"], "auto")
+
+    def test_non_main_sheet_gets_its_own_page_and_prefix(self):
+        fill = [(40 + 30 * (n % 15), 200 + 10 * (n // 15), 8, "w%d" % n) for n in range(60)]  # a text layer needs 50 words
+        y = fx.build_pdf([[(40, 100, 8, "Row X"), (300, 100, 8, "3.30"), fx.footer(1)] + fill])
+        (self.root / "docs/datasheets/y.pdf").write_bytes(y)
+        self.make(LOCATE_BODY + prow("sx", "SX", "V", cite="DS p.1 (y.pdf), Table, x", typ=3.3), pdf=fx.build_pdf(locate_pages()))
+        (self.root / "docs/datasheets/y.pdf").write_bytes(y)
+        self.assertEqual(self.run_r()[0], 0)
+        e = self.loc()["sx"]
+        self.assertEqual((e["sheet"], e["how"], e["image"]), ("y.pdf", "numbers", "evidence/y_page_p1.png"))  # its own full page
+        self.assertNotEqual(e["image"], self.loc()["land"]["image"])
+        self.assertIn("Row X 3.30", e["boxes"][0]["text"])
+        self.assertTrue((self.cdir / e["image"]).is_file())
+
+    def test_cache_only_never_in_the_ledger_and_stable(self):
+        ledger = (self.rdir / "review.toml").read_text()
+        self.assertNotIn("boxes", ledger)
+        self.assertNotIn("locate_p", ledger)
+        before = self.snap()
+        rc, out = self.run_r()
+        self.assertIn("renders 0", out)
+        self.assertEqual(before, self.snap())  # same inputs, same bytes (locate.json included)
+        (self.root / "docs/datasheets/x.pdf").unlink()  # no PDF: the cache keeps what it found
+        self.run_r()
+        self.assertEqual(before, self.snap())
+
+    def test_rotated_page_is_not_located(self):
+        doc = R.Doc(self.root / "docs/datasheets/x.pdf", "x.pdf")
+        row = {"min": 0.9, "max": 1.4, "symbol": "QQ"}
+        self.assertEqual(R.locate_boxes(row, doc, 2)[0], "numbers")
+        doc.rot = {2: 90}  # the text-layer boxes of a rotated page do not match the render: show no box
+        self.assertEqual(R.locate_boxes(row, doc, 2), ("none", []))
+
+
 class TestIncremental(Base):
     def test_second_run_zero_renders_byte_identical(self):
         self.run_r()
@@ -716,12 +822,252 @@ class TestCache(Base):
         self.assertTrue(any("only review/review.toml is committed" in m for m in msgs), msgs)
 
 
+PINS = ('\n[[pin]]\nnumber = "1"\nname = "IN"\ntype = "input"\nfunction = "Input"\ncite = "DS p.4, Pin Functions"\n'
+        '\n[[pin]]\nnumber = "2"\nname = "OUT"\ntype = "output"\nfunction = "Output"\ncite = "DS p.4, Pin Functions"\n')
+
+
+class Pins:
+    """Mixin: the fixture part also has two [[pin]] entries (docs/spec/review-view.md "Pinout stamp")."""
+
+    def make(self, body=None, pdf=None):
+        super().make(BODY + PINS if body is None else body, pdf)
+
+
+class PinBase(Pins, Base):
+    def pins_hash(self):
+        pins = tomllib.loads((self.root / COMP / "component.toml").read_text())["pin"]
+        return hashlib.sha256(json.dumps(pins, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+    def pinout_stamp(self, pins=None, pdf=None, who="alice"):
+        sha = pdf or self.ledger()["inputs"]["pdf_sha256"]
+        return "human:%s 2026-11-20 page-image pinout %s pins %s" % (who, sha[:12], (pins or self.pins_hash())[:12])
+
+    def put_stamp(self, stamp):
+        p = self.root / COMP / "component.toml"
+        p.write_text(re.sub(r"\n\[pinout\]\nverified = .*\n", "\n", p.read_text()) + '\n[pinout]\nverified = "%s"\n' % stamp)
+
+    @property
+    def pinout(self):
+        return self.ledger()["pinout"]
+
+
+class TestPinout(PinBase):
+    def test_record_fields_and_full_page_image(self):
+        self.run_r()
+        p = self.pinout
+        self.assertEqual(p["hash"], self.pins_hash())
+        self.assertEqual(p["state"], "NEW")
+        self.assertNotIn("image", p)  # the images are [[pinout.page]] entries
+        self.assertEqual(p["pdf_sha256"], self.ledger()["inputs"]["pdf_sha256"])
+        (pg,) = p["page"]
+        self.assertEqual((pg["pdf_page"], pg["image"], pg["dpi"]), (4, "evidence/pinout_p4.png", 150))
+        self.assertNotIn("sheet", pg)  # only when not the main file
+        img = self.cdir / pg["image"]
+        self.assertEqual(hashlib.sha256(img.read_bytes()).hexdigest(), pg["image_sha256"])
+        self.assertEqual(pg["image_bytes"], img.stat().st_size)
+        self.assertEqual(R.png_info(img)["ihdr"][:2], (1275, 1650))  # the whole 8.5 x 11 in page at 150 dpi
+        self.assertTrue(pg["render_key"])
+        self.assertEqual(self.ledger()["inputs"]["render"], "complete")
+
+    def two_pages(self):
+        self.edit('function = "Output"\ncite = "DS p.4, Pin Functions"', 'function = "Output"\ncite = "DS p.1, Pin Functions"')
+
+    def test_every_page_any_pin_cites_is_a_page_entry_in_page_order(self):
+        self.two_pages()
+        self.run_r()
+        pages = self.pinout["page"]
+        self.assertEqual([(g["pdf_page"], g["image"]) for g in pages],
+                         [(1, "evidence/pinout_p1.png"), (4, "evidence/pinout_p4.png")])
+        for g in pages:
+            self.assertEqual(hashlib.sha256((self.cdir / g["image"]).read_bytes()).hexdigest(), g["image_sha256"])
+            self.assertTrue(g["render_key"])
+        self.assertNotEqual(pages[0]["render_key"], pages[1]["render_key"])
+        a = self.snap()
+        rc, out = self.run_r()
+        self.assertIn("0 render(s), 0 file(s) changed", out)
+        self.assertEqual(a, self.snap())
+        self.edit('function = "Output"\ncite = "DS p.1, Pin Functions"', 'function = "Output"\ncite = "DS p.4, Pin Functions"')
+        self.run_r()  # one cited page left: the other image is dropped
+        self.assertEqual([g["pdf_page"] for g in self.pinout["page"]], [4])
+        self.assertFalse((self.cdir / "evidence/pinout_p1.png").exists())
+
+    def test_pins_row_and_its_prose_are_gone(self):
+        self.run_r()
+        self.assertNotIn("pins", self.rows())
+        self.assertNotIn("[[pin]] rows are not reviewed", (self.cdir / "unmapped.md").read_text())
+        self.assertNotIn("[[pin]] rows are not reviewed", (self.rdir / "review.toml").read_text())
+
+    def test_human_pinout_stale_or_pdf_changed_is_in_delta_and_issue(self):
+        self.run_r()
+        self.put_stamp(self.pinout_stamp())
+        self.run_r()
+        self.assertNotIn("pinout", (self.cdir / "DELTA.md").read_text())
+        self.assertNotIn("pinout", (self.cdir / "github-issue.md").read_text())
+        self.edit('function = "Input"', 'function = "In"')
+        rc, out = self.run_r()
+        self.assertIn("delta 1", out)
+        for name in ("DELTA.md", "github-issue.md"):
+            self.assertIn("pinout", (self.cdir / name).read_text(), name)
+        self.assertIn("STALE", (self.cdir / "DELTA.md").read_text())
+        self.edit('function = "In"', 'function = "Input"')
+        self.run_r()
+        self.put_stamp(self.pinout_stamp(pdf="c" * 64))
+        self.run_r()
+        self.assertEqual(self.pinout["state"], "PDF_CHANGED")
+        self.assertIn("PDF_CHANGED", (self.cdir / "DELTA.md").read_text())
+        self.assertIn("pinout", (self.cdir / "github-issue.md").read_text())
+
+    def test_cache_readme_counts_the_pinout(self):
+        self.run_r()
+        counts = (self.cdir / "README.md").read_text().split("Counts: ")[1].splitlines()[0]
+        total = sum(int(n) for n in re.findall(r"[A-Z_]+ (\d+)", counts.split(" · ")[1]))
+        self.assertEqual(total, len(self.rows()) + 1)
+        self.assertIn("pinout", (self.cdir / "README.md").read_text().split("## Rows to review")[1])
+
+    def test_no_pins_no_pinout_record(self):
+        self.make(BODY)
+        self.run_r()
+        self.assertNotIn("pinout", self.ledger())
+
+    def test_stamp_states_and_any_pin_edit_is_stale(self):
+        self.run_r()
+        self.put_stamp(self.pinout_stamp())
+        self.run_r()
+        self.assertEqual(self.pinout["state"], "HUMAN_VERIFIED")
+        self.assertEqual(self.pinout["stamp"], self.pinout_stamp())
+        for old, new in (('function = "Input"', 'function = "Input pin"'), ('type = "input"', 'type = "bidirectional"'),
+                         ('name = "OUT"', 'name = "OUT2"'), ('number = "2"', 'number = "3"'),
+                         ('cite = "DS p.4, Pin Functions"', 'cite = "DS p.4, Pin Functions x"')):
+            self.edit(old, new)
+            self.run_r()
+            self.assertEqual(self.pinout["state"], "STALE", new)
+            self.assertNotEqual(self.pinout["hash"], self.pinout["stamp_hash"])
+            self.edit(new, old)
+            self.run_r()
+            self.assertEqual(self.pinout["state"], "HUMAN_VERIFIED", old)
+
+    def test_other_stamps_and_pdf_change(self):
+        self.run_r()
+        self.put_stamp("sonnet-audit 2026-11-18 pins read")
+        self.run_r()
+        self.assertEqual(self.pinout["state"], "MACHINE_CHECKED")
+        self.put_stamp("human:alice 2026-11-20 pinout looks right")
+        self.run_r()
+        self.assertEqual(self.pinout["state"], "UNVERIFIED")
+        self.put_stamp(self.pinout_stamp(pdf="c" * 64))
+        self.run_r()
+        self.assertEqual(self.pinout["state"], "PDF_CHANGED")
+        self.put_stamp(self.pinout_stamp(pins="d" * 64))
+        self.run_r()
+        self.assertEqual(self.pinout["state"], "STALE")
+
+    def test_second_run_zero_renders_and_image_dropped_with_pins(self):
+        self.run_r()
+        a = self.snap()
+        rc, out = self.run_r()
+        self.assertIn("0 render(s), 0 file(s) changed", out)
+        self.assertEqual(a, self.snap())
+        self.make(BODY)  # the pins are gone: no record, no image
+        self.run_r()
+        self.assertNotIn("pinout", self.ledger())
+        self.assertFalse((self.cdir / "evidence/pinout_p4.png").exists())
+
+    def test_ledger_only_mode_records_not_rendered_and_keeps_old_image(self):
+        (self.root / "docs/datasheets/x.pdf").unlink()
+        self.run_r()
+        p = self.pinout
+        self.assertEqual((p["hash"], p["state"]), (self.pins_hash(), "NEW"))
+        self.assertNotIn("page", p)
+        self.assertEqual(self.ledger()["inputs"]["render"], "NOT_RENDERED")
+        a = self.snap()
+        self.run_r()
+        self.assertEqual(a, self.snap())  # a second run without the PDF changes nothing
+        self.make()  # PDF back
+        self.run_r()
+        shutil.rmtree(self.cdir)
+        (self.root / "docs/datasheets/x.pdf").unlink()
+        before = self.ledger()["pinout"]
+        self.run_r()
+        self.assertEqual(self.ledger()["pinout"], before)  # image fields kept from the run with the PDF
+        self.assertEqual(before["page"][0]["image"], "evidence/pinout_p4.png")
+
+    def test_unresolvable_cite_has_no_image(self):
+        self.edit('cite = "DS p.4, Pin Functions"', 'cite = "see datasheet"')
+        self.edit('cite = "DS p.4, Pin Functions"', 'cite = "see datasheet"')
+        self.run_r()
+        self.assertNotIn("page", self.pinout)
+        self.assertEqual(self.pinout["hash"], self.pins_hash())
+
+    def test_lib_check_pinout(self):
+        from lib import check
+        self.run_r()
+        errs = lambda: [m for lvl, m in check.check_ledger(self.root / COMP) if lvl == "ERROR"]  # noqa: E731
+        self.assertEqual(errs(), [])
+        self.put_stamp(self.pinout_stamp())  # stamp differs from the ledger's
+        self.assertTrue(any("pinout: stamp differs" in m for m in errs()), errs())
+        self.run_r()
+        self.assertEqual(errs(), [])
+        self.edit('function = "Input"', 'function = "In"')  # pins edited, record not rerun
+        self.assertTrue(any("pinout is missing or older" in m for m in errs()), errs())
+        self.run_r()
+        led = self.rdir / "review.toml"
+        led.write_text(led.read_text().replace('state = "STALE"', 'state = "HUMAN_VERIFIED"'))
+        self.assertTrue(any("pinout: state" in m for m in errs()), errs())
+        led.write_text(re.sub(r"\[pinout\].*?\n\n", "", led.read_text(), flags=re.S))  # record removed
+        self.assertTrue(any("pinout is missing or older" in m for m in errs()), errs())
+        img = self.cdir / "evidence/pinout_p4.png"
+        self.run_r()
+        img.write_bytes(img.read_bytes() + b"x")
+        self.assertTrue(any("sha256 differs" in m and "pinout" in m for m in errs()), errs())
+
+    def test_lib_check_images_of_every_pinout_page(self):
+        from lib import check
+        self.two_pages()
+        self.run_r()
+        errs = lambda: [m for lvl, m in check.check_ledger(self.root / COMP) if lvl == "ERROR"]  # noqa: E731
+        self.assertEqual(errs(), [])
+        img = self.cdir / "evidence/pinout_p1.png"  # the first page, not the one a single-image record would name
+        good = img.read_bytes()
+        img.write_bytes(good + b"x")
+        self.assertTrue(any("pinout_p1.png sha256 differs" in m and "pinout" in m for m in errs()), errs())
+        img.unlink()
+        self.assertTrue(any("pinout_p1.png missing" in m for m in errs()), errs())
+
+    def test_human_stamp_needs_every_cited_sheet_unchanged(self):
+        from lib import component as C
+        self.run_r()
+        d, other = self.root / COMP, self.root / "docs/datasheets/other.pdf"
+        other.write_bytes(self.PDF)
+        led = self.ledger()
+        led["pinout"]["page"] = [{"sheet": "other.pdf", "pdf_page": 1}]
+        led["inputs"]["sheets"]["other.pdf"] = hashlib.sha256(self.PDF).hexdigest()
+        self.assertIsNone(C._review(d, "pinout", self.pinout_stamp(), ledger=led)[1])
+        other.write_bytes(self.PDF + b"\n% changed\n")
+        self.assertEqual(C._review(d, "pinout", self.pinout_stamp(), ledger=led)[1], "human stamp: PDF changed")
+        del led["inputs"]["sheets"]["other.pdf"]  # a cited sheet the ledger does not pin
+        self.assertEqual(C._review(d, "pinout", self.pinout_stamp(), ledger=led)[1], "human stamp: PDF changed")
+
+    def test_human_review_reads_the_pinout_stamp(self):
+        from lib import component as C
+        self.run_r()
+        d = self.root / COMP
+        ledger = tomllib.loads((d / "review/review.toml").read_text())
+        stamp = self.pinout_stamp()
+        self.assertEqual(C._review(d, "pinout", stamp)[1], None)
+        self.assertEqual(C._review(d, "pinout", None)[1], "no stamp")
+        self.assertEqual(C._review(d, "pinout", self.pinout_stamp(pins="d" * 64))[1], "human stamp: row changed")
+        self.assertEqual(C._review(d, "pinout", self.pinout_stamp(pdf="c" * 64))[1], "human stamp: PDF changed")
+        self.assertEqual(C._review(d, "pinout", "human:alice 2026-11-20 page-image ds_review " + "a" * 12 + " row " + "b" * 12)[1],
+                         "human stamp: malformed")
+        self.assertEqual(ledger["pinout"]["hash"], C.pinout_hash(tomllib.loads((d / "component.toml").read_text())["pin"]))
+
+
 class TestDocSizes(unittest.TestCase):
     def test_limits(self):
         doc = ast.get_docstring(ast.parse((ROOT / "tools/ds_review.py").read_text()))
         self.assertLessEqual(len(doc.split("\n")), 15)
         self.assertIn("docs/spec/review.md", doc)
-        for path, limit in (("docs/spec/review.md", 40), ("docs/briefs/ds-review.md", 15),
+        for path, limit in (("docs/spec/review.md", 40), ("docs/spec/review-view.md", 70), ("docs/briefs/ds-review.md", 15),
                             ("docs/briefs/ds-review-model-prompt.md", 40)):
             self.assertLessEqual(len((ROOT / path).read_text().rstrip("\n").split("\n")), limit, path)
 

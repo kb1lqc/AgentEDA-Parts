@@ -2,7 +2,7 @@
 
 # WSK2512-LOW
 
-Checked by a person: 0 of 41 rows (docs/spec/review.md).
+Checked by a person: 0 of 21 rows that matter (42 rows in all). Review: python3 tools/review.py WSK2512-LOW
 
 ## Part
 

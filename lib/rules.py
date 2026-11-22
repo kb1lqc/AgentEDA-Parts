@@ -197,6 +197,25 @@ def cite_sheet_findings(data, variants=None):
             for loc, name in cite_sheets(data, variants) if not SHEET_NAME_RE.match(name)]
 
 
+def cite_unbracketed_findings(data, names, variants=None):
+    """A cite that names a source sheet by its file stem (names: PDF file names known to this part) outside the
+    bracket after the page (docs/spec/extract.md, Cite). Stems under 6 characters are not tested."""
+    items = [(f"pin {p.get('number')}", p.get("cite")) for p in data.get("pin", [])]
+    items += [(f"param {k}", t.get("cite")) for k, t in data.get("param", {}).items()]
+    for v, table in (variants or {}).items():
+        items += [(f"variant {v} param {k}", t.get("cite")) for k, t in table.get("param", {}).items()]
+    stems = sorted({n[:-4] for n in names if n.lower().endswith(".pdf") and len(n) > 9})
+    out = []
+    for loc, cite in items:
+        outside = re.sub(r"\([^()]*\)", " ", re.sub(r"^DS (?:PDF )?p\.\d+(?:-\d+)? ", "", cite or ""))  # no brackets
+        for stem in stems:
+            if re.search(r"(?<![\w.-])" + re.escape(stem) + r"(?![\w-])", outside):
+                out.append(Finding("cite-sheet-bracket", "", loc, f"cite names {stem} without the bracketed source; "
+                                   f"write 'DS p.<n> ({stem}.pdf), ...'"))
+                break
+    return out
+
+
 def cite_findings(data, variants=None):
     """Every [[pin]] and [param.*] cite (and variant param cites) matches CITE_RE."""
     items = [(f"pin {p.get('number')}", p.get("cite")) for p in data.get("pin", [])]

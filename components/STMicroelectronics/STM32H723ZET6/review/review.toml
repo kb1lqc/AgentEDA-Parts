@@ -16,6 +16,131 @@ render = "complete"
 backfill = "git blame"
 sheets = { "stm32h723ze.pdf" = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492" }
 
+[pinout]
+state = "NEW"
+hash = "c1ee274a86f812156e033fb11741a77b405a76676d192adda0a50dbb951cfde0"
+pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
+
+[[pinout.page]]
+pdf_page = 57
+image = "evidence/pinout_p57.png"
+image_sha256 = "13b82a830ad4acdf176e2f8cf80575e979c2ddc0fff5656be0c3426d34d89890"
+image_bytes = 55313
+dpi = 150
+render_key = "da94bd26b508503f"
+
+[[pinout.page]]
+pdf_page = 58
+image = "evidence/pinout_p58.png"
+image_sha256 = "3a9458c285e4dd13215f3b9d73126b3da6975315366b934c315c8fd1ecc1343d"
+image_bytes = 59533
+dpi = 150
+render_key = "87cd0a64f966eac2"
+
+[[pinout.page]]
+pdf_page = 59
+image = "evidence/pinout_p59.png"
+image_sha256 = "a30f0dd195dd6dabb8af218fea884e299773997279ee8e013d76c47ed65c4756"
+image_bytes = 50034
+dpi = 150
+render_key = "22b0db5b19c69e15"
+
+[[pinout.page]]
+pdf_page = 60
+image = "evidence/pinout_p60.png"
+image_sha256 = "65c8a75a72edb4345e07b4e330b633415222e8cfdb9a5ad2f3a4b8173ceb0671"
+image_bytes = 57927
+dpi = 150
+render_key = "63c48f2cac5627dc"
+
+[[pinout.page]]
+pdf_page = 61
+image = "evidence/pinout_p61.png"
+image_sha256 = "c8f12ac22ee697f0f89ba576abceb33712c73dba2be144ffc48346b8f678a43b"
+image_bytes = 63132
+dpi = 150
+render_key = "5077c739780729f5"
+
+[[pinout.page]]
+pdf_page = 62
+image = "evidence/pinout_p62.png"
+image_sha256 = "abab936d0508828ff1c04c76c72d44890e968f14aa14f23c3b8e5e3b36ee6878"
+image_bytes = 60130
+dpi = 150
+render_key = "5cce5d573a8592d0"
+
+[[pinout.page]]
+pdf_page = 63
+image = "evidence/pinout_p63.png"
+image_sha256 = "487844aedef8539625c1ba4ac70f97c4105d6ee080808daabe1649ada4b762cc"
+image_bytes = 52254
+dpi = 150
+render_key = "30eedcfe589a20f0"
+
+[[pinout.page]]
+pdf_page = 64
+image = "evidence/pinout_p64.png"
+image_sha256 = "aca45444c196c27e82a77311e7a9245e21dd1f9dae785be9c7d73352f3335e13"
+image_bytes = 56203
+dpi = 150
+render_key = "83305057e365d55e"
+
+[[pinout.page]]
+pdf_page = 65
+image = "evidence/pinout_p65.png"
+image_sha256 = "5304a15b52e53459f50b446a62b93c39db78255273d7b34a3fa061be83fed690"
+image_bytes = 57562
+dpi = 150
+render_key = "66489e467018a9dd"
+
+[[pinout.page]]
+pdf_page = 66
+image = "evidence/pinout_p66.png"
+image_sha256 = "0776bd4e3b565520af335f3eae6ca7f04aedf18c78b2ce3b423d83554ac3014a"
+image_bytes = 60720
+dpi = 150
+render_key = "64dbfc5998342345"
+
+[[pinout.page]]
+pdf_page = 67
+image = "evidence/pinout_p67.png"
+image_sha256 = "9d43cf522fdf72de2773fce4baa3a7f91020ac43acdcc366601b1445088b8a99"
+image_bytes = 54279
+dpi = 150
+render_key = "08bb047cc31671e5"
+
+[[pinout.page]]
+pdf_page = 68
+image = "evidence/pinout_p68.png"
+image_sha256 = "7267fd9306df79edf322439bc32590a11244833d8318656660686b50c0aafc86"
+image_bytes = 53743
+dpi = 150
+render_key = "6f83c5a95dede9ce"
+
+[[pinout.page]]
+pdf_page = 69
+image = "evidence/pinout_p69.png"
+image_sha256 = "a6d904e41701586e4cfcf6ec9b25214a6b44e2cdff4b2924c81c487e1aebb977"
+image_bytes = 52054
+dpi = 150
+render_key = "6118d75a5c4e8b24"
+
+[[pinout.page]]
+pdf_page = 70
+image = "evidence/pinout_p70.png"
+image_sha256 = "0cfad6c0a8cab147241801e388e7f7938b5b6a09609ca901464eb1c4902969e6"
+image_bytes = 54422
+dpi = 150
+render_key = "c4f93a5ef62e0408"
+
+[[pinout.page]]
+pdf_page = 71
+image = "evidence/pinout_p71.png"
+image_sha256 = "bd84c2f04f3af42fed1ea60cf7d5973395c4c78a5663d4ceb191c9faec8e3da8"
+image_bytes = 41743
+dpi = 150
+render_key = "11c0cd76303928a0"
+
 [row.abs_vddx_vss]
 state = "NEW"
 status = "UNSURE"
@@ -39889,11 +40014,6 @@ foot_sha256 = "c2b4751cbd5160b5b5ba0cf6bc8bbdd6fb17a42101bc2442b1d8603d3c3be5f2"
 foot_box = [60.4, 547.3, 567.9, 601.5]
 foot_key = "376fcaf21b138916"
 text_snippet = "                                                               PGA Gain = -1               -        10/10         -       k\u2126\n                        R2/R1 internal resistance              PGA Gain = -3               -        30/10         -\n                         values in inverting PGA\n                                                                  Gain=2                   -        GBW/2         -\n                             PGA bandwidth for                    Gain=4                   -        GBW/4         -\n                                                                                                                         MHz\n                        different non inverting gain              Gain=8                   -        GBW/8         -\n                                                                  Gain=16                  -       GBW/16         -\n                                                                 Gain = -1                 -         5.00         -\n                            PGA bandwidth for                    Gain = -3                 -         3.00         -\n                          different inverting gain               Gain = -7                 -         1.50         -\n                                                                 Gain = -15                -         0.80         -"
-
-[row.pins]
-state = "NOT_COVERED"
-status = "UNSURE"
-reason = "[[pin]] rows are not reviewed by ds_review"
 
 [row.calc]
 state = "NOT_COVERED"

@@ -95,6 +95,28 @@ class TestNewChecks(unittest.TestCase):
         self.assertIn("WARN: datasheet_file not found", text)
         self.assertNotIn("ERROR", text)
 
+    def test_cite_naming_a_sheet_without_brackets_is_error(self):
+        from lib import check
+        cite = "DS p.5, Electrical Characteristics, TC"
+        with mock.patch.object(check, "sheet_names", return_value={"other-sheet.pdf"}):
+            text = self.run_edit([(cite, "DS p.5, other-sheet table, TC")])
+            self.assertIn("ERROR: [cite-sheet-bracket] param tc: cite names other-sheet", text)
+            self.assertIn("DS p.<n> (other-sheet.pdf), ...", text)
+            self.assertNotIn("ERROR", self.run_edit([(cite, "DS p.5 (other-sheet.pdf), table, TC")]))
+
+    def test_sheet_names_from_review_toml_and_local_datasheets(self):
+        from lib import check
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            folder = root / "components" / "Acme" / "X"
+            (folder / "review").mkdir(parents=True)
+            (folder / "review" / "review.toml").write_text('[inputs]\nsheets = { "a-sheet.pdf" = "1" }\n')
+            self.assertEqual(check.sheet_names(folder, root), {"a-sheet.pdf"})  # CI: no docs/datasheets/
+            (root / "docs" / "datasheets").mkdir(parents=True)
+            (root / "docs" / "datasheets" / "b-sheet.pdf").write_bytes(b"%PDF")
+            (root / "docs" / "datasheets" / "note.html").write_text("x")
+            self.assertEqual(check.sheet_names(folder, root), {"a-sheet.pdf", "b-sheet.pdf"})
+
     def test_datasheet_url_empty_is_tolerated_warn(self):
         text = self.run_edit([('datasheet_url = "https://example.com/ldo1.pdf"', 'datasheet_url = ""')])
         self.assertIn("WARN: datasheet_url empty (record the vendor URL; open item)", text)
@@ -256,7 +278,7 @@ class TestLedger(unittest.TestCase):
         fields), cache files in root/.review-cache/Acme/LDO1/, and the PDF in docs/datasheets/ unless pdf=False."""
         import json
         import tomllib
-        from lib.component import row_hash
+        from lib.component import pinout_hash, row_hash
         root = Path(d)
         copy = root / "components" / "Acme" / "LDO1"
         copy.parent.mkdir(parents=True)
@@ -272,6 +294,9 @@ class TestLedger(unittest.TestCase):
             table.setdefault(k, {}).update(extra)
         text = raw if raw is not None else '[inputs]\ndatasheet_file = "docs/datasheets/ldo1.pdf"\n' + raw_inputs + "".join(
             f"[row.{k}]\n" + "".join(f"{f} = {json.dumps(v)}\n" for f, v in r.items()) for k, r in table.items())
+        pins = tomllib.loads(ct.read_text()).get("pin")
+        if raw is None and pins:  # the pinout record (docs/spec/review-view.md "Pinout stamp")
+            text += f'[pinout]\nstate = "NEW"\nhash = "{pinout_hash(pins)}"\n'
         (copy / "review").mkdir()
         (copy / "review" / "review.toml").write_text(text)
         for name, data in (files or {}).items():
@@ -362,6 +387,14 @@ class TestLedger(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             text = self.errors(self.ledger(d, raw="[row.vref\nstate = "))
         self.assertIn("ERROR: review/review.toml or component.toml is not valid TOML", text)
+
+
+class TestPinoutName(unittest.TestCase):
+    def test_param_pinout_is_reserved_and_the_error_states_the_fix(self):
+        with tempfile.TemporaryDirectory() as d:
+            copy = copy_fixture(d, [("[param.vref]", "[param.pinout]")])
+            errs = [m for m in messages(copy) if "pinout" in m and m.startswith("ERROR")]
+        self.assertTrue(any("[param.pinout]" in m and "reserved" in m and "rename" in m for m in errs), errs)
 
 
 class TestReadme(unittest.TestCase):

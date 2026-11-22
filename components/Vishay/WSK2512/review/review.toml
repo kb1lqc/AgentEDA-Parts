@@ -16,6 +16,19 @@ render = "complete"
 backfill = "git blame"
 sheets = { "wsk2512.pdf" = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff" }
 
+[pinout]
+state = "NEW"
+hash = "9ac15ff224f59a3e8365ee3969b932931b5fe72237da395f3b7c5e4cbdbb31b8"
+pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
+
+[[pinout.page]]
+pdf_page = 3
+image = "evidence/pinout_p3.png"
+image_sha256 = "09e1d6d3d0a4613dd9b217afbd7be67a4a1780dd7f3e382d95066f3dffe1cf00"
+image_bytes = 96188
+dpi = 200
+render_key = "864036f6422b4d41"
+
 [row.res_range]
 state = "MACHINE_CHECKED"
 status = "UNSURE"
@@ -812,11 +825,6 @@ stamped_toml = "[param.weight]\nname       = \"Weight\"\nkind       = \"mechanic
 state = "NOT_COVERED"
 status = "UNSURE"
 reason = "resistor-series values and MPN rule (calc.py) are not reviewed by ds_review"
-
-[row.pins]
-state = "NOT_COVERED"
-status = "UNSURE"
-reason = "[[pin]] rows are not reviewed by ds_review"
 
 [row.calc]
 state = "NOT_COVERED"

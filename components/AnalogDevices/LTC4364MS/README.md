@@ -2,7 +2,7 @@
 
 # LTC4364MS
 
-Checked by a person: 0 of 81 rows (docs/spec/review.md).
+Checked by a person: 0 of 33 rows that matter (82 rows in all). Review: python3 tools/review.py LTC4364MS
 
 ## Part
 

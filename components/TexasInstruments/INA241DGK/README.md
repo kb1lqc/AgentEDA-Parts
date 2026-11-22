@@ -2,7 +2,7 @@
 
 # INA241DGK
 
-Checked by a person: 0 of 56 rows (docs/spec/review.md).
+Checked by a person: 0 of 21 rows that matter (57 rows in all). Review: python3 tools/review.py INA241DGK; 21 used values not covered (variants.toml)
 
 ## Part
 

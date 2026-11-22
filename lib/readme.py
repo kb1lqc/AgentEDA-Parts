@@ -3,11 +3,13 @@
 import inspect
 import sys
 import tomllib
+from pathlib import Path
 
 from . import capacitor, series
 from .check import find_components
+from . import review_status
 from .review_status import checked_rows
-from .component import load, load_calc, merge_variant, restriction, run_example, variants_of
+from .component import ROOT, load, load_calc, merge_variant, restriction, run_example, variants_of
 from .units import eng
 
 HEADER = "<!-- GENERATED - do not edit. Run: python3 -m lib.readme -->"
@@ -259,7 +261,8 @@ def build(folder):
     part, shared = data.get("part", {}), data.get("param", {})
     checked = checked_rows(folder, local_pdf=False)  # ledger only: the README never depends on a local PDF or cache
     text = f"{HEADER}\n\n# {part.get('value', folder.name)}\n\n"
-    text += f"Checked by a person: {len(checked)} of {len(shared)} rows (docs/spec/review.md).\n\n## Part\n\n"
+    r = review_status.review(folder, ROOT, local_pdf=False)
+    text += f"{review_status.readme_line(folder.name, r)}\n\n## Part\n\n"
     for key in PART_ORDER:
         if key in part:
             val = f"[{part[key]}]({part[key]})" if key == "datasheet_url" and part[key] else part[key]
@@ -294,11 +297,43 @@ def build(folder):
     return text
 
 
+START, END = "<!-- review-status:start -->", "<!-- review-status:end -->"
+
+
+def top_table(root):
+    """Review status of every component directory under root (ledger only, sorted by path)."""
+    rows = []
+    for toml in sorted(Path(root).glob("components/*/*/component.toml")):
+        d = toml.parent
+        r = review_status.review(d, root, local_pdf=False)
+        rows.append([f"{d.parent.name}/{d.name}", "released" if r["released"] else f"{r['k']} of {r['n']}",
+                     f"`python3 tools/review.py {d.name}`"])
+    return md_table(["Part", "Status", "Review command"], rows)
+
+
+def update_top(root):
+    """Rewrite the table between the review-status markers of root/README.md; False when there is no file or marker."""
+    f = Path(root) / "README.md"
+    if not f.is_file():
+        return False
+    text = f.read_text(encoding="utf-8")
+    if START not in text or END not in text or text.index(START) > text.index(END):
+        return False
+    head, rest = text.split(START, 1)
+    tail = rest.split(END, 1)[1]
+    f.write_text(f"{head}{START}\n{top_table(root)}{END}{tail}", encoding="utf-8")
+    return True
+
+
 def main(argv=None):
-    """Write README.md in each component directory."""
-    for folder in find_components(sys.argv[1:] if argv is None else argv):
+    """Write README.md in each component directory, then the review table in the top README.md (components of this
+    repo only)."""
+    folders = find_components(sys.argv[1:] if argv is None else argv)
+    for folder in folders:
         (folder / "README.md").write_text(build(folder), encoding="utf-8")
         print(f"wrote {folder / 'README.md'}")
+    if any(ROOT in Path(f).resolve().parents for f in folders) and update_top(ROOT):
+        print(f"wrote {ROOT / 'README.md'} (review table)")
 
 
 if __name__ == "__main__":

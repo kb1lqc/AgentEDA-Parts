@@ -11,10 +11,23 @@ datasheet_rev = "Catalog 2026.5 (ERA A pages: footer 24-Apr-24, printed pp.19-21
 pdf_sha256 = "dc67f1fde8789360afa44dae3cd47e22d30b6e938987dbcf28d49085484a1b9d"
 pages = 90
 text_layer = true
-component_sha256 = "a745b974fcd81ef13f733cae3d9ecdb3b82ba3903698b8c4d3644331bae8b8b6"
+component_sha256 = "5108855f0e87369658adebfd38d41a36e7a49776d304cd1c32271c408783a47b"
 render = "complete"
 backfill = "git blame"
-sheets = { "panasonic-fixed-resistors-catalog-2026-05.pdf" = "dc67f1fde8789360afa44dae3cd47e22d30b6e938987dbcf28d49085484a1b9d" }
+sheets = { "DMM0000COL17.pdf" = "2bd3e91795f1efcb80435e1a54c13d19d6a1e90e1ae7e5ed7b8fd1a4b2b2b9bc", "panasonic-fixed-resistors-catalog-2026-05.pdf" = "dc67f1fde8789360afa44dae3cd47e22d30b6e938987dbcf28d49085484a1b9d" }
+
+[pinout]
+state = "NEW"
+hash = "098584a9a35d74c9a5dc2d21edb53f5283efcc48040996d7bfa766cedcefd8ce"
+pdf_sha256 = "dc67f1fde8789360afa44dae3cd47e22d30b6e938987dbcf28d49085484a1b9d"
+
+[[pinout.page]]
+pdf_page = 23
+image = "evidence/pinout_p23.png"
+image_sha256 = "de9f7ef29f9ed1b73c801ba46016c78b07bdc11aba2d68fa8ea392afd0fd0be2"
+image_bytes = 68218
+dpi = 150
+render_key = "0ca0b5adbfb32bbe"
 
 [row.p85]
 state = "NEW"
@@ -449,65 +462,63 @@ render_key = "88380f57e2f7b307"
 text_snippet = "(no text-layer line located)"
 
 [row.land_a]
-state = "NEW"
+state = "PDF_CHANGED"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'a' not found as a table row; text check: UNSURE vendor 'Panasonic' not in the text-check tested set"
-hash = "1340ad7c13fa96db55803b7bec0f68b8ebe335f8edd19186b1f88c6db12a6d7b"
+reason = "fallback (table 'Recommended land pattern'): no printed page numbers in the text layer; assumed PDF p.1; text check: UNSURE vendor 'Panasonic' not in the text-check tested set"
+hash = "2c22363b7337f6474b954037fedffe1f5e16676d47403a6d29c3351b61660dcc"
 pdf_sha256 = "dc67f1fde8789360afa44dae3cd47e22d30b6e938987dbcf28d49085484a1b9d"
+sheet = "DMM0000COL17.pdf"
 pdf_page = 1
 toml_lines = "352-362"
-image = "evidence/page_p1.png"
-image_sha256 = "3e8db815eccf9e5f94b3df6e9ca5b464fcfe57ca11f6c7fccda3ebb7de824601"
-image_bytes = 150844
+image = "evidence/DMM0000COL17_table_p1_y51.png"
+image_sha256 = "a211cd8a6f17cbc2bee823d2790b985d9417019508e7496bb8a7641a7c79aaad"
+image_bytes = 20216
 crop = "fallback"
-crop_box = "full_page"
-dpi = 150
-render_key = "bdd660a34809de76"
-text_snippet = "(no text-layer line located)"
+crop_box = [40.6, 51.7, 559.0, 213.2]
+dpi = 200
+render_key = "73695a674bafd163"
+text_snippet = "                                                          \u25cf An example of a land pattern for the rectangular type is shown below.\n                                                                                      a                                      Wide terminal type (ERJA/B/Ds)                                               Unit : mm\n                                                                                      b                                                                   a                    b                      c\n                                                                         (inch)       a            b              c            2012 (0805)            1.0 to 1.4          3.2 to 3.8              0.9 to 1.4\n            \u25cf An example of a land pattern for high power chip resistors / Wide terminal type is shown below."
 
 [row.land_b]
-state = "NEW"
+state = "PDF_CHANGED"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'b' not found as a table row; text check: UNSURE vendor 'Panasonic' not in the text-check tested set"
-hash = "7016a947f6b3c477fff1ec97cd5c0ee3dae89a398689fb629a504f796bf62746"
+reason = "fallback (table 'Recommended land pattern'): no printed page numbers in the text layer; assumed PDF p.1; text check: UNSURE vendor 'Panasonic' not in the text-check tested set"
+hash = "5930d5f6fabd08ae7308de0ecd62c39ea11a04ee58b70eaabad0931e64e9fe2a"
 pdf_sha256 = "dc67f1fde8789360afa44dae3cd47e22d30b6e938987dbcf28d49085484a1b9d"
+sheet = "DMM0000COL17.pdf"
 pdf_page = 1
 toml_lines = "364-374"
-image = "evidence/page_p1.png"
-image_sha256 = "3e8db815eccf9e5f94b3df6e9ca5b464fcfe57ca11f6c7fccda3ebb7de824601"
-image_bytes = 150844
+image = "evidence/DMM0000COL17_table_p1_y51.png"
+image_sha256 = "a211cd8a6f17cbc2bee823d2790b985d9417019508e7496bb8a7641a7c79aaad"
+image_bytes = 20216
 crop = "fallback"
-crop_box = "full_page"
-dpi = 150
-render_key = "bdd660a34809de76"
-text_snippet = "(no text-layer line located)"
+crop_box = [40.6, 51.7, 559.0, 213.2]
+dpi = 200
+render_key = "73695a674bafd163"
+text_snippet = "                                                                                      b                                                                   a                    b                      c\n                                                                         (inch)       a            b              c            2012 (0805)            1.0 to 1.4          3.2 to 3.8              0.9 to 1.4\n                                                                                                                                                          a                   b                      c\n                                                               b                                                                ERJB1\n                                                               b"
 
 [row.land_c]
-state = "NEW"
+state = "PDF_CHANGED"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'c' not found as a table row; text check: UNSURE vendor 'Panasonic' not in the text-check tested set"
-hash = "0ef0b3ce1f8ac151eb3870a50d9bdb4844c0abcb6b1e06a0bf5fdeeb8ae0c49f"
+reason = "fallback (table 'Recommended land pattern'): no printed page numbers in the text layer; assumed PDF p.1; text check: UNSURE vendor 'Panasonic' not in the text-check tested set"
+hash = "cfc3321835755e34595d17f11d1bc87edc4bc0ffeee238c73bc817844f0a22d0"
 pdf_sha256 = "dc67f1fde8789360afa44dae3cd47e22d30b6e938987dbcf28d49085484a1b9d"
+sheet = "DMM0000COL17.pdf"
 pdf_page = 1
 toml_lines = "376-386"
-image = "evidence/page_p1.png"
-image_sha256 = "3e8db815eccf9e5f94b3df6e9ca5b464fcfe57ca11f6c7fccda3ebb7de824601"
-image_bytes = 150844
+image = "evidence/DMM0000COL17_table_p1_y51.png"
+image_sha256 = "a211cd8a6f17cbc2bee823d2790b985d9417019508e7496bb8a7641a7c79aaad"
+image_bytes = 20216
 crop = "fallback"
-crop_box = "full_page"
-dpi = 150
-render_key = "bdd660a34809de76"
-text_snippet = "(no text-layer line located)"
+crop_box = [40.6, 51.7, 559.0, 213.2]
+dpi = 200
+render_key = "73695a674bafd163"
+text_snippet = "                                                                                                             c\n                                                                                      b                                                                   a                    b                      c\n                                                                         (inch)       a            b              c            2012 (0805)            1.0 to 1.4          3.2 to 3.8              0.9 to 1.4\n                                                                                                                                                          a                   b                      c\n                                                               c"
 
 [row.series]
 state = "NOT_COVERED"
 status = "UNSURE"
 reason = "resistor-series values and MPN rule (calc.py) are not reviewed by ds_review"
-
-[row.pins]
-state = "NOT_COVERED"
-status = "UNSURE"
-reason = "[[pin]] rows are not reviewed by ds_review"
 
 [row.calc]
 state = "NOT_COVERED"

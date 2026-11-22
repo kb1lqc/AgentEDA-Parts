@@ -2,7 +2,7 @@
 
 # GCM32Q
 
-Checked by a person: 0 of 5 rows (docs/spec/review.md).
+Checked by a person: 0 of 5 rows that matter (6 rows in all). Review: python3 tools/review.py GCM32Q; 3 used values not covered (catalog.csv, series)
 
 ## Part
 

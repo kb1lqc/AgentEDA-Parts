@@ -2,7 +2,7 @@
 
 # ERA-6AEB
 
-Checked by a person: 0 of 27 rows (docs/spec/review.md).
+Checked by a person: 0 of 17 rows that matter (28 rows in all). Review: python3 tools/review.py ERA-6AEB
 
 ## Part
 
@@ -85,9 +85,9 @@ Rated voltage at decade values, computed from `p85`, `v_limit` and the formula a
 | Terminal width, b | b | 0.15 | 0.4 | 0.65 | mm | Note: Printed 0.40+/-0.25 mm (DS p.21). | DS p.21, Dimensions (mm) table, row ERA6A, column b |  |
 | Terminal thickness, T | T | 0.4 | 0.5 | 0.6 | mm | Note: Printed 0.50+/-0.10 mm (DS p.21). | DS p.21, Dimensions (mm) table, row ERA6A, column T |  |
 | Mass (reference) |  |  | 4 |  | mg | Reference value, per part Note: 4 g per 1000 pcs = 4 mg per part (per-part value in mg keeps the printed digits). Reference only, not a bound. | DS p.21, Dimensions (mm) table, row ERA6A, Mass (Weight) (Reference) (g/1000 pcs) = 4 |  |
-| Land pattern dimension a (DS land pattern table, rectangular type) | a | 1.0 |  | 1.4 | mm | Recommended land pattern (not a tolerance on the body) Note: Printed as a range. The land table is one table for the listed categories; the ERA key line is printed above it. The footprint uses the middle of the range (pads 1.15 x 1.15 mm at +/-1.175 mm). | DS PDF p.1, DMM0000COL17 (Panasonic land-pattern document), Recommended land pattern, 'High precision type (ERA, ERJPC/PB)' key, row 0805 (2012), column a |  |
-| Land pattern dimension b (DS land pattern table, rectangular type) | b | 3.2 |  | 3.8 | mm | Recommended land pattern (not a tolerance on the body) Note: Printed as a range. The land table is one table for the listed categories; the ERA key line is printed above it. The footprint uses the middle of the range (pads 1.15 x 1.15 mm at +/-1.175 mm). | DS PDF p.1, DMM0000COL17 (Panasonic land-pattern document), Recommended land pattern, 'High precision type (ERA, ERJPC/PB)' key, row 0805 (2012), column b |  |
-| Land pattern dimension c (DS land pattern table, rectangular type) | c | 0.9 |  | 1.4 | mm | Recommended land pattern (not a tolerance on the body) Note: Printed as a range. The land table is one table for the listed categories; the ERA key line is printed above it. The footprint uses the middle of the range (pads 1.15 x 1.15 mm at +/-1.175 mm). | DS PDF p.1, DMM0000COL17 (Panasonic land-pattern document), Recommended land pattern, 'High precision type (ERA, ERJPC/PB)' key, row 0805 (2012), column c |  |
+| Land pattern dimension a (DS land pattern table, rectangular type) | a | 1.0 |  | 1.4 | mm | Recommended land pattern (not a tolerance on the body) Note: Printed as a range. The land table is one table for the listed categories; the ERA key line is printed above it. The footprint uses the middle of the range (pads 1.15 x 1.15 mm at +/-1.175 mm). | DS p.1 (DMM0000COL17.pdf), Panasonic land-pattern document, Recommended land pattern, 'High precision type (ERA, ERJPC/PB)' key, row 0805 (2012), column a |  |
+| Land pattern dimension b (DS land pattern table, rectangular type) | b | 3.2 |  | 3.8 | mm | Recommended land pattern (not a tolerance on the body) Note: Printed as a range. The land table is one table for the listed categories; the ERA key line is printed above it. The footprint uses the middle of the range (pads 1.15 x 1.15 mm at +/-1.175 mm). | DS p.1 (DMM0000COL17.pdf), Panasonic land-pattern document, Recommended land pattern, 'High precision type (ERA, ERJPC/PB)' key, row 0805 (2012), column b |  |
+| Land pattern dimension c (DS land pattern table, rectangular type) | c | 0.9 |  | 1.4 | mm | Recommended land pattern (not a tolerance on the body) Note: Printed as a range. The land table is one table for the listed categories; the ERA key line is printed above it. The footprint uses the middle of the range (pads 1.15 x 1.15 mm at +/-1.175 mm). | DS p.1 (DMM0000COL17.pdf), Panasonic land-pattern document, Recommended land pattern, 'High precision type (ERA, ERJPC/PB)' key, row 0805 (2012), column c |  |
 
 ## Limits of this data
 

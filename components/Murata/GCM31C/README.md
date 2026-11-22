@@ -2,7 +2,7 @@
 
 # GCM31C
 
-Checked by a person: 0 of 83 rows (docs/spec/review.md).
+Checked by a person: 0 of 23 rows that matter (84 rows in all). Review: python3 tools/review.py GCM31C; 3 used values not covered (catalog.csv, series)
 
 ## Part
 

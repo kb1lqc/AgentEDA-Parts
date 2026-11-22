@@ -2,7 +2,7 @@
 
 # WSK2512R0250D
 
-Checked by a person: 0 of 33 rows (docs/spec/review.md).
+Checked by a person: 0 of 23 rows that matter (34 rows in all). Review: python3 tools/review.py WSK2512R0250D
 
 ## Part
 

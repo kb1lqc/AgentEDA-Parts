@@ -2,7 +2,7 @@
 
 # ISC035N10NM5LF2
 
-Checked by a person: 0 of 146 rows (docs/spec/review.md).
+Checked by a person: 0 of 22 rows that matter (147 rows in all). Review: python3 tools/review.py ISC035N10NM5LF2
 
 ## Part
 

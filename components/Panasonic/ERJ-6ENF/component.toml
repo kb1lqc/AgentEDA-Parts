@@ -354,7 +354,7 @@ min        = 1.0
 max        = 1.4
 unit       = "mm"
 conditions = "Recommended land pattern (not a tolerance on the body)"
-cite       = "DS PDF p.1, DMM0000COL17 (Panasonic land-pattern document), Recommended land pattern, 'General purpose type (ERJ)' key, row 0805 (2012), column a"
+cite       = "DS p.1 (DMM0000COL17.pdf), Panasonic land-pattern document, Recommended land pattern, 'General purpose type (ERJ)' key, row 0805 (2012), column a"
 note       = "Printed as a range. Inferred meaning: inner gap between lands (inferred; letter label only). The footprint uses the middle of the range."
 
 [param.land_b]
@@ -366,7 +366,7 @@ min        = 3.2
 max        = 3.8
 unit       = "mm"
 conditions = "Recommended land pattern (not a tolerance on the body)"
-cite       = "DS PDF p.1, DMM0000COL17 (Panasonic land-pattern document), Recommended land pattern, 'General purpose type (ERJ)' key, row 0805 (2012), column b"
+cite       = "DS p.1 (DMM0000COL17.pdf), Panasonic land-pattern document, Recommended land pattern, 'General purpose type (ERJ)' key, row 0805 (2012), column b"
 note       = "Printed as a range. Inferred meaning: outer span of the two lands (inferred). The footprint uses the middle of the range."
 
 [param.land_c]
@@ -378,5 +378,5 @@ min        = 0.9
 max        = 1.4
 unit       = "mm"
 conditions = "Recommended land pattern (not a tolerance on the body)"
-cite       = "DS PDF p.1, DMM0000COL17 (Panasonic land-pattern document), Recommended land pattern, 'General purpose type (ERJ)' key, row 0805 (2012), column c"
+cite       = "DS p.1 (DMM0000COL17.pdf), Panasonic land-pattern document, Recommended land pattern, 'General purpose type (ERJ)' key, row 0805 (2012), column c"
 note       = "Printed as a range. Inferred meaning: land width (inferred). The footprint uses the middle of the range."
