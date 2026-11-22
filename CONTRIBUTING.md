@@ -120,8 +120,8 @@ browser:
 Compare each statement with its image, tick the rows that match, and press **Stamp N rows and open PR**. The tool then
 shows each command as it runs it: it needs a clean working tree (untracked files are fine), fetches `origin`, makes a
 branch `review/<parts>-<login>-<date>` from `origin/main`, runs `tools/stamp.py` on the ticked rows, runs
-`tools/verify.py --regen` on those parts, commits their `component.toml`, `review/review.toml` and `README.md`,
-pushes and opens the PR with `gh`. If `stamp.py` refuses, it goes back to your branch and deletes the new one. If
+`tools/verify.py --regen` on those parts, commits their `component.toml`, `review/review.toml` and `README.md`
+(and the top-level `README.md` status table), pushes and opens the PR with `gh`. If `stamp.py` refuses, it goes back to your branch and deletes the new one. If
 `verify` fails, it stops and leaves the branch for you, uncommitted. `--dry-run` is for a person trying the
 page: it shows the commands and runs none. Agents don't run `review.py` (`.claude/settings.json` denies it; its
 `CLAUDECODE` refusal lets only `--dry-run` through, for the tests).
@@ -174,7 +174,7 @@ python3 tools/stamp.py INA229AIDGS:vin_diff_abs INA229AIDGS:pinout   # or --from
 python3 tools/verify.py --regen components/TexasInstruments/INA229AIDGS
 ```
 
-Commit `component.toml`, `review/review.toml` and `README.md`, and name the rows in the PR text. `--who
+Commit `component.toml`, `review/review.toml`, `README.md` and the top-level `README.md` status table, and name the rows in the PR text. `--who
 <github-login>` overrides the login read from `gh api user`.
 
 ## Troubleshooting: `tools/stamp.py` refusals

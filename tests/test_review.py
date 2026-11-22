@@ -870,6 +870,22 @@ class Publish(unittest.TestCase):
         self.assertIn("unexpected changes (lib/readme.py)", lines[-1])
         self.assertNotIn(["git", "add", "--"], calls)
 
+    def test_root_readme_status_table_is_committed(self):
+        f = Fake()
+        f.status = iter([(0, ""), (0, " M components/Acme/X/component.toml\n M components/Acme/X/review/review.toml\n"
+                                      " M components/Acme/X/README.md\n M README.md\n")])
+        rc, lines, _ = self.go(f)
+        self.assertEqual(rc, 0, lines)
+        self.assertEqual(f.calls[9], ["git", "add", "--", "README.md", "components/Acme/X/README.md",
+                                      "components/Acme/X/component.toml", "components/Acme/X/review/review.toml"])
+
+    def test_other_root_files_still_unexpected(self):
+        f = Fake()
+        f.status = iter([(0, ""), (0, " M components/Acme/X/component.toml\n M CONTRIBUTING.md\n M docs/README.md\n")])
+        rc, lines, _ = self.go(f)
+        self.assertEqual(rc, 1)
+        self.assertIn("unexpected changes (CONTRIBUTING.md, docs/README.md)", lines[-1])
+
     def test_commit_push_pr_failures(self):
         for name, want in (("commit", "commit failed"), ("push", "push failed"), ("pr", "gh pr create failed")):
             f = Fake(**{name: (1, "boom")})
