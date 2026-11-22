@@ -165,7 +165,7 @@ max        = 85
 unit       = "V"
 conditions = "over operating free-air temperature range (unless otherwise noted)"
 cite       = "DS p.3, 6.1 Absolute Maximum Ratings, VBUS"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 386c808a6b10 row 16b418af68c5"
 note       = "No reference pin printed; checked against system 0 V (a floating GND is not modelled)."
 check_pins = ["VBUS"]
 
@@ -234,7 +234,7 @@ max        = 150
 unit       = "degC"
 conditions = ""
 cite       = "DS p.3, 6.1 Absolute Maximum Ratings, Tstg, Storage temperature"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 386c808a6b10 row 21a662889030"
 unchecked  = "owner: assembly"
 
 # ---------------------------------------------------------------- ESD ratings

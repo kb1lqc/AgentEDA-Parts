@@ -11,7 +11,7 @@ datasheet_rev = "SLYS023A"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
 pages = 47
 text_layer = true
-component_sha256 = "60e9a1b040bd7f56239e4b985a493bf3d4717873ed5bbc0d10ba2b9f118b4611"
+component_sha256 = "f386137401337e25fb444497280ebdfd4aa6bc4a03917a47d27162bca612c776"
 render = "complete"
 backfill = "git blame"
 sheets = { "ina229.pdf" = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484" }
@@ -104,14 +104,13 @@ text_snippet = "(no text-layer line located)"
 stamped_toml = "[param.vcm_abs]\nname       = \"Common-mode input voltage, VIN+ and VIN-\"\nsymbol     = \"VIN+, VIN-\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -0.3\nmax        = 85\nunit       = \"V\"\nconditions = \"over operating free-air temperature range (unless otherwise noted)\"\ncite       = \"DS p.3, 6.1 Absolute Maximum Ratings, VIN+, VIN- Common-mode\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Same limits as vcm_rec (DS p.4, 6.3). No reference pin printed (DS p.12, 7.3.1 gives -0.3 V to +85 V at the input pins with no reference); checked against system 0 V (a floating GND is not modelled).\"\ncheck_pins = [\"IN+\", \"IN-\"]"
 
 [row.vbus_abs]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "no MIN/TYP/MAX header on the cited page; row found by symbol; footnotes shown"
 hash = "16b418af68c580b6a74ac1c782c677dfe269c21efcd201b4aed90ef84c874c57"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-22 page-image ds_review 386c808a6b10 row 16b418af68c5"
 stamp_hash = "16b418af68c580b6a74ac1c782c677dfe269c21efcd201b4aed90ef84c874c57"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
-baseline = true
 printed_page = 3
 pdf_page = 3
 toml_lines = "158-170"
@@ -131,7 +130,7 @@ foot_sha256 = "aa187e1e8127a838b91dfaf9130bcbceb7d450841811206c82e00ff2e20555d5"
 foot_box = [50.7, 641.5, 549.8, 699.5]
 foot_key = "34035c4adef305ab"
 text_snippet = "over operating free-air temperature range (unless otherwise noted)(1)\n                                                                                                                         MIN                 MAX           UNIT\n VVBUS                                                                                                                   \u20130.3                   85           V"
-stamped_toml = "[param.vbus_abs]\nname       = \"Bus voltage input, VBUS\"\nsymbol     = \"VBUS\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -0.3\nmax        = 85\nunit       = \"V\"\nconditions = \"over operating free-air temperature range (unless otherwise noted)\"\ncite       = \"DS p.3, 6.1 Absolute Maximum Ratings, VBUS\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"No reference pin printed; checked against system 0 V (a floating GND is not modelled).\"\ncheck_pins = [\"VBUS\"]"
+stamped_toml = "[param.vbus_abs]\nname       = \"Bus voltage input, VBUS\"\nsymbol     = \"VBUS\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -0.3\nmax        = 85\nunit       = \"V\"\nconditions = \"over operating free-air temperature range (unless otherwise noted)\"\ncite       = \"DS p.3, 6.1 Absolute Maximum Ratings, VBUS\"\nverified   = \"human:kb1lqc 2026-11-22 page-image ds_review 386c808a6b10 row 16b418af68c5\"\nnote       = \"No reference pin printed; checked against system 0 V (a floating GND is not modelled).\"\ncheck_pins = [\"VBUS\"]"
 
 [row.vio_abs]
 state = "MACHINE_CHECKED"
@@ -251,14 +250,13 @@ text_snippet = "over operating free-air temperature range (unless otherwise note
 stamped_toml = "[param.tj_abs]\nname       = \"Junction temperature\"\nsymbol     = \"TJ\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmax        = 150\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.3, 6.1 Absolute Maximum Ratings, TJ, Junction temperature\"\nverified   = \"human:kb1lqc 2026-11-20 page-image ds_review 386c808a6b10 row 55e2de600bf7\"\nunchecked  = \"needs dissipation x RthetaJA; owner: module\""
 
 [row.tstg_abs]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "no MIN/TYP/MAX header on the cited page; row found by symbol; footnotes shown"
 hash = "21a6628890301657981d1dd61171af08ecd2b0df583a60509d5b3a7d3fe4c454"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-22 page-image ds_review 386c808a6b10 row 21a662889030"
 stamp_hash = "21a6628890301657981d1dd61171af08ecd2b0df583a60509d5b3a7d3fe4c454"
 pdf_sha256 = "386c808a6b1024304dfecd5e7e1834680188b4c42fc34abdc25ef302edf6d484"
-baseline = true
 printed_page = 3
 pdf_page = 3
 toml_lines = "227-238"
@@ -278,7 +276,7 @@ foot_sha256 = "aa187e1e8127a838b91dfaf9130bcbceb7d450841811206c82e00ff2e20555d5"
 foot_box = [50.7, 641.5, 549.8, 699.5]
 foot_key = "34035c4adef305ab"
 text_snippet = "over operating free-air temperature range (unless otherwise noted)(1)\n                                                                                                                         MIN                 MAX           UNIT\n Tstg                   Storage temperature                                                                               \u201365                 150           \u00b0C"
-stamped_toml = "[param.tstg_abs]\nname       = \"Storage temperature\"\nsymbol     = \"Tstg\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -65\nmax        = 150\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.3, 6.1 Absolute Maximum Ratings, Tstg, Storage temperature\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nunchecked  = \"owner: assembly\""
+stamped_toml = "[param.tstg_abs]\nname       = \"Storage temperature\"\nsymbol     = \"Tstg\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -65\nmax        = 150\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.3, 6.1 Absolute Maximum Ratings, Tstg, Storage temperature\"\nverified   = \"human:kb1lqc 2026-11-22 page-image ds_review 386c808a6b10 row 21a662889030\"\nunchecked  = \"owner: assembly\""
 
 [row.esd_hbm]
 state = "HUMAN_VERIFIED"

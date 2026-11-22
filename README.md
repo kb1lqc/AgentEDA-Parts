@@ -52,7 +52,7 @@ match the datasheet image, and press one button to stamp them and open the PR. S
 | Panasonic/ERJ-8ENF | 0 of 17 | `python3 tools/review.py ERJ-8ENF` |
 | STMicroelectronics/STM32H723ZET6 | 0 of 65 | `python3 tools/review.py STM32H723ZET6` |
 | STMicroelectronics/VNF1248F | 0 of 35 | `python3 tools/review.py VNF1248F` |
-| TexasInstruments/INA229AIDGS | 8 of 23 | `python3 tools/review.py INA229AIDGS` |
+| TexasInstruments/INA229AIDGS | 10 of 23 | `python3 tools/review.py INA229AIDGS` |
 | TexasInstruments/INA241DGK | 0 of 21 | `python3 tools/review.py INA241DGK` |
 | TexasInstruments/INA821IDGK | 0 of 25 | `python3 tools/review.py INA821IDGK` |
 | TexasInstruments/TPS48000QDGXQ1 | 0 of 30 | `python3 tools/review.py TPS48000QDGXQ1` |
