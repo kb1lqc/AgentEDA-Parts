@@ -192,6 +192,19 @@ class HumanReview(unittest.TestCase):
         self.assertEqual([e["reason"] for e in lib.human_review_needed()], ["no stamp"])
 
     def test_family_series_and_selection_rows(self):
+        # This test reads real components, whose rows people stamp over time. It checks how a row read maps to its
+        # review record (review_key, ref), not which rows are still unreviewed: so every `human:` stamp is read as
+        # absent here, and a newly human-checked row cannot make the test fail.
+        from unittest import mock
+        import lib.component as comp
+        real = comp._review
+
+        def unstamped(path, review_key, stamp, *a, **k):
+            return real(path, review_key, None if str(stamp).startswith("human:") else stamp, *a, **k)
+
+        patcher = mock.patch.object(comp, "_review", unstamped)
+        patcher.start()
+        self.addCleanup(patcher.stop)
         f = lib.load("AnalogDevices/LTC4364MS", variant="LTC4364CMS-1")
         f.param("dvsns_0c125c")  # variants.toml override: its own review row, not the shared one
         f.param("abs_vcc")
