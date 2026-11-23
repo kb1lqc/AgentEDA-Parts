@@ -11,7 +11,7 @@ datasheet_rev = "29-May-25 (page footers, pp.1-4)"
 pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
 pages = 8
 text_layer = true
-component_sha256 = "7af9329575b99d72fedf686bed2045da91c7e09c1c6b6eaf8ae5d594e7012a78"
+component_sha256 = "54ff812015d0cdb44943aeae89d0c8bb73fc67f218e12749db24424d530c09b7"
 render = "complete"
 backfill = "git blame"
 sheets = { "AOA0000C304.pdf" = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378" }
@@ -30,14 +30,13 @@ dpi = 200
 render_key = "3db725f16ecf781f"
 
 [row.p70]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'P70' not found as a table row; text check: UNSURE vendor 'Panasonic' not in the text-check tested set"
 hash = "dd577a2703b98aa8d67c53770a98d1d14ef7d30918eb43ec9ae8387936e6548b"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-22 page-image ds_review 78825b819853 row dd577a2703b9"
 stamp_hash = "dd577a2703b98aa8d67c53770a98d1d14ef7d30918eb43ec9ae8387936e6548b"
 pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
-baseline = true
 pdf_page = 3
 toml_lines = "56-67"
 image = "evidence/page_p3.png"
@@ -48,7 +47,7 @@ crop_box = "full_page"
 dpi = 200
 render_key = "3db725f16ecf781f"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.p70]\nname       = \"Rated power at 70 degC\"\nsymbol     = \"P70\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmax        = 0.1\nunit       = \"W\"\nconditions = \"Ambient 70 degC; use with case temperature below the upper category temperature (footnote *1)\"\ncite       = \"DS PDF p.3, Ratings <+/-1 %>, Power rating (70 degC) (W), ERJ3EK row\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"The DS prints 0.1 W for ERJ3EK (same for 0402 and 0603 in this series). Printed with no MIN/TYP/MAX label: stored as max (Defaults table). Derated above 70 degC (derate_knee, derate_zero). No abs-max table in this DS.\"\nunchecked  = \"series_power: used by the wrapper rated_voltage check (70 degC rating, optimistic above 70 degC ambient)\""
+stamped_toml = "[param.p70]\nname       = \"Rated power at 70 degC\"\nsymbol     = \"P70\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmax        = 0.1\nunit       = \"W\"\nconditions = \"Ambient 70 degC; use with case temperature below the upper category temperature (footnote *1)\"\ncite       = \"DS PDF p.3, Ratings <+/-1 %>, Power rating (70 degC) (W), ERJ3EK row\"\nverified   = \"human:kb1lqc 2026-11-22 page-image ds_review 78825b819853 row dd577a2703b9\"\nnote       = \"The DS prints 0.1 W for ERJ3EK (same for 0402 and 0603 in this series). Printed with no MIN/TYP/MAX label: stored as max (Defaults table). Derated above 70 degC (derate_knee, derate_zero). No abs-max table in this DS.\"\nunchecked  = \"series_power: used by the wrapper rated_voltage check (70 degC rating, optimistic above 70 degC ambient)\""
 
 [row.v_limit]
 state = "MACHINE_CHECKED"
@@ -173,14 +172,13 @@ text_snippet = "(no text-layer line located)"
 stamped_toml = "[param.derate_zero]\nname       = \"Derating: 0 % rated power at\"\nsymbol     = \"TA zero\"\nkind       = \"rec_op\"\nscope      = \"na\"\ntyp        = 155\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS PDF p.3, Power derating curve (figure: the 155 degC line reaches 0 %)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\ncurve      = true\nnote       = \"Read off the graph (no printed number). The 155 degC line is used because this part's category range is -55 to +155 degC; the steeper 125 degC line is labelled ERJXG,1G,1R. Linear between knee and zero (graph shape). Curve-based estimate; reading uncertainty not quantified (open item).\"\nunchecked  = \"curve value; used by calc.rated_power\""
 
 [row.tol]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'TOL' not found as a table row; text check: UNSURE unit '%' not comparable"
 hash = "59b999798609bc7bd3f13ae48cb4e8197298c19847535ac9fddf10c70900e944"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-22 page-image ds_review 78825b819853 row 59b999798609"
 stamp_hash = "59b999798609bc7bd3f13ae48cb4e8197298c19847535ac9fddf10c70900e944"
 pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
-baseline = true
 pdf_page = 3
 toml_lines = "149-160"
 image = "evidence/page_p3.png"
@@ -191,7 +189,7 @@ crop_box = "full_page"
 dpi = 200
 render_key = "3db725f16ecf781f"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.tol]\nname       = \"Resistance tolerance, code F\"\nsymbol     = \"TOL\"\nkind       = \"electrical\"\nscope      = \"na\"\nmin        = -1\nmax        = 1\nunit       = \"%\"\nconditions = \"Resistance measured at 20 degC (DS PDF p.4, Performance <+/-1 %>, Resistance row)\"\ncite       = \"DS PDF p.3, Ratings <+/-1 %>, Resistance tolerance (%), ERJ3EK row; DS PDF p.2, tolerance code F = +/-1 %\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Reference temperature 20 degC from the Performance table; the T.C.R. test runs from +25 degC (DS p.4).\""
+stamped_toml = "[param.tol]\nname       = \"Resistance tolerance, code F\"\nsymbol     = \"TOL\"\nkind       = \"electrical\"\nscope      = \"na\"\nmin        = -1\nmax        = 1\nunit       = \"%\"\nconditions = \"Resistance measured at 20 degC (DS PDF p.4, Performance <+/-1 %>, Resistance row)\"\ncite       = \"DS PDF p.3, Ratings <+/-1 %>, Resistance tolerance (%), ERJ3EK row; DS PDF p.2, tolerance code F = +/-1 %\"\nverified   = \"human:kb1lqc 2026-11-22 page-image ds_review 78825b819853 row 59b999798609\"\nnote       = \"Reference temperature 20 degC from the Performance table; the T.C.R. test runs from +25 degC (DS p.4).\""
 
 [row.res_range]
 state = "MACHINE_CHECKED"
@@ -215,14 +213,13 @@ text_snippet = "(no text-layer line located)"
 stamped_toml = "[param.res_range]\nname       = \"Resistance range\"\nkind       = \"electrical\"\nscope      = \"na\"\nmin        = 10\nmax        = 1000000\nunit       = \"ohm\"\nconditions = \"E24, E96 values\"\ncite       = \"DS PDF p.3, Ratings <+/-1 %>, Resistance range (ohm), ERJ3EK row '10 to 1 M'\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed '10 to 1 M' in the ohm column; 1 M is written out as 1000000 ohm. Values below 100 ohm use the R decimal code (DS p.2), see calc.mpn.\""
 
 [row.tcr_10r_1m]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'TCR' not found as a table row; cite row label matches 6 lines; text check: UNSURE unit 'ppm/degC' not comparable"
 hash = "1c01c395fc05cdd8572574b57bdfa83e736fa57c195b9fa4fab8801b18c9ae16"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-22 page-image ds_review 78825b819853 row 1c01c395fc05"
 stamp_hash = "1c01c395fc05cdd8572574b57bdfa83e736fa57c195b9fa4fab8801b18c9ae16"
 pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
-baseline = true
 pdf_page = 3
 toml_lines = "174-185"
 image = "evidence/page_p3.png"
@@ -233,7 +230,7 @@ crop_box = "full_page"
 dpi = 200
 render_key = "3db725f16ecf781f"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.tcr_10r_1m]\nname       = \"Temperature coefficient of resistance, 10 ohm to 1 Mohm\"\nsymbol     = \"TCR\"\nkind       = \"electrical\"\nscope      = \"na\"\nmin        = -100\nmax        = 100\nunit       = \"ppm/degC\"\nconditions = \"Resistance 10 ohm to 1 Mohm; T.C.R. test at +25 degC / +155 degC (DS PDF p.4)\"\ncite       = \"DS PDF p.3, Ratings <+/-1 %>, T.C.R. (x10-6/K), ERJ3EK row (+/-100, one value for the whole 10 to 1 M range)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed +/-100 x10-6/K (= ppm/degC): stored as min = -100, max = 100. One TCR for the full +/-1 % range. The DS does not state the TCR reference temperature. Use this key for any value in 10 ohm to 1 Mohm.\""
+stamped_toml = "[param.tcr_10r_1m]\nname       = \"Temperature coefficient of resistance, 10 ohm to 1 Mohm\"\nsymbol     = \"TCR\"\nkind       = \"electrical\"\nscope      = \"na\"\nmin        = -100\nmax        = 100\nunit       = \"ppm/degC\"\nconditions = \"Resistance 10 ohm to 1 Mohm; T.C.R. test at +25 degC / +155 degC (DS PDF p.4)\"\ncite       = \"DS PDF p.3, Ratings <+/-1 %>, T.C.R. (x10-6/K), ERJ3EK row (+/-100, one value for the whole 10 to 1 M range)\"\nverified   = \"human:kb1lqc 2026-11-22 page-image ds_review 78825b819853 row 1c01c395fc05\"\nnote       = \"Printed +/-100 x10-6/K (= ppm/degC): stored as min = -100, max = 100. One TCR for the full +/-1 % range. The DS does not state the TCR reference temperature. Use this key for any value in 10 ohm to 1 Mohm.\""
 
 [row.perf_overload]
 state = "NEW"

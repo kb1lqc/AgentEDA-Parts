@@ -47,7 +47,7 @@ match the datasheet image, and press one button to stamp them and open the PR. S
 | Panasonic/ERA-3AEB | 0 of 17 | `python3 tools/review.py ERA-3AEB` |
 | Panasonic/ERA-6AEB | 0 of 17 | `python3 tools/review.py ERA-6AEB` |
 | Panasonic/ERJ-2RKF | 0 of 14 | `python3 tools/review.py ERJ-2RKF` |
-| Panasonic/ERJ-3EKF | 0 of 14 | `python3 tools/review.py ERJ-3EKF` |
+| Panasonic/ERJ-3EKF | 3 of 14 | `python3 tools/review.py ERJ-3EKF` |
 | Panasonic/ERJ-6ENF | 0 of 17 | `python3 tools/review.py ERJ-6ENF` |
 | Panasonic/ERJ-8ENF | 0 of 17 | `python3 tools/review.py ERJ-8ENF` |
 | STMicroelectronics/STM32H723ZET6 | 0 of 65 | `python3 tools/review.py STM32H723ZET6` |
@@ -56,7 +56,7 @@ match the datasheet image, and press one button to stamp them and open the PR. S
 | TexasInstruments/INA241DGK | 0 of 21 | `python3 tools/review.py INA241DGK` |
 | TexasInstruments/INA821IDGK | 0 of 25 | `python3 tools/review.py INA821IDGK` |
 | TexasInstruments/TPS48000QDGXQ1 | 0 of 30 | `python3 tools/review.py TPS48000QDGXQ1` |
-| Vishay/WSK2512 | 0 of 21 | `python3 tools/review.py WSK2512` |
+| Vishay/WSK2512 | 6 of 21 | `python3 tools/review.py WSK2512` |
 | Vishay/WSK2512-LOW | 0 of 21 | `python3 tools/review.py WSK2512-LOW` |
 | Vishay/WSK2512R0250D | 0 of 23 | `python3 tools/review.py WSK2512R0250D` |
 <!-- review-status:end -->

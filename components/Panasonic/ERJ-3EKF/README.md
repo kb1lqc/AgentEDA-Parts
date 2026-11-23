@@ -2,7 +2,7 @@
 
 # ERJ-3EKF
 
-Checked by a person: 0 of 14 rows that matter (25 rows in all). Review: python3 tools/review.py ERJ-3EKF
+Checked by a person: 3 of 14 rows that matter (25 rows in all). Review: python3 tools/review.py ERJ-3EKF
 
 ## Part
 
@@ -52,7 +52,7 @@ Rated voltage at decade values, computed from `p70`, `v_limit` and the formula a
 
 | Parameter | Symbol | Min | Typ | Max | Unit | Conditions | Cite | Checked |
 |---|---|---|---|---|---|---|---|---|
-| Rated power at 70 degC | P70 |  |  | 0.1 | W | Ambient 70 degC; use with case temperature below the upper category temperature (footnote *1) Note: The DS prints 0.1 W for ERJ3EK (same for 0402 and 0603 in this series). Printed with no MIN/TYP/MAX label: stored as max (Defaults table). Derated above 70 degC (derate_knee, derate_zero). No abs-max table in this DS. | DS PDF p.3, Ratings <+/-1 %>, Power rating (70 degC) (W), ERJ3EK row |  |
+| Rated power at 70 degC | P70 |  |  | 0.1 | W | Ambient 70 degC; use with case temperature below the upper category temperature (footnote *1) Note: The DS prints 0.1 W for ERJ3EK (same for 0402 and 0603 in this series). Printed with no MIN/TYP/MAX label: stored as max (Defaults table). Derated above 70 degC (derate_knee, derate_zero). No abs-max table in this DS. | DS PDF p.3, Ratings <+/-1 %>, Power rating (70 degC) (W), ERJ3EK row | checked (kb1lqc, 2026-11-22) |
 | Limiting element voltage | V limit |  |  | 75 | V | Note: Upper limit on RCWV (footnote *2): RCWV = sqrt(Power rating x Resistance value) or this limit, whichever is less. See rcwv_rule. | DS PDF p.3, Ratings <+/-1 %>, Limiting element voltage (V), ERJ3EK row |  |
 | Maximum overload voltage | V overload |  |  | 150 | V | Note: Upper limit on the overload test voltage (footnote *3): OTV = specified magnification x RCWV or this limit, whichever is less. | DS PDF p.3, Ratings <+/-1 %>, Maximum overload voltage (V), ERJ3EK row |  |
 | Rated continuous working voltage, RCWV | RCWV |  | sqrt(Power rating x Resistance value), or limiting element voltage, whichever less |  | V | Note: Formula, not a number. calc.py rated_voltage implements it. | DS PDF p.3, Ratings <+/-1 %>, footnote *2 |  |
@@ -64,9 +64,9 @@ Rated voltage at decade values, computed from `p70`, `v_limit` and the formula a
 
 | Parameter | Symbol | Min | Typ | Max | Unit | Conditions | Cite | Checked |
 |---|---|---|---|---|---|---|---|---|
-| Resistance tolerance, code F | TOL | -1 |  | 1 | % | Resistance measured at 20 degC (DS PDF p.4, Performance <+/-1 %>, Resistance row) Note: Reference temperature 20 degC from the Performance table; the T.C.R. test runs from +25 degC (DS p.4). | DS PDF p.3, Ratings <+/-1 %>, Resistance tolerance (%), ERJ3EK row; DS PDF p.2, tolerance code F = +/-1 % |  |
+| Resistance tolerance, code F | TOL | -1 |  | 1 | % | Resistance measured at 20 degC (DS PDF p.4, Performance <+/-1 %>, Resistance row) Note: Reference temperature 20 degC from the Performance table; the T.C.R. test runs from +25 degC (DS p.4). | DS PDF p.3, Ratings <+/-1 %>, Resistance tolerance (%), ERJ3EK row; DS PDF p.2, tolerance code F = +/-1 % | checked (kb1lqc, 2026-11-22) |
 | Resistance range |  | 10 |  | 1000000 | ohm | E24, E96 values Note: Printed '10 to 1 M' in the ohm column; 1 M is written out as 1000000 ohm. Values below 100 ohm use the R decimal code (DS p.2), see calc.mpn. | DS PDF p.3, Ratings <+/-1 %>, Resistance range (ohm), ERJ3EK row '10 to 1 M' |  |
-| Temperature coefficient of resistance, 10 ohm to 1 Mohm | TCR | -100 |  | 100 | ppm/degC | Resistance 10 ohm to 1 Mohm; T.C.R. test at +25 degC / +155 degC (DS PDF p.4) Note: Printed +/-100 x10-6/K (= ppm/degC): stored as min = -100, max = 100. One TCR for the full +/-1 % range. The DS does not state the TCR reference temperature. Use this key for any value in 10 ohm to 1 Mohm. | DS PDF p.3, Ratings <+/-1 %>, T.C.R. (x10-6/K), ERJ3EK row (+/-100, one value for the whole 10 to 1 M range) |  |
+| Temperature coefficient of resistance, 10 ohm to 1 Mohm | TCR | -100 |  | 100 | ppm/degC | Resistance 10 ohm to 1 Mohm; T.C.R. test at +25 degC / +155 degC (DS PDF p.4) Note: Printed +/-100 x10-6/K (= ppm/degC): stored as min = -100, max = 100. One TCR for the full +/-1 % range. The DS does not state the TCR reference temperature. Use this key for any value in 10 ohm to 1 Mohm. | DS PDF p.3, Ratings <+/-1 %>, T.C.R. (x10-6/K), ERJ3EK row (+/-100, one value for the whole 10 to 1 M range) | checked (kb1lqc, 2026-11-22) |
 | Resistance change, overload |  | -2 |  | 2 | % | Rated voltage x 2.5, 5 s Note: Printed +/-2 %. | DS PDF p.4, Performance, ERJ XGN...2RK...3EK...series +/-1 % (F), Overload |  |
 | Resistance change, resistance to soldering heat |  | -1 |  | 1 | % | 270 degC, 10 s Note: Printed +/-1 %. | DS PDF p.4, Performance, ERJ XGN...3EK...series +/-1 % (F), Resistance to soldering heat |  |
 | Resistance change, rapid change of temperature |  | -1 |  | 1 | % | -55 degC (30 min) / +155 degC (30 min), 100 cycles Note: Printed +/-1 %. | DS PDF p.4, Performance, ERJ XGN...3EK...series +/-1 % (F), Rapid change of temperature |  |

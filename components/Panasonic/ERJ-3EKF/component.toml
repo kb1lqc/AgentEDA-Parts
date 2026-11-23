@@ -62,7 +62,7 @@ max        = 0.1
 unit       = "W"
 conditions = "Ambient 70 degC; use with case temperature below the upper category temperature (footnote *1)"
 cite       = "DS PDF p.3, Ratings <+/-1 %>, Power rating (70 degC) (W), ERJ3EK row"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 78825b819853 row dd577a2703b9"
 note       = "The DS prints 0.1 W for ERJ3EK (same for 0402 and 0603 in this series). Printed with no MIN/TYP/MAX label: stored as max (Defaults table). Derated above 70 degC (derate_knee, derate_zero). No abs-max table in this DS."
 unchecked  = "series_power: used by the wrapper rated_voltage check (70 degC rating, optimistic above 70 degC ambient)"
 
@@ -156,7 +156,7 @@ max        = 1
 unit       = "%"
 conditions = "Resistance measured at 20 degC (DS PDF p.4, Performance <+/-1 %>, Resistance row)"
 cite       = "DS PDF p.3, Ratings <+/-1 %>, Resistance tolerance (%), ERJ3EK row; DS PDF p.2, tolerance code F = +/-1 %"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 78825b819853 row 59b999798609"
 note       = "Reference temperature 20 degC from the Performance table; the T.C.R. test runs from +25 degC (DS p.4)."
 
 [param.res_range]
@@ -181,7 +181,7 @@ max        = 100
 unit       = "ppm/degC"
 conditions = "Resistance 10 ohm to 1 Mohm; T.C.R. test at +25 degC / +155 degC (DS PDF p.4)"
 cite       = "DS PDF p.3, Ratings <+/-1 %>, T.C.R. (x10-6/K), ERJ3EK row (+/-100, one value for the whole 10 to 1 M range)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-22 page-image ds_review 78825b819853 row 1c01c395fc05"
 note       = "Printed +/-100 x10-6/K (= ppm/degC): stored as min = -100, max = 100. One TCR for the full +/-1 % range. The DS does not state the TCR reference temperature. Use this key for any value in 10 ohm to 1 Mohm."
 
 # ---- Performance test limits: +/-1 % block (DS PDF p.4). Printed +/-X: min = -X, max = X. ----
