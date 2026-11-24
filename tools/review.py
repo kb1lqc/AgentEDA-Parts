@@ -5,6 +5,7 @@ Usage (library repo root):
   python3 tools/review.py                                       every part
   python3 tools/review.py <Value> [<Value> ...]                 these parts
   python3 tools/review.py --block <Block> [--blocks-repo DIR]   the rows a circuit block reads
+  python3 tools/review.py --list-blocks [--blocks-repo DIR]     the blocks --block can read
 --block reads <blocks repo>/benches/<Block>/docs/design-analysis/library-inputs.json (written by the block's
 analysis.py). Default blocks repo: ../ina229 if it exists, else ../circuit-blocks.
 
@@ -102,6 +103,15 @@ def block_inputs(blocks_repo, block):
     if not f.is_file():
         raise SystemExit(f"refused: {f} not found (run python3 blocks/{block}/analysis.py in the blocks repo)")
     return json.loads(f.read_text())
+
+
+def list_blocks(blocks_repo):
+    """Names of the blocks whose library-inputs.json exists (sorted); [] when the blocks repo has no benches/."""
+    benches = Path(blocks_repo) / "benches"
+    if not benches.is_dir():
+        return []
+    return sorted(p.name for p in benches.iterdir()
+                  if (p / "docs" / "design-analysis" / "library-inputs.json").is_file())
 
 
 def classify(root, d, key, ledger, params):
@@ -674,6 +684,8 @@ def main(argv=None):
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("values", nargs="*", metavar="Value", help="component directory name: show every row of the part")
     ap.add_argument("--block", help="circuit block name: show the rows its analysis reads")
+    ap.add_argument("--list-blocks", action="store_true", help="list the blocks --block can read (blocks repo: --blocks-repo) "
+                    "and exit; no Value, no --block")
     ap.add_argument("--blocks-repo", help="circuit-blocks checkout (default: ../ina229 if it exists, else ../circuit-blocks)")
     ap.add_argument("--dry-run", action="store_true", help="for a person trying the page: show the git, gh, stamp and "
                     "ds_review commands, run none (agents don't run review.py)")
@@ -685,7 +697,19 @@ def main(argv=None):
         return 1
     if a.block and a.values:
         ap.error("give --block <Block> or <Value> ..., not both (no argument: every part)")
+    if a.list_blocks and (a.block or a.values):
+        ap.error("--list-blocks takes no --block and no Value")
     root = Path(a.root).resolve()
+    if a.list_blocks:
+        repo = Path(a.blocks_repo).resolve() if a.blocks_repo else default_blocks_repo(root)
+        print(f"blocks repo: {repo}")
+        names = list_blocks(repo)
+        if not names:
+            print(f"no block has docs/design-analysis/library-inputs.json under {repo / 'benches'} "
+                  "(run the block's analysis.py first)")
+        for name in names:
+            print(name)
+        return 0
     notes = []
     try:
         if a.block:
