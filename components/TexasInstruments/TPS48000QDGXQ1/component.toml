@@ -192,7 +192,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = "Absolute maximum, referenced to GND"
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, VS, CS+, CS- to GND"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row bb80c25725b1"
 note       = "Reference GND from the row title ('to GND'). Pin-pair rows (CS+ to CS-) are a separate row below."
 check_pins = ["VS", "CS+", "CS-"]
 
@@ -208,7 +208,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = "Absolute maximum, referenced to GND"
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, SRC to GND"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row d97ed9e284c2"
 note       = "Reference GND from the row title ('to GND')."
 unchecked  = "SRC is the external FET source node; its voltage is set by the external MOSFET and load; owner: module"
 
@@ -224,7 +224,7 @@ max_ref    = "SRC"
 unit       = "V"
 conditions = "Absolute maximum, referenced to SRC"
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, PU, PD, BST to SRC"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row 9fd02675c735"
 note       = "Reference SRC from the row title ('to SRC'). The DS prints the same -0.3 V to 19 V for each of the three pins."
 unchecked  = "PU, PD and BST are driven by the part (gate driver and charge pump); owner: module"
 
@@ -240,7 +240,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = "Absolute maximum, referenced to GND"
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, ISCP, TMR, SCP_TEST to GND"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row a105d1204995"
 note       = "Reference GND from the row title ('to GND'). SCP_TEST is checked; ISCP and TMR are not (below)."
 check_pins = ["SCP_TEST"]
 unchecked  = "ISCP and TMR voltages are set by the internal sources and the external RISCP / CTMR components (an external ISCP bias, if used, must stay <= 3 V: rec_iscp_bias); owner: module"
@@ -257,7 +257,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = "V(VS) > 0 V"
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, EN/UVLO, OV, INP, CS_SEL, V(VS) > 0 V"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row 4cda5660f884"
 note       = "Reference GND from the row title (the DS prints the range to GND only for VS > 0). The second row below is the VS <= 0 V case. The DS has no rec-op row for OV (EN/UVLO, INP, CS_SEL have 0-65 V, rec_en_inp_cs_sel); OV usually shares their divider, so 65 V is the practical module bound."
 check_pins = ["EN/UVLO", "OV", "INP", "CS_SEL"]
 
@@ -288,7 +288,7 @@ max_ref    = "CS-"
 unit       = "V"
 conditions = "Absolute maximum, pin pair"
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, CS+ to CS-"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row dc7bff64c9dc"
 note       = "Pin-pair row: the second pin (CS-) is the reference (Defaults table). Checked on the CS+ net. Zener checks each net range independently: declare CS+ and CS- with a correlated (tight) tolerance, or the real mV drop shows as a large worst-case difference (open item)."
 check_pins = ["CS+"]
 
@@ -304,7 +304,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = "Absolute maximum, referenced to GND"
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, FLT, FLT_GD to GND"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row 500ea2de8025"
 note       = "Reference GND from the row title. Open drain: the high level is set by the circuit's pull-up rail, so both pins are checked."
 check_pins = ["FLT", "FLT_GD"]  # open drain: the circuit's pull-up rail sets the high level (DS p.3 Table 4-1)
 
@@ -317,7 +317,7 @@ max        = 10
 unit       = "mA"
 conditions = ""
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Sink current, I(FLT)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row a130a04b9198"
 note       = "Printed MAX only (no MIN column value). A sink-current rating, not a voltage."
 unchecked  = "Current rating, not a voltage check; module must keep V(pull-up) / R(pull-up) < 10 mA; owner: module"
 
@@ -346,7 +346,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = "Absolute maximum, referenced to GND"
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Output Pins, PU, PD, G2, BST to GND"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row fe1ff0a636e5"
 note       = "The DS prints G2 in this row; G2 is not in the DGX pin table (Table 4-1). Stored as printed; G2 is not a pin of this package."
 unchecked  = "PU, PD and BST are driven by the part (see abs_gate_bst_src); owner: module"
 
@@ -360,7 +360,7 @@ max        = 150
 unit       = "degC"
 conditions = ""
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Operating junction temperature, Tj"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row af8d2f84af06"
 note       = "Junction temperature, not ambient. TJ = TA + P x RthJA (RthJA DS p.6, 92.3 degC/W). The module must check the dissipation."
 unchecked  = "TJ rating; needs dissipation; owner: module"
 
@@ -436,7 +436,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = "Recommended operating, to GND"
 cite       = "DS p.5, 5.3 Recommended Operating Conditions, Input Pins, VS to GND"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row adfafd30424d"
 note       = "Same span as the electrical row vs_op (DS p.6, 5.5 Supply voltage, VS 3.5 to 95 V). Checked here once."
 check_pins = ["VS"]
 
@@ -478,7 +478,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = "Recommended operating, to GND"
 cite       = "DS p.5, 5.3 Recommended Operating Conditions, Input Pins, EN/UVLO, INP, CS_SEL to GND"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row 848b1e834c66"
 note       = "Reference GND from the row title."
 check_pins = ["EN/UVLO", "INP", "CS_SEL"]
 
@@ -494,7 +494,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = "Recommended operating, to GND"
 cite       = "DS p.5, 5.3 Recommended Operating Conditions, Output Pins, FLT to GND"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row d8ec42ad7f9a"
 note       = "Open-drain output of the part; the pull-up rail is set by the module."
 check_pins = ["FLT"]  # open drain: the circuit's pull-up rail sets the high level (DS p.3 Table 4-1)
 
@@ -714,7 +714,7 @@ max        = 1.29
 unit       = "V"
 conditions = ""
 cite       = "DS p.6, 5.5 Electrical Characteristics, Enable, UVLO, V(UVLOR)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row ff24a9526c34"
 
 [param.v_uvlof]
 name       = "UVLO threshold voltage, falling (EN/UVLO)"
@@ -812,7 +812,7 @@ max        = 1.28
 unit       = "V"
 conditions = ""
 cite       = "DS p.6, 5.5 Electrical Characteristics, Overvoltage Protection, V(OVR)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row a6f71f4ee0da"
 note       = "The design example text (DS p.24) uses V(OVR) = 1.225 V; that value is not in this row (see the decision log)."
 
 [param.v_ovf]
@@ -854,7 +854,7 @@ max        = 555
 unit       = "uA"
 conditions = "V(BST-SRC) = 10 V, V(EN/UVLO) = 2 V"
 cite       = "DS p.6, 5.5 Electrical Characteristics, Charge Pump, I(BST)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row d487d326072b"
 note       = "Used by the bootstrap delay equation (DS p.14 eq. 1; DS p.14 text quotes 345 uA)."
 
 [param.v_bst_uvlor]
@@ -868,7 +868,7 @@ max        = 10.81
 unit       = "V"
 conditions = "V(EN/UVLO) = 2 V"
 cite       = "DS p.6, 5.5 Electrical Characteristics, Charge Pump, V(BST_UVLOR)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row 8c3d5234eb79"
 note       = "DS p.14 text: 'V(BST_UVLOR) = 10.81 V (max)' is used in eq. 1."
 
 [param.v_bst_uvlof]
@@ -1100,7 +1100,7 @@ max        = 106
 unit       = "uA"
 conditions = ""
 cite       = "DS p.7, 5.5 Electrical Characteristics, Delay Timer (TMR), I(TMR_SRC_CB)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row b15c098c04bd"
 note       = "DS p.19 eq. 8 and DS p.25 design eq. 11 use I(TMR_SRC_CB). Typ 87 uA is the value eq. 11 prints (see the decision log)."
 
 [param.i_tmr_src_flt]
@@ -1138,7 +1138,7 @@ max        = 1.26
 unit       = "V"
 conditions = ""
 cite       = "DS p.7, 5.5 Electrical Characteristics, Delay Timer (TMR), V(TMR_SC)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row c41b4ec8cdca"
 
 [param.v_tmr_low]
 name       = "TMR input low level"

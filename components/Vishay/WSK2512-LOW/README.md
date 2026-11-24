@@ -2,7 +2,7 @@
 
 # WSK2512-LOW
 
-Checked by a person: 0 of 21 rows that matter (42 rows in all). Review: python3 tools/review.py WSK2512-LOW
+Checked by a person: 4 of 21 rows that matter (42 rows in all). Review: python3 tools/review.py WSK2512-LOW
 
 ## Part
 
@@ -52,11 +52,11 @@ Rated voltage at decade values, computed from `p70` and the formula above:
 
 | Parameter | Symbol | Min | Typ | Max | Unit | Conditions | Cite | Checked |
 |---|---|---|---|---|---|---|---|---|
-| Power rating at 70 degC ambient | P70 degC |  |  | 1.0 | W | Ambient 70 degC; one rating for every value of the WSK2512 model Note: Rating: a maximum, stored as max. No abs-max table. Rated against AMBIENT (DS p.3 DERATING axis); self-heating is not given. | DS p.1, Standard Electrical Specifications, POWER RATING P70 degC, W, 1.0 |  |
+| Power rating at 70 degC ambient | P70 degC |  |  | 1.0 | W | Ambient 70 degC; one rating for every value of the WSK2512 model Note: Rating: a maximum, stored as max. No abs-max table. Rated against AMBIENT (DS p.3 DERATING axis); self-heating is not given. | DS p.1, Standard Electrical Specifications, POWER RATING P70 degC, W, 1.0 | checked (kb1lqc, 2026-11-24) |
 | Maximum working voltage |  |  | (P x R)^1/2 |  | V | Note: Formula, not a number. calc.py max_working_voltage implements it. The DS prints no limiting element voltage, so the series has no series_vlimit. | DS p.2, Technical Specifications, Maximum working voltage, (P x R)^1/2 |  |
 | Operating temperature range |  | -65 |  | 170 | degC | Note: The DS does not say whether this is ambient or element temperature; read as ambient (DS p.3 DERATING axis). Only temperature rating in the DS (no storage or abs-max row). | DS p.2, Technical Specifications, Operating temperature range, -65 to +170 |  |
-| Derating knee: 100 % rated power up to | TA knee |  | 70 |  | degC | Note: Read off the graph. Not a worst-case bound (curve). | DS p.3, Figure: DERATING graph (unnumbered; rated power vs ambient, 100 % line ends at 70 degC); coincides with DS p.1 P70 degC (curve) |  |
-| Derating: 0 % rated power at | TA zero |  | 170 |  | degC | Note: Read off the graph (no printed number). Coincides with the top of the operating range (DS p.2). Linear between knee and zero (graph shape). | DS p.3, Figure: DERATING graph (unnumbered; rated power vs ambient, line reaches 0 % at 170 degC) (curve) |  |
+| Derating knee: 100 % rated power up to | TA knee |  | 70 |  | degC | Note: Read off the graph. Not a worst-case bound (curve). | DS p.3, Figure: DERATING graph (unnumbered; rated power vs ambient, 100 % line ends at 70 degC); coincides with DS p.1 P70 degC (curve) | checked (kb1lqc, 2026-11-24) |
+| Derating: 0 % rated power at | TA zero |  | 170 |  | degC | Note: Read off the graph (no printed number). Coincides with the top of the operating range (DS p.2). Linear between knee and zero (graph shape). | DS p.3, Figure: DERATING graph (unnumbered; rated power vs ambient, line reaches 0 % at 170 degC) (curve) | checked (kb1lqc, 2026-11-24) |
 
 ## Parameters: electrical
 
@@ -73,7 +73,7 @@ Rated voltage at decade values, computed from `p70` and the formula above:
 | TCR range: 0.001 ohm to 0.0029 ohm |  | 0.001 |  | 0.0029 | ohm | Note: Range for which the TCR row of the same name applies, as printed. | DS p.2, Technical Specifications, Temperature coefficient, range 0.001 ohm to 0.0029 ohm |  |
 | Temperature coefficient of resistance, 0.003 ohm to 0.0049 ohm | TCR | -75 |  | 75 | ppm/degC | Resistance range 0.003 ohm to 0.0049 ohm Note: DS p.1 Features says 'low TCR (< 20 ppm/degC)'. Feature text is not a specification; the table value +/-75 is used (open item). The DS states neither the reference temperature nor the temperature span over which the TCR holds. Selected per value by Part.tcr(value) through [part] series_tcr (its range row is tcr_3m_4m9_range). | DS p.2, Technical Specifications, Temperature coefficient (RESISTOR CHARACTERISTICS), +/-75 for 0.003 ohm to 0.0049 ohm |  |
 | TCR range: 0.003 ohm to 0.0049 ohm |  | 0.003 |  | 0.0049 | ohm | Note: Range for which the TCR row of the same name applies, as printed. | DS p.2, Technical Specifications, Temperature coefficient, range 0.003 ohm to 0.0049 ohm |  |
-| Performance test limit, additive term (all PERFORMANCE rows) |  | -0.0005 |  | 0.0005 | ohm | Added to the percent term of every PERFORMANCE row: total limit ±(X % of R + 0.0005 ohm) Note: Printed '± X % + 0.0005 Ω' with no brackets. Stored symmetric, ±(X % of R + 0.0005 ohm): the conservative worst-case reading (a one-sided +0.0005 would understate the low side). Open item: confirm the reading with Vishay. | DS p.3, PERFORMANCE, TEST LIMITS column, '+ 0.0005 ohm' (all rows) |  |
+| Performance test limit, additive term (all PERFORMANCE rows) |  | -0.0005 |  | 0.0005 | ohm | Added to the percent term of every PERFORMANCE row: total limit ±(X % of R + 0.0005 ohm) Note: Printed '± X % + 0.0005 Ω' with no brackets. Stored symmetric, ±(X % of R + 0.0005 ohm): the conservative worst-case reading (a one-sided +0.0005 would understate the low side). Open item: confirm the reading with Vishay. | DS p.3, PERFORMANCE, TEST LIMITS column, '+ 0.0005 ohm' (all rows) | checked (kb1lqc, 2026-11-24) |
 | Resistance change, thermal shock |  | -0.5 |  | 0.5 | % | -55 degC to +150 degC, 1000 cycles, 15 min at each extreme Note: Printed ± 0.5 %. Total limit ±(0.5 % of R + 0.0005 ohm); add perf_offset_ohm. | DS p.3, PERFORMANCE, Thermal shock, TEST LIMITS |  |
 | Resistance change, short time overload |  | -0.5 |  | 0.5 | % | Overload level not printed; DS refers to external link www.vishay.com/en/resistors/power-metal-strip-calculator/ Note: Printed ± 0.5 %. Total limit ±(0.5 % of R + 0.0005 ohm); add perf_offset_ohm. Do not apply to any specific overload: the DS gives no level. Pulse capability has no numbers in the DS (online calculator only). | DS p.3, PERFORMANCE, Short time overload, TEST LIMITS |  |
 | Resistance change, low temperature operation |  | -0.5 |  | 0.5 | % | -65 degC for 24 h Note: Printed ± 0.5 %. Total limit ±(0.5 % of R + 0.0005 ohm); add perf_offset_ohm. | DS p.3, PERFORMANCE, Low temperature operation, TEST LIMITS |  |

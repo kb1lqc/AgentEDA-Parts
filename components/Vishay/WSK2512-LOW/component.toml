@@ -203,7 +203,7 @@ max        = 1.0
 unit       = "W"
 conditions = "Ambient 70 degC; one rating for every value of the WSK2512 model"
 cite       = "DS p.1, Standard Electrical Specifications, POWER RATING P70 degC, W, 1.0"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 2ee8a9067539 row fe32af6faf28"
 note       = "Rating: a maximum, stored as max. No abs-max table. Rated against AMBIENT (DS p.3 DERATING axis); self-heating is not given."
 unchecked  = "dissipation depends on the load current; owner: module (calc.dissipation vs calc.rated_power)"
 
@@ -241,7 +241,7 @@ typ        = 70
 unit       = "degC"
 conditions = ""
 cite       = "DS p.3, Figure: DERATING graph (unnumbered; rated power vs ambient, 100 % line ends at 70 degC); coincides with DS p.1 P70 degC"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 2ee8a9067539 row 95c5c286de7e"
 curve      = true
 note       = "Read off the graph. Not a worst-case bound (curve)."
 unchecked  = "curve value; used by calc.rated_power"
@@ -255,7 +255,7 @@ typ        = 170
 unit       = "degC"
 conditions = ""
 cite       = "DS p.3, Figure: DERATING graph (unnumbered; rated power vs ambient, line reaches 0 % at 170 degC)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 2ee8a9067539 row d8484fe64f5e"
 curve      = true
 note       = "Read off the graph (no printed number). Coincides with the top of the operating range (DS p.2). Linear between knee and zero (graph shape)."
 
@@ -274,7 +274,7 @@ max        = 0.0005
 unit       = "ohm"
 conditions = "Added to the percent term of every PERFORMANCE row: total limit ±(X % of R + 0.0005 ohm)"
 cite       = "DS p.3, PERFORMANCE, TEST LIMITS column, '+ 0.0005 ohm' (all rows)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md); symmetric reading approved by the designer (audit R1)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 2ee8a9067539 row d61fe9b7a6fc"
 note       = "Printed '± X % + 0.0005 Ω' with no brackets. Stored symmetric, ±(X % of R + 0.0005 ohm): the conservative worst-case reading (a one-sided +0.0005 would understate the low side). Open item: confirm the reading with Vishay."
 
 [param.perf_thermal_shock]

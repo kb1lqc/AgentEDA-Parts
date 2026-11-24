@@ -11,7 +11,7 @@ datasheet_rev = "29-May-25 (page footers, pp.1-4)"
 pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
 pages = 8
 text_layer = true
-component_sha256 = "54ff812015d0cdb44943aeae89d0c8bb73fc67f218e12749db24424d530c09b7"
+component_sha256 = "dfbe87d2536f2ae2886dc7c0edd1fbae78fb8edf91765489b410eb7ff1599249"
 render = "complete"
 backfill = "git blame"
 sheets = { "AOA0000C304.pdf" = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378" }
@@ -50,14 +50,13 @@ text_snippet = "(no text-layer line located)"
 stamped_toml = "[param.p70]\nname       = \"Rated power at 70 degC\"\nsymbol     = \"P70\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmax        = 0.1\nunit       = \"W\"\nconditions = \"Ambient 70 degC; use with case temperature below the upper category temperature (footnote *1)\"\ncite       = \"DS PDF p.3, Ratings <+/-1 %>, Power rating (70 degC) (W), ERJ3EK row\"\nverified   = \"human:kb1lqc 2026-11-22 page-image ds_review 78825b819853 row dd577a2703b9\"\nnote       = \"The DS prints 0.1 W for ERJ3EK (same for 0402 and 0603 in this series). Printed with no MIN/TYP/MAX label: stored as max (Defaults table). Derated above 70 degC (derate_knee, derate_zero). No abs-max table in this DS.\"\nunchecked  = \"series_power: used by the wrapper rated_voltage check (70 degC rating, optimistic above 70 degC ambient)\""
 
 [row.v_limit]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'V limit' not found as a table row; text check: UNSURE vendor 'Panasonic' not in the text-check tested set"
 hash = "166852cbea76e6ff69a6213b76e1471542a6dd680f6f21a360d7905f659f760a"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 78825b819853 row 166852cbea76"
 stamp_hash = "166852cbea76e6ff69a6213b76e1471542a6dd680f6f21a360d7905f659f760a"
 pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
-baseline = true
 pdf_page = 3
 toml_lines = "69-80"
 image = "evidence/page_p3.png"
@@ -68,7 +67,7 @@ crop_box = "full_page"
 dpi = 200
 render_key = "3db725f16ecf781f"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.v_limit]\nname       = \"Limiting element voltage\"\nsymbol     = \"V limit\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmax        = 75\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS PDF p.3, Ratings <+/-1 %>, Limiting element voltage (V), ERJ3EK row\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Upper limit on RCWV (footnote *2): RCWV = sqrt(Power rating x Resistance value) or this limit, whichever is less. See rcwv_rule.\"\nunchecked  = \"series_vlimit: used by the wrapper rated_voltage check\""
+stamped_toml = "[param.v_limit]\nname       = \"Limiting element voltage\"\nsymbol     = \"V limit\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmax        = 75\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS PDF p.3, Ratings <+/-1 %>, Limiting element voltage (V), ERJ3EK row\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 78825b819853 row 166852cbea76\"\nnote       = \"Upper limit on RCWV (footnote *2): RCWV = sqrt(Power rating x Resistance value) or this limit, whichever is less. See rcwv_rule.\"\nunchecked  = \"series_vlimit: used by the wrapper rated_voltage check\""
 
 [row.v_overload]
 state = "NEW"
