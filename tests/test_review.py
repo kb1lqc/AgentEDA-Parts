@@ -515,6 +515,24 @@ class StatementCard(unittest.TestCase):
             c = self.card()
             self.assertEqual((c["note"], c["note_open"]), (note, want), note)
 
+    def test_magnitude_order_row_shows_the_printed_columns(self):
+        note = ('"DS prints this negative quantity in magnitude order (MIN column -10, MAX column -30); stored in numeric '
+                'order: printed MAX -> min, printed MIN -> max."')
+        self.row(min="-30", typ="-20", max="-10", unit='"uA"', note=note)
+        c = self.card()
+        self.assertEqual(c["lines"][:2], [("Value", "min -30, typ -20, max -10 µA"),
+                                          ("Datasheet columns", "printed MIN -10 = stored max -10; printed MAX -30 = stored min -30")])
+        self.row(min="-30", typ="-20", max="-10", unit='"uA"', note='"plain"')
+        self.assertNotIn("Datasheet columns", dict(self.card()["lines"]))
+
+    def test_only_the_columns_the_note_quotes_and_hyphenated_wording(self):
+        self.row(max="-4", note='"DS prints this negative quantity in magnitude order (MAX column -4); stored in numeric order."')
+        self.assertEqual(dict(self.card()["lines"])["Datasheet columns"], "printed MAX -4 = stored min not set")
+        self.row(min="-2", typ="-1", max="-3", note='"Magnitude-order pair: typ printed -1, max printed 3 (sign inferred)."')
+        self.assertEqual(dict(self.card()["lines"])["Datasheet columns"], "printed TYP -1 = stored typ -1; printed MAX 3 = stored min -2")
+        self.row(min="-0.2", note='"Printed TYP VS - 0.07 V, MAX VS - 0.2 V (magnitude order: the MAX swing)."')
+        self.assertNotIn("Datasheet columns", dict(self.card()["lines"]))
+
     def test_fix_first_and_pinout(self):
         self.row(max=None, pins=True)
         self.assertEqual(self.card()["fix"], "Fix first: the row has no min, typ or max")

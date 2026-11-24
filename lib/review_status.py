@@ -235,6 +235,20 @@ PRETTY_DEGC = re.compile(r"(?<![A-Za-z_])(m?)degC(?![A-Za-z])")  # "125degC", "m
 SCOPE_TEXT = {"25C": "at 25 \u00b0C only", "full": "over the full temperature range",
               "partial": "over part of the range: see conditions"}
 READ_AS = re.compile(r"read as|applied as|inferred", re.I)
+MAGNITUDE_ORDER = re.compile(r"magnitude[ -]order", re.I)  # the DS prints a negative pair in magnitude order
+PRINTED_COLUMN = re.compile(r"\b(MIN|TYP|MAX)\b(?: column)?(?: printed)? ([-−]?\d[\d.]*)", re.I)  # "MAX column -10"
+STORED_FOR = {"MIN": "max", "TYP": "typ", "MAX": "min"}  # numeric order: printed MIN is the stored max, printed MAX the min
+
+
+def printed_columns(note):
+    """[(column, printed value, stored field)] for the columns a magnitude-order note quotes, in MIN, TYP, MAX order;
+    [] for any other note (INA241's rail-relative "MAX VS - 0.2 V" quotes no column number, so it gets none)."""
+    if not MAGNITUDE_ORDER.search(note):
+        return []
+    seen = {}
+    for col, val in PRINTED_COLUMN.findall(note):
+        seen.setdefault(col.upper(), val.replace("−", "-"))
+    return [(c, seen[c], STORED_FOR[c]) for c in ("MIN", "TYP", "MAX") if c in seen]
 
 
 def pretty(text):
@@ -272,10 +286,15 @@ def statement_card(path, key, root=None):
     t = (data.get("param") or {})[key]
     title = pretty(f"{t['symbol']} \u2014 {t.get('name', '')}" if t.get("symbol") else t.get("name", ""))
     card = {"title": title, "lines": [], "note": "", "note_open": False, "fix": ""}
+    from .readme import shown
     if not values_text(t):
         card["fix"] = "Fix first: the row has no min, typ or max"
         return card
     lines = [("Value", pretty(card_value(t))), ("Conditions", pretty(t.get("conditions") or "none printed"))]
+    cols = printed_columns(str(t.get("note") or ""))
+    if cols:
+        lines.insert(1, ("Datasheet columns", "; ".join(f"printed {c} {v} = stored {f} {shown(t, f) or 'not set'}"
+                                                       for c, v, f in cols)))
     if t.get("scope") in SCOPE_TEXT:
         lines.append(("Temperature", SCOPE_TEXT[t["scope"]]))
     use = [re.sub(r"^(\w+)\((.*)\)$", r"\1 (\2)", u) for u in used_by(path, key, root)]
