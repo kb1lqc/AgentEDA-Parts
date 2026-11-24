@@ -11,7 +11,7 @@ datasheet_rev = "SLUSEZ1B Rev. B"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
 pages = 38
 text_layer = true
-component_sha256 = "5d84a3a9f9326e8410b5fe029ed16bbb80e47d3d47e1c7b26aa0827c638a9c75"
+component_sha256 = "9b1fcac58b3cad82ce1a456e92e9a7dd29198491ade237cc2a3654a7d3937dbf"
 render = "complete"
 backfill = "git blame"
 sheets = { "tps4800-q1.pdf" = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839" }
@@ -38,14 +38,13 @@ dpi = 200
 render_key = "2e0fd4728529690c"
 
 [row.abs_vs_cs_gnd]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table '5.1 Absolute Maximum Ratings'): symbol 'VS, CS+, CS-' not found as a table row; text check: UNSURE row uses convention 'min_ref'"
 hash = "bb80c25725b183a10701a4e34bd41c697c9d4cf786b8667212a595899712bd2b"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row bb80c25725b1"
 stamp_hash = "bb80c25725b183a10701a4e34bd41c697c9d4cf786b8667212a595899712bd2b"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "183-197"
@@ -57,17 +56,16 @@ crop_box = [54.0, 90.2, 558.0, 376.6]
 dpi = 200
 render_key = "89f1d56c9e4a5441"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.abs_vs_cs_gnd]\nname       = \"VS, CS+, CS- voltage to GND\"\nsymbol     = \"VS, CS+, CS-\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -65\nmax        = 100\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"Absolute maximum, referenced to GND\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, VS, CS+, CS- to GND\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Reference GND from the row title ('to GND'). Pin-pair rows (CS+ to CS-) are a separate row below.\"\ncheck_pins = [\"VS\", \"CS+\", \"CS-\"]"
+stamped_toml = "[param.abs_vs_cs_gnd]\nname       = \"VS, CS+, CS- voltage to GND\"\nsymbol     = \"VS, CS+, CS-\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -65\nmax        = 100\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"Absolute maximum, referenced to GND\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, VS, CS+, CS- to GND\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row bb80c25725b1\"\nnote       = \"Reference GND from the row title ('to GND'). Pin-pair rows (CS+ to CS-) are a separate row below.\"\ncheck_pins = [\"VS\", \"CS+\", \"CS-\"]"
 
 [row.abs_src_gnd]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table '5.1 Absolute Maximum Ratings'): symbol 'SRC' on 2 lines and the cite's row label does not pick one; text check: UNSURE row uses convention 'min_ref'"
 hash = "d97ed9e284c2829a147e46f28074d63be1771783dce032e8e417b7ea2a6355a1"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row d97ed9e284c2"
 stamp_hash = "d97ed9e284c2829a147e46f28074d63be1771783dce032e8e417b7ea2a6355a1"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "199-213"
@@ -79,17 +77,16 @@ crop_box = [54.0, 90.2, 558.0, 376.6]
 dpi = 200
 render_key = "89f1d56c9e4a5441"
 text_snippet = "                                   SRC to GND                                                               \u201365              100\n                                   PU, PD, BST to SRC                                                      \u20130.3               19\n External       VS, SRC to GND                                                                        22                                   nF\n Capacitor      BST to SRC                                                                           0.1                                   \u00b5F"
-stamped_toml = "[param.abs_src_gnd]\nname       = \"SRC voltage to GND\"\nsymbol     = \"SRC\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -65\nmax        = 100\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"Absolute maximum, referenced to GND\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, SRC to GND\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Reference GND from the row title ('to GND').\"\nunchecked  = \"SRC is the external FET source node; its voltage is set by the external MOSFET and load; owner: module\""
+stamped_toml = "[param.abs_src_gnd]\nname       = \"SRC voltage to GND\"\nsymbol     = \"SRC\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -65\nmax        = 100\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"Absolute maximum, referenced to GND\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, SRC to GND\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row d97ed9e284c2\"\nnote       = \"Reference GND from the row title ('to GND').\"\nunchecked  = \"SRC is the external FET source node; its voltage is set by the external MOSFET and load; owner: module\""
 
 [row.abs_gate_bst_src]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table '5.1 Absolute Maximum Ratings'): symbol 'PU, PD, BST' not found as a table row; text check: UNSURE row uses convention 'min_ref'"
 hash = "9fd02675c735dc993a9ce3b24c1230c32990352f5eb60ab1ae9b3c24dace489c"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row 9fd02675c735"
 stamp_hash = "9fd02675c735dc993a9ce3b24c1230c32990352f5eb60ab1ae9b3c24dace489c"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "215-229"
@@ -101,17 +98,16 @@ crop_box = [54.0, 90.2, 558.0, 376.6]
 dpi = 200
 render_key = "89f1d56c9e4a5441"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.abs_gate_bst_src]\nname       = \"PU, PD, BST voltage to SRC\"\nsymbol     = \"PU, PD, BST\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -0.3\nmax        = 19\nmin_ref    = \"SRC\"\nmax_ref    = \"SRC\"\nunit       = \"V\"\nconditions = \"Absolute maximum, referenced to SRC\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, PU, PD, BST to SRC\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Reference SRC from the row title ('to SRC'). The DS prints the same -0.3 V to 19 V for each of the three pins.\"\nunchecked  = \"PU, PD and BST are driven by the part (gate driver and charge pump); owner: module\""
+stamped_toml = "[param.abs_gate_bst_src]\nname       = \"PU, PD, BST voltage to SRC\"\nsymbol     = \"PU, PD, BST\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -0.3\nmax        = 19\nmin_ref    = \"SRC\"\nmax_ref    = \"SRC\"\nunit       = \"V\"\nconditions = \"Absolute maximum, referenced to SRC\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, PU, PD, BST to SRC\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row 9fd02675c735\"\nnote       = \"Reference SRC from the row title ('to SRC'). The DS prints the same -0.3 V to 19 V for each of the three pins.\"\nunchecked  = \"PU, PD and BST are driven by the part (gate driver and charge pump); owner: module\""
 
 [row.abs_iscp_tmr_scp_test]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table '5.1 Absolute Maximum Ratings'): symbol 'ISCP, TMR, SCP_TEST' not found as a table row; text check: UNSURE row uses convention 'min_ref'"
 hash = "a105d120499575ec3dda46c409cafa1f09f02a7bcd21c511815e2f0b76143886"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row a105d1204995"
 stamp_hash = "a105d120499575ec3dda46c409cafa1f09f02a7bcd21c511815e2f0b76143886"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "231-246"
@@ -123,17 +119,16 @@ crop_box = [54.0, 90.2, 558.0, 376.6]
 dpi = 200
 render_key = "89f1d56c9e4a5441"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.abs_iscp_tmr_scp_test]\nname       = \"ISCP, TMR, SCP_TEST voltage to GND\"\nsymbol     = \"ISCP, TMR, SCP_TEST\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -0.3\nmax        = 5.5\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"Absolute maximum, referenced to GND\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, ISCP, TMR, SCP_TEST to GND\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Reference GND from the row title ('to GND'). SCP_TEST is checked; ISCP and TMR are not (below).\"\ncheck_pins = [\"SCP_TEST\"]\nunchecked  = \"ISCP and TMR voltages are set by the internal sources and the external RISCP / CTMR components (an external ISCP bias, if used, must stay <= 3 V: rec_iscp_bias); owner: module\""
+stamped_toml = "[param.abs_iscp_tmr_scp_test]\nname       = \"ISCP, TMR, SCP_TEST voltage to GND\"\nsymbol     = \"ISCP, TMR, SCP_TEST\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -0.3\nmax        = 5.5\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"Absolute maximum, referenced to GND\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, ISCP, TMR, SCP_TEST to GND\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row a105d1204995\"\nnote       = \"Reference GND from the row title ('to GND'). SCP_TEST is checked; ISCP and TMR are not (below).\"\ncheck_pins = [\"SCP_TEST\"]\nunchecked  = \"ISCP and TMR voltages are set by the internal sources and the external RISCP / CTMR components (an external ISCP bias, if used, must stay <= 3 V: rec_iscp_bias); owner: module\""
 
 [row.abs_input_vs_pos]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table '5.1 Absolute Maximum Ratings'): symbol 'EN/UVLO, OV, INP, CS_SEL' not found as a table row; text check: UNSURE row uses convention 'min_ref'"
 hash = "4cda5660f884ee948f3813d61521c9ccaeeeb0f76ecc9d099e0c09c5e0ca331b"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row 4cda5660f884"
 stamp_hash = "4cda5660f884ee948f3813d61521c9ccaeeeb0f76ecc9d099e0c09c5e0ca331b"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "248-262"
@@ -145,7 +140,7 @@ crop_box = [54.0, 90.2, 558.0, 376.6]
 dpi = 200
 render_key = "89f1d56c9e4a5441"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.abs_input_vs_pos]\nname       = \"EN/UVLO, OV, INP, CS_SEL voltage (V(VS) > 0 V)\"\nsymbol     = \"EN/UVLO, OV, INP, CS_SEL\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -1\nmax        = 70\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"V(VS) > 0 V\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, EN/UVLO, OV, INP, CS_SEL, V(VS) > 0 V\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Reference GND from the row title (the DS prints the range to GND only for VS > 0). The second row below is the VS <= 0 V case. The DS has no rec-op row for OV (EN/UVLO, INP, CS_SEL have 0-65 V, rec_en_inp_cs_sel); OV usually shares their divider, so 65 V is the practical module bound.\"\ncheck_pins = [\"EN/UVLO\", \"OV\", \"INP\", \"CS_SEL\"]"
+stamped_toml = "[param.abs_input_vs_pos]\nname       = \"EN/UVLO, OV, INP, CS_SEL voltage (V(VS) > 0 V)\"\nsymbol     = \"EN/UVLO, OV, INP, CS_SEL\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -1\nmax        = 70\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"V(VS) > 0 V\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, EN/UVLO, OV, INP, CS_SEL, V(VS) > 0 V\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row 4cda5660f884\"\nnote       = \"Reference GND from the row title (the DS prints the range to GND only for VS > 0). The second row below is the VS <= 0 V case. The DS has no rec-op row for OV (EN/UVLO, INP, CS_SEL have 0-65 V, rec_en_inp_cs_sel); OV usually shares their divider, so 65 V is the practical module bound.\"\ncheck_pins = [\"EN/UVLO\", \"OV\", \"INP\", \"CS_SEL\"]"
 
 [row.abs_input_vs_neg]
 state = "NEW"
@@ -166,14 +161,13 @@ render_key = "89f1d56c9e4a5441"
 text_snippet = "(no text-layer line located)"
 
 [row.abs_cs_pair]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table '5.1 Absolute Maximum Ratings'): symbol 'CS+ - CS-' not found as a table row; text check: UNSURE row uses convention 'min_ref'"
 hash = "dc7bff64c9dc01bdd91d8c96eb91129a39726b875b3ad600f0d51e110754b806"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row dc7bff64c9dc"
 stamp_hash = "dc7bff64c9dc01bdd91d8c96eb91129a39726b875b3ad600f0d51e110754b806"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "279-293"
@@ -185,17 +179,16 @@ crop_box = [54.0, 90.2, 558.0, 376.6]
 dpi = 200
 render_key = "89f1d56c9e4a5441"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.abs_cs_pair]\nname       = \"CS+ to CS- voltage\"\nsymbol     = \"CS+ - CS-\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -1\nmax        = 100\nmin_ref    = \"CS-\"\nmax_ref    = \"CS-\"\nunit       = \"V\"\nconditions = \"Absolute maximum, pin pair\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, CS+ to CS-\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Pin-pair row: the second pin (CS-) is the reference (Defaults table). Checked on the CS+ net. Zener checks each net range independently: declare CS+ and CS- with a correlated (tight) tolerance, or the real mV drop shows as a large worst-case difference (open item).\"\ncheck_pins = [\"CS+\"]"
+stamped_toml = "[param.abs_cs_pair]\nname       = \"CS+ to CS- voltage\"\nsymbol     = \"CS+ - CS-\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -1\nmax        = 100\nmin_ref    = \"CS-\"\nmax_ref    = \"CS-\"\nunit       = \"V\"\nconditions = \"Absolute maximum, pin pair\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, CS+ to CS-\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row dc7bff64c9dc\"\nnote       = \"Pin-pair row: the second pin (CS-) is the reference (Defaults table). Checked on the CS+ net. Zener checks each net range independently: declare CS+ and CS- with a correlated (tight) tolerance, or the real mV drop shows as a large worst-case difference (open item).\"\ncheck_pins = [\"CS+\"]"
 
 [row.abs_flt_gnd]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table '5.1 Absolute Maximum Ratings'): symbol 'FLT, FLT_GD' not found as a table row; text check: UNSURE row uses convention 'min_ref'"
 hash = "500ea2de802507bb0e15bcad8957ecbd6b0e51201e0f3affa1e19258ca5adee7"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row 500ea2de8025"
 stamp_hash = "500ea2de802507bb0e15bcad8957ecbd6b0e51201e0f3affa1e19258ca5adee7"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "295-309"
@@ -207,17 +200,16 @@ crop_box = [54.0, 90.2, 558.0, 376.6]
 dpi = 200
 render_key = "89f1d56c9e4a5441"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.abs_flt_gnd]\nname       = \"FLT, FLT_GD voltage to GND\"\nsymbol     = \"FLT, FLT_GD\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -1\nmax        = 20\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"Absolute maximum, referenced to GND\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, FLT, FLT_GD to GND\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Reference GND from the row title. Open drain: the high level is set by the circuit's pull-up rail, so both pins are checked.\"\ncheck_pins = [\"FLT\", \"FLT_GD\"]  # open drain: the circuit's pull-up rail sets the high level (DS p.3 Table 4-1)"
+stamped_toml = "[param.abs_flt_gnd]\nname       = \"FLT, FLT_GD voltage to GND\"\nsymbol     = \"FLT, FLT_GD\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -1\nmax        = 20\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"Absolute maximum, referenced to GND\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, FLT, FLT_GD to GND\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row 500ea2de8025\"\nnote       = \"Reference GND from the row title. Open drain: the high level is set by the circuit's pull-up rail, so both pins are checked.\"\ncheck_pins = [\"FLT\", \"FLT_GD\"]  # open drain: the circuit's pull-up rail sets the high level (DS p.3 Table 4-1)"
 
 [row.abs_i_flt_sink]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "no MIN/TYP/MAX header on the cited page; row found by symbol, row group of 3 lines; footnotes shown"
 hash = "a130a04b9198cd0856ba82e7e0ee0f916867c3e7f582254e848ff9ea3a110fb6"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row a130a04b9198"
 stamp_hash = "a130a04b9198cd0856ba82e7e0ee0f916867c3e7f582254e848ff9ea3a110fb6"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "311-322"
@@ -237,7 +229,7 @@ foot_sha256 = "04308d57f52c911552510772b2155bc5906dcb2b4066b47770e6a19e82445e84"
 foot_box = [50.7, 318.7, 545.1, 672.9]
 foot_key = "3456d125adf31e60"
 text_snippet = "over operating free-air temperature range (unless otherwise noted)(1)\n                                                                                                           MIN             MAX           UNIT\n                                   I(FLT)                                                                                     10         mA\n Sink current\n                                   I(CS+), I(CS\u2013), 1msec                                                   \u2013100              100         mA"
-stamped_toml = "[param.abs_i_flt_sink]\nname       = \"FLT sink current\"\nsymbol     = \"I(FLT)\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmax        = 10\nunit       = \"mA\"\nconditions = \"\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Sink current, I(FLT)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed MAX only (no MIN column value). A sink-current rating, not a voltage.\"\nunchecked  = \"Current rating, not a voltage check; module must keep V(pull-up) / R(pull-up) < 10 mA; owner: module\""
+stamped_toml = "[param.abs_i_flt_sink]\nname       = \"FLT sink current\"\nsymbol     = \"I(FLT)\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmax        = 10\nunit       = \"mA\"\nconditions = \"\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Sink current, I(FLT)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row a130a04b9198\"\nnote       = \"Printed MAX only (no MIN column value). A sink-current rating, not a voltage.\"\nunchecked  = \"Current rating, not a voltage check; module must keep V(pull-up) / R(pull-up) < 10 mA; owner: module\""
 
 [row.abs_i_cs_1ms]
 state = "NEW"
@@ -258,14 +250,13 @@ render_key = "89f1d56c9e4a5441"
 text_snippet = "(no text-layer line located)"
 
 [row.abs_gate_out_gnd]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table '5.1 Absolute Maximum Ratings'): symbol 'PU, PD, G2, BST' not found as a table row; text check: UNSURE row uses convention 'min_ref'"
 hash = "fe1ff0a636e50572ed3b385fc5bc846a2ea639b05870cba5546c5551168f0e47"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row fe1ff0a636e5"
 stamp_hash = "fe1ff0a636e50572ed3b385fc5bc846a2ea639b05870cba5546c5551168f0e47"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "337-351"
@@ -277,17 +268,16 @@ crop_box = [54.0, 90.2, 558.0, 376.6]
 dpi = 200
 render_key = "89f1d56c9e4a5441"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.abs_gate_out_gnd]\nname       = \"PU, PD, G2, BST voltage to GND\"\nsymbol     = \"PU, PD, G2, BST\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -65\nmax        = 112\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"Absolute maximum, referenced to GND\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Output Pins, PU, PD, G2, BST to GND\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"The DS prints G2 in this row; G2 is not in the DGX pin table (Table 4-1). Stored as printed; G2 is not a pin of this package.\"\nunchecked  = \"PU, PD and BST are driven by the part (see abs_gate_bst_src); owner: module\""
+stamped_toml = "[param.abs_gate_out_gnd]\nname       = \"PU, PD, G2, BST voltage to GND\"\nsymbol     = \"PU, PD, G2, BST\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -65\nmax        = 112\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"Absolute maximum, referenced to GND\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Output Pins, PU, PD, G2, BST to GND\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row fe1ff0a636e5\"\nnote       = \"The DS prints G2 in this row; G2 is not in the DGX pin table (Table 4-1). Stored as printed; G2 is not a pin of this package.\"\nunchecked  = \"PU, PD and BST are driven by the part (see abs_gate_bst_src); owner: module\""
 
 [row.tj_abs]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table '5.1 Absolute Maximum Ratings'): symbol 'Tj' on 2 lines and the cite's row label does not pick one; text check: UNSURE no MIN/TYP/MAX header on the cited page"
 hash = "af8d2f84af063b00325156924e46b91d8d1bc2e150017d57c9b706bcd3793f6e"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row af8d2f84af06"
 stamp_hash = "af8d2f84af063b00325156924e46b91d8d1bc2e150017d57c9b706bcd3793f6e"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "353-365"
@@ -299,7 +289,7 @@ crop_box = [54.0, 90.2, 558.0, 376.6]
 dpi = 200
 render_key = "89f1d56c9e4a5441"
 text_snippet = " Operating junction temperature, Tj                                                                         \u201340              150\n Tj             Operating Junction temperature                                                       \u201340                        150        \u00b0C"
-stamped_toml = "[param.tj_abs]\nname       = \"Operating junction temperature, Tj (absolute maximum)\"\nsymbol     = \"Tj\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -40\nmax        = 150\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Operating junction temperature, Tj\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Junction temperature, not ambient. TJ = TA + P x RthJA (RthJA DS p.6, 92.3 degC/W). The module must check the dissipation.\"\nunchecked  = \"TJ rating; needs dissipation; owner: module\""
+stamped_toml = "[param.tj_abs]\nname       = \"Operating junction temperature, Tj (absolute maximum)\"\nsymbol     = \"Tj\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -40\nmax        = 150\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.5, 5.1 Absolute Maximum Ratings, Operating junction temperature, Tj\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row af8d2f84af06\"\nnote       = \"Junction temperature, not ambient. TJ = TA + P x RthJA (RthJA DS p.6, 92.3 degC/W). The module must check the dissipation.\"\nunchecked  = \"TJ rating; needs dissipation; owner: module\""
 
 [row.tstg_abs]
 state = "MACHINE_CHECKED"
@@ -382,14 +372,13 @@ render_key = "bc8bd15cce1be62d"
 text_snippet = "(no text-layer line located)"
 
 [row.rec_vs]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table '5.3 Recommended Operating Conditions'): symbol 'VS' not found as a table row; text check: UNSURE row uses convention 'min_ref'"
 hash = "adfafd30424dacd37d0436ebccca5c1c4230c49291673a4874ebccb292fbfe8e"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row adfafd30424d"
 stamp_hash = "adfafd30424dacd37d0436ebccca5c1c4230c49291673a4874ebccb292fbfe8e"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "427-441"
@@ -401,7 +390,7 @@ crop_box = [54.0, 489.5, 558.0, 736.6]
 dpi = 150
 render_key = "3b240e0a0dcbf15b"
 text_snippet = "                VS to GND                                                                            3.5                            95\n Input Pins     Minimum voltage on VS pin for Short Circuit Protection                                 4                                   V"
-stamped_toml = "[param.rec_vs]\nname       = \"VS voltage to GND, operating\"\nsymbol     = \"VS\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = 3.5\nmax        = 95\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"Recommended operating, to GND\"\ncite       = \"DS p.5, 5.3 Recommended Operating Conditions, Input Pins, VS to GND\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Same span as the electrical row vs_op (DS p.6, 5.5 Supply voltage, VS 3.5 to 95 V). Checked here once.\"\ncheck_pins = [\"VS\"]"
+stamped_toml = "[param.rec_vs]\nname       = \"VS voltage to GND, operating\"\nsymbol     = \"VS\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = 3.5\nmax        = 95\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"Recommended operating, to GND\"\ncite       = \"DS p.5, 5.3 Recommended Operating Conditions, Input Pins, VS to GND\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row adfafd30424d\"\nnote       = \"Same span as the electrical row vs_op (DS p.6, 5.5 Supply voltage, VS 3.5 to 95 V). Checked here once.\"\ncheck_pins = [\"VS\"]"
 
 [row.rec_vs_scp_min]
 state = "MACHINE_CHECKED"
@@ -444,14 +433,13 @@ render_key = "f01e2e49d109e76d"
 text_snippet = "(no text-layer line located)"
 
 [row.rec_en_inp_cs_sel]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table '5.3 Recommended Operating Conditions'): symbol 'EN/UVLO, INP, CS_SEL' not found as a table row; text check: UNSURE row uses convention 'min_ref'"
 hash = "848b1e834c6655ba07095228decbf3ae13059afdda81f89a94b04466b17fd70f"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row 848b1e834c66"
 stamp_hash = "848b1e834c6655ba07095228decbf3ae13059afdda81f89a94b04466b17fd70f"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "469-483"
@@ -463,17 +451,16 @@ crop_box = [54.0, 489.5, 558.0, 736.6]
 dpi = 150
 render_key = "3b240e0a0dcbf15b"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.rec_en_inp_cs_sel]\nname       = \"EN/UVLO, INP, CS_SEL voltage to GND, operating\"\nsymbol     = \"EN/UVLO, INP, CS_SEL\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = 0\nmax        = 65\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"Recommended operating, to GND\"\ncite       = \"DS p.5, 5.3 Recommended Operating Conditions, Input Pins, EN/UVLO, INP, CS_SEL to GND\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Reference GND from the row title.\"\ncheck_pins = [\"EN/UVLO\", \"INP\", \"CS_SEL\"]"
+stamped_toml = "[param.rec_en_inp_cs_sel]\nname       = \"EN/UVLO, INP, CS_SEL voltage to GND, operating\"\nsymbol     = \"EN/UVLO, INP, CS_SEL\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = 0\nmax        = 65\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"Recommended operating, to GND\"\ncite       = \"DS p.5, 5.3 Recommended Operating Conditions, Input Pins, EN/UVLO, INP, CS_SEL to GND\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row 848b1e834c66\"\nnote       = \"Reference GND from the row title.\"\ncheck_pins = [\"EN/UVLO\", \"INP\", \"CS_SEL\"]"
 
 [row.rec_flt]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table '5.3 Recommended Operating Conditions'): symbol 'FLT' not found as a table row; text check: UNSURE row uses convention 'min_ref'"
 hash = "d8ec42ad7f9ac47565a56425face29de6042e0d3d853878032e3de4dbab13c51"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row d8ec42ad7f9a"
 stamp_hash = "d8ec42ad7f9ac47565a56425face29de6042e0d3d853878032e3de4dbab13c51"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "485-499"
@@ -485,7 +472,7 @@ crop_box = [54.0, 489.5, 558.0, 736.6]
 dpi = 150
 render_key = "3b240e0a0dcbf15b"
 text_snippet = "                FLT to GND                                                                             0                            15     V"
-stamped_toml = "[param.rec_flt]\nname       = \"FLT voltage to GND, operating\"\nsymbol     = \"FLT\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = 0\nmax        = 15\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"Recommended operating, to GND\"\ncite       = \"DS p.5, 5.3 Recommended Operating Conditions, Output Pins, FLT to GND\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Open-drain output of the part; the pull-up rail is set by the module.\"\ncheck_pins = [\"FLT\"]  # open drain: the circuit's pull-up rail sets the high level (DS p.3 Table 4-1)"
+stamped_toml = "[param.rec_flt]\nname       = \"FLT voltage to GND, operating\"\nsymbol     = \"FLT\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = 0\nmax        = 15\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"Recommended operating, to GND\"\ncite       = \"DS p.5, 5.3 Recommended Operating Conditions, Output Pins, FLT to GND\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row d8ec42ad7f9a\"\nnote       = \"Open-drain output of the part; the pull-up rail is set by the module.\"\ncheck_pins = [\"FLT\"]  # open drain: the circuit's pull-up rail sets the high level (DS p.3 Table 4-1)"
 
 [row.rec_cap_vs_src]
 state = "NEW"
@@ -818,14 +805,13 @@ header_key = "2488ad8e8c0a8d66"
 text_snippet = "TJ = \u201340 \u2103 to +150\u2103. V(VS) = 48 V, V(BST \u2013 SRC) = 11 V\n                             PARAMETER                                         TEST CONDITIONS                        MIN        TYP       MAX     UNIT\n    SUPPLY VOLTAGE\n                           I(VS) leakage current during Reverse\n    I(REV)                                                            0 V \u2264 V(VS) \u2264 \u2013 65 V                                15     22.1        38      \u00b5A\n                           Polarity"
 
 [row.v_uvlor]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "AGREE_TEXT_CHECK"
 reason = "one clean line; min/typ/max and unit equal; row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "ff24a9526c3412eae481448817be75f61e554f4172278e0731a9d20a9adf907f"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row ff24a9526c34"
 stamp_hash = "ff24a9526c3412eae481448817be75f61e554f4172278e0731a9d20a9adf907f"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 6
 pdf_page = 6
 toml_lines = "706-717"
@@ -842,7 +828,7 @@ header_box = [50.7, 240.5, 552.8, 305.3]
 header_key = "2488ad8e8c0a8d66"
 text_snippet = "TJ = \u201340 \u2103 to +150\u2103. V(VS) = 48 V, V(BST \u2013 SRC) = 11 V\n                             PARAMETER                                         TEST CONDITIONS                        MIN        TYP       MAX     UNIT\n    SUPPLY VOLTAGE\n    V(UVLOR)               UVLO threshold voltage, rising                                                             1.17       1.23      1.29       V"
 text_cells = { max = "1.29", min = "1.17", typ = "1.23", unit = "V" }
-stamped_toml = "[param.v_uvlor]\nname       = \"UVLO threshold voltage, rising (EN/UVLO)\"\nsymbol     = \"V(UVLOR)\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 1.17\ntyp        = 1.23\nmax        = 1.29\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.6, 5.5 Electrical Characteristics, Enable, UVLO, V(UVLOR)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\""
+stamped_toml = "[param.v_uvlor]\nname       = \"UVLO threshold voltage, rising (EN/UVLO)\"\nsymbol     = \"V(UVLOR)\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 1.17\ntyp        = 1.23\nmax        = 1.29\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.6, 5.5 Electrical Characteristics, Enable, UVLO, V(UVLOR)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row ff24a9526c34\""
 
 [row.v_uvlof]
 state = "MACHINE_CHECKED"
@@ -1018,14 +1004,13 @@ text_snippet = "TJ = \u201340 \u2103 to +150\u2103. V(VS) = 48 V, V(BST \u2013 S
 text_cells = { max = "730", min = "", typ = "90", unit = "nA" }
 
 [row.v_ovr]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "AGREE_TEXT_CHECK"
 reason = "one clean line; min/typ/max and unit equal; row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "a6f71f4ee0da9af988dad409a3a7805c47165bb4134a56e5b65bfd756efb5b64"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row a6f71f4ee0da"
 stamp_hash = "a6f71f4ee0da9af988dad409a3a7805c47165bb4134a56e5b65bfd756efb5b64"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 6
 pdf_page = 6
 toml_lines = "804-816"
@@ -1042,7 +1027,7 @@ header_box = [50.7, 240.5, 552.8, 305.3]
 header_key = "2488ad8e8c0a8d66"
 text_snippet = "TJ = \u201340 \u2103 to +150\u2103. V(VS) = 48 V, V(BST \u2013 SRC) = 11 V\n                             PARAMETER                                         TEST CONDITIONS                        MIN        TYP       MAX     UNIT\n    SUPPLY VOLTAGE\n    V(OVR)                 Overvoltage threshold input, risIng                                                        1.17       1.23      1.28       V"
 text_cells = { max = "1.28", min = "1.17", typ = "1.23", unit = "V" }
-stamped_toml = "[param.v_ovr]\nname       = \"Overvoltage threshold input, rising (OV)\"\nsymbol     = \"V(OVR)\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 1.17\ntyp        = 1.23\nmax        = 1.28\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.6, 5.5 Electrical Characteristics, Overvoltage Protection, V(OVR)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"The design example text (DS p.24) uses V(OVR) = 1.225 V; that value is not in this row (see the decision log).\""
+stamped_toml = "[param.v_ovr]\nname       = \"Overvoltage threshold input, rising (OV)\"\nsymbol     = \"V(OVR)\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 1.17\ntyp        = 1.23\nmax        = 1.28\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.6, 5.5 Electrical Characteristics, Overvoltage Protection, V(OVR)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row a6f71f4ee0da\"\nnote       = \"The design example text (DS p.24) uses V(OVR) = 1.225 V; that value is not in this row (see the decision log).\""
 
 [row.v_ovf]
 state = "MACHINE_CHECKED"
@@ -1099,14 +1084,13 @@ text_cells = { max = "205", min = "", typ = "86", unit = "nA" }
 stamped_toml = "[param.i_ov]\nname       = \"OV input leakage current\"\nsymbol     = \"I(OV)\"\nkind       = \"electrical\"\nscope      = \"full\"\ntyp        = 86\nmax        = 205\nunit       = \"nA\"\nconditions = \"\"\ncite       = \"DS p.6, 5.5 Electrical Characteristics, Overvoltage Protection, I(OV)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed TYP 86, MAX 205 nA; no MIN.\""
 
 [row.i_bst]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "adjacent line without its own symbol (multi-line name/conditions or sub-row); row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "d487d326072baebe2f48812c1618b5521e816de5717de4abe173aae1295df80e"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row d487d326072b"
 stamp_hash = "d487d326072baebe2f48812c1618b5521e816de5717de4abe173aae1295df80e"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 6
 pdf_page = 6
 toml_lines = "846-858"
@@ -1123,17 +1107,16 @@ header_box = [50.7, 240.5, 552.8, 305.3]
 header_key = "2488ad8e8c0a8d66"
 text_snippet = "TJ = \u201340 \u2103 to +150\u2103. V(VS) = 48 V, V(BST \u2013 SRC) = 11 V\n                             PARAMETER                                         TEST CONDITIONS                        MIN        TYP       MAX     UNIT\n    SUPPLY VOLTAGE\n    I(BST)                 Charge Pump Supply current                 V(BST \u2013 SRC) = 10 V, V(EN/UVLO) = 2 V            100       345        555      \u00b5A"
 text_cells = { max = "555", min = "100", typ = "345", unit = "\u00b5A" }
-stamped_toml = "[param.i_bst]\nname       = \"Charge pump supply current\"\nsymbol     = \"I(BST)\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 100\ntyp        = 345\nmax        = 555\nunit       = \"uA\"\nconditions = \"V(BST-SRC) = 10 V, V(EN/UVLO) = 2 V\"\ncite       = \"DS p.6, 5.5 Electrical Characteristics, Charge Pump, I(BST)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Used by the bootstrap delay equation (DS p.14 eq. 1; DS p.14 text quotes 345 uA).\""
+stamped_toml = "[param.i_bst]\nname       = \"Charge pump supply current\"\nsymbol     = \"I(BST)\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 100\ntyp        = 345\nmax        = 555\nunit       = \"uA\"\nconditions = \"V(BST-SRC) = 10 V, V(EN/UVLO) = 2 V\"\ncite       = \"DS p.6, 5.5 Electrical Characteristics, Charge Pump, I(BST)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row d487d326072b\"\nnote       = \"Used by the bootstrap delay equation (DS p.14 eq. 1; DS p.14 text quotes 345 uA).\""
 
 [row.v_bst_uvlor]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "adjacent line without its own symbol (multi-line name/conditions or sub-row); row found by symbol (table_xcheck match), row group of 3 lines; no footnote marker on the row or header"
 hash = "8c3d5234eb792d065c216ee053f848193c97a925705a6df7d3cb9d3cd665b8f1"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row 8c3d5234eb79"
 stamp_hash = "8c3d5234eb792d065c216ee053f848193c97a925705a6df7d3cb9d3cd665b8f1"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 6
 pdf_page = 6
 toml_lines = "860-872"
@@ -1149,7 +1132,7 @@ header_sha256 = "e2c4a062672940483790c090252b8f9d104319f68919d932400020385fbafe2
 header_box = [50.7, 240.5, 552.8, 305.3]
 header_key = "2488ad8e8c0a8d66"
 text_snippet = "TJ = \u201340 \u2103 to +150\u2103. V(VS) = 48 V, V(BST \u2013 SRC) = 11 V\n                             PARAMETER                                         TEST CONDITIONS                        MIN        TYP       MAX     UNIT\n    SUPPLY VOLTAGE\n                           V(BST \u2013 SRC) UVLO voltage threshold,\n    V(BST_UVLOR)                                                      V(EN/UVLO) = 2 V                                7.19          9     10.81       V\n    V(S_PORR)              Input supply POR threshold, rising                                                          1.7        2.5      3.34       V"
-stamped_toml = "[param.v_bst_uvlor]\nname       = \"V(BST-SRC) UVLO threshold voltage, rising\"\nsymbol     = \"V(BST_UVLOR)\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 7.19\ntyp        = 9\nmax        = 10.81\nunit       = \"V\"\nconditions = \"V(EN/UVLO) = 2 V\"\ncite       = \"DS p.6, 5.5 Electrical Characteristics, Charge Pump, V(BST_UVLOR)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"DS p.14 text: 'V(BST_UVLOR) = 10.81 V (max)' is used in eq. 1.\""
+stamped_toml = "[param.v_bst_uvlor]\nname       = \"V(BST-SRC) UVLO threshold voltage, rising\"\nsymbol     = \"V(BST_UVLOR)\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 7.19\ntyp        = 9\nmax        = 10.81\nunit       = \"V\"\nconditions = \"V(EN/UVLO) = 2 V\"\ncite       = \"DS p.6, 5.5 Electrical Characteristics, Charge Pump, V(BST_UVLOR)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row 8c3d5234eb79\"\nnote       = \"DS p.14 text: 'V(BST_UVLOR) = 10.81 V (max)' is used in eq. 1.\""
 
 [row.v_bst_uvlof]
 state = "NEW"
@@ -1524,14 +1507,13 @@ render_key = "999085d6e28952ca"
 text_snippet = " V(SCP)                SCP threshold                           R(ISCP) = 10.5 k\u2126                        31.1       40     48.9   mV\n V(SCP)\n                       Hard Short-circuit protection           V(CS+\u2013CS\u2013)\u2191 V(SCP) to PD \u2193, CL = 47"
 
 [row.i_tmr_src_cb]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "AGREE_TEXT_CHECK"
 reason = "one clean line; min/typ/max and unit equal; row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "b15c098c04bd46472f06f7bc710be88b40f31099dae05649a3ade1e3f9eeea43"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row b15c098c04bd"
 stamp_hash = "b15c098c04bd46472f06f7bc710be88b40f31099dae05649a3ade1e3f9eeea43"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 7
 pdf_page = 7
 toml_lines = "1092-1104"
@@ -1548,7 +1530,7 @@ header_box = [50.7, 67.6, 552.8, 116.7]
 header_key = "ac0d23f0202a254e"
 text_snippet = "TJ = \u201340 \u2103 to +150\u2103. V(VS) = 48 V, V(BST \u2013 SRC) = 11 V\n                         PARAMETER                                      TEST CONDITIONS                  MIN     TYP     MAX     UNIT\n I(TMR_SRC_CB)         TMR source current                                                                 65       87     106    \u00b5A"
 text_cells = { max = "106", min = "65", typ = "87", unit = "\u00b5A" }
-stamped_toml = "[param.i_tmr_src_cb]\nname       = \"TMR source current, circuit breaker (charge) pull-up\"\nsymbol     = \"I(TMR_SRC_CB)\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 65\ntyp        = 87\nmax        = 106\nunit       = \"uA\"\nconditions = \"\"\ncite       = \"DS p.7, 5.5 Electrical Characteristics, Delay Timer (TMR), I(TMR_SRC_CB)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"DS p.19 eq. 8 and DS p.25 design eq. 11 use I(TMR_SRC_CB). Typ 87 uA is the value eq. 11 prints (see the decision log).\""
+stamped_toml = "[param.i_tmr_src_cb]\nname       = \"TMR source current, circuit breaker (charge) pull-up\"\nsymbol     = \"I(TMR_SRC_CB)\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 65\ntyp        = 87\nmax        = 106\nunit       = \"uA\"\nconditions = \"\"\ncite       = \"DS p.7, 5.5 Electrical Characteristics, Delay Timer (TMR), I(TMR_SRC_CB)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row b15c098c04bd\"\nnote       = \"DS p.19 eq. 8 and DS p.25 design eq. 11 use I(TMR_SRC_CB). Typ 87 uA is the value eq. 11 prints (see the decision log).\""
 
 [row.i_tmr_src_flt]
 state = "NEW"
@@ -1597,14 +1579,13 @@ text_snippet = "TJ = \u201340 \u2103 to +150\u2103. V(VS) = 48 V, V(BST \u2013 S
 text_cells = { max = "3.43", min = "2.14", typ = "2.8", unit = "\u00b5A" }
 
 [row.v_tmr_sc]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "AGREE_TEXT_CHECK"
 reason = "one clean line; min/typ/max and unit equal; row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "c41b4ec8cdca8e6c8191f6a92f7ba84969462fb8b5eef433bdd103a387eb9f01"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row c41b4ec8cdca"
 stamp_hash = "c41b4ec8cdca8e6c8191f6a92f7ba84969462fb8b5eef433bdd103a387eb9f01"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
-baseline = true
 printed_page = 7
 pdf_page = 7
 toml_lines = "1130-1141"
@@ -1621,7 +1602,7 @@ header_box = [50.7, 67.6, 552.8, 116.7]
 header_key = "ac0d23f0202a254e"
 text_snippet = "TJ = \u201340 \u2103 to +150\u2103. V(VS) = 48 V, V(BST \u2013 SRC) = 11 V\n                         PARAMETER                                      TEST CONDITIONS                  MIN     TYP     MAX     UNIT\n V(TMR_SC)             TMR input clamp level                                                            0.87      1.1     1.26      V"
 text_cells = { max = "1.26", min = "0.87", typ = "1.1", unit = "V" }
-stamped_toml = "[param.v_tmr_sc]\nname       = \"TMR input clamp level\"\nsymbol     = \"V(TMR_SC)\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 0.87\ntyp        = 1.1\nmax        = 1.26\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.7, 5.5 Electrical Characteristics, Delay Timer (TMR), V(TMR_SC)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\""
+stamped_toml = "[param.v_tmr_sc]\nname       = \"TMR input clamp level\"\nsymbol     = \"V(TMR_SC)\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 0.87\ntyp        = 1.1\nmax        = 1.26\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.7, 5.5 Electrical Characteristics, Delay Timer (TMR), V(TMR_SC)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row c41b4ec8cdca\""
 
 [row.v_tmr_low]
 state = "NEW"

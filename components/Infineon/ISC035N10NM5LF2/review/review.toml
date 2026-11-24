@@ -11,7 +11,7 @@ datasheet_rev = "Revision 2.3"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
 pages = 16
 text_layer = true
-component_sha256 = "13fce3f7a9780199374fbc8b3632b5e88d1a353f56e82df2b5f6ab2d18815c82"
+component_sha256 = "9b25fca143bb760df8f2fb03ed49646bdce6cd727434ede04d3298d5591583fd"
 render = "complete"
 backfill = "git blame"
 sheets = { "infineon-isc035n10nm5lf2-datasheet-en.pdf" = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94" }
@@ -30,14 +30,13 @@ dpi = 200
 render_key = "61a05b661adab4ca"
 
 [row.vds_rating]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'VDS' not found as a table row; text check: UNSURE row uses convention 'max_ref'"
 hash = "5e489e72c156e7a14e0d7dbcff2c14c8d544e45a9f10bfde6d120c4a0258fc3d"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 5e489e72c156"
 stamp_hash = "5e489e72c156e7a14e0d7dbcff2c14c8d544e45a9f10bfde6d120c4a0258fc3d"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
-baseline = true
 printed_page = 1
 pdf_page = 1
 toml_lines = "92-104"
@@ -49,7 +48,7 @@ crop_box = "full_page"
 dpi = 200
 render_key = "61a05b661adab4ca"
 text_snippet = "    VDS                      100                          V"
-stamped_toml = "[param.vds_rating]\nname       = \"Drain-source voltage rating\"\nsymbol     = \"VDS\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmax        = 100\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.1, Table 1 Key performance parameters, VDS\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Not a row of the Maximum ratings table (DS p.3). The DS gives no temperature for it. The guaranteed minimum breakdown voltage is V(BR)DSS = 100 V at 25 degC (vbr_dss, DS p.5 Table 4). Printed with no MIN/TYP/MAX label: stored as max. Only the upper bound is checked.\"\ncheck_pins = [\"D\"]\nmax_ref    = \"S\""
+stamped_toml = "[param.vds_rating]\nname       = \"Drain-source voltage rating\"\nsymbol     = \"VDS\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmax        = 100\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.1, Table 1 Key performance parameters, VDS\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 5e489e72c156\"\nnote       = \"Not a row of the Maximum ratings table (DS p.3). The DS gives no temperature for it. The guaranteed minimum breakdown voltage is V(BR)DSS = 100 V at 25 degC (vbr_dss, DS p.5 Table 4). Printed with no MIN/TYP/MAX label: stored as max. Only the upper bound is checked.\"\ncheck_pins = [\"D\"]\nmax_ref    = \"S\""
 
 [row.id_tc25]
 state = "NEW"
@@ -88,14 +87,13 @@ render_key = "e53f328fd0dd2a28"
 text_snippet = " Continuous drain current 1)                   ID           \u2011          \u2011          116         A    VGS=10 V, TC=100 \u00b0C"
 
 [row.id_pcb]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'Maximum ratings'): symbol 'ID' not found as a table row; cite row label matches 3 lines; text check: UNSURE symbol not found as the first/Symbol-column word of any table line"
 hash = "adcb5b0355ec8fd7fa62917033835de41dc63b786730782dbb450fe4270263b6"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row adcb5b0355ec"
 stamp_hash = "adcb5b0355ec8fd7fa62917033835de41dc63b786730782dbb450fe4270263b6"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
-baseline = true
 printed_page = 3
 pdf_page = 3
 toml_lines = "129-140"
@@ -107,17 +105,16 @@ crop_box = [37.5, 127.7, 560.1, 782.9]
 dpi = 150
 render_key = "e53f328fd0dd2a28"
 text_snippet = " Continuous drain current 1)                   ID           \u2011          \u2011          116         A    VGS=10 V, TC=100 \u00b0C"
-stamped_toml = "[param.id_pcb]\nname       = \"Continuous drain current, PCB-limited\"\nsymbol     = \"ID\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmax        = 19\nunit       = \"A\"\nconditions = \"VGS = 10 V, TA = 25 degC, RthJA = 50 degC/W\"\ncite       = \"DS p.3, Table 2 Maximum ratings, Continuous drain current ID (row 3), footnote 2\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Footnote 2: 40 x 40 x 1.5 mm FR4 PCB with 6 cm2 drain copper, vertical in still air. Printed RthJA 50 degC/W is the PCB value.\"\nunchecked  = \"not a voltage; owner: module\""
+stamped_toml = "[param.id_pcb]\nname       = \"Continuous drain current, PCB-limited\"\nsymbol     = \"ID\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmax        = 19\nunit       = \"A\"\nconditions = \"VGS = 10 V, TA = 25 degC, RthJA = 50 degC/W\"\ncite       = \"DS p.3, Table 2 Maximum ratings, Continuous drain current ID (row 3), footnote 2\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row adcb5b0355ec\"\nnote       = \"Footnote 2: 40 x 40 x 1.5 mm FR4 PCB with 6 cm2 drain copper, vertical in still air. Printed RthJA 50 degC/W is the PCB value.\"\nunchecked  = \"not a voltage; owner: module\""
 
 [row.id_pulse]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'Maximum ratings'): symbol 'ID,pulse' not found as a table row; text check: UNSURE symbol not found as the first/Symbol-column word of any table line"
 hash = "7fcf7ce936edbdd3686c68b014df1baaacff2053104cde93365ea37a5ce09290"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 7fcf7ce936ed"
 stamp_hash = "7fcf7ce936edbdd3686c68b014df1baaacff2053104cde93365ea37a5ce09290"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
-baseline = true
 printed_page = 3
 pdf_page = 3
 toml_lines = "142-153"
@@ -129,7 +126,7 @@ crop_box = [37.5, 127.7, 560.1, 782.9]
 dpi = 150
 render_key = "e53f328fd0dd2a28"
 text_snippet = " Pulsed drain current 3)                       ID,pulse     \u2011          \u2011          656         A    TA=25 \u00b0C"
-stamped_toml = "[param.id_pulse]\nname       = \"Pulsed drain current\"\nsymbol     = \"ID,pulse\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmax        = 656\nunit       = \"A\"\nconditions = \"TA = 25 degC\"\ncite       = \"DS p.3, Table 2 Maximum ratings, Pulsed drain current ID,pulse (footnote 3: Diagrams 3 and 4)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"The pulsed rating is the SOA ceiling: the Diagram 3 and 4 curve rows (soa_tc25_*, soa_tc125_*) give the limit per pulse width and VDS.\"\nunchecked  = \"not a voltage; owner: module\""
+stamped_toml = "[param.id_pulse]\nname       = \"Pulsed drain current\"\nsymbol     = \"ID,pulse\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmax        = 656\nunit       = \"A\"\nconditions = \"TA = 25 degC\"\ncite       = \"DS p.3, Table 2 Maximum ratings, Pulsed drain current ID,pulse (footnote 3: Diagrams 3 and 4)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 7fcf7ce936ed\"\nnote       = \"The pulsed rating is the SOA ceiling: the Diagram 3 and 4 curve rows (soa_tc25_*, soa_tc125_*) give the limit per pulse width and VDS.\"\nunchecked  = \"not a voltage; owner: module\""
 
 [row.id_lin_50v_10ms]
 state = "NEW"
@@ -2044,14 +2041,13 @@ render_key = "b0ce74eb7104271d"
 text_snippet = "  IF [A]                                                                            IAV [A]        101                               150 \u00b0C"
 
 [row.vgs]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'Maximum ratings'): symbol 'VGS' not found as a table row; text check: UNSURE row uses convention 'min_ref'"
 hash = "06510cdcc5b7fa3701ebf2a8206f2191a7c6535efc59e2f6c3a0d370b98b6a96"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 06510cdcc5b7"
 stamp_hash = "06510cdcc5b7fa3701ebf2a8206f2191a7c6535efc59e2f6c3a0d370b98b6a96"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
-baseline = true
 printed_page = 3
 pdf_page = 3
 toml_lines = "1431-1445"
@@ -2063,7 +2059,7 @@ crop_box = [37.5, 127.7, 560.1, 782.9]
 dpi = 150
 render_key = "e53f328fd0dd2a28"
 text_snippet = " Gate source voltage                           VGS          \u201120        \u2011          20          V    \u2011"
-stamped_toml = "[param.vgs]\nname       = \"Gate-source voltage\"\nsymbol     = \"VGS\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -20\nmax        = 20\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.3, Table 2 Maximum ratings, Gate source voltage VGS\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"No reference pin printed; applied as gate to source (pin-pair row, S is the reference).\"\ncheck_pins = [\"G\"]\nmin_ref    = \"S\"\nmax_ref    = \"S\""
+stamped_toml = "[param.vgs]\nname       = \"Gate-source voltage\"\nsymbol     = \"VGS\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -20\nmax        = 20\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.3, Table 2 Maximum ratings, Gate source voltage VGS\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 06510cdcc5b7\"\nnote       = \"No reference pin printed; applied as gate to source (pin-pair row, S is the reference).\"\ncheck_pins = [\"G\"]\nmin_ref    = \"S\"\nmax_ref    = \"S\""
 
 [row.ptot_tc25]
 state = "NEW"
@@ -2084,14 +2080,13 @@ render_key = "e53f328fd0dd2a28"
 text_snippet = " Power dissipation                             Ptot         \u2011          \u2011                      W"
 
 [row.ptot_pcb]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'Maximum ratings'): symbol 'Ptot' not found as a table row; cite row label matches 2 lines; text check: UNSURE symbol not found as the first/Symbol-column word of any table line"
 hash = "f65fd8b1da0ea083e7ce61a8dfc4519a521054cd94a1eae51f8a7c6a6b58ddcc"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row f65fd8b1da0e"
 stamp_hash = "f65fd8b1da0ea083e7ce61a8dfc4519a521054cd94a1eae51f8a7c6a6b58ddcc"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
-baseline = true
 printed_page = 3
 pdf_page = 3
 toml_lines = "1459-1469"
@@ -2103,17 +2098,16 @@ crop_box = [37.5, 127.7, 560.1, 782.9]
 dpi = 150
 render_key = "e53f328fd0dd2a28"
 text_snippet = " Power dissipation                             Ptot         \u2011          \u2011                      W"
-stamped_toml = "[param.ptot_pcb]\nname       = \"Power dissipation, PCB-limited\"\nsymbol     = \"Ptot\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmax        = 3\nunit       = \"W\"\nconditions = \"TA = 25 degC, RthJA = 50 degC/W\"\ncite       = \"DS p.3, Table 2 Maximum ratings, Power dissipation Ptot (row 2), footnote 2\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nunchecked  = \"not a voltage; owner: module\""
+stamped_toml = "[param.ptot_pcb]\nname       = \"Power dissipation, PCB-limited\"\nsymbol     = \"Ptot\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmax        = 3\nunit       = \"W\"\nconditions = \"TA = 25 degC, RthJA = 50 degC/W\"\ncite       = \"DS p.3, Table 2 Maximum ratings, Power dissipation Ptot (row 2), footnote 2\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row f65fd8b1da0e\"\nunchecked  = \"not a voltage; owner: module\""
 
 [row.tj_tstg]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'Maximum ratings'): symbol 'Tj,Tstg' not found as a table row; text check: UNSURE symbol not found as the first/Symbol-column word of any table line"
 hash = "56f704e6f617d70e8d8756612a7657189dfd77dc71db23e6af9429e9e57efd87"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 56f704e6f617"
 stamp_hash = "56f704e6f617d70e8d8756612a7657189dfd77dc71db23e6af9429e9e57efd87"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
-baseline = true
 printed_page = 3
 pdf_page = 3
 toml_lines = "1471-1483"
@@ -2125,17 +2119,16 @@ crop_box = [37.5, 127.7, 560.1, 782.9]
 dpi = 150
 render_key = "e53f328fd0dd2a28"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.tj_tstg]\nname       = \"Operating and storage temperature Tj, Tstg\"\nsymbol     = \"Tj,Tstg\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -55\nmax        = 175\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.3, Table 2 Maximum ratings, Operating and storage temperature Tj, Tstg\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Junction range (Tj); the storage part of the row is assembly-owned (see the unchecked reason).\"\nunchecked  = \"TJ: needs dissipation x RthJA; owner: module (Tstg part: owner: assembly)\""
+stamped_toml = "[param.tj_tstg]\nname       = \"Operating and storage temperature Tj, Tstg\"\nsymbol     = \"Tj,Tstg\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -55\nmax        = 175\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.3, Table 2 Maximum ratings, Operating and storage temperature Tj, Tstg\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 56f704e6f617\"\nnote       = \"Junction range (Tj); the storage part of the row is assembly-owned (see the unchecked reason).\"\nunchecked  = \"TJ: needs dissipation x RthJA; owner: module (Tstg part: owner: assembly)\""
 
 [row.rth_jc_bottom]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'Thermal characteristics'): symbol 'RthJC' not found as a table row; text check: UNSURE symbol not found as the first/Symbol-column word of any table line"
 hash = "89ad5c647aab71b0f091583e4d201edd5b91afabc56e5c2f1b800c00aae6488b"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 89ad5c647aab"
 stamp_hash = "89ad5c647aab71b0f091583e4d201edd5b91afabc56e5c2f1b800c00aae6488b"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
-baseline = true
 printed_page = 4
 pdf_page = 4
 toml_lines = "1489-1499"
@@ -2147,7 +2140,7 @@ crop_box = [37.5, 116.5, 557.8, 782.9]
 dpi = 150
 render_key = "0514f7788e680e60"
 text_snippet = "                                      RthJC                                     0.7\n                                      RthJC                                     20"
-stamped_toml = "[param.rth_jc_bottom]\nname       = \"Thermal resistance, junction to case, bottom\"\nsymbol     = \"RthJC\"\nkind       = \"thermal\"\nscope      = \"na\"\nmax        = 0.7\nunit       = \"degC/W\"\nconditions = \"\"\ncite       = \"DS p.4, Table 3 Thermal characteristics, Thermal resistance junction-case, bottom\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Only a max is printed; the Min/Typ columns are '-'.\""
+stamped_toml = "[param.rth_jc_bottom]\nname       = \"Thermal resistance, junction to case, bottom\"\nsymbol     = \"RthJC\"\nkind       = \"thermal\"\nscope      = \"na\"\nmax        = 0.7\nunit       = \"degC/W\"\nconditions = \"\"\ncite       = \"DS p.4, Table 3 Thermal characteristics, Thermal resistance junction-case, bottom\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 89ad5c647aab\"\nnote       = \"Only a max is printed; the Min/Typ columns are '-'.\""
 
 [row.rth_jc_top]
 state = "NEW"
@@ -2168,14 +2161,13 @@ render_key = "0514f7788e680e60"
 text_snippet = "                                      RthJC                                     0.7\n                                      RthJC                                     20"
 
 [row.rth_ja]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'Thermal characteristics'): symbol 'RthJA' not found as a table row; text check: UNSURE symbol not found as the first/Symbol-column word of any table line"
 hash = "20c6bc89e073d8a0fd776707581cf25b47a712463cedb6d4cba2c7a7a59dc7a6"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 20c6bc89e073"
 stamp_hash = "20c6bc89e073d8a0fd776707581cf25b47a712463cedb6d4cba2c7a7a59dc7a6"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
-baseline = true
 printed_page = 4
 pdf_page = 4
 toml_lines = "1512-1522"
@@ -2187,17 +2179,16 @@ crop_box = [37.5, 116.5, 557.8, 782.9]
 dpi = 150
 render_key = "0514f7788e680e60"
 text_snippet = " ambient,                                     RthJA                             50"
-stamped_toml = "[param.rth_ja]\nname       = \"Thermal resistance, junction to ambient, 6 cm2 cooling area\"\nsymbol     = \"RthJA\"\nkind       = \"thermal\"\nscope      = \"na\"\nmax        = 50\nunit       = \"degC/W\"\nconditions = \"6 cm2 cooling area\"\ncite       = \"DS p.4, Table 3 Thermal characteristics, Thermal resistance junction-ambient, 6 cm2 cooling area (RthJA), footnote 5\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Valid only for the DS PCB (footnote 5).\""
+stamped_toml = "[param.rth_ja]\nname       = \"Thermal resistance, junction to ambient, 6 cm2 cooling area\"\nsymbol     = \"RthJA\"\nkind       = \"thermal\"\nscope      = \"na\"\nmax        = 50\nunit       = \"degC/W\"\nconditions = \"6 cm2 cooling area\"\ncite       = \"DS p.4, Table 3 Thermal characteristics, Thermal resistance junction-ambient, 6 cm2 cooling area (RthJA), footnote 5\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 20c6bc89e073\"\nnote       = \"Valid only for the DS PCB (footnote 5).\""
 
 [row.zthjc_single_10us]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'ZthJC' not found as a table row; text check: UNSURE row uses convention 'curve'"
 hash = "db2fe19d9d5db3383ae7e1aff50e222fc8a1353195eabc84316469d24f19afdb"
-stamp = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row db2fe19d9d5d"
 stamp_hash = "db2fe19d9d5db3383ae7e1aff50e222fc8a1353195eabc84316469d24f19afdb"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
-baseline = true
 printed_page = 8
 pdf_page = 8
 toml_lines = "1524-1536"
@@ -2209,17 +2200,16 @@ crop_box = "full_page"
 dpi = 200
 render_key = "02d9f8f9375797d1"
 text_snippet = "  ZthJC [K/W]"
-stamped_toml = "[param.zthjc_single_10us]\nname       = \"Max. transient thermal impedance, junction to case, single pulse, tp = 10 us (curve)\"\nsymbol     = \"ZthJC\"\nkind       = \"thermal\"\nscope      = \"na\"\ntyp        = 0.0121\nunit       = \"degC/W\"\nconditions = \"single pulse (solid line), tp = 10 us, D = tp/T; printed K/W, same number in degC/W\"\ncite       = \"DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %\"\ncurve      = true\nnote       = \"Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound.\"\nunchecked  = \"curve read off Diagram 5, not a voltage; owner: module\""
+stamped_toml = "[param.zthjc_single_10us]\nname       = \"Max. transient thermal impedance, junction to case, single pulse, tp = 10 us (curve)\"\nsymbol     = \"ZthJC\"\nkind       = \"thermal\"\nscope      = \"na\"\ntyp        = 0.0121\nunit       = \"degC/W\"\nconditions = \"single pulse (solid line), tp = 10 us, D = tp/T; printed K/W, same number in degC/W\"\ncite       = \"DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row db2fe19d9d5d\"\ncurve      = true\nnote       = \"Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound.\"\nunchecked  = \"curve read off Diagram 5, not a voltage; owner: module\""
 
 [row.zthjc_single_100us]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'ZthJC' not found as a table row; text check: UNSURE row uses convention 'curve'"
 hash = "2aef98efc7a0b66f32d9e638e3bef52b9067c8cb0e8eb3bd662ad7bf0cbcba5e"
-stamp = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 2aef98efc7a0"
 stamp_hash = "2aef98efc7a0b66f32d9e638e3bef52b9067c8cb0e8eb3bd662ad7bf0cbcba5e"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
-baseline = true
 printed_page = 8
 pdf_page = 8
 toml_lines = "1538-1550"
@@ -2231,17 +2221,16 @@ crop_box = "full_page"
 dpi = 200
 render_key = "02d9f8f9375797d1"
 text_snippet = "  ZthJC [K/W]"
-stamped_toml = "[param.zthjc_single_100us]\nname       = \"Max. transient thermal impedance, junction to case, single pulse, tp = 100 us (curve)\"\nsymbol     = \"ZthJC\"\nkind       = \"thermal\"\nscope      = \"na\"\ntyp        = 0.0545\nunit       = \"degC/W\"\nconditions = \"single pulse (solid line), tp = 100 us, D = tp/T; printed K/W, same number in degC/W\"\ncite       = \"DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %\"\ncurve      = true\nnote       = \"Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound.\"\nunchecked  = \"curve read off Diagram 5, not a voltage; owner: module\""
+stamped_toml = "[param.zthjc_single_100us]\nname       = \"Max. transient thermal impedance, junction to case, single pulse, tp = 100 us (curve)\"\nsymbol     = \"ZthJC\"\nkind       = \"thermal\"\nscope      = \"na\"\ntyp        = 0.0545\nunit       = \"degC/W\"\nconditions = \"single pulse (solid line), tp = 100 us, D = tp/T; printed K/W, same number in degC/W\"\ncite       = \"DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 2aef98efc7a0\"\ncurve      = true\nnote       = \"Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound.\"\nunchecked  = \"curve read off Diagram 5, not a voltage; owner: module\""
 
 [row.zthjc_single_1ms]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'ZthJC' not found as a table row; text check: UNSURE row uses convention 'curve'"
 hash = "88ead1f243f6fadfbd2b97c62e05ce3a2d0305c4f030b6b95f56c5d0058e4cef"
-stamp = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 88ead1f243f6"
 stamp_hash = "88ead1f243f6fadfbd2b97c62e05ce3a2d0305c4f030b6b95f56c5d0058e4cef"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
-baseline = true
 printed_page = 8
 pdf_page = 8
 toml_lines = "1552-1564"
@@ -2253,17 +2242,16 @@ crop_box = "full_page"
 dpi = 200
 render_key = "02d9f8f9375797d1"
 text_snippet = "  ZthJC [K/W]"
-stamped_toml = "[param.zthjc_single_1ms]\nname       = \"Max. transient thermal impedance, junction to case, single pulse, tp = 1 ms (curve)\"\nsymbol     = \"ZthJC\"\nkind       = \"thermal\"\nscope      = \"na\"\ntyp        = 0.201\nunit       = \"degC/W\"\nconditions = \"single pulse (solid line), tp = 1 ms, D = tp/T; printed K/W, same number in degC/W\"\ncite       = \"DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %\"\ncurve      = true\nnote       = \"Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound.\"\nunchecked  = \"curve read off Diagram 5, not a voltage; owner: module\""
+stamped_toml = "[param.zthjc_single_1ms]\nname       = \"Max. transient thermal impedance, junction to case, single pulse, tp = 1 ms (curve)\"\nsymbol     = \"ZthJC\"\nkind       = \"thermal\"\nscope      = \"na\"\ntyp        = 0.201\nunit       = \"degC/W\"\nconditions = \"single pulse (solid line), tp = 1 ms, D = tp/T; printed K/W, same number in degC/W\"\ncite       = \"DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 88ead1f243f6\"\ncurve      = true\nnote       = \"Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound.\"\nunchecked  = \"curve read off Diagram 5, not a voltage; owner: module\""
 
 [row.zthjc_single_10ms]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'ZthJC' not found as a table row; text check: UNSURE row uses convention 'curve'"
 hash = "6bcf89c49b6b1c185d17b1840095603f9e46e1d672c91fb528f8b71bd5f87407"
-stamp = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 6bcf89c49b6b"
 stamp_hash = "6bcf89c49b6b1c185d17b1840095603f9e46e1d672c91fb528f8b71bd5f87407"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
-baseline = true
 printed_page = 8
 pdf_page = 8
 toml_lines = "1566-1578"
@@ -2275,17 +2263,16 @@ crop_box = "full_page"
 dpi = 200
 render_key = "02d9f8f9375797d1"
 text_snippet = "  ZthJC [K/W]"
-stamped_toml = "[param.zthjc_single_10ms]\nname       = \"Max. transient thermal impedance, junction to case, single pulse, tp = 10 ms (curve)\"\nsymbol     = \"ZthJC\"\nkind       = \"thermal\"\nscope      = \"na\"\ntyp        = 0.404\nunit       = \"degC/W\"\nconditions = \"single pulse (solid line), tp = 10 ms, D = tp/T; printed K/W, same number in degC/W\"\ncite       = \"DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %\"\ncurve      = true\nnote       = \"Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound.\"\nunchecked  = \"curve read off Diagram 5, not a voltage; owner: module\""
+stamped_toml = "[param.zthjc_single_10ms]\nname       = \"Max. transient thermal impedance, junction to case, single pulse, tp = 10 ms (curve)\"\nsymbol     = \"ZthJC\"\nkind       = \"thermal\"\nscope      = \"na\"\ntyp        = 0.404\nunit       = \"degC/W\"\nconditions = \"single pulse (solid line), tp = 10 ms, D = tp/T; printed K/W, same number in degC/W\"\ncite       = \"DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 6bcf89c49b6b\"\ncurve      = true\nnote       = \"Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound.\"\nunchecked  = \"curve read off Diagram 5, not a voltage; owner: module\""
 
 [row.zthjc_single_100ms]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'ZthJC' not found as a table row; text check: UNSURE row uses convention 'curve'"
 hash = "1c1c61d29b06d2b1e2c55b061d130249393fdf14f86814407f0487758a9cb1e5"
-stamp = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 1c1c61d29b06"
 stamp_hash = "1c1c61d29b06d2b1e2c55b061d130249393fdf14f86814407f0487758a9cb1e5"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
-baseline = true
 printed_page = 8
 pdf_page = 8
 toml_lines = "1580-1592"
@@ -2297,7 +2284,7 @@ crop_box = "full_page"
 dpi = 200
 render_key = "02d9f8f9375797d1"
 text_snippet = "  ZthJC [K/W]"
-stamped_toml = "[param.zthjc_single_100ms]\nname       = \"Max. transient thermal impedance, junction to case, single pulse, tp = 100 ms (curve)\"\nsymbol     = \"ZthJC\"\nkind       = \"thermal\"\nscope      = \"na\"\ntyp        = 0.676\nunit       = \"degC/W\"\nconditions = \"single pulse (solid line), tp = 100 ms, D = tp/T; printed K/W, same number in degC/W\"\ncite       = \"DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %\"\ncurve      = true\nnote       = \"Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound. Sanity: the trace reaches about 0.68 degC/W at 100 ms, against the 0.7 degC/W RthJC max (rth_jc_bottom).\"\nunchecked  = \"curve read off Diagram 5, not a voltage; owner: module\""
+stamped_toml = "[param.zthjc_single_100ms]\nname       = \"Max. transient thermal impedance, junction to case, single pulse, tp = 100 ms (curve)\"\nsymbol     = \"ZthJC\"\nkind       = \"thermal\"\nscope      = \"na\"\ntyp        = 0.676\nunit       = \"degC/W\"\nconditions = \"single pulse (solid line), tp = 100 ms, D = tp/T; printed K/W, same number in degC/W\"\ncite       = \"DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 1c1c61d29b06\"\ncurve      = true\nnote       = \"Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound. Sanity: the trace reaches about 0.68 degC/W at 100 ms, against the 0.7 degC/W RthJC max (rth_jc_bottom).\"\nunchecked  = \"curve read off Diagram 5, not a voltage; owner: module\""
 
 [row.vbr_dss]
 state = "MACHINE_CHECKED"
@@ -2402,14 +2389,13 @@ render_key = "3ea3d7c01fadf92b"
 text_snippet = " Gate\u2011source leakage current                     IGSS       \u2011          10         100        nA VGS=20 V, VDS=0 V"
 
 [row.rds_on_10v]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'Static characteristics'): symbol 'RDS(on)' not found as a table row; text check: UNSURE symbol not found as the first/Symbol-column word of any table line"
 hash = "90269e837d0fabd27dcba423047cdca0b6b937581f60e1a53261ae20cd697508"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 90269e837d0f"
 stamp_hash = "90269e837d0fabd27dcba423047cdca0b6b937581f60e1a53261ae20cd697508"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "1656-1667"
@@ -2421,7 +2407,7 @@ crop_box = [37.5, 127.7, 557.8, 187.0]
 dpi = 150
 render_key = "3ea3d7c01fadf92b"
 text_snippet = " Drain\u2011source on\u2011state resistance                RDS(on)    \u2011          3.0        3.5        m\u2126 VGS=10 V, ID=50 A"
-stamped_toml = "[param.rds_on_10v]\nname       = \"Drain-source on-state resistance, VGS = 10 V\"\nsymbol     = \"RDS(on)\"\nkind       = \"electrical\"\nscope      = \"25C\"\ntyp        = 3.0\nmax        = 3.5\nunit       = \"mohm\"\nconditions = \"VGS = 10 V, ID = 50 A\"\ncite       = \"DS p.5, Table 4 Static characteristics, Drain-source on-state resistance RDS(on)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Table 1 prints RDS(on),max 3.5 mohm (DS p.1), same value. Tj = 25 degC only: no RDS(on) row over temperature (open item, see calc.py).\""
+stamped_toml = "[param.rds_on_10v]\nname       = \"Drain-source on-state resistance, VGS = 10 V\"\nsymbol     = \"RDS(on)\"\nkind       = \"electrical\"\nscope      = \"25C\"\ntyp        = 3.0\nmax        = 3.5\nunit       = \"mohm\"\nconditions = \"VGS = 10 V, ID = 50 A\"\ncite       = \"DS p.5, Table 4 Static characteristics, Drain-source on-state resistance RDS(on)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 90269e837d0f\"\nnote       = \"Table 1 prints RDS(on),max 3.5 mohm (DS p.1), same value. Tj = 25 degC only: no RDS(on) row over temperature (open item, see calc.py).\""
 
 [row.norm_rds_100c]
 state = "MACHINE_CHECKED"
@@ -2834,14 +2820,13 @@ render_key = "fe54ecb86a812043"
 text_snippet = " Reverse recovery time 10)                        trr                    49         98         ns"
 
 [row.eas]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'Maximum ratings'): symbol 'EAS' not found as a table row; text check: UNSURE symbol not found as the first/Symbol-column word of any table line"
 hash = "8c2fa7dbdca758a1279cfee22489d3b8b4cb387f8906a631de1fb629d0ff5677"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 8c2fa7dbdca7"
 stamp_hash = "8c2fa7dbdca758a1279cfee22489d3b8b4cb387f8906a631de1fb629d0ff5677"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
-baseline = true
 printed_page = 3
 pdf_page = 3
 toml_lines = "1940-1950"
@@ -2853,7 +2838,7 @@ crop_box = [37.5, 127.7, 560.1, 782.9]
 dpi = 150
 render_key = "e53f328fd0dd2a28"
 text_snippet = " Avalanche energy, single pulse 4)             EAS          \u2011          \u2011          398        mJ ID=50 A, RGS=25 \u2126"
-stamped_toml = "[param.eas]\nname       = \"Avalanche energy, single pulse\"\nsymbol     = \"EAS\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmax        = 398\nunit       = \"mJ\"\nconditions = \"ID = 50 A, RGS = 25 ohm\"\ncite       = \"DS p.3, Table 2 Maximum ratings, Avalanche energy, single pulse EAS (footnote 4: Diagram 14)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nunchecked  = \"not a voltage; owner: module\""
+stamped_toml = "[param.eas]\nname       = \"Avalanche energy, single pulse\"\nsymbol     = \"EAS\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmax        = 398\nunit       = \"mJ\"\nconditions = \"ID = 50 A, RGS = 25 ohm\"\ncite       = \"DS p.3, Table 2 Maximum ratings, Avalanche energy, single pulse EAS (footnote 4: Diagram 14)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 8c2fa7dbdca7\"\nunchecked  = \"not a voltage; owner: module\""
 
 [row.qgs]
 state = "NEW"
@@ -2928,14 +2913,13 @@ render_key = "3e02d847bc264adb"
 text_snippet = " Switching charge                                 Qsw                    30         \u2011          nC"
 
 [row.qg]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'Qg' not found as a table row; text check: UNSURE symbol not found as the first/Symbol-column word of any table line"
 hash = "7de9b511f44a7f93f8dd4642e54c76faec645809071ccdd86bd0b4aedff4c5ff"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 7de9b511f44a"
 stamp_hash = "7de9b511f44a7f93f8dd4642e54c76faec645809071ccdd86bd0b4aedff4c5ff"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
-baseline = true
 printed_page = 6
 pdf_page = 6
 toml_lines = "1994-2005"
@@ -2947,7 +2931,7 @@ crop_box = "full_page"
 dpi = 150
 render_key = "3e02d847bc264adb"
 text_snippet = " Gate charge total 9)                             Qg                     70         88         nC"
-stamped_toml = "[param.qg]\nname       = \"Gate charge total\"\nsymbol     = \"Qg\"\nkind       = \"electrical\"\nscope      = \"25C\"\ntyp        = 70\nmax        = 88\nunit       = \"nC\"\nconditions = \"VDD = 50 V, ID = 50 A, VGS = 0 to 10 V\"\ncite       = \"DS p.6, Table 6 Gate charge characteristics, Gate charge total Qg (footnote 9)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Defined by design. Not subject to production test (footnote 9).\""
+stamped_toml = "[param.qg]\nname       = \"Gate charge total\"\nsymbol     = \"Qg\"\nkind       = \"electrical\"\nscope      = \"25C\"\ntyp        = 70\nmax        = 88\nunit       = \"nC\"\nconditions = \"VDD = 50 V, ID = 50 A, VGS = 0 to 10 V\"\ncite       = \"DS p.6, Table 6 Gate charge characteristics, Gate charge total Qg (footnote 9)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 7de9b511f44a\"\nnote       = \"Defined by design. Not subject to production test (footnote 9).\""
 
 [row.qoss]
 state = "NEW"

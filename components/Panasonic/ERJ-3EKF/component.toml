@@ -75,7 +75,7 @@ max        = 75
 unit       = "V"
 conditions = ""
 cite       = "DS PDF p.3, Ratings <+/-1 %>, Limiting element voltage (V), ERJ3EK row"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 78825b819853 row 166852cbea76"
 note       = "Upper limit on RCWV (footnote *2): RCWV = sqrt(Power rating x Resistance value) or this limit, whichever is less. See rcwv_rule."
 unchecked  = "series_vlimit: used by the wrapper rated_voltage check"
 

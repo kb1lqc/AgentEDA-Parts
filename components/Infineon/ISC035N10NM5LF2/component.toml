@@ -98,7 +98,7 @@ max        = 100
 unit       = "V"
 conditions = ""
 cite       = "DS p.1, Table 1 Key performance parameters, VDS"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 5e489e72c156"
 note       = "Not a row of the Maximum ratings table (DS p.3). The DS gives no temperature for it. The guaranteed minimum breakdown voltage is V(BR)DSS = 100 V at 25 degC (vbr_dss, DS p.5 Table 4). Printed with no MIN/TYP/MAX label: stored as max. Only the upper bound is checked."
 check_pins = ["D"]
 max_ref    = "S"
@@ -135,7 +135,7 @@ max        = 19
 unit       = "A"
 conditions = "VGS = 10 V, TA = 25 degC, RthJA = 50 degC/W"
 cite       = "DS p.3, Table 2 Maximum ratings, Continuous drain current ID (row 3), footnote 2"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row adcb5b0355ec"
 note       = "Footnote 2: 40 x 40 x 1.5 mm FR4 PCB with 6 cm2 drain copper, vertical in still air. Printed RthJA 50 degC/W is the PCB value."
 unchecked  = "not a voltage; owner: module"
 
@@ -148,7 +148,7 @@ max        = 656
 unit       = "A"
 conditions = "TA = 25 degC"
 cite       = "DS p.3, Table 2 Maximum ratings, Pulsed drain current ID,pulse (footnote 3: Diagrams 3 and 4)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 7fcf7ce936ed"
 note       = "The pulsed rating is the SOA ceiling: the Diagram 3 and 4 curve rows (soa_tc25_*, soa_tc125_*) give the limit per pulse width and VDS."
 unchecked  = "not a voltage; owner: module"
 
@@ -1438,7 +1438,7 @@ max        = 20
 unit       = "V"
 conditions = ""
 cite       = "DS p.3, Table 2 Maximum ratings, Gate source voltage VGS"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 06510cdcc5b7"
 note       = "No reference pin printed; applied as gate to source (pin-pair row, S is the reference)."
 check_pins = ["G"]
 min_ref    = "S"
@@ -1465,7 +1465,7 @@ max        = 3
 unit       = "W"
 conditions = "TA = 25 degC, RthJA = 50 degC/W"
 cite       = "DS p.3, Table 2 Maximum ratings, Power dissipation Ptot (row 2), footnote 2"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row f65fd8b1da0e"
 unchecked  = "not a voltage; owner: module"
 
 [param.tj_tstg]
@@ -1478,7 +1478,7 @@ max        = 175
 unit       = "degC"
 conditions = ""
 cite       = "DS p.3, Table 2 Maximum ratings, Operating and storage temperature Tj, Tstg"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 56f704e6f617"
 note       = "Junction range (Tj); the storage part of the row is assembly-owned (see the unchecked reason)."
 unchecked  = "TJ: needs dissipation x RthJA; owner: module (Tstg part: owner: assembly)"
 
@@ -1495,7 +1495,7 @@ max        = 0.7
 unit       = "degC/W"
 conditions = ""
 cite       = "DS p.4, Table 3 Thermal characteristics, Thermal resistance junction-case, bottom"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 89ad5c647aab"
 note       = "Only a max is printed; the Min/Typ columns are '-'."
 
 [param.rth_jc_top]
@@ -1518,7 +1518,7 @@ max        = 50
 unit       = "degC/W"
 conditions = "6 cm2 cooling area"
 cite       = "DS p.4, Table 3 Thermal characteristics, Thermal resistance junction-ambient, 6 cm2 cooling area (RthJA), footnote 5"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 20c6bc89e073"
 note       = "Valid only for the DS PCB (footnote 5)."
 
 [param.zthjc_single_10us]
@@ -1530,7 +1530,7 @@ typ        = 0.0121
 unit       = "degC/W"
 conditions = "single pulse (solid line), tp = 10 us, D = tp/T; printed K/W, same number in degC/W"
 cite       = "DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve"
-verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row db2fe19d9d5d"
 curve      = true
 note       = "Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound."
 unchecked  = "curve read off Diagram 5, not a voltage; owner: module"
@@ -1544,7 +1544,7 @@ typ        = 0.0545
 unit       = "degC/W"
 conditions = "single pulse (solid line), tp = 100 us, D = tp/T; printed K/W, same number in degC/W"
 cite       = "DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve"
-verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 2aef98efc7a0"
 curve      = true
 note       = "Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound."
 unchecked  = "curve read off Diagram 5, not a voltage; owner: module"
@@ -1558,7 +1558,7 @@ typ        = 0.201
 unit       = "degC/W"
 conditions = "single pulse (solid line), tp = 1 ms, D = tp/T; printed K/W, same number in degC/W"
 cite       = "DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve"
-verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 88ead1f243f6"
 curve      = true
 note       = "Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound."
 unchecked  = "curve read off Diagram 5, not a voltage; owner: module"
@@ -1572,7 +1572,7 @@ typ        = 0.404
 unit       = "degC/W"
 conditions = "single pulse (solid line), tp = 10 ms, D = tp/T; printed K/W, same number in degC/W"
 cite       = "DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve"
-verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 6bcf89c49b6b"
 curve      = true
 note       = "Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound."
 unchecked  = "curve read off Diagram 5, not a voltage; owner: module"
@@ -1586,7 +1586,7 @@ typ        = 0.676
 unit       = "degC/W"
 conditions = "single pulse (solid line), tp = 100 ms, D = tp/T; printed K/W, same number in degC/W"
 cite       = "DS p.8, Diagram 5 Max. transient thermal impedance (figure), curve"
-verified   = "sonnet-audit 2026-11-18 blind page-image curve reading at 300 dpi, cross-model (diet-work/audit/AUDIT.md); agrees within 3 %"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 1c1c61d29b06"
 curve      = true
 note       = "Pixel read of the solid single-pulse trace at 200 dpi, log axes fitted from gridlines; read accuracy about +/-3 %. Not a bound. Sanity: the trace reaches about 0.68 degC/W at 100 ms, against the 0.7 degC/W RthJC max (rth_jc_bottom)."
 unchecked  = "curve read off Diagram 5, not a voltage; owner: module"
@@ -1663,7 +1663,7 @@ max        = 3.5
 unit       = "mohm"
 conditions = "VGS = 10 V, ID = 50 A"
 cite       = "DS p.5, Table 4 Static characteristics, Drain-source on-state resistance RDS(on)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 90269e837d0f"
 note       = "Table 1 prints RDS(on),max 3.5 mohm (DS p.1), same value. Tj = 25 degC only: no RDS(on) row over temperature (open item, see calc.py)."
 
 [param.norm_rds_100c]
@@ -1946,7 +1946,7 @@ max        = 398
 unit       = "mJ"
 conditions = "ID = 50 A, RGS = 25 ohm"
 cite       = "DS p.3, Table 2 Maximum ratings, Avalanche energy, single pulse EAS (footnote 4: Diagram 14)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 8c2fa7dbdca7"
 unchecked  = "not a voltage; owner: module"
 
 [param.qgs]
@@ -2001,7 +2001,7 @@ max        = 88
 unit       = "nC"
 conditions = "VDD = 50 V, ID = 50 A, VGS = 0 to 10 V"
 cite       = "DS p.6, Table 6 Gate charge characteristics, Gate charge total Qg (footnote 9)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 7e144939b785 row 7de9b511f44a"
 note       = "Defined by design. Not subject to production test (footnote 9)."
 
 [param.qoss]
