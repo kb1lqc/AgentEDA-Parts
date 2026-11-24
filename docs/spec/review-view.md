@@ -35,7 +35,11 @@ Status (`released` or `k of n`), Review command; one line per component director
 `Value` (min/typ/max as the README prints them with min_ref/max_ref; a `sym` row or min = -max prints `±<max>`; no
 `unit` prints `unitless`) · `Conditions` (`conditions`, or "none printed") · `Temperature` only for scope `25C` ("at
 25 °C only"), `full` ("over the full temperature range"), `partial` ("over part of the range: see conditions") ·
-`Used by` (calc.py `function (argument)`, Zener check on pins, examples file). `note` is folded under "How we read
+`Used by` (calc.py `function (argument)`, Zener check on pins, examples file). When `note` says "magnitude order"
+(or "magnitude-order") and quotes printed columns ("MIN column -10", "typ printed -290"), a `Datasheet columns` line
+follows Value: one `printed <MIN|TYP|MAX> <value> = stored <max|typ|min> <value>` entry per column the note quotes, so
+the reviewer ticks each printed column against the page image. A note that quotes no column number gets no line.
+`note` is folded under "How we read
 it", shown open with ⚠ when the row has `unchecked` or the note says "read as", "applied as" or "inferred". Display
 only, never in the TOML: `degC`→°C, `ohm`/`kohm`/`Mohm`→Ω/kΩ/MΩ, `u`-prefixed units→µ, `+/-`→±. The pinout card is
 the pin table (number, name, type, function). A row with no min, typ or max is `Fix first`, no tick box (counts in n).
