@@ -146,20 +146,36 @@ def not_covered(path, mat=None):
     return out
 
 
+def located(row):
+    """True when a ledger row points at a datasheet table or figure: an evidence image (ds_review.py), the same
+    condition stamp.py needs before it stamps a row. A row without one (a value from a features bullet, design or
+    application text) cannot be compared with an image, so it is a reference row, not a check."""
+    return isinstance(row, dict) and bool(row.get("image"))
+
+
 def review(path, root=None, local_pdf=True):
-    """The human view of one component directory: status {row: status} for every [param] row (+ `pinout`), matters,
-    k (checked rows that matter), n (rows that matter), M (all rows), released, not_covered."""
+    """The human view of one component directory: status {row: status} for every [param] row (+ `pinout`), matters
+    (every row that matters, with reasons), unlocated (rows that matter but have no datasheet table or figure location:
+    reference, not checked, not counted), k (checked rows among n), n (checkable rows that matter), M (all rows),
+    released, not_covered. A checked row stays checked whatever its location."""
     path = Path(path)
     data = _read_toml(path / "component.toml") or {}
     params = data.get("param") or {}
     mat = matters(path, root)
     done = checked_rows(path, local_pdf)
-    status = {k: CHECKED if k in done else NEEDS if k in mat else REFERENCE for k in params}
+    rows = (_read_toml(path / "review" / "review.toml") or {}).get("row", {})
+    # A value with a citation (a features bullet, design or application text) but no table or figure location is
+    # reference, not a check. A row with no min, typ or max, or with no citation, is a defect to fix in the TOML, so it
+    # stays checkable (the page shows it as "fix first").
+    unlocated = sorted(k for k in mat if k != "pinout" and k not in done and not located(rows.get(k))
+                       and values_text(params.get(k, {})) and params.get(k, {}).get("cite"))
+    checkable = [k for k in mat if k not in unlocated]
+    status = {k: CHECKED if k in done else NEEDS if k in checkable else REFERENCE for k in params}
     if "pinout" in mat:
         status["pinout"] = CHECKED if "pinout" in done else NEEDS
-    k = sum(status[r] == CHECKED for r in mat)
-    return {"status": status, "matters": mat, "k": k, "n": len(mat), "M": len(status), "released": k == len(mat) > 0,
-            "not_covered": not_covered(path, mat)}
+    k = sum(status[r] == CHECKED for r in checkable)
+    return {"status": status, "matters": mat, "unlocated": unlocated, "k": k, "n": len(checkable), "M": len(status),
+            "released": k == len(checkable) > 0, "not_covered": not_covered(path, mat)}
 
 
 def statuses(path, local_pdf=True, root=None):
@@ -168,8 +184,11 @@ def statuses(path, local_pdf=True, root=None):
 
 
 def summary(value, r):
-    """("<Value>: <k> of <n> rows that matter checked", released)."""
-    return f"{value}: {r['k']} of {r['n']} rows that matter checked", r["released"]
+    """("<Value>: <k> of <n> rows that matter checked", released); rows without a table location are named apart."""
+    text = f"{value}: {r['k']} of {r['n']} rows that matter checked"
+    if r.get("unlocated"):
+        text += f" ({len(r['unlocated'])} reference: no table or figure location)"
+    return text, r["released"]
 
 
 def not_covered_text(r):

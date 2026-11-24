@@ -233,11 +233,27 @@ def build_model(root, used_by_dir):
                                             [pg["pdf_page"] for pg in pin_pages])})
         order = {t: n for n, (t, _) in enumerate(TIERS)}
         items.sort(key=lambda i: (SECTIONS.index(i["section"]), order[i["tier"]], i["key"]))
+        # Rows with a value and a citation but no table or figure location: not compared, not stamped, not counted.
+        # Listed apart with no tick box, so no image comparison or NOT_FOUND state is shown for them.
+        unlocated = [unlocated_item(d, key, params, root, rev) for key in rev["unlocated"] if used is None or key in used]
         parts.append({"dir": d, "value": d.name, "line": line, "released": released, "items": items,
+                      "unlocated": unlocated,
                       "k": rev["k"], "n": rev["n"], "used_known": used is not None,
                       "checked": [(k, *done[k]) for k, s in status.items() if s == RS.CHECKED],
-                      "reference": [k for k, s in status.items() if s == RS.REFERENCE]})
+                      "reference": [k for k, s in status.items() if s == RS.REFERENCE and k not in rev["unlocated"]]})
     return parts
+
+
+UNLOCATED_WHY = ("Reference, not checked: the value has a citation but no table or figure location in the datasheet "
+                 "(a features bullet, design or application text). It is not compared with an image and is not stamped. "
+                 "Add a page locator or a crop to its review record to make it a check.")
+
+
+def unlocated_item(d, key, params, root, rev):
+    """A reference row of the block view: its statement and citation, no tick box and no image."""
+    return {"ref": f"{d.name}:{key}", "key": key, "part": d.name, "tier": "reference", "why": UNLOCATED_WHY,
+            "card": RS.statement_card(d, key, root),
+            "toml": toml_block(d / "component.toml", f"[param.{key}]")}
 
 
 def ensure_cache(root, dirs, run=subprocess.run, dry_run=False):
@@ -426,6 +442,16 @@ def render(title, parts, token, root, notes=(), block=None, images=None):
                     out.append(f"<details><summary>Full TOML</summary><pre>{esc(i['toml'])}</pre></details>")
                 out.append("</div>")
                 body.append("\n".join(out))
+        if p["unlocated"]:
+            body.append(f'<details><summary>Reference, not checked: {len(p["unlocated"])} row(s) without a table or figure '
+                        'location</summary>')
+            for i in p["unlocated"]:
+                body.append(f'<div class="item" id="row-{esc(i["ref"])}"><b>{esc(i["part"])}</b> · {esc(i["key"])}<br>'
+                            + (card_html(i["card"]) if i.get("card") else "")
+                            + f'<p class="mute small">{esc(i["why"])}</p>'
+                            + (f"<details><summary>Full TOML</summary><pre>{esc(i['toml'])}</pre></details>" if i["toml"] else "")
+                            + "</div>")
+            body.append("</details>")
         ck, ref = p["checked"], p["reference"]
         if ck or ref:
             body.append(f"<details><summary>Already checked: {len(ck)} rows; other rows (reference): {len(ref)} rows</summary>"
