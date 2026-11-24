@@ -25,7 +25,7 @@ match the datasheet image, and press one button to stamp them and open the PR. S
 <!-- review-status:start -->
 | Part | Status | Review command |
 |---|---|---|
-| AnalogDevices/LTC4364MS | 0 of 33 | `python3 tools/review.py LTC4364MS` |
+| AnalogDevices/LTC4364MS | 28 of 33 | `python3 tools/review.py LTC4364MS` |
 | Infineon/BSC040N10NS5 | 0 of 17 | `python3 tools/review.py BSC040N10NS5` |
 | Infineon/ISC035N10NM5LF2 | 0 of 22 | `python3 tools/review.py ISC035N10NM5LF2` |
 | Infineon/ISC750P10LM | 0 of 17 | `python3 tools/review.py ISC750P10LM` |
