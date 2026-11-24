@@ -454,6 +454,7 @@ max        = -10
 unit       = "uA"
 conditions = "VCC = HGATE = DGATE = SOURCE = 12V"
 cite       = "DS p.3, Electrical Characteristics, IHGATE(UP)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 9cbd7e893c23 row f9ac6403753e"
 note       = "DS prints this negative quantity in magnitude order (MIN column -10, MAX column -30); stored in numeric order: printed MAX -> min, printed MIN -> max."
 
 [param.ihgate_dn_ov]
@@ -636,6 +637,7 @@ max        = -40
 unit       = "uA"
 conditions = "TMR = 1V, FB = 1.5V, VCC - OUT = 75V"
 cite       = "DS p.4, Electrical Characteristics, ITMR(UP) Overvoltage (row 2)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 9cbd7e893c23 row c992f884d272"
 note       = "DS prints this negative quantity in magnitude order (MIN column -40, MAX column -60); stored in numeric order: printed MAX -> min, printed MIN -> max."
 
 [param.itmr_up_oc_lo]
@@ -662,6 +664,7 @@ max        = -210
 unit       = "uA"
 conditions = "TMR = 1V, dVSNS = 60mV, VCC - OUT = 75V"
 cite       = "DS p.4, Electrical Characteristics, ITMR(UP) Overcurrent (row 2)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 9cbd7e893c23 row 233b7a29e436"
 note       = "DS prints this negative quantity in magnitude order (MIN column -210, MAX column -310); stored in numeric order: printed MAX -> min, printed MIN -> max."
 
 [param.itmr_up_warn]
@@ -675,6 +678,7 @@ max        = -3
 unit       = "uA"
 conditions = "TMR = 1.3V, FB = 1.5V, VCC - OUT = 0.5V"
 cite       = "DS p.4, Electrical Characteristics, ITMR(UP) Warning"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 9cbd7e893c23 row 193cecba454b"
 note       = "DS prints this negative quantity in magnitude order (MIN column -3, MAX column -7); stored in numeric order: printed MAX -> min, printed MIN -> max."
 
 [param.itmr_up_retry]
@@ -688,6 +692,7 @@ max        = -1.3
 unit       = "uA"
 conditions = "TMR = 1V, FB = 1.5V"
 cite       = "DS p.4, Electrical Characteristics, ITMR(UP) Retry"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 9cbd7e893c23 row a66245ec2cc3"
 note       = "OPEN ITEM: DS Figure 4 caption says 'LTC4364-2 Only' but the p.15 text says the -1 also generates these cool-down TMR pulses; the text is followed. DS prints this negative quantity in magnitude order (MIN column -1.3, MAX column -3); stored in numeric order: printed MAX -> min, printed MIN -> max. Shared by all six variants: the -1 cool-down pulses (DS p.15, Figure 4) use the same charge current; the -2 restart uses it too."
 
 [param.itmr_dn_retry]
