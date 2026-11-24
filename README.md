@@ -98,7 +98,7 @@ match the datasheet image, and press one button to stamp them and open the PR. S
 |---|---|---|
 | AnalogDevices/LTC4364MS | released | `python3 tools/review.py LTC4364MS` |
 | Infineon/BSC040N10NS5 | 0 of 17 | `python3 tools/review.py BSC040N10NS5` |
-| Infineon/ISC035N10NM5LF2 | 0 of 22 | `python3 tools/review.py ISC035N10NM5LF2` |
+| Infineon/ISC035N10NM5LF2 | 16 of 22 | `python3 tools/review.py ISC035N10NM5LF2` |
 | Infineon/ISC750P10LM | 0 of 17 | `python3 tools/review.py ISC750P10LM` |
 | Murata/GCM155 | 0 of 20 | `python3 tools/review.py GCM155` |
 | Murata/GCM188 | 0 of 20 | `python3 tools/review.py GCM188` |
@@ -118,7 +118,7 @@ match the datasheet image, and press one button to stamp them and open the PR. S
 | Panasonic/ERA-3AEB | 0 of 17 | `python3 tools/review.py ERA-3AEB` |
 | Panasonic/ERA-6AEB | 0 of 17 | `python3 tools/review.py ERA-6AEB` |
 | Panasonic/ERJ-2RKF | 0 of 14 | `python3 tools/review.py ERJ-2RKF` |
-| Panasonic/ERJ-3EKF | 3 of 14 | `python3 tools/review.py ERJ-3EKF` |
+| Panasonic/ERJ-3EKF | 4 of 14 | `python3 tools/review.py ERJ-3EKF` |
 | Panasonic/ERJ-6ENF | 0 of 17 | `python3 tools/review.py ERJ-6ENF` |
 | Panasonic/ERJ-8ENF | 0 of 17 | `python3 tools/review.py ERJ-8ENF` |
 | STMicroelectronics/STM32H723ZET6 | 0 of 65 | `python3 tools/review.py STM32H723ZET6` |
@@ -126,9 +126,9 @@ match the datasheet image, and press one button to stamp them and open the PR. S
 | TexasInstruments/INA229AIDGS | released | `python3 tools/review.py INA229AIDGS` |
 | TexasInstruments/INA241DGK | 0 of 21 | `python3 tools/review.py INA241DGK` |
 | TexasInstruments/INA821IDGK | 0 of 25 | `python3 tools/review.py INA821IDGK` |
-| TexasInstruments/TPS48000QDGXQ1 | 0 of 30 | `python3 tools/review.py TPS48000QDGXQ1` |
+| TexasInstruments/TPS48000QDGXQ1 | 19 of 30 | `python3 tools/review.py TPS48000QDGXQ1` |
 | Vishay/WSK2512 | 6 of 21 | `python3 tools/review.py WSK2512` |
-| Vishay/WSK2512-LOW | 0 of 21 | `python3 tools/review.py WSK2512-LOW` |
+| Vishay/WSK2512-LOW | 4 of 21 | `python3 tools/review.py WSK2512-LOW` |
 | Vishay/WSK2512R0250D | 0 of 23 | `python3 tools/review.py WSK2512R0250D` |
 <!-- review-status:end -->
 

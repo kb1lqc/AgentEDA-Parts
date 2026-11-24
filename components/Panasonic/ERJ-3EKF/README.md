@@ -2,7 +2,7 @@
 
 # ERJ-3EKF
 
-Checked by a person: 3 of 14 rows that matter (25 rows in all). Review: python3 tools/review.py ERJ-3EKF
+Checked by a person: 4 of 14 rows that matter (25 rows in all). Review: python3 tools/review.py ERJ-3EKF
 
 ## Part
 
@@ -53,7 +53,7 @@ Rated voltage at decade values, computed from `p70`, `v_limit` and the formula a
 | Parameter | Symbol | Min | Typ | Max | Unit | Conditions | Cite | Checked |
 |---|---|---|---|---|---|---|---|---|
 | Rated power at 70 degC | P70 |  |  | 0.1 | W | Ambient 70 degC; use with case temperature below the upper category temperature (footnote *1) Note: The DS prints 0.1 W for ERJ3EK (same for 0402 and 0603 in this series). Printed with no MIN/TYP/MAX label: stored as max (Defaults table). Derated above 70 degC (derate_knee, derate_zero). No abs-max table in this DS. | DS PDF p.3, Ratings <+/-1 %>, Power rating (70 degC) (W), ERJ3EK row | checked (kb1lqc, 2026-11-22) |
-| Limiting element voltage | V limit |  |  | 75 | V | Note: Upper limit on RCWV (footnote *2): RCWV = sqrt(Power rating x Resistance value) or this limit, whichever is less. See rcwv_rule. | DS PDF p.3, Ratings <+/-1 %>, Limiting element voltage (V), ERJ3EK row |  |
+| Limiting element voltage | V limit |  |  | 75 | V | Note: Upper limit on RCWV (footnote *2): RCWV = sqrt(Power rating x Resistance value) or this limit, whichever is less. See rcwv_rule. | DS PDF p.3, Ratings <+/-1 %>, Limiting element voltage (V), ERJ3EK row | checked (kb1lqc, 2026-11-24) |
 | Maximum overload voltage | V overload |  |  | 150 | V | Note: Upper limit on the overload test voltage (footnote *3): OTV = specified magnification x RCWV or this limit, whichever is less. | DS PDF p.3, Ratings <+/-1 %>, Maximum overload voltage (V), ERJ3EK row |  |
 | Rated continuous working voltage, RCWV | RCWV |  | sqrt(Power rating x Resistance value), or limiting element voltage, whichever less |  | V | Note: Formula, not a number. calc.py rated_voltage implements it. | DS PDF p.3, Ratings <+/-1 %>, footnote *2 |  |
 | Category temperature range | T category | -55 |  | 155 | degC | Note: Read as ambient, the axis of the derating figure (DS PDF p.3). Ratings are for the case temperature below this limit (footnote *1). | DS PDF p.3, Ratings <+/-1 %>, Category temperature range (degC), ERJ3EK row (shared with ERJ2RK and ERJ6EN) |  |

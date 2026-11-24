@@ -11,7 +11,7 @@ datasheet_rev = "11-Dec-2023 (Document 30108)"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
 pages = 5
 text_layer = true
-component_sha256 = "eac5d5d231043b0cfd64a50c738360eb773f191142bc66f3c4bb046f85eba58c"
+component_sha256 = "c9720c16db02025301c89d06e9d20d6ecc42d06e80a037b2c86198c7d2127a4f"
 render = "complete"
 backfill = "git blame"
 sheets = { "wsk2512.pdf" = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff" }
@@ -252,14 +252,13 @@ text_snippet = "(no text-layer line located)"
 stamped_toml = "[param.tcr_3m_4m9_range]\nname       = \"TCR range: 0.003 ohm to 0.0049 ohm\"\nkind       = \"electrical\"\nscope      = \"na\"\nmin        = 0.003\nmax        = 0.0049\nunit       = \"ohm\"\nconditions = \"\"\ncite       = \"DS p.2, Technical Specifications, Temperature coefficient, range 0.003 ohm to 0.0049 ohm\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Range for which the TCR row of the same name applies, as printed.\""
 
 [row.p70]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'P70 degC' not found as a table row; text check: UNSURE vendor 'Vishay Dale' not in the text-check tested set"
 hash = "fe32af6faf28061535e69c863047e7cc91ebd38547f1d04250b41233b056e8b1"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 2ee8a9067539 row fe32af6faf28"
 stamp_hash = "fe32af6faf28061535e69c863047e7cc91ebd38547f1d04250b41233b056e8b1"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
-baseline = true
 printed_page = 1
 pdf_page = 1
 toml_lines = "197-208"
@@ -271,7 +270,7 @@ crop_box = "full_page"
 dpi = 200
 render_key = "df462fe45c5ec28f"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.p70]\nname       = \"Power rating at 70 degC ambient\"\nsymbol     = \"P70 degC\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmax        = 1.0\nunit       = \"W\"\nconditions = \"Ambient 70 degC; one rating for every value of the WSK2512 model\"\ncite       = \"DS p.1, Standard Electrical Specifications, POWER RATING P70 degC, W, 1.0\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Rating: a maximum, stored as max. No abs-max table. Rated against AMBIENT (DS p.3 DERATING axis); self-heating is not given.\"\nunchecked  = \"dissipation depends on the load current; owner: module (calc.dissipation vs calc.rated_power)\""
+stamped_toml = "[param.p70]\nname       = \"Power rating at 70 degC ambient\"\nsymbol     = \"P70 degC\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmax        = 1.0\nunit       = \"W\"\nconditions = \"Ambient 70 degC; one rating for every value of the WSK2512 model\"\ncite       = \"DS p.1, Standard Electrical Specifications, POWER RATING P70 degC, W, 1.0\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 2ee8a9067539 row fe32af6faf28\"\nnote       = \"Rating: a maximum, stored as max. No abs-max table. Rated against AMBIENT (DS p.3 DERATING axis); self-heating is not given.\"\nunchecked  = \"dissipation depends on the load current; owner: module (calc.dissipation vs calc.rated_power)\""
 
 [row.max_working_voltage]
 state = "MACHINE_CHECKED"
@@ -318,14 +317,13 @@ text_snippet = "(no text-layer line located)"
 stamped_toml = "[param.t_oper]\nname       = \"Operating temperature range\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = -65\nmax        = 170\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.2, Technical Specifications, Operating temperature range, -65 to +170\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"The DS does not say whether this is ambient or element temperature; read as ambient (DS p.3 DERATING axis). Only temperature rating in the DS (no storage or abs-max row).\"\ncheck_ambient = true"
 
 [row.derate_knee]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'TA knee' not found as a table row; text check: UNSURE row uses convention 'curve'"
 hash = "95c5c286de7e8a4f65d47d2528f943ae0e63657c713f0e38272fdf1c3196fc83"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 2ee8a9067539 row 95c5c286de7e"
 stamp_hash = "95c5c286de7e8a4f65d47d2528f943ae0e63657c713f0e38272fdf1c3196fc83"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
-baseline = true
 printed_page = 3
 pdf_page = 3
 toml_lines = "235-247"
@@ -337,17 +335,16 @@ crop_box = "full_page"
 dpi = 200
 render_key = "864036f6422b4d41"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.derate_knee]\nname       = \"Derating knee: 100 % rated power up to\"\nsymbol     = \"TA knee\"\nkind       = \"rec_op\"\nscope      = \"na\"\ntyp        = 70\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.3, Figure: DERATING graph (unnumbered; rated power vs ambient, 100 % line ends at 70 degC); coincides with DS p.1 P70 degC\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\ncurve      = true\nnote       = \"Read off the graph. Not a worst-case bound (curve).\"\nunchecked  = \"curve value; used by calc.rated_power\""
+stamped_toml = "[param.derate_knee]\nname       = \"Derating knee: 100 % rated power up to\"\nsymbol     = \"TA knee\"\nkind       = \"rec_op\"\nscope      = \"na\"\ntyp        = 70\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.3, Figure: DERATING graph (unnumbered; rated power vs ambient, 100 % line ends at 70 degC); coincides with DS p.1 P70 degC\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 2ee8a9067539 row 95c5c286de7e\"\ncurve      = true\nnote       = \"Read off the graph. Not a worst-case bound (curve).\"\nunchecked  = \"curve value; used by calc.rated_power\""
 
 [row.derate_zero]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'TA zero' not found as a table row; text check: UNSURE row uses convention 'curve'"
 hash = "d8484fe64f5e565c4799acc8b559baa00cbdc3cc1b14ca1c2fc4a9b323e6eeec"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 2ee8a9067539 row d8484fe64f5e"
 stamp_hash = "d8484fe64f5e565c4799acc8b559baa00cbdc3cc1b14ca1c2fc4a9b323e6eeec"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
-baseline = true
 printed_page = 3
 pdf_page = 3
 toml_lines = "249-266"
@@ -359,17 +356,16 @@ crop_box = "full_page"
 dpi = 200
 render_key = "864036f6422b4d41"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.derate_zero]\nname       = \"Derating: 0 % rated power at\"\nsymbol     = \"TA zero\"\nkind       = \"rec_op\"\nscope      = \"na\"\ntyp        = 170\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.3, Figure: DERATING graph (unnumbered; rated power vs ambient, line reaches 0 % at 170 degC)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\ncurve      = true\nnote       = \"Read off the graph (no printed number). Coincides with the top of the operating range (DS p.2). Linear between knee and zero (graph shape).\"\n\n# Performance test limits (DS p.3, PERFORMANCE, TEST LIMITS), printed as \"\u00b1 X % + 0.0005 ohm\".\n# Total limit for each row: \u00b1(X % of R + 0.0005 ohm). The percent term is stored as min = -X, max = X; the additive\n# 0.0005 ohm is stored once in perf_offset_ohm (the printed \"+\" is one-sided, so it is max only).\n# The DS gives no end-of-life guarantee outside these conditions; typical performance is better (DS p.3 note).\nunchecked  = \"curve value; used by calc.rated_power\""
+stamped_toml = "[param.derate_zero]\nname       = \"Derating: 0 % rated power at\"\nsymbol     = \"TA zero\"\nkind       = \"rec_op\"\nscope      = \"na\"\ntyp        = 170\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.3, Figure: DERATING graph (unnumbered; rated power vs ambient, line reaches 0 % at 170 degC)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 2ee8a9067539 row d8484fe64f5e\"\ncurve      = true\nnote       = \"Read off the graph (no printed number). Coincides with the top of the operating range (DS p.2). Linear between knee and zero (graph shape).\"\n\n# Performance test limits (DS p.3, PERFORMANCE, TEST LIMITS), printed as \"\u00b1 X % + 0.0005 ohm\".\n# Total limit for each row: \u00b1(X % of R + 0.0005 ohm). The percent term is stored as min = -X, max = X; the additive\n# 0.0005 ohm is stored once in perf_offset_ohm (the printed \"+\" is one-sided, so it is max only).\n# The DS gives no end-of-life guarantee outside these conditions; typical performance is better (DS p.3 note).\nunchecked  = \"curve value; used by calc.rated_power\""
 
 [row.perf_offset_ohm]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE vendor 'Vishay Dale' not in the text-check tested set"
 hash = "d61fe9b7a6fcc719ada3853cf73b478cb7c5a3d1820d1ffcfdaa3f41a9d3f969"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md); symmetric reading approved by the designer (audit R1)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 2ee8a9067539 row d61fe9b7a6fc"
 stamp_hash = "d61fe9b7a6fcc719ada3853cf73b478cb7c5a3d1820d1ffcfdaa3f41a9d3f969"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
-baseline = true
 printed_page = 3
 pdf_page = 3
 toml_lines = "268-278"
@@ -381,7 +377,7 @@ crop_box = "full_page"
 dpi = 200
 render_key = "864036f6422b4d41"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.perf_offset_ohm]\nname       = \"Performance test limit, additive term (all PERFORMANCE rows)\"\nkind       = \"electrical\"\nscope      = \"na\"\nmin        = -0.0005\nmax        = 0.0005\nunit       = \"ohm\"\nconditions = \"Added to the percent term of every PERFORMANCE row: total limit \u00b1(X % of R + 0.0005 ohm)\"\ncite       = \"DS p.3, PERFORMANCE, TEST LIMITS column, '+ 0.0005 ohm' (all rows)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md); symmetric reading approved by the designer (audit R1)\"\nnote       = \"Printed '\u00b1 X % + 0.0005 \u03a9' with no brackets. Stored symmetric, \u00b1(X % of R + 0.0005 ohm): the conservative worst-case reading (a one-sided +0.0005 would understate the low side). Open item: confirm the reading with Vishay.\""
+stamped_toml = "[param.perf_offset_ohm]\nname       = \"Performance test limit, additive term (all PERFORMANCE rows)\"\nkind       = \"electrical\"\nscope      = \"na\"\nmin        = -0.0005\nmax        = 0.0005\nunit       = \"ohm\"\nconditions = \"Added to the percent term of every PERFORMANCE row: total limit \u00b1(X % of R + 0.0005 ohm)\"\ncite       = \"DS p.3, PERFORMANCE, TEST LIMITS column, '+ 0.0005 ohm' (all rows)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 2ee8a9067539 row d61fe9b7a6fc\"\nnote       = \"Printed '\u00b1 X % + 0.0005 \u03a9' with no brackets. Stored symmetric, \u00b1(X % of R + 0.0005 ohm): the conservative worst-case reading (a one-sided +0.0005 would understate the low side). Open item: confirm the reading with Vishay.\""
 
 [row.perf_thermal_shock]
 state = "NEW"
