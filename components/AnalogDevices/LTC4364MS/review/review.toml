@@ -11,14 +11,16 @@ datasheet_rev = "Rev. B"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 pages = 29
 text_layer = true
-component_sha256 = "3bf353afb38b769a12847265354208e69d506c39afccf0abf50405201581fe1b"
+component_sha256 = "a9689f76520803167c8e5d2f4282d64c12ef32c5e9a72b4e52e86775a441f4c0"
 render = "complete"
 backfill = "git blame"
 sheets = { "ltc4364.pdf" = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940" }
 
 [pinout]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 hash = "baf54f43b03cae5a1a7d16d026d629e1696c3b7aebebc7f291dd5d7fede5e52a"
+stamp = "human:kb1lqc 2026-11-23 page-image pinout 9cbd7e893c23 pins baf54f43b03c"
+stamp_hash = "baf54f43b03cae5a1a7d16d026d629e1696c3b7aebebc7f291dd5d7fede5e52a"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 
 [[pinout.page]]
@@ -38,14 +40,16 @@ dpi = 150
 render_key = "d59b8eb1173f9873"
 
 [row.abs_vcc]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'VCC' on 3 lines and the cite's row label does not pick one; text check: UNSURE row uses convention 'min_ref'"
 hash = "a5444524e6debe1ea83a33da96f592e502031ef3c3d59c76aaf2197b5d10a669"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row a5444524e6de"
+stamp_hash = "a5444524e6debe1ea83a33da96f592e502031ef3c3d59c76aaf2197b5d10a669"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 2
 pdf_page = 2
-toml_lines = "141-154"
+toml_lines = "141-155"
 image = "evidence/page_p2.png"
 image_sha256 = "9b0d30d8001f9c1b81e4c69f8cb5582a80347e55d6bc16f82a3236edcb2479c3"
 image_bytes = 79364
@@ -54,16 +58,19 @@ crop_box = "full_page"
 dpi = 150
 render_key = "2a3ef2b072ceb111"
 text_snippet = "Supply Voltage: VCC .................................. \u201340V to 100V         FB, TMR Voltages...................................... \u20130.3V to 5.5V\n           VCC   6              9 OV                     NC 7                       10     UV             HGATE 6                  11 OV\n                                                        VCC 8                       9      SHDN\n                                                              16-LEAD PLASTIC MSOP                          VCC 8                   9   SHDN"
+stamped_toml = "[param.abs_vcc]\nname       = \"Supply voltage VCC\"\nsymbol     = \"VCC\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -40\nmax        = 100\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.2, Absolute Maximum Ratings, Supply Voltage VCC\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row a5444524e6de\"\nnote       = \"Reference: DS p.2 header (Notes 1, 2) and DS p.5, Note 2 ('All voltages are referenced to GND unless otherwise specified'). min_ref/max_ref = GND.\"\ncheck_pins = [\"VCC\"]"
 
 [row.abs_source_ov_uv_shdn]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE row uses convention 'min_ref'"
 hash = "0d2944931f3d8f7af1107adc68d62f97ef1b0cff4f8b0cafbb6c8e47b4461a20"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 0d2944931f3d"
+stamp_hash = "0d2944931f3d8f7af1107adc68d62f97ef1b0cff4f8b0cafbb6c8e47b4461a20"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 2
 pdf_page = 2
-toml_lines = "156-168"
+toml_lines = "157-170"
 image = "evidence/page_p2.png"
 image_sha256 = "9b0d30d8001f9c1b81e4c69f8cb5582a80347e55d6bc16f82a3236edcb2479c3"
 image_bytes = 79364
@@ -72,16 +79,19 @@ crop_box = "full_page"
 dpi = 150
 render_key = "2a3ef2b072ceb111"
 text_snippet = "(no text-layer line located)"
+stamped_toml = "[param.abs_source_ov_uv_shdn]\nname       = \"SOURCE, OV, UV, SHDN voltages\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -40\nmax        = 100\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.2, Absolute Maximum Ratings, SOURCE, OV, UV, SHDN Voltages\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 0d2944931f3d\"\nnote       = \"Reference: DS p.2 header (Notes 1, 2) and DS p.5, Note 2 ('All voltages are referenced to GND unless otherwise specified'). min_ref/max_ref = GND.\"\ncheck_pins = [\"OV\", \"UV\", \"SHDN\", \"SOURCE\"]"
 
 [row.abs_dgate_hgate]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE row uses convention 'min_ref'"
 hash = "78aa99859605074c215533dc698e04c2b68b6e1041c952d74833b10ec1c796c1"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 78aa99859605"
+stamp_hash = "78aa99859605074c215533dc698e04c2b68b6e1041c952d74833b10ec1c796c1"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 2
 pdf_page = 2
-toml_lines = "170-182"
+toml_lines = "172-185"
 image = "evidence/page_p2.png"
 image_sha256 = "9b0d30d8001f9c1b81e4c69f8cb5582a80347e55d6bc16f82a3236edcb2479c3"
 image_bytes = 79364
@@ -90,16 +100,19 @@ crop_box = "full_page"
 dpi = 150
 render_key = "2a3ef2b072ceb111"
 text_snippet = "(no text-layer line located)"
+stamped_toml = "[param.abs_dgate_hgate]\nname       = \"DGATE, HGATE voltages (relative to SOURCE)\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -0.3\nmin_ref    = \"SOURCE\"\nmax        = 10\nmax_ref    = \"SOURCE\"\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.2, Absolute Maximum Ratings, DGATE, HGATE Voltages (Note 3) SOURCE - 0.3 V to SOURCE + 10 V\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 78aa99859605\"\nnote       = \"Note 3 (DS p.5): internal clamps limit DGATE and HGATE to a minimum of 10 V above SOURCE; driving beyond the clamp may damage the device.\"\nunchecked  = \"DGATE and HGATE are driven by the part (internally clamped); owner: module\""
 
 [row.abs_enout_flt]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE row uses convention 'min_ref'"
 hash = "1072b01f54f0d6c114ab5820c6939122bb83644dd6ade2d834cf7df52bf97497"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 1072b01f54f0"
+stamp_hash = "1072b01f54f0d6c114ab5820c6939122bb83644dd6ade2d834cf7df52bf97497"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 2
 pdf_page = 2
-toml_lines = "184-196"
+toml_lines = "187-200"
 image = "evidence/page_p2.png"
 image_sha256 = "9b0d30d8001f9c1b81e4c69f8cb5582a80347e55d6bc16f82a3236edcb2479c3"
 image_bytes = 79364
@@ -108,16 +121,19 @@ crop_box = "full_page"
 dpi = 150
 render_key = "2a3ef2b072ceb111"
 text_snippet = "(no text-layer line located)"
+stamped_toml = "[param.abs_enout_flt]\nname       = \"ENOUT, FLT voltages\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -0.3\nmax        = 100\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.2, Absolute Maximum Ratings, ENOUT, FLT Voltages\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 1072b01f54f0\"\nnote       = \"Conflict inside the DS: abs max row gives 100 V (p.2); pin text DS p.9 says each pin 'can withstand up to 80V', and ILEAK is tested at 80 V (DS p.4). Both stored as printed; the 80 V statement is not an abs max row. Reference: DS p.2 header (Notes 1, 2) and DS p.5, Note 2 ('All voltages are referenced to GND unless otherwise specified'). min_ref/max_ref = GND.\"\ncheck_pins = [\"ENOUT\", \"FLT\"]"
 
 [row.abs_out_sense]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE row uses convention 'min_ref'"
 hash = "a1f6da20cfa91ccf668dad844426d1931dde1872afefb9112d00044a0ec352e2"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row a1f6da20cfa9"
+stamp_hash = "a1f6da20cfa91ccf668dad844426d1931dde1872afefb9112d00044a0ec352e2"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 2
 pdf_page = 2
-toml_lines = "198-210"
+toml_lines = "202-215"
 image = "evidence/page_p2.png"
 image_sha256 = "9b0d30d8001f9c1b81e4c69f8cb5582a80347e55d6bc16f82a3236edcb2479c3"
 image_bytes = 79364
@@ -126,16 +142,19 @@ crop_box = "full_page"
 dpi = 150
 render_key = "2a3ef2b072ceb111"
 text_snippet = "(no text-layer line located)"
+stamped_toml = "[param.abs_out_sense]\nname       = \"OUT, SENSE voltages\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -20\nmax        = 100\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.2, Absolute Maximum Ratings, OUT, SENSE Voltages\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row a1f6da20cfa9\"\nnote       = \"Reference: DS p.2 header (Notes 1, 2) and DS p.5, Note 2 ('All voltages are referenced to GND unless otherwise specified'). min_ref/max_ref = GND.\"\ncheck_pins = [\"OUT\", \"SENSE\"]"
 
 [row.abs_sense_out]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE row uses convention 'min_ref'"
 hash = "c971ab98e1db020f9c092fd553e45e859eaa7542d60d840ecbcfe65deb65e0da"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row c971ab98e1db"
+stamp_hash = "c971ab98e1db020f9c092fd553e45e859eaa7542d60d840ecbcfe65deb65e0da"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 2
 pdf_page = 2
-toml_lines = "212-224"
+toml_lines = "217-230"
 image = "evidence/page_p2.png"
 image_sha256 = "9b0d30d8001f9c1b81e4c69f8cb5582a80347e55d6bc16f82a3236edcb2479c3"
 image_bytes = 79364
@@ -144,16 +163,19 @@ crop_box = "full_page"
 dpi = 150
 render_key = "2a3ef2b072ceb111"
 text_snippet = "(no text-layer line located)"
+stamped_toml = "[param.abs_sense_out]\nname       = \"Voltage difference SENSE to OUT\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -30\nmax        = 30\nmin_ref    = \"OUT\"\nmax_ref    = \"OUT\"\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.2, Absolute Maximum Ratings, Voltage Difference (SENSE to OUT)\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row c971ab98e1db\"\nnote       = \"Difference V(SENSE) - V(OUT): the value is SENSE, the reference pin is OUT (DS p.2 row 'Voltage Difference (SENSE to OUT)'); the row names no reference pin beyond the difference. Cite: DS p.2 header (Notes 1, 2).\"\ncheck_pins = [\"SENSE\"]"
 
 [row.abs_out_vcc]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE row uses convention 'min_ref'"
 hash = "88e00478387cbcd0f74b0bc927010a1c00c0d5a3b26c6d2dd0a28aefafb9d2aa"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 88e00478387c"
+stamp_hash = "88e00478387cbcd0f74b0bc927010a1c00c0d5a3b26c6d2dd0a28aefafb9d2aa"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 2
 pdf_page = 2
-toml_lines = "226-238"
+toml_lines = "232-245"
 image = "evidence/page_p2.png"
 image_sha256 = "9b0d30d8001f9c1b81e4c69f8cb5582a80347e55d6bc16f82a3236edcb2479c3"
 image_bytes = 79364
@@ -162,16 +184,19 @@ crop_box = "full_page"
 dpi = 150
 render_key = "2a3ef2b072ceb111"
 text_snippet = "(no text-layer line located)"
+stamped_toml = "[param.abs_out_vcc]\nname       = \"Voltage difference OUT to VCC\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -100\nmax        = 100\nmin_ref    = \"VCC\"\nmax_ref    = \"VCC\"\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.2, Absolute Maximum Ratings, Voltage Difference (OUT to VCC)\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 88e00478387c\"\nnote       = \"Difference V(OUT) - V(VCC): the value is OUT, the reference pin is VCC (DS p.2 row 'Voltage Difference (OUT to VCC)'). Cite: DS p.2 header (Notes 1, 2).\"\ncheck_pins = [\"OUT\"]"
 
 [row.abs_sense_source]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE row uses convention 'min_ref'"
 hash = "69be458d0f02639894a5399ace80aef9cbc0207cd6ced4d73920319550273916"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 69be458d0f02"
+stamp_hash = "69be458d0f02639894a5399ace80aef9cbc0207cd6ced4d73920319550273916"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 2
 pdf_page = 2
-toml_lines = "240-252"
+toml_lines = "247-260"
 image = "evidence/page_p2.png"
 image_sha256 = "9b0d30d8001f9c1b81e4c69f8cb5582a80347e55d6bc16f82a3236edcb2479c3"
 image_bytes = 79364
@@ -180,16 +205,19 @@ crop_box = "full_page"
 dpi = 150
 render_key = "2a3ef2b072ceb111"
 text_snippet = "(no text-layer line located)"
+stamped_toml = "[param.abs_sense_source]\nname       = \"Voltage difference SENSE to SOURCE\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -100\nmax        = 100\nmin_ref    = \"SOURCE\"\nmax_ref    = \"SOURCE\"\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.2, Absolute Maximum Ratings, Voltage Difference (SENSE to SOURCE)\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 69be458d0f02\"\nnote       = \"Difference V(SENSE) - V(SOURCE): the value is SENSE, the reference pin is SOURCE (DS p.2 row 'Voltage Difference (SENSE to SOURCE)'). Cite: DS p.2 header (Notes 1, 2). SENSE is circuit-set (the sense resistor node), so the row is checked on SENSE with SOURCE as the reference; a module that leaves SOURCE undeclared gets UNVERIFIED (docs/spec/extract.md check-row rules).\"\ncheck_pins = [\"SENSE\"]"
 
 [row.abs_fb_tmr]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE row uses convention 'min_ref'"
 hash = "63b80401406ba29a81f6c063067bce22227d888deaa55883f32a7a5a1c8332c4"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 63b80401406b"
+stamp_hash = "63b80401406ba29a81f6c063067bce22227d888deaa55883f32a7a5a1c8332c4"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 2
 pdf_page = 2
-toml_lines = "254-267"
+toml_lines = "262-276"
 image = "evidence/page_p2.png"
 image_sha256 = "9b0d30d8001f9c1b81e4c69f8cb5582a80347e55d6bc16f82a3236edcb2479c3"
 image_bytes = 79364
@@ -198,16 +226,19 @@ crop_box = "full_page"
 dpi = 150
 render_key = "2a3ef2b072ceb111"
 text_snippet = "(no text-layer line located)"
+stamped_toml = "[param.abs_fb_tmr]\nname       = \"FB, TMR voltages\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -0.3\nmax        = 5.5\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.2, Absolute Maximum Ratings, FB, TMR Voltages\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 63b80401406b\"\nnote       = \"Reference: DS p.2 header (Notes 1, 2) and DS p.5, Note 2 ('All voltages are referenced to GND unless otherwise specified'). min_ref/max_ref = GND.\"\ncheck_pins = [\"FB\"]\nunchecked  = \"TMR not checked: timer capacitor node driven by the part; owner: module\""
 
 [row.ta_h]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE row has no symbol to locate it"
 hash = "fdab5d5f12a408dd62efe0181a04e751febc933c23d7347afed28edd088d80d4"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row fdab5d5f12a4"
+stamp_hash = "fdab5d5f12a408dd62efe0181a04e751febc933c23d7347afed28edd088d80d4"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 2
 pdf_page = 2
-toml_lines = "269-279"
+toml_lines = "278-289"
 image = "evidence/page_p2.png"
 image_sha256 = "9b0d30d8001f9c1b81e4c69f8cb5582a80347e55d6bc16f82a3236edcb2479c3"
 image_bytes = 79364
@@ -216,16 +247,19 @@ crop_box = "full_page"
 dpi = 150
 render_key = "2a3ef2b072ceb111"
 text_snippet = "(no text-layer line located)"
+stamped_toml = "[param.ta_h]\nname       = \"Operating ambient temperature range, LTC4364H\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -40\nmax        = 125\nunit       = \"degC\"\nconditions = \"LTC4364H grade, -40 degC to 125 degC (variants LTC4364HMS-1, LTC4364HMS-2)\"\ncite       = \"DS p.2, Absolute Maximum Ratings, Operating Ambient Temperature Range, LTC4364H\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row fdab5d5f12a4\"\ncheck_ambient = true\nvariants   = [\"LTC4364HMS-1\", \"LTC4364HMS-2\"]"
 
 [row.ta_c]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE row has no symbol to locate it"
 hash = "18db959033745ca38f8b39803d6c4f96cc864508f25acc5d544a06608da1f68f"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 18db95903374"
+stamp_hash = "18db959033745ca38f8b39803d6c4f96cc864508f25acc5d544a06608da1f68f"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 2
 pdf_page = 2
-toml_lines = "281-291"
+toml_lines = "291-302"
 image = "evidence/page_p2.png"
 image_sha256 = "9b0d30d8001f9c1b81e4c69f8cb5582a80347e55d6bc16f82a3236edcb2479c3"
 image_bytes = 79364
@@ -234,16 +268,19 @@ crop_box = "full_page"
 dpi = 150
 render_key = "2a3ef2b072ceb111"
 text_snippet = "(no text-layer line located)"
+stamped_toml = "[param.ta_c]\nname       = \"Operating ambient temperature range, LTC4364C\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = 0\nmax        = 70\nunit       = \"degC\"\nconditions = \"LTC4364C grade, 0 degC to 70 degC (variants LTC4364CMS-1, LTC4364CMS-2)\"\ncite       = \"DS p.2, Absolute Maximum Ratings, Operating Ambient Temperature Range, LTC4364C\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 18db95903374\"\nvariants   = [\"LTC4364CMS-1\", \"LTC4364CMS-2\"]\ncheck_ambient = true"
 
 [row.ta_i]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE row has no symbol to locate it"
 hash = "2e9d194ee974ab82d19725a9446cca21365b669c07d6328a418680ce9b371cd4"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 2e9d194ee974"
+stamp_hash = "2e9d194ee974ab82d19725a9446cca21365b669c07d6328a418680ce9b371cd4"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 2
 pdf_page = 2
-toml_lines = "293-303"
+toml_lines = "304-315"
 image = "evidence/page_p2.png"
 image_sha256 = "9b0d30d8001f9c1b81e4c69f8cb5582a80347e55d6bc16f82a3236edcb2479c3"
 image_bytes = 79364
@@ -252,16 +289,19 @@ crop_box = "full_page"
 dpi = 150
 render_key = "2a3ef2b072ceb111"
 text_snippet = "(no text-layer line located)"
+stamped_toml = "[param.ta_i]\nname       = \"Operating ambient temperature range, LTC4364I\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -40\nmax        = 85\nunit       = \"degC\"\nconditions = \"LTC4364I grade, -40 degC to 85 degC (variants LTC4364IMS-1, LTC4364IMS-2)\"\ncite       = \"DS p.2, Absolute Maximum Ratings, Operating Ambient Temperature Range, LTC4364I\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 2e9d194ee974\"\nvariants   = [\"LTC4364IMS-1\", \"LTC4364IMS-2\"]\ncheck_ambient = true"
 
 [row.tstg]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE row has no symbol to locate it"
 hash = "496dbb330571f62d09daee43212347060fc6b1a6200b09a3050dde40728c341e"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 496dbb330571"
+stamp_hash = "496dbb330571f62d09daee43212347060fc6b1a6200b09a3050dde40728c341e"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 2
 pdf_page = 2
-toml_lines = "305-314"
+toml_lines = "317-327"
 image = "evidence/page_p2.png"
 image_sha256 = "9b0d30d8001f9c1b81e4c69f8cb5582a80347e55d6bc16f82a3236edcb2479c3"
 image_bytes = 79364
@@ -270,16 +310,19 @@ crop_box = "full_page"
 dpi = 150
 render_key = "2a3ef2b072ceb111"
 text_snippet = "(no text-layer line located)"
+stamped_toml = "[param.tstg]\nname       = \"Storage temperature range\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmin        = -65\nmax        = 150\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.2, Absolute Maximum Ratings, Storage Temperature Range\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 496dbb330571\"\nunchecked  = \"owner: assembly\""
 
 [row.t_lead]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE row has no symbol to locate it"
 hash = "ac348266d602aba2a80d66267f49c97d53f436559bd5aa0ead9cbb1334a83d4d"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row ac348266d602"
+stamp_hash = "ac348266d602aba2a80d66267f49c97d53f436559bd5aa0ead9cbb1334a83d4d"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 2
 pdf_page = 2
-toml_lines = "316-328"
+toml_lines = "329-342"
 image = "evidence/page_p2.png"
 image_sha256 = "9b0d30d8001f9c1b81e4c69f8cb5582a80347e55d6bc16f82a3236edcb2479c3"
 image_bytes = 79364
@@ -288,6 +331,7 @@ crop_box = "full_page"
 dpi = 150
 render_key = "2a3ef2b072ceb111"
 text_snippet = "(no text-layer line located)"
+stamped_toml = "[param.t_lead]\nname       = \"Lead temperature, soldering 10 s, MS and SO packages\"\nkind       = \"abs_max\"\nscope      = \"na\"\nmax        = 300\nunit       = \"degC\"\nconditions = \"Soldering, 10 sec, MS and SO packages\"\ncite       = \"DS p.2, Absolute Maximum Ratings, Lead Temperature (Soldering, 10 sec), MS, SO Packages\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row ac348266d602\"\n\n# ---------------------------------------------------------------------------------------------------------------\n# Thermal: DS p.2, Pin Configuration, MS package (drawing note text, no MIN/TYP/MAX label).\n# ---------------------------------------------------------------------------------------------------------------\nunchecked  = \"owner: assembly\""
 
 [row.theta_ja_ms]
 state = "NEW"
@@ -297,7 +341,7 @@ hash = "431cad0172a78067e2c03034da8f16bccd85c1e042dc97b6b273a5d20790a4de"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 2
 pdf_page = 2
-toml_lines = "330-339"
+toml_lines = "344-353"
 image = "evidence/table_p2_y248.png"
 image_sha256 = "9ac1db904bdd3c71925b874174f7727eb0c3eae2aef52ba7dd68ee01cdbe1072"
 image_bytes = 11907
@@ -308,14 +352,16 @@ render_key = "c773d20b83596ae6"
 text_snippet = "(no text-layer line located)"
 
 [row.tj_max]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'PIN CONFIGURATION'): symbol 'TJMAX' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
 hash = "fa099df8203917584b9506edb0a56fb23380ff2e3d53ab9cc6ec71c22713dca4"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row fa099df82039"
+stamp_hash = "fa099df8203917584b9506edb0a56fb23380ff2e3d53ab9cc6ec71c22713dca4"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 2
 pdf_page = 2
-toml_lines = "341-349"
+toml_lines = "355-364"
 image = "evidence/table_p2_y248.png"
 image_sha256 = "9ac1db904bdd3c71925b874174f7727eb0c3eae2aef52ba7dd68ee01cdbe1072"
 image_bytes = 11907
@@ -324,16 +370,19 @@ crop_box = [44.2, 248.2, 567.0, 381.6]
 dpi = 150
 render_key = "c773d20b83596ae6"
 text_snippet = "         14-LEAD (4mm \u00d7 3mm) PLASTIC DFN                    TJMAX = 150\u00b0C, \u03b8JA = 120\u00b0C/W\n             TJMAX = 150\u00b0C, \u03b8JA = 45\u00b0C/W                                                                          16-LEAD PLASTIC SO\n                                                                                                              TJMAX = 150\u00b0C, \u03b8JA = 100\u00b0C/W"
+stamped_toml = "[param.tj_max]\nname       = \"Maximum junction temperature, MS package\"\nsymbol     = \"TJMAX\"\nkind       = \"thermal\"\nscope      = \"na\"\nmax        = 150\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.2, Pin Configuration, MS package, TJMAX\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row fa099df82039\""
 
 [row.vcc_op]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "row uses convention 'min_ref'; row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "42c267611ed3156f68d41bb5dcdd859a2574963d21c02d45faf5df7ec7da84c8"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 42c267611ed3"
+stamp_hash = "42c267611ed3156f68d41bb5dcdd859a2574963d21c02d45faf5df7ec7da84c8"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 3
 pdf_page = 3
-toml_lines = "356-369"
+toml_lines = "371-385"
 image = "evidence/vcc_op_p3.png"
 image_sha256 = "d505cddc52db1b3e21d83cc95ff2f5cf03cd2a2bcc6d546978a2cd34c73ecb5e"
 image_bytes = 2733
@@ -347,16 +396,19 @@ header_box = [39.0, 415.4, 573.6, 472.0]
 header_key = "a23c563ae799e312"
 text_snippet = "temperature range, otherwise specifications are at TA = 25\u00b0C. VCC = 12V.\nSYMBOL          PARAMETER                                     CONDITIONS                                                      MIN      TYP      MAX       UNITS\nVCC             Operating Supply Range                                                                                  l       4                80            V"
 text_cells = { max = "80", min = "4", typ = "", unit = "V" }
+stamped_toml = "[param.vcc_op]\nname       = \"Operating supply range\"\nsymbol     = \"VCC\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 4\nmax        = 80\nunit       = \"V\"\nconditions = \"\"\ncite       = \"DS p.3, Electrical Characteristics, VCC Operating Supply Range\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 42c267611ed3\"\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nnote       = \"Referenced to GND: DS p.5, Note 2, 'All voltages are referenced to GND unless otherwise specified'.\"\ncheck_pins = [\"VCC\"]"
 
 [row.icc]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "AGREE_TEXT_CHECK"
 reason = "one clean line; min/typ/max and unit equal; row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "769e513d3cdf32fc42ab13896155ec38581bb53d0f7dc3bbc81a8a345c36516d"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 769e513d3cdf"
+stamp_hash = "769e513d3cdf32fc42ab13896155ec38581bb53d0f7dc3bbc81a8a345c36516d"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 3
 pdf_page = 3
-toml_lines = "371-380"
+toml_lines = "387-397"
 image = "evidence/icc_p3.png"
 image_sha256 = "0942e17fedd0a0c8943d5636a4c4d63596bff88066eda266b6454daa383231cc"
 image_bytes = 4170
@@ -370,6 +422,7 @@ header_box = [39.0, 415.4, 573.6, 472.0]
 header_key = "a23c563ae799e312"
 text_snippet = "temperature range, otherwise specifications are at TA = 25\u00b0C. VCC = 12V.\nSYMBOL          PARAMETER                                     CONDITIONS                                                      MIN      TYP      MAX       UNITS\nICC             Supply Current                                VCC = SOURCE = SENSE = OUT = 12V, No Fault                l               370      750          \u00b5A"
 text_cells = { max = "750", min = "", typ = "370", unit = "\u00b5A" }
+stamped_toml = "[param.icc]\nname       = \"Supply current, no fault\"\nsymbol     = \"ICC\"\nkind       = \"electrical\"\nscope      = \"full\"\ntyp        = 370\nmax        = 750\nunit       = \"uA\"\nconditions = \"VCC = SOURCE = SENSE = OUT = 12V, no fault\"\ncite       = \"DS p.3, Electrical Characteristics, ICC\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 769e513d3cdf\""
 
 [row.icc_shdn]
 state = "NEW"
@@ -379,7 +432,7 @@ hash = "6da155147d1c0ab0af88b3baeb18daffbb92eeafe79c51bd3c24b53e9f96e6bc"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 3
 pdf_page = 3
-toml_lines = "382-391"
+toml_lines = "399-408"
 image = "evidence/icc_shdn_p3.png"
 image_sha256 = "8b0445973bf540c94de437f57ae68bc0f747aeae043e39bed05fd1320718de16"
 image_bytes = 3406
@@ -402,7 +455,7 @@ hash = "a9b3306efd45eba851369bb6300a2d9a345dbc5197f76fbc719d2b2b2a851a22"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 3
 pdf_page = 3
-toml_lines = "393-403"
+toml_lines = "410-420"
 image = "evidence/icc_rev_p3.png"
 image_sha256 = "2f6386e0608ebad8c393fd01f555010e390c8ef5c31575649fbf1c97c62557b9"
 image_bytes = 2992
@@ -425,7 +478,7 @@ hash = "a416f8ea9d21f316141e6dcd42f8ed85b28819b134c0e1fef876013727d42650"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 3
 pdf_page = 3
-toml_lines = "405-415"
+toml_lines = "422-432"
 image = "evidence/page_p3.png"
 image_sha256 = "803060a5c48aa7830039bf5bb6ca8f5f6ff82db5956e9f01a18c0e2a112d51d3"
 image_bytes = 149273
@@ -443,7 +496,7 @@ hash = "5cb0d0334afac4481998e995229dfcc4a18797db76df5a14de17f5a6891e4877"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 3
 pdf_page = 3
-toml_lines = "417-427"
+toml_lines = "434-444"
 image = "evidence/page_p3.png"
 image_sha256 = "803060a5c48aa7830039bf5bb6ca8f5f6ff82db5956e9f01a18c0e2a112d51d3"
 image_bytes = 149273
@@ -461,7 +514,7 @@ hash = "f9ac6403753e10a31db080c86236c455fc6465229500f1ff06159200024d679e"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 3
 pdf_page = 3
-toml_lines = "429-440"
+toml_lines = "446-457"
 image = "evidence/ihgate_up_p3.png"
 image_sha256 = "be900137ae4f45d4638ed883c5a56206f5d73955d170692a7fe0e7284d7c9d4a"
 image_bytes = 4332
@@ -484,7 +537,7 @@ hash = "921a170b3a3ae9e329a0501cd8c3888a67e8a09344f51ba20ea35c7faf52bfdb"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 3
 pdf_page = 3
-toml_lines = "442-451"
+toml_lines = "459-468"
 image = "evidence/ihgate_dn_ov_p3.png"
 image_sha256 = "58cfdfdb3e2dc68062ca4468318235665b28238af2ed09e3727d428eefb5eecf"
 image_bytes = 8098
@@ -506,7 +559,7 @@ hash = "7e0f44516a3073e2e45ed826ce887ceddc755e69b6ab359c2e16f871fa6b5a3b"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 3
 pdf_page = 3
-toml_lines = "453-462"
+toml_lines = "470-479"
 image = "evidence/ihgate_dn_oc_p3.png"
 image_sha256 = "58cfdfdb3e2dc68062ca4468318235665b28238af2ed09e3727d428eefb5eecf"
 image_bytes = 8098
@@ -528,7 +581,7 @@ hash = "2c99a7a5288ba6171c596e4a182e7418925a9cf99d6954bbfd3c0603dd4d5039"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 3
 pdf_page = 3
-toml_lines = "464-473"
+toml_lines = "481-490"
 image = "evidence/ihgate_dn_off_p3.png"
 image_sha256 = "58cfdfdb3e2dc68062ca4468318235665b28238af2ed09e3727d428eefb5eecf"
 image_bytes = 8098
@@ -550,7 +603,7 @@ hash = "49d12e7964dc28af82e299f0fb85f2fc0a7a1c6ca8344ae13be91d8d63e32c10"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 3
 pdf_page = 3
-toml_lines = "475-484"
+toml_lines = "492-501"
 image = "evidence/isrc_on_p3.png"
 image_sha256 = "9160025e39ca8ffa25d83813dd2f8c96fb734bdadcabf59306d2be771f68215a"
 image_bytes = 6789
@@ -572,7 +625,7 @@ hash = "3ef7f0bd133609167feb0cf90bd331689465addbeb69c5cc2cf06f18e294ac8f"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 3
 pdf_page = 3
-toml_lines = "486-495"
+toml_lines = "503-512"
 image = "evidence/isrc_shdn_p3.png"
 image_sha256 = "9160025e39ca8ffa25d83813dd2f8c96fb734bdadcabf59306d2be771f68215a"
 image_bytes = 6789
@@ -594,7 +647,7 @@ hash = "72c5eb373cac61c6ae40a107e711291c0a7fa59f474b639b3543f47f8e86874a"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 3
 pdf_page = 3
-toml_lines = "497-507"
+toml_lines = "514-524"
 image = "evidence/isrc_neg30_p3.png"
 image_sha256 = "9160025e39ca8ffa25d83813dd2f8c96fb734bdadcabf59306d2be771f68215a"
 image_bytes = 6789
@@ -609,14 +662,16 @@ header_key = "a23c563ae799e312"
 text_snippet = "temperature range, otherwise specifications are at TA = 25\u00b0C. VCC = 12V.\nSYMBOL          PARAMETER                                     CONDITIONS                                                      MIN      TYP      MAX       UNITS\nISRC            SOURCE Input Current                          VCC = SOURCE = SENSE = OUT = 12V                          l               18       40          \u00b5A\n                                                              VCC = SOURCE = 12V, Shutdown                              l               32       90          \u00b5A\n                                                              VSOURCE = \u201330V                                            l              \u20132.0     \u20133.5         mA"
 
 [row.vfb]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "adjacent line without its own symbol (multi-line name/conditions or sub-row); row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "9f197b4b533cc69e6b3f271b4b97ba932b925d483782f054c9766535bcd9f4ac"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 9f197b4b533c"
+stamp_hash = "9f197b4b533cc69e6b3f271b4b97ba932b925d483782f054c9766535bcd9f4ac"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 3
 pdf_page = 3
-toml_lines = "509-519"
+toml_lines = "526-537"
 image = "evidence/vfb_p3.png"
 image_sha256 = "a88e76b521cd89240d5a0be188fd725985ed98ba4e10dfccfc7becf8e63d88c7"
 image_bytes = 3443
@@ -630,16 +685,19 @@ header_box = [39.0, 415.4, 573.6, 472.0]
 header_key = "a23c563ae799e312"
 text_snippet = "temperature range, otherwise specifications are at TA = 25\u00b0C. VCC = 12V.\nSYMBOL          PARAMETER                                     CONDITIONS                                                      MIN      TYP      MAX       UNITS\nVFB             FB Servo Voltage                              VCC = 12V to 80V                                          l     1.22     1.25     1.28           V"
 text_cells = { max = "1.28", min = "1.22", typ = "1.25", unit = "V" }
+stamped_toml = "[param.vfb]\nname       = \"FB servo voltage\"\nsymbol     = \"VFB\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 1.22\ntyp        = 1.25\nmax        = 1.28\nunit       = \"V\"\nconditions = \"VCC = 12V to 80V\"\ncite       = \"DS p.3, Electrical Characteristics, VFB\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 9f197b4b533c\""
 
 [row.ifb]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "cell max is not a plain number (marker or text); row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "6ebf354e20f715362472611c12001b0be8644c0e870281c33797fdbfa747fe47"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 6ebf354e20f7"
+stamp_hash = "6ebf354e20f715362472611c12001b0be8644c0e870281c33797fdbfa747fe47"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 3
 pdf_page = 3
-toml_lines = "521-532"
+toml_lines = "539-551"
 image = "evidence/ifb_p3.png"
 image_sha256 = "01e59a7722982d1e5adbbf5c43ad879ed827ddd31fec845e64124fcb58023ab3"
 image_bytes = 2319
@@ -653,6 +711,7 @@ header_box = [39.0, 415.4, 573.6, 472.0]
 header_key = "a23c563ae799e312"
 text_snippet = "temperature range, otherwise specifications are at TA = 25\u00b0C. VCC = 12V.\nSYMBOL          PARAMETER                                     CONDITIONS                                                      MIN      TYP      MAX       UNITS\nIFB             FB Input Current                              FB = 1.25V                                                l                0       \u00b11           \u00b5A"
 text_cells = { max = "\u00b11", min = "", typ = "0", unit = "\u00b5A" }
+stamped_toml = "[param.ifb]\nname       = \"FB input current\"\nsymbol     = \"IFB\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = -1\ntyp        = 0\nmax        = 1\nunit       = \"uA\"\nconditions = \"FB = 1.25V\"\ncite       = \"DS p.3, Electrical Characteristics, IFB\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 6ebf354e20f7\"\nnote       = \"Printed as 0 TYP and +/-1 in the MAX column; stored as symmetric min -1 / max 1.\""
 
 [row.dvsns_0c125c]
 state = "NEW"
@@ -662,7 +721,7 @@ hash = "d371acb124ac69c62f7a1de5239962117866102fc78e23512859f15f36165d8f"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 3
 pdf_page = 3
-toml_lines = "534-545"
+toml_lines = "553-564"
 image = "evidence/page_p3.png"
 image_sha256 = "803060a5c48aa7830039bf5bb6ca8f5f6ff82db5956e9f01a18c0e2a112d51d3"
 image_bytes = 149273
@@ -673,14 +732,16 @@ render_key = "caf6f17741ec57d8"
 text_snippet = "(no text-layer line located)"
 
 [row.dvsns_full]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'dVSNS' not found as a table row; text check: UNSURE symbol not found as the first/Symbol-column word of any table line"
 hash = "07cb725d218eeb5fae746a285a6185149ce15a5868bdbc58b54514f9ef2597e3"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 07cb725d218e"
+stamp_hash = "07cb725d218eeb5fae746a285a6185149ce15a5868bdbc58b54514f9ef2597e3"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 3
 pdf_page = 3
-toml_lines = "547-557"
+toml_lines = "566-577"
 image = "evidence/page_p3.png"
 image_sha256 = "803060a5c48aa7830039bf5bb6ca8f5f6ff82db5956e9f01a18c0e2a112d51d3"
 image_bytes = 149273
@@ -689,6 +750,7 @@ crop_box = "full_page"
 dpi = 200
 render_key = "caf6f17741ec57d8"
 text_snippet = "(no text-layer line located)"
+stamped_toml = "[param.dvsns_full]\nname       = \"Overcurrent fault threshold (VSENSE - VOUT), -40 to 125 degC\"\nsymbol     = \"dVSNS\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 43\ntyp        = 50\nmax        = 57\nunit       = \"mV\"\nconditions = \"VCC = 4V to 80V, OUT = 2.5V to VCC, -40degC to 125degC\"\ncite       = \"DS p.3, Electrical Characteristics, dVSNS (row 2)\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 07cb725d218e\""
 
 [row.dvsns_lo]
 state = "NEW"
@@ -698,7 +760,7 @@ hash = "2554517c3d8250ca7181fcd00f5cd1381be80c5f2efba465bec10380029fa126"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 3
 pdf_page = 3
-toml_lines = "559-570"
+toml_lines = "579-590"
 image = "evidence/page_p3.png"
 image_sha256 = "803060a5c48aa7830039bf5bb6ca8f5f6ff82db5956e9f01a18c0e2a112d51d3"
 image_bytes = 149273
@@ -716,7 +778,7 @@ hash = "47a4f47ad454f09d3e859bb973f94d6a0de1576c7e661de47eba696d207867b8"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "572-581"
+toml_lines = "592-601"
 image = "evidence/isns_on_p4.png"
 image_sha256 = "bb540a4742b42b14da632a7b67c78052f952aada4503c8c6ba18e840fde36094"
 image_bytes = 4839
@@ -738,7 +800,7 @@ hash = "998bcd0220abf6c83812a3941b382a0009993aaeef05bb62158fb498269725eb"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "583-593"
+toml_lines = "603-613"
 image = "evidence/isns_neg15_p4.png"
 image_sha256 = "bb540a4742b42b14da632a7b67c78052f952aada4503c8c6ba18e840fde36094"
 image_bytes = 4839
@@ -760,7 +822,7 @@ hash = "e5ce95f4a04674d2bf4c3036bf50d76c45cbf9fde789d8b175a28abe7a9e3c4e"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "595-606"
+toml_lines = "615-626"
 image = "evidence/itmr_up_ov_lo_p4.png"
 image_sha256 = "a83e305259b741efdecf0659bbc846885bb72afd266bbd2d8a7d248688db7267"
 image_bytes = 14937
@@ -782,7 +844,7 @@ hash = "c992f884d272acd74a1f9ca00c578e7c137aaf89fb4206380b403f635d3ddbb8"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "608-619"
+toml_lines = "628-639"
 image = "evidence/itmr_up_ov_hi_p4.png"
 image_sha256 = "a83e305259b741efdecf0659bbc846885bb72afd266bbd2d8a7d248688db7267"
 image_bytes = 14937
@@ -804,7 +866,7 @@ hash = "5f0822bb4ad1480755c518c511ecf81a1cc617cbb1fe91c2e99ccae320b78487"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "621-632"
+toml_lines = "641-652"
 image = "evidence/itmr_up_oc_lo_p4.png"
 image_sha256 = "a83e305259b741efdecf0659bbc846885bb72afd266bbd2d8a7d248688db7267"
 image_bytes = 14937
@@ -826,7 +888,7 @@ hash = "233b7a29e436a7808eb41eb2045858c12bd6345d7fc2820386d1683ae9db911c"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "634-645"
+toml_lines = "654-665"
 image = "evidence/itmr_up_oc_hi_p4.png"
 image_sha256 = "a83e305259b741efdecf0659bbc846885bb72afd266bbd2d8a7d248688db7267"
 image_bytes = 14937
@@ -848,7 +910,7 @@ hash = "193cecba454b1eab1125998992d19f4d9e4e359cd73e3136a2ff273e51d656ef"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "647-658"
+toml_lines = "667-678"
 image = "evidence/itmr_up_warn_p4.png"
 image_sha256 = "a83e305259b741efdecf0659bbc846885bb72afd266bbd2d8a7d248688db7267"
 image_bytes = 14937
@@ -870,7 +932,7 @@ hash = "a66245ec2cc3ed56bc2ac7a79a4108c5b361488ef251c4e0ee9045db09a4fc55"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "660-671"
+toml_lines = "680-691"
 image = "evidence/itmr_up_retry_p4.png"
 image_sha256 = "a83e305259b741efdecf0659bbc846885bb72afd266bbd2d8a7d248688db7267"
 image_bytes = 14937
@@ -885,14 +947,16 @@ header_key = "362c4761f399660f"
 text_snippet = "temperature range, otherwise specifications are at TA = 25\u00b0C. VCC = 12V.\nSYMBOL       PARAMETER                                 CONDITIONS                                            MIN     TYP     MAX     UNITS\nITMR(UP)     TMR Pull-Up Current, Overvoltage          TMR = 1V, FB = 1.5V, VCC \u2013 OUT = 0.5V             l   \u20131.3    \u20132.2     \u20133         \u00b5A\n                                                       TMR = 1V, FB = 1.5V, VCC \u2013 OUT = 75V              l   \u201340     \u201350     \u201360         \u00b5A\n             TMR Pull-Up Current, Overcurrent          TMR = 1V, \u2206VSNS = 60mV, VCC \u2013 OUT = 0.5V          l    \u20136     \u201310     \u201314         \u00b5A\n                                                       TMR = 1V, \u2206VSNS = 60mV, VCC \u2013 OUT = 75V           l   \u2013210    \u2013260    \u2013310        \u00b5A\n             TMR Pull-Up Current, Warning              TMR = 1.3V, FB = 1.5V, VCC \u2013 OUT = 0.5V           l    \u20133      \u20135      \u20137         \u00b5A\n             TMR Pull-Up Current, Retry                TMR = 1V, FB = 1.5V                               l   \u20131.3     \u20132      \u20133         \u00b5A"
 
 [row.itmr_dn_retry]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "adjacent line without its own symbol (multi-line name/conditions or sub-row); row found by symbol (table_xcheck match), row group of 2 lines; no footnote marker on the row or header"
 hash = "f239d0299971c7eaced88848631b2cc9e27bcceec554003b5da29b770e57ef5b"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row f239d0299971"
+stamp_hash = "f239d0299971c7eaced88848631b2cc9e27bcceec554003b5da29b770e57ef5b"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "673-684"
+toml_lines = "693-705"
 image = "evidence/itmr_dn_retry_p4.png"
 image_sha256 = "33a4e5e9704fcfd5eaf1bd5dc2a04ed9459d1121545f02af63a960c38a92d66e"
 image_bytes = 5070
@@ -905,6 +969,7 @@ header_sha256 = "0ef828a5ae4bf8e26aa8f79c26b4136416fc59e6ca3e8ffddbaf91295dc4ae5
 header_box = [39.0, 73.9, 573.6, 129.4]
 header_key = "362c4761f399660f"
 text_snippet = "temperature range, otherwise specifications are at TA = 25\u00b0C. VCC = 12V.\nSYMBOL       PARAMETER                                 CONDITIONS                                            MIN     TYP     MAX     UNITS\nITMR(DN)     TMR Pull-Down Current                     TMR = 1V, FB = 1.5V, Retry                        l    1.1     2       2.7       \u00b5A\n                                                       Shutdown                                          l    0.3    0.75     1.5       mA"
+stamped_toml = "[param.itmr_dn_retry]\nname       = \"TMR pull-down current, retry and cool-down\"\nsymbol     = \"ITMR(DN)\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 1.1\ntyp        = 2\nmax        = 2.7\nunit       = \"uA\"\nconditions = \"TMR = 1V, FB = 1.5V, Retry\"\ncite       = \"DS p.4, Electrical Characteristics, ITMR(DN) Retry\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row f239d0299971\"\nnote       = \"OPEN ITEM: DS Figure 4 caption says 'LTC4364-2 Only' but the p.15 text says the -1 also generates these cool-down TMR pulses; the text is followed. Shared by all six variants: DS p.15, the -1 generates the same cool-down TMR pulses (Figure 4) and then latches, so this current is used for -1 as well. Used by calc.t_cool (i_cycle).\""
 
 [row.itmr_dn_shdn]
 state = "NEW"
@@ -914,7 +979,7 @@ hash = "12b64a4d3293c302b57f46ec8f7136f67fcb3c22c862da32c73005bdfa46f3d5"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "686-696"
+toml_lines = "707-717"
 image = "evidence/itmr_dn_shdn_p4.png"
 image_sha256 = "33a4e5e9704fcfd5eaf1bd5dc2a04ed9459d1121545f02af63a960c38a92d66e"
 image_bytes = 5070
@@ -929,14 +994,16 @@ header_key = "362c4761f399660f"
 text_snippet = "temperature range, otherwise specifications are at TA = 25\u00b0C. VCC = 12V.\nSYMBOL       PARAMETER                                 CONDITIONS                                            MIN     TYP     MAX     UNITS\nITMR(DN)     TMR Pull-Down Current                     TMR = 1V, FB = 1.5V, Retry                        l    1.1     2       2.7       \u00b5A\n                                                       Shutdown                                          l    0.3    0.75     1.5       mA"
 
 [row.vtmr_f]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "adjacent line without its own symbol (multi-line name/conditions or sub-row); row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "2c5008c01ed3faebfff31d910bd323868e9066a3d22ff81a5b0456481c40376f"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 2c5008c01ed3"
+stamp_hash = "2c5008c01ed3faebfff31d910bd323868e9066a3d22ff81a5b0456481c40376f"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "698-708"
+toml_lines = "719-730"
 image = "evidence/vtmr_f_p4.png"
 image_sha256 = "6ffecd2d0b4a09f46bcd022839f13ad7458bb48dca87a853bc520057a772cd82"
 image_bytes = 3897
@@ -950,16 +1017,19 @@ header_box = [39.0, 73.9, 573.6, 129.4]
 header_key = "362c4761f399660f"
 text_snippet = "temperature range, otherwise specifications are at TA = 25\u00b0C. VCC = 12V.\nSYMBOL       PARAMETER                                 CONDITIONS                                            MIN     TYP     MAX     UNITS\nVTMR(F)      TMR Fault Threshold                       FLT Falling, VCC = 4V to 80V                      l   1.22    1.25    1.28         V"
 text_cells = { max = "1.28", min = "1.22", typ = "1.25", unit = "V" }
+stamped_toml = "[param.vtmr_f]\nname       = \"TMR fault threshold (FLT falls)\"\nsymbol     = \"VTMR(F)\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 1.22\ntyp        = 1.25\nmax        = 1.28\nunit       = \"V\"\nconditions = \"FLT falling, VCC = 4V to 80V\"\ncite       = \"DS p.4, Electrical Characteristics, VTMR(F)\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 2c5008c01ed3\""
 
 [row.vtmr_g]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "AGREE_TEXT_CHECK"
 reason = "one clean line; min/typ/max and unit equal; row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "63f5f1ceb1ceb3a1aea0d9f0ba36108f2779e45a7c3311b44422fa3b400dc071"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 63f5f1ceb1ce"
+stamp_hash = "63f5f1ceb1ceb3a1aea0d9f0ba36108f2779e45a7c3311b44422fa3b400dc071"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "710-720"
+toml_lines = "732-743"
 image = "evidence/vtmr_g_p4.png"
 image_sha256 = "d3a8f9e7e94bbc0746cd556e05f0407f339d4e04092316549e33209d8364c3dc"
 image_bytes = 4420
@@ -973,6 +1043,7 @@ header_box = [39.0, 73.9, 573.6, 129.4]
 header_key = "362c4761f399660f"
 text_snippet = "temperature range, otherwise specifications are at TA = 25\u00b0C. VCC = 12V.\nSYMBOL       PARAMETER                                 CONDITIONS                                            MIN     TYP     MAX     UNITS\nVTMR(G)      TMR Gate Off Threshold                    HGATE Falling, VCC = 4V to 80V                    l   1.32    1.35    1.38         V"
 text_cells = { max = "1.38", min = "1.32", typ = "1.35", unit = "V" }
+stamped_toml = "[param.vtmr_g]\nname       = \"TMR gate-off threshold (HGATE falls)\"\nsymbol     = \"VTMR(G)\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 1.32\ntyp        = 1.35\nmax        = 1.38\nunit       = \"V\"\nconditions = \"HGATE falling, VCC = 4V to 80V\"\ncite       = \"DS p.4, Electrical Characteristics, VTMR(G)\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 63f5f1ceb1ce\""
 
 [row.vtmr_r]
 state = "NEW"
@@ -982,7 +1053,7 @@ hash = "90aff0cf231d0af3fe5dde4bca560b5d7c58774fe92765b513b7666c515fbb56"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "722-733"
+toml_lines = "745-756"
 image = "evidence/vtmr_r_p4.png"
 image_sha256 = "a50615998a9102cb3a184c0a9aa86f7d8dd218939e1facf7605a022a34bbf582"
 image_bytes = 5275
@@ -998,14 +1069,16 @@ text_snippet = "temperature range, otherwise specifications are at TA = 25\u00b0
 text_cells = { max = "0.175", min = "0.125", typ = "0.15", unit = "V" }
 
 [row.dvtmr]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'dVTMR' not found as a table row; text check: UNSURE symbol not found as the first/Symbol-column word of any table line"
 hash = "087b999fd272d668fa6f5e10276b41bffb92ebd0dbd143624e2b79e0edd5a54b"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 087b999fd272"
+stamp_hash = "087b999fd272d668fa6f5e10276b41bffb92ebd0dbd143624e2b79e0edd5a54b"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "735-745"
+toml_lines = "758-769"
 image = "evidence/page_p4.png"
 image_sha256 = "7deda391c8dd31f8279e2f1e91b26edc123b1c7c7bb5ccae13dbde63b83ff84f"
 image_bytes = 128642
@@ -1014,16 +1087,19 @@ crop_box = "full_page"
 dpi = 200
 render_key = "1aba149e876221ab"
 text_snippet = "(no text-layer line located)"
+stamped_toml = "[param.dvtmr]\nname       = \"Early warning timer window\"\nsymbol     = \"dVTMR\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 75\ntyp        = 100\nmax        = 125\nunit       = \"mV\"\nconditions = \"VTMR(G) - VTMR(F), VCC = 4V to 80V\"\ncite       = \"DS p.4, Electrical Characteristics, Early Warning Timer Window\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 087b999fd272\""
 
 [row.vuv]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "AGREE_TEXT_CHECK"
 reason = "one clean line; min/typ/max and unit equal; row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "c15801eeaa0267f3975f2f4d92860cebc1fe4dfb9152261801373f1127d69599"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row c15801eeaa02"
+stamp_hash = "c15801eeaa0267f3975f2f4d92860cebc1fe4dfb9152261801373f1127d69599"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "747-757"
+toml_lines = "771-782"
 image = "evidence/vuv_p4.png"
 image_sha256 = "3c2854bcf12463397791d24503aacbbe3a7a8e094a53f9c7f18436b91cc721f6"
 image_bytes = 3704
@@ -1037,6 +1113,7 @@ header_box = [39.0, 73.9, 573.6, 129.4]
 header_key = "362c4761f399660f"
 text_snippet = "temperature range, otherwise specifications are at TA = 25\u00b0C. VCC = 12V.\nSYMBOL       PARAMETER                                 CONDITIONS                                            MIN     TYP     MAX     UNITS\nVUV          UV Input Threshold                        UV Falling, VCC = 4V to 80V                       l   1.22    1.25    1.28         V"
 text_cells = { max = "1.28", min = "1.22", typ = "1.25", unit = "V" }
+stamped_toml = "[param.vuv]\nname       = \"UV input threshold (falling)\"\nsymbol     = \"VUV\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 1.22\ntyp        = 1.25\nmax        = 1.28\nunit       = \"V\"\nconditions = \"UV falling, VCC = 4V to 80V\"\ncite       = \"DS p.4, Electrical Characteristics, VUV\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row c15801eeaa02\""
 
 [row.vuv_hyst]
 state = "NEW"
@@ -1046,7 +1123,7 @@ hash = "36f7a1d944140c07ccb385cb8f988b1a8129af4a5c9f25aacd4d6aba8b9485bb"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "759-769"
+toml_lines = "784-794"
 image = "evidence/vuv_hyst_p4.png"
 image_sha256 = "22aa1f073b81a07ce9375eed03aa8f2424b9d369def1d71d6be5f1f97849a233"
 image_bytes = 2905
@@ -1069,7 +1146,7 @@ hash = "c1166950e54788867af9b3f8935d9b40cef3f0e014e6dc56f6cc1263f4ca46f5"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "771-783"
+toml_lines = "796-808"
 image = "evidence/vuv_rst_p4.png"
 image_sha256 = "44a61629510a1e3c261a1c84426e96f0cb7b4cd98347d15d49ede88df8879916"
 image_bytes = 4769
@@ -1085,14 +1162,16 @@ text_snippet = "temperature range, otherwise specifications are at TA = 25\u00b0
 text_cells = { max = "0.7", min = "0.5", typ = "0.6", unit = "V" }
 
 [row.vov]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "AGREE_TEXT_CHECK"
 reason = "one clean line; min/typ/max and unit equal; row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "48c705b6d54659d0342c4452ac3a4e3918ece3342d3f20483f7a8dc6b34c87e3"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 48c705b6d546"
+stamp_hash = "48c705b6d54659d0342c4452ac3a4e3918ece3342d3f20483f7a8dc6b34c87e3"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "785-795"
+toml_lines = "810-821"
 image = "evidence/vov_p4.png"
 image_sha256 = "234eaffec14102fba4bbef9929d99437468ec8e9d8da936ad6002908cacac958"
 image_bytes = 3856
@@ -1106,6 +1185,7 @@ header_box = [39.0, 73.9, 573.6, 129.4]
 header_key = "362c4761f399660f"
 text_snippet = "temperature range, otherwise specifications are at TA = 25\u00b0C. VCC = 12V.\nSYMBOL       PARAMETER                                 CONDITIONS                                            MIN     TYP     MAX     UNITS\nVOV          OV Input Threshold                        OV Rising, VCC = 4V to 80V                        l   1.22    1.25    1.28         V"
 text_cells = { max = "1.28", min = "1.22", typ = "1.25", unit = "V" }
+stamped_toml = "[param.vov]\nname       = \"OV input threshold (rising)\"\nsymbol     = \"VOV\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = 1.22\ntyp        = 1.25\nmax        = 1.28\nunit       = \"V\"\nconditions = \"OV rising, VCC = 4V to 80V\"\ncite       = \"DS p.4, Electrical Characteristics, VOV\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 48c705b6d546\""
 
 [row.vov_hyst]
 state = "NEW"
@@ -1115,7 +1195,7 @@ hash = "98dd466a81394dd6e07601eecb72155c7035eb07c455b17729b8a8c018c9f707"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "797-806"
+toml_lines = "823-832"
 image = "evidence/vov_hyst_p4.png"
 image_sha256 = "5face887b5d816d276230aa32ffb7484974dda6d699cfbe1df19bd1e2a5a79d3"
 image_bytes = 2436
@@ -1131,14 +1211,16 @@ text_snippet = "temperature range, otherwise specifications are at TA = 25\u00b0
 text_cells = { max = "", min = "", typ = "12", unit = "mV" }
 
 [row.iin_uvov_pos]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "cell max is not a plain number (marker or text); row found by symbol (table_xcheck match), row group of 2 lines; no footnote marker on the row or header"
 hash = "1d2f5b96ddf5729597d7ccbaecf5036ca172ed8f15179e45a0ffa6b01a0e8923"
+stamp = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 1d2f5b96ddf5"
+stamp_hash = "1d2f5b96ddf5729597d7ccbaecf5036ca172ed8f15179e45a0ffa6b01a0e8923"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "808-819"
+toml_lines = "834-846"
 image = "evidence/iin_uvov_pos_p4.png"
 image_sha256 = "179180cdb8b7c3fc196f811a8b922d988e2e2dd4dca3e620db6a381495ac3100"
 image_bytes = 3849
@@ -1151,6 +1233,7 @@ header_sha256 = "0ef828a5ae4bf8e26aa8f79c26b4136416fc59e6ca3e8ffddbaf91295dc4ae5
 header_box = [39.0, 73.9, 573.6, 129.4]
 header_key = "362c4761f399660f"
 text_snippet = "temperature range, otherwise specifications are at TA = 25\u00b0C. VCC = 12V.\nSYMBOL       PARAMETER                                 CONDITIONS                                            MIN     TYP     MAX     UNITS\nIIN          UV, OV Input Current                      UV, OV = 1.25V                                    l            0       \u00b11        \u00b5A\n                                                       UV, OV = \u201330V                                     l           \u20130.3    \u20130.6       mA"
+stamped_toml = "[param.iin_uvov_pos]\nname       = \"UV, OV input current at threshold\"\nsymbol     = \"IIN\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = -1\ntyp        = 0\nmax        = 1\nunit       = \"uA\"\nconditions = \"UV, OV = 1.25V\"\ncite       = \"DS p.4, Electrical Characteristics, IIN (row 1)\"\nverified   = \"human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 1d2f5b96ddf5\"\nnote       = \"Printed 0 TYP and +/-1 in the MAX column; stored as symmetric min -1 / max 1.\""
 
 [row.iin_uvov_neg]
 state = "NEW"
@@ -1160,7 +1243,7 @@ hash = "c43cfaea26a547f79cb573333098b0cd28e7b884cf53e3b6061a619fa96b922d"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "821-831"
+toml_lines = "848-858"
 image = "evidence/iin_uvov_neg_p4.png"
 image_sha256 = "179180cdb8b7c3fc196f811a8b922d988e2e2dd4dca3e620db6a381495ac3100"
 image_bytes = 3849
@@ -1182,7 +1265,7 @@ hash = "7f64ed259477ef8e67fe1f24dbab1a9cfa458b7527ac235454ab228a1f2280fd"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "833-842"
+toml_lines = "860-869"
 image = "evidence/vol_025ma_p4.png"
 image_sha256 = "e75ff7d096cac18ee31603004637496ddeaf504cd1e2ae11070ae7eb531da2c7"
 image_bytes = 3861
@@ -1204,7 +1287,7 @@ hash = "d68ac02f50f53bd45369b7e4734b4a9559f0b3d59a1df1a33ef733622ae7d9ab"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "844-853"
+toml_lines = "871-880"
 image = "evidence/vol_2ma_p4.png"
 image_sha256 = "e75ff7d096cac18ee31603004637496ddeaf504cd1e2ae11070ae7eb531da2c7"
 image_bytes = 3861
@@ -1226,7 +1309,7 @@ hash = "1dd0997a177adb107798c3f26aadcbe6888417428d1906f136b69875f182a73b"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "855-866"
+toml_lines = "882-893"
 image = "evidence/ileak_p4.png"
 image_sha256 = "d58fbdef16a048bdcf331051b2575cf8533d0f085a3db5bd3b6d49811c7ffc78"
 image_bytes = 3338
@@ -1249,7 +1332,7 @@ hash = "278abfdc1277b3b9c766b77822e0d9bdf4aed536a240bf3b0be058abd451c9a7"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "868-878"
+toml_lines = "895-905"
 image = "evidence/page_p4.png"
 image_sha256 = "7deda391c8dd31f8279e2f1e91b26edc123b1c7c7bb5ccae13dbde63b83ff84f"
 image_bytes = 128642
@@ -1267,7 +1350,7 @@ hash = "561d88149a1d26edf40d774d76e257f3a9dd2966e1cd7b63040a0fa7e9bfc4f2"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "880-890"
+toml_lines = "907-917"
 image = "evidence/vout_rst_p4.png"
 image_sha256 = "75beed0b84b2232d0a54d285e9d4fadcd9986e590adc5386a52951b7f58f032f"
 image_bytes = 3705
@@ -1290,7 +1373,7 @@ hash = "f7c67a81d07041bb863d493a5c7c4782d4d02b55deb8184e2fe9cbe6bad68144"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "892-901"
+toml_lines = "919-928"
 image = "evidence/iout_on_p4.png"
 image_sha256 = "f61429309290aea630f6bb733c53f19042b839558366170f35767333bcf907e2"
 image_bytes = 8476
@@ -1312,7 +1395,7 @@ hash = "56df2a5246a0af53e658b12c7c54bc735fb263477e633c245acbf4c690252ecb"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "903-913"
+toml_lines = "930-940"
 image = "evidence/iout_neg15_p4.png"
 image_sha256 = "f61429309290aea630f6bb733c53f19042b839558366170f35767333bcf907e2"
 image_bytes = 8476
@@ -1334,7 +1417,7 @@ hash = "b3d0166395e07800874477c51e8deda4e87d4c16a4c40935216bbab548b469aa"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "915-923"
+toml_lines = "942-950"
 image = "evidence/page_p4.png"
 image_sha256 = "7deda391c8dd31f8279e2f1e91b26edc123b1c7c7bb5ccae13dbde63b83ff84f"
 image_bytes = 128642
@@ -1352,7 +1435,7 @@ hash = "d8168d5e74462af8f1053d6102e8ad42b0ea77a1ca6fb8a1926e1b56b0ace430"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "925-935"
+toml_lines = "952-962"
 image = "evidence/vshdn_p4.png"
 image_sha256 = "1a93e0e204a0de31f6cc298f4832b37fa8c98e57271ae8ae149a40181e44941f"
 image_bytes = 3501
@@ -1375,7 +1458,7 @@ hash = "06336ba7559a8206d070c8f722476345888c1d22926b8edd9c39e0fc57e46204"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "937-947"
+toml_lines = "964-974"
 image = "evidence/vshdn_flt_p4.png"
 image_sha256 = "7d841308388ab2bb2894de001b4b3e4c0b567eecc850b72ee8b15553c18ea9f4"
 image_bytes = 3819
@@ -1398,7 +1481,7 @@ hash = "afca6b9c0f27258d6d59e4229b5bc62a231034132a05c84fbbdb9ed1ddafebf1"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "949-959"
+toml_lines = "976-986"
 image = "evidence/ishdn_on_p4.png"
 image_sha256 = "b51a5e76f4fe9d48bd1e1ef57896642358f2ac3ab102299641435b52ed4b177d"
 image_bytes = 6257
@@ -1420,7 +1503,7 @@ hash = "0d0f5801fe002e5bbbf6ead5ea02de126ecc6c36fd784005891ec9ebe7c2833b"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "961-970"
+toml_lines = "988-997"
 image = "evidence/ishdn_leak_p4.png"
 image_sha256 = "b51a5e76f4fe9d48bd1e1ef57896642358f2ac3ab102299641435b52ed4b177d"
 image_bytes = 6257
@@ -1442,7 +1525,7 @@ hash = "b498700b1032201b7233abe803f13e11cafe64dd23e36548acec22192e91aba5"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "972-982"
+toml_lines = "999-1009"
 image = "evidence/ishdn_neg30_p4.png"
 image_sha256 = "b51a5e76f4fe9d48bd1e1ef57896642358f2ac3ab102299641435b52ed4b177d"
 image_bytes = 6257
@@ -1464,7 +1547,7 @@ hash = "617897a53bb00c5dcd225201926d9a64f5fcc8bfce052866611b724d6caf97cd"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "984-994"
+toml_lines = "1011-1021"
 image = "evidence/page_p4.png"
 image_sha256 = "7deda391c8dd31f8279e2f1e91b26edc123b1c7c7bb5ccae13dbde63b83ff84f"
 image_bytes = 128642
@@ -1482,7 +1565,7 @@ hash = "9f9fa8048763c073df31637032268323041f7894d0db03a7af524fa96eaf4a8d"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "996-1006"
+toml_lines = "1023-1033"
 image = "evidence/page_p4.png"
 image_sha256 = "7deda391c8dd31f8279e2f1e91b26edc123b1c7c7bb5ccae13dbde63b83ff84f"
 image_bytes = 128642
@@ -1500,7 +1583,7 @@ hash = "5d5d608d9f6a104bc59364cc78425077247263319523580facbe03281faae4af"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "1008-1017"
+toml_lines = "1035-1044"
 image = "evidence/t_off_uv_p4.png"
 image_sha256 = "3bd433dfecfe413ffad8bcbaa4c9005833c59850f7f3554a9010c69814eb0f5e"
 image_bytes = 5112
@@ -1522,7 +1605,7 @@ hash = "cb96f7d088ce76a7b86ad5725b27899026a72622e9e1192de473902515376a76"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "1019-1028"
+toml_lines = "1046-1055"
 image = "evidence/t_off_ov_p4.png"
 image_sha256 = "3d38013ffab4f71e1e224bcdbb5c4e1a044502670c0695abef381a342b284037"
 image_bytes = 5209
@@ -1544,7 +1627,7 @@ hash = "0d7e5e361086a44e72963c67ace1fcd979f85da1793620f5e25e5b0ce103e3da"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
 pdf_page = 4
-toml_lines = "1030-1039"
+toml_lines = "1057-1066"
 image = "evidence/t_off_oc_p4.png"
 image_sha256 = "30886a13e139be8f6037d424d2ecd198ff75ae444c7e189897589a5148ff716c"
 image_bytes = 5953
@@ -1566,7 +1649,7 @@ hash = "58fd3bddd083c9c1454e4f3cd35d7bc773d7bd5a20321de25d3dd4d31fafcfd7"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 5
 pdf_page = 5
-toml_lines = "1041-1051"
+toml_lines = "1068-1078"
 image = "evidence/page_p5.png"
 image_sha256 = "d64ab03b51a3a1a88847c4b75232c1c8454170beaba6fd9c92f952c32355fc06"
 image_bytes = 69821
@@ -1584,7 +1667,7 @@ hash = "93dcbee8ecd2257c0cc04cf484de852e8d428ec70f118d99e9e070d238db65e8"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 5
 pdf_page = 5
-toml_lines = "1053-1063"
+toml_lines = "1080-1090"
 image = "evidence/page_p5.png"
 image_sha256 = "d64ab03b51a3a1a88847c4b75232c1c8454170beaba6fd9c92f952c32355fc06"
 image_bytes = 69821
@@ -1602,7 +1685,7 @@ hash = "0a75b69632dd3cf96333b9c2bcb9c0d7689667a5c7febc576d5598a5a512d8a2"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 5
 pdf_page = 5
-toml_lines = "1065-1076"
+toml_lines = "1092-1103"
 image = "evidence/idgate_up_p5.png"
 image_sha256 = "a516ef3a136cc479fe80d332ad553450a686dc6144976f29de3034b824dc453d"
 image_bytes = 4680
@@ -1625,7 +1708,7 @@ hash = "ae467d659a05a1a9a5dc0bd03feebfdfe23ad6f19487d062d2957c5c4b076243"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 5
 pdf_page = 5
-toml_lines = "1078-1087"
+toml_lines = "1105-1114"
 image = "evidence/idgate_dn_on_p5.png"
 image_sha256 = "fefdf1ddf6c9a5bc48b2b0980167c1b4dcb172285f3e733d7300ca814a1d541a"
 image_bytes = 5707
@@ -1647,7 +1730,7 @@ hash = "fc85a29cfab1412dbfb5e459ac222015a15e51cb3e460dfc9a414425a07e3af5"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 5
 pdf_page = 5
-toml_lines = "1089-1098"
+toml_lines = "1116-1125"
 image = "evidence/idgate_dn_off_p5.png"
 image_sha256 = "fefdf1ddf6c9a5bc48b2b0980167c1b4dcb172285f3e733d7300ca814a1d541a"
 image_bytes = 5707
@@ -1669,7 +1752,7 @@ hash = "b323e3d18b08750e44e5699bdf03e44ab2d490896921daf046188300f130bf50"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 5
 pdf_page = 5
-toml_lines = "1100-1110"
+toml_lines = "1127-1137"
 image = "evidence/page_p5.png"
 image_sha256 = "d64ab03b51a3a1a88847c4b75232c1c8454170beaba6fd9c92f952c32355fc06"
 image_bytes = 69821
@@ -1687,7 +1770,7 @@ hash = "2fcf60b96633775aa2536328dbf6c7733801e119f24d4c30837c509eea45a451"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 5
 pdf_page = 5
-toml_lines = "1112-1122"
+toml_lines = "1139-1149"
 image = "evidence/page_p5.png"
 image_sha256 = "d64ab03b51a3a1a88847c4b75232c1c8454170beaba6fd9c92f952c32355fc06"
 image_bytes = 69821
@@ -1705,7 +1788,7 @@ hash = "0618dff78bdb86ab17e0a888c91db0368f71619ffdb7b99f944289d6988c77b3"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 5
 pdf_page = 5
-toml_lines = "1124-1133"
+toml_lines = "1151-1160"
 image = "evidence/t_off_dgate_p5.png"
 image_sha256 = "a6a37695cedd38ac1e2ade502bfca5df22df762baff047bc5287c632315741e3"
 image_bytes = 4724

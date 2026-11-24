@@ -150,6 +150,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = ""
 cite       = "DS p.2, Absolute Maximum Ratings, Supply Voltage VCC"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row a5444524e6de"
 note       = "Reference: DS p.2 header (Notes 1, 2) and DS p.5, Note 2 ('All voltages are referenced to GND unless otherwise specified'). min_ref/max_ref = GND."
 check_pins = ["VCC"]
 
@@ -164,6 +165,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = ""
 cite       = "DS p.2, Absolute Maximum Ratings, SOURCE, OV, UV, SHDN Voltages"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 0d2944931f3d"
 note       = "Reference: DS p.2 header (Notes 1, 2) and DS p.5, Note 2 ('All voltages are referenced to GND unless otherwise specified'). min_ref/max_ref = GND."
 check_pins = ["OV", "UV", "SHDN", "SOURCE"]
 
@@ -178,6 +180,7 @@ max_ref    = "SOURCE"
 unit       = "V"
 conditions = ""
 cite       = "DS p.2, Absolute Maximum Ratings, DGATE, HGATE Voltages (Note 3) SOURCE - 0.3 V to SOURCE + 10 V"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 78aa99859605"
 note       = "Note 3 (DS p.5): internal clamps limit DGATE and HGATE to a minimum of 10 V above SOURCE; driving beyond the clamp may damage the device."
 unchecked  = "DGATE and HGATE are driven by the part (internally clamped); owner: module"
 
@@ -192,6 +195,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = ""
 cite       = "DS p.2, Absolute Maximum Ratings, ENOUT, FLT Voltages"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 1072b01f54f0"
 note       = "Conflict inside the DS: abs max row gives 100 V (p.2); pin text DS p.9 says each pin 'can withstand up to 80V', and ILEAK is tested at 80 V (DS p.4). Both stored as printed; the 80 V statement is not an abs max row. Reference: DS p.2 header (Notes 1, 2) and DS p.5, Note 2 ('All voltages are referenced to GND unless otherwise specified'). min_ref/max_ref = GND."
 check_pins = ["ENOUT", "FLT"]
 
@@ -206,6 +210,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = ""
 cite       = "DS p.2, Absolute Maximum Ratings, OUT, SENSE Voltages"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row a1f6da20cfa9"
 note       = "Reference: DS p.2 header (Notes 1, 2) and DS p.5, Note 2 ('All voltages are referenced to GND unless otherwise specified'). min_ref/max_ref = GND."
 check_pins = ["OUT", "SENSE"]
 
@@ -220,6 +225,7 @@ max_ref    = "OUT"
 unit       = "V"
 conditions = ""
 cite       = "DS p.2, Absolute Maximum Ratings, Voltage Difference (SENSE to OUT)"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row c971ab98e1db"
 note       = "Difference V(SENSE) - V(OUT): the value is SENSE, the reference pin is OUT (DS p.2 row 'Voltage Difference (SENSE to OUT)'); the row names no reference pin beyond the difference. Cite: DS p.2 header (Notes 1, 2)."
 check_pins = ["SENSE"]
 
@@ -234,6 +240,7 @@ max_ref    = "VCC"
 unit       = "V"
 conditions = ""
 cite       = "DS p.2, Absolute Maximum Ratings, Voltage Difference (OUT to VCC)"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 88e00478387c"
 note       = "Difference V(OUT) - V(VCC): the value is OUT, the reference pin is VCC (DS p.2 row 'Voltage Difference (OUT to VCC)'). Cite: DS p.2 header (Notes 1, 2)."
 check_pins = ["OUT"]
 
@@ -248,6 +255,7 @@ max_ref    = "SOURCE"
 unit       = "V"
 conditions = ""
 cite       = "DS p.2, Absolute Maximum Ratings, Voltage Difference (SENSE to SOURCE)"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 69be458d0f02"
 note       = "Difference V(SENSE) - V(SOURCE): the value is SENSE, the reference pin is SOURCE (DS p.2 row 'Voltage Difference (SENSE to SOURCE)'). Cite: DS p.2 header (Notes 1, 2). SENSE is circuit-set (the sense resistor node), so the row is checked on SENSE with SOURCE as the reference; a module that leaves SOURCE undeclared gets UNVERIFIED (docs/spec/extract.md check-row rules)."
 check_pins = ["SENSE"]
 
@@ -262,6 +270,7 @@ max_ref    = "GND"
 unit       = "V"
 conditions = ""
 cite       = "DS p.2, Absolute Maximum Ratings, FB, TMR Voltages"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 63b80401406b"
 note       = "Reference: DS p.2 header (Notes 1, 2) and DS p.5, Note 2 ('All voltages are referenced to GND unless otherwise specified'). min_ref/max_ref = GND."
 check_pins = ["FB"]
 unchecked  = "TMR not checked: timer capacitor node driven by the part; owner: module"
@@ -275,6 +284,7 @@ max        = 125
 unit       = "degC"
 conditions = "LTC4364H grade, -40 degC to 125 degC (variants LTC4364HMS-1, LTC4364HMS-2)"
 cite       = "DS p.2, Absolute Maximum Ratings, Operating Ambient Temperature Range, LTC4364H"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row fdab5d5f12a4"
 check_ambient = true
 variants   = ["LTC4364HMS-1", "LTC4364HMS-2"]
 
@@ -287,6 +297,7 @@ max        = 70
 unit       = "degC"
 conditions = "LTC4364C grade, 0 degC to 70 degC (variants LTC4364CMS-1, LTC4364CMS-2)"
 cite       = "DS p.2, Absolute Maximum Ratings, Operating Ambient Temperature Range, LTC4364C"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 18db95903374"
 variants   = ["LTC4364CMS-1", "LTC4364CMS-2"]
 check_ambient = true
 
@@ -299,6 +310,7 @@ max        = 85
 unit       = "degC"
 conditions = "LTC4364I grade, -40 degC to 85 degC (variants LTC4364IMS-1, LTC4364IMS-2)"
 cite       = "DS p.2, Absolute Maximum Ratings, Operating Ambient Temperature Range, LTC4364I"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 2e9d194ee974"
 variants   = ["LTC4364IMS-1", "LTC4364IMS-2"]
 check_ambient = true
 
@@ -311,6 +323,7 @@ max        = 150
 unit       = "degC"
 conditions = ""
 cite       = "DS p.2, Absolute Maximum Ratings, Storage Temperature Range"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 496dbb330571"
 unchecked  = "owner: assembly"
 
 [param.t_lead]
@@ -321,6 +334,7 @@ max        = 300
 unit       = "degC"
 conditions = "Soldering, 10 sec, MS and SO packages"
 cite       = "DS p.2, Absolute Maximum Ratings, Lead Temperature (Soldering, 10 sec), MS, SO Packages"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row ac348266d602"
 
 # ---------------------------------------------------------------------------------------------------------------
 # Thermal: DS p.2, Pin Configuration, MS package (drawing note text, no MIN/TYP/MAX label).
@@ -347,6 +361,7 @@ max        = 150
 unit       = "degC"
 conditions = ""
 cite       = "DS p.2, Pin Configuration, MS package, TJMAX"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row fa099df82039"
 
 # ---------------------------------------------------------------------------------------------------------------
 # Electrical Characteristics: DS p.3-5. Scope "full" = bullet row (applies over the H-grade range -40 to 125 degC,
@@ -363,6 +378,7 @@ max        = 80
 unit       = "V"
 conditions = ""
 cite       = "DS p.3, Electrical Characteristics, VCC Operating Supply Range"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 42c267611ed3"
 min_ref    = "GND"
 max_ref    = "GND"
 note       = "Referenced to GND: DS p.5, Note 2, 'All voltages are referenced to GND unless otherwise specified'."
@@ -378,6 +394,7 @@ max        = 750
 unit       = "uA"
 conditions = "VCC = SOURCE = SENSE = OUT = 12V, no fault"
 cite       = "DS p.3, Electrical Characteristics, ICC"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 769e513d3cdf"
 
 [param.icc_shdn]
 name       = "Supply current in shutdown"
@@ -517,6 +534,7 @@ max        = 1.28
 unit       = "V"
 conditions = "VCC = 12V to 80V"
 cite       = "DS p.3, Electrical Characteristics, VFB"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 9f197b4b533c"
 
 [param.ifb]
 name       = "FB input current"
@@ -529,6 +547,7 @@ max        = 1
 unit       = "uA"
 conditions = "FB = 1.25V"
 cite       = "DS p.3, Electrical Characteristics, IFB"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 6ebf354e20f7"
 note       = "Printed as 0 TYP and +/-1 in the MAX column; stored as symmetric min -1 / max 1."
 
 [param.dvsns_0c125c]
@@ -555,6 +574,7 @@ max        = 57
 unit       = "mV"
 conditions = "VCC = 4V to 80V, OUT = 2.5V to VCC, -40degC to 125degC"
 cite       = "DS p.3, Electrical Characteristics, dVSNS (row 2)"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 07cb725d218e"
 
 [param.dvsns_lo]
 name       = "Overcurrent fault threshold (VSENSE - VOUT), OUT low (foldback)"
@@ -681,6 +701,7 @@ max        = 2.7
 unit       = "uA"
 conditions = "TMR = 1V, FB = 1.5V, Retry"
 cite       = "DS p.4, Electrical Characteristics, ITMR(DN) Retry"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row f239d0299971"
 note       = "OPEN ITEM: DS Figure 4 caption says 'LTC4364-2 Only' but the p.15 text says the -1 also generates these cool-down TMR pulses; the text is followed. Shared by all six variants: DS p.15, the -1 generates the same cool-down TMR pulses (Figure 4) and then latches, so this current is used for -1 as well. Used by calc.t_cool (i_cycle)."
 
 [param.itmr_dn_shdn]
@@ -706,6 +727,7 @@ max        = 1.28
 unit       = "V"
 conditions = "FLT falling, VCC = 4V to 80V"
 cite       = "DS p.4, Electrical Characteristics, VTMR(F)"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 2c5008c01ed3"
 
 [param.vtmr_g]
 name       = "TMR gate-off threshold (HGATE falls)"
@@ -718,6 +740,7 @@ max        = 1.38
 unit       = "V"
 conditions = "HGATE falling, VCC = 4V to 80V"
 cite       = "DS p.4, Electrical Characteristics, VTMR(G)"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 63f5f1ceb1ce"
 
 [param.vtmr_r]
 name       = "TMR retry threshold, 32nd crossing (0.15 V; HGATE rises only for -2)"
@@ -743,6 +766,7 @@ max        = 125
 unit       = "mV"
 conditions = "VTMR(G) - VTMR(F), VCC = 4V to 80V"
 cite       = "DS p.4, Electrical Characteristics, Early Warning Timer Window"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 087b999fd272"
 
 [param.vuv]
 name       = "UV input threshold (falling)"
@@ -755,6 +779,7 @@ max        = 1.28
 unit       = "V"
 conditions = "UV falling, VCC = 4V to 80V"
 cite       = "DS p.4, Electrical Characteristics, VUV"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row c15801eeaa02"
 
 [param.vuv_hyst]
 name       = "UV input hysteresis"
@@ -793,6 +818,7 @@ max        = 1.28
 unit       = "V"
 conditions = "OV rising, VCC = 4V to 80V"
 cite       = "DS p.4, Electrical Characteristics, VOV"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 48c705b6d546"
 
 [param.vov_hyst]
 name       = "OV input hysteresis"
@@ -816,6 +842,7 @@ max        = 1
 unit       = "uA"
 conditions = "UV, OV = 1.25V"
 cite       = "DS p.4, Electrical Characteristics, IIN (row 1)"
+verified   = "human:kb1lqc 2026-11-23 page-image ds_review 9cbd7e893c23 row 1d2f5b96ddf5"
 note       = "Printed 0 TYP and +/-1 in the MAX column; stored as symmetric min -1 / max 1."
 
 [param.iin_uvov_neg]
@@ -1131,3 +1158,6 @@ max        = 1.5
 unit       = "us"
 conditions = "dVSD steps from 0.1V to -1V"
 cite       = "DS p.5, Electrical Characteristics, Ideal Diode, tOFF(DGATE)"
+
+[pinout]
+verified = "human:kb1lqc 2026-11-23 page-image pinout 9cbd7e893c23 pins baf54f43b03c"
