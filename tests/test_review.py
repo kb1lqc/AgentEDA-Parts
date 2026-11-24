@@ -559,11 +559,12 @@ class Page(Stamped):
 
     def test_rows_tiers_and_tick_rules(self):
         (part,) = self.model()
-        self.assertEqual(part["line"], "X: 1 of 6 rows that matter checked")
+        self.assertEqual(part["line"], "X: 1 of 5 rows that matter checked (1 reference: no table or figure location)")
         tiers = {i["key"]: i["tier"] for i in part["items"]}
-        self.assertEqual(tiers, {"vos": "tier 1", "wrap": "tier 2", "absr": "tier 3", "vos_bad": "fix", "nocite": "fix",
+        self.assertEqual(tiers, {"vos": "tier 1", "wrap": "tier 2", "absr": "tier 3", "vos_bad": "fix",
                                  "capacitance": "none"})
-        self.assertEqual([i["key"] for i in part["items"]], ["vos", "wrap", "absr", "nocite", "vos_bad", "capacitance"])
+        self.assertEqual([i["key"] for i in part["items"]], ["vos", "wrap", "absr", "vos_bad", "capacitance"])
+        self.assertEqual([(u["key"], u["tier"]) for u in part["unlocated"]], [("nocite", "reference")])  # cited, no location
         self.assertEqual(part["checked"], [("iq", "alice", "2026-11-20")])
         self.assertEqual(part["reference"], ["aol"])
         absr = part["items"][2]  # no auto crop: the full page of the cited page, boxes only when located, then the stamped image
@@ -649,10 +650,10 @@ class Page(Stamped):
 
     def test_render_plain_words_one_button(self):
         page = RV.render("Rows to check: B", self.model(), "TOK", self.root, block="B")
-        self.assertIn('<div id="summary"><p><b>1 of 6 rows that matter checked</b></p>\n<p><a href="#part-X">X: 1 of 6 rows that matter '
-                      'checked</a></p></div>', page)
+        self.assertIn('<div id="summary"><p><b>1 of 5 rows that matter checked</b></p>\n<p><a href="#part-X">X: 1 of 5 rows that matter '
+                      'checked (1 reference: no table or figure location)</a></p></div>', page)
         self.assertLess(page.index('id="summary"'), page.index('class="item"'))  # the summary is the first screen
-        self.assertIn('<h2 id="part-X">X: 1 of 6 rows that matter checked</h2>', page)
+        self.assertIn('<h2 id="part-X">X: 1 of 5 rows that matter checked (1 reference: no table or figure location)</h2>', page)
         self.assertIn("<p><b>VOS \u2014 n vos</b></p>", page)
         self.assertIn("<tr><th>Value</th><td>typ 10, max 35 \u00b5V</td></tr>", page)
         self.assertIn("<details><summary>Full TOML</summary><pre>[param.vos]", page)
@@ -679,10 +680,10 @@ class Page(Stamped):
         r = copy.deepcopy(x)
         r.update(value="R", line="R: 2 of 2 rows that matter checked", released=True, items=[], k=2, n=2)
         page = RV.render("t", [a, x, r], "TOK", self.root, block="B")
-        order = [page.index(f'id="row-{s}"') for s in ("A:absr", "X:vos", "X:wrap", "X:absr", "X:nocite", "X:capacitance")]
+        order = [page.index(f'id="row-{s}"') for s in ("A:absr", "X:vos", "X:wrap", "X:absr", "X:capacitance")]
         self.assertEqual(order, sorted(order))
         self.assertIn('<a href="#part-R">R: 2 of 2 rows that matter checked. Released for B.</a>', page)
-        self.assertIn("<b>3 of 9 rows that matter checked</b>", page)
+        self.assertIn("<b>3 of 8 rows that matter checked</b>", page)
 
     def test_parts_sorted_by_the_whole_parts_needs_check_count(self):
         import copy
@@ -733,20 +734,20 @@ class Page(Stamped):
         item = next(i for i in part["items"] if i["key"] == "wrap")
         self.assertEqual(item["tier"], "fix")
         self.assertIn("Fix first", item["why"])
-        self.assertEqual(part["line"], "X: 1 of 6 rows that matter checked")  # still in n
+        self.assertEqual(part["line"], "X: 1 of 5 rows that matter checked (1 reference: no table or figure location)")  # still in n
         page = RV.render("t", [part], "TOK", self.root, images={})
         self.assertNotIn('value="X:wrap"', page)
         self.assertEqual(page.count('class="ok"'), 2)  # vos, absr
 
     def test_value_mode_lists_every_unchecked_row(self):
         (part,) = self.model(used=None)
-        self.assertEqual(part["line"], "X: 1 of 6 rows that matter checked")
+        self.assertEqual(part["line"], "X: 1 of 5 rows that matter checked (1 reference: no table or figure location)")
         self.assertEqual(part["reference"], ["aol"])
-        self.assertEqual([i["key"] for i in part["items"]], ["vos", "wrap", "absr", "nocite", "vos_bad"])
+        self.assertEqual([i["key"] for i in part["items"]], ["vos", "wrap", "absr", "vos_bad"])
 
     def test_block_narrows_the_page_never_the_status(self):
         (part,) = self.model(used={"vos"})
-        self.assertEqual(part["line"], "X: 1 of 6 rows that matter checked")
+        self.assertEqual(part["line"], "X: 1 of 5 rows that matter checked (1 reference: no table or figure location)")
         self.assertEqual([i["key"] for i in part["items"]], ["vos"])
         self.assertFalse(part["released"])
 

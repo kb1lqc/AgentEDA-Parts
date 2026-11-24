@@ -2,7 +2,7 @@
 
 # STM32H723ZET6
 
-Checked by a person: 0 of 65 rows that matter (2093 rows in all). Review: python3 tools/review.py STM32H723ZET6
+Checked by a person: 0 of 40 rows that matter (2093 rows in all). Review: python3 tools/review.py STM32H723ZET6
 
 ## Part
 
