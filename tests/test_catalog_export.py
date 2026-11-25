@@ -2,12 +2,14 @@
 "Export check"). Tiny synthetic export and catalog, so the tests run offline."""
 
 import csv
+import os
 import shutil
 import tempfile
 import unittest
 from pathlib import Path
 
 from lib import catalog as C
+from lib import check as K
 
 HEADER = ["Operating Temperature", "Part Number", "Product Status", "Length", "Width", "Thickness",
           "Temperature characteristics", "Capacitance", "Tolerance of capacitance", "Rated Voltage DC"]
@@ -133,6 +135,96 @@ class ExportCheckTests(unittest.TestCase):
         self.assertEqual(C.main(["export-check", str(self.export), str(self.folder)]), 0)
         write_catalog(self.folder / "catalog.csv", CATALOG[1:])
         self.assertEqual(C.main(["export-check", str(self.export), str(self.folder)]), 1)
+
+
+class RecordTests(unittest.TestCase):
+    """review/export_check.toml, its human stamps, and the lib.check rules (docs/spec/capacitor.md "Export check")."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.folder = self.tmp / "GCM21B"
+        self.folder.mkdir()
+        (self.folder / "component.toml").write_text(TOML)
+        self.export = self.tmp / "export.csv"
+        write_export(self.export, EXPORT_ROWS)
+        write_catalog(self.folder / "catalog.csv", CATALOG)
+        self.record = self.folder / "review" / "export_check.toml"
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp)
+
+    def run_cmd(self, *args):
+        return C.main(["export-check", *args, str(self.export), str(self.folder)])
+
+    def test_match_writes_record_without_stamps(self):
+        self.assertEqual(self.run_cmd(), 0)
+        text = self.record.read_text()
+        self.assertIn('[group.C0G]', text)
+        self.assertNotIn("verified", text)
+
+    def test_stamp_writes_human_line_per_group(self):
+        self.assertEqual(self.run_cmd("--stamp", "reviewer-1"), 0)
+        text = self.record.read_text()
+        self.assertIn('verified = "human:reviewer-1 ', text)
+        self.assertIn("export-check group C0G", text)
+        self.assertIn("export-check group X7R", text)
+
+    def test_mismatch_writes_nothing(self):
+        write_catalog(self.folder / "catalog.csv", CATALOG[1:])
+        self.assertEqual(self.run_cmd(), 1)
+        self.assertFalse(self.record.exists())
+
+    def test_agents_cannot_stamp(self):
+        os.environ["CLAUDECODE"] = "1"
+        try:
+            self.assertEqual(self.run_cmd("--stamp", "reviewer-1"), 1)
+        finally:
+            del os.environ["CLAUDECODE"]
+        self.assertFalse(self.record.exists())
+
+    def test_bad_login_refused(self):
+        self.assertEqual(self.run_cmd("--stamp", "-bad"), 2)
+
+    def test_stamp_date_feeds_verified_only_when_stamped_and_current(self):
+        from lib.capacitor import export_stamp_date
+        catalog_path = self.folder / "catalog.csv"
+        self.assertIsNone(export_stamp_date(self.folder, catalog_path, "C0G"))  # no record
+        self.run_cmd()
+        self.assertIsNone(export_stamp_date(self.folder, catalog_path, "C0G"))  # record, no stamp
+        self.run_cmd("--stamp", "reviewer-1")
+        day = export_stamp_date(self.folder, catalog_path, "C0G")
+        self.assertRegex(day, r"^\d{4}-\d{2}-\d{2}$")
+        self.assertIsNone(export_stamp_date(self.folder, catalog_path, "NP0"))  # no such group
+        rows = list(CATALOG)
+        rows[0] = ("GCM21B5C1H183FA16", "C0G", "18,000pF", "±2%", "50Vdc", "1.25mm ±0.15mm")
+        write_catalog(catalog_path, rows)
+        self.assertIsNone(export_stamp_date(self.folder, catalog_path, "C0G"))  # catalog changed: stale
+
+    def test_lib_check_accepts_fresh_record(self):
+        self.run_cmd("--stamp", "reviewer-1")
+        self.assertEqual(K.check_export_record(self.folder), [])
+
+    def test_lib_check_flags_stale_catalog(self):
+        self.run_cmd("--stamp", "reviewer-1")
+        rows = list(CATALOG)
+        rows[0] = ("GCM21B5C1H183FA16", "C0G", "18,000pF", "±2%", "50Vdc", "1.25mm ±0.15mm")
+        write_catalog(self.folder / "catalog.csv", rows)
+        out = K.check_export_record(self.folder)
+        self.assertTrue(any("STALE" in m for _, m in out), out)
+
+    def test_lib_check_flags_bad_stamp(self):
+        self.run_cmd("--stamp", "reviewer-1")
+        text = self.record.read_text().replace("export-check group C0G", "export-check group X7R", 1)
+        self.record.write_text(text)
+        out = K.check_export_record(self.folder)
+        self.assertTrue(any("verified is not a human stamp" in m for _, m in out), out)
+
+    def test_stray_review_file_is_flagged_but_record_is_not(self):
+        self.run_cmd()
+        (self.folder / "review" / "notes.txt").write_text("x")
+        flagged = [m for _, m in K.stray_review_files(self.folder)]
+        self.assertEqual(len(flagged), 1)
+        self.assertIn("notes.txt", flagged[0])
 
 
 if __name__ == "__main__":

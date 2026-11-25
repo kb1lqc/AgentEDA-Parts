@@ -31,7 +31,9 @@ package_alternates = ["W", "J", "V"]     # other letters: the same part in other
   `Murata product list export <file name>, row <part number>` (the part number exactly as the export prints it, with
   the `#` package placeholder). It is not a datasheet table and says so in every Param `note`; per-dielectric and
   per-size rows still cite the reference sheet (`DS p.`).
-  The catalog Params (capacitance, tolerance, rated_v) carry `verified = "manufacturer-export <export date> ..."`:
+  The catalog Params (capacitance, tolerance, rated_v) carry `verified = "manufacturer-export <stamp date> ..."`, where
+  the date is the date of the group's human export-check stamp (no stamp: unverified, the same rule as every other
+  part's `verified` date; the export file name in the cite does not set it):
   machine-readable data parsed by tested code, not transcribed; a source without a date leaves them unverified.
 - **Generating the catalog.** `python3 -m lib.catalog murata-gcm <vendor csv> <component dir> [--dielectrics X7R,C0G]`
   keeps the export rows whose part number carries the directory's size+thickness code (`GCM155` -> `155`) and whose
@@ -88,8 +90,10 @@ package_alternates = ["W", "J", "V"]     # other letters: the same part in other
 
 ## Export check (review of catalog.csv)
 
-Status: the comparison, group hashes and `export-check` command are implemented (`lib/catalog.py`, tests in
-`tests/test_catalog_export.py`). Not yet: the human stamp, its record, and `lib.check` wiring. A capacitor series' catalog rows are reviewed through the export they cite, not
+Status: the comparison, group hashes, the `export-check` command, the record `review/export_check.toml`, the human
+group stamp (`export-check <export> <dir> --stamp <login>`, refused for agents) and the `lib.check` rules are
+implemented (`lib/catalog.py`, `lib/check.py`, tests in `tests/test_catalog_export.py`). Not yet: the review page
+showing groups. A capacitor series' catalog rows are reviewed through the export they cite, not
 through a datasheet table (there is none per part). Export: the manufacturer product-list CSV named in the `source`
 cite, which must be a file under `docs/datasheets/` or `docs/vendor/`; the cite's file name must match it exactly.
 The export is used **in addition to** the datasheet PDFs, not instead of them: the PDFs (the reference sheet of each
@@ -106,9 +110,9 @@ values (capacitance, tolerance, rated voltage, thickness) that the PDFs do not p
   an allowed dielectric (the rule of `lib.catalog` generation) must be exactly the catalog's values. An export row not in
   the catalog, or a catalog value not in the export, is a MISMATCH.
 - **Record.** `python3 -m lib.catalog export-check <export> <component dir>` prints the result (`MATCH` or `MISMATCH`),
-  the export file name, the row count, each dielectric group's row count and hash, and the first differences; exit 0
-  only on MATCH. The file hashes are in `export_check()`'s result. A committed record is not written yet: `lib.check`
-  allows only `review.toml` under `review/`, so where the record lives is an open item with the stamp format.
+  the export file name, the row count, each dielectric group's row count and hash, and the first differences. On MATCH
+  it writes `review/export_check.toml`: the export file name and SHA-256, the catalog SHA-256, and per group `rows` and
+  `group_sha256`. On MISMATCH it writes nothing. `lib.check` allows this file under `review/` (`docs/spec/review.md`).
 - **Human check.** One person tick per group: a group is the catalog rows of one size directory with one dielectric
   (for example, GCM21B C0G, GCM21B X7R), and only after `MATCH` for those rows. The tick is recorded as a stamp that
   names the export SHA-256, the catalog SHA-256, the group (dielectric), the row count, and a hash of the group's

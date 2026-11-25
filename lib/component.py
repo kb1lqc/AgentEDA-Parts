@@ -371,7 +371,8 @@ class Part:
         """
         row = _cap.choose(self.catalog(), capacitance, rated_voltage, dielectric, tolerance)
         params, _ = _applicable(self.raw.get("param", {}), dielectric, row.value)
-        cap, tol, rated = _cap.selection_params(row)
+        stamp = _cap.export_stamp_date(self.path, self.path / self.info["catalog"], dielectric)
+        cap, tol, rated = _cap.selection_params(row, stamp)
         tc_key = self.info["tc_param"][dielectric]
         params.update(capacitance=cap, tolerance=tol, rated_v=rated, tc=params[tc_key])
         label = f"{self.info.get('value')}[{row.value}]"

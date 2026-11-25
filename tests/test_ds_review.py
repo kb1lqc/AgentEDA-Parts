@@ -819,7 +819,7 @@ class TestCache(Base):
         (self.rdir / "evidence").mkdir()
         (self.rdir / "evidence" / "x.png").write_bytes(b"x")
         msgs = [m for lvl, m in check.check_ledger(self.root / COMP) if lvl == "ERROR"]
-        self.assertTrue(any("only review/review.toml is committed" in m for m in msgs), msgs)
+        self.assertTrue(any("only review/review.toml and review/export_check.toml are committed" in m for m in msgs), msgs)
 
 
 PINS = ('\n[[pin]]\nnumber = "1"\nname = "IN"\ntype = "input"\nfunction = "Input"\ncite = "DS p.4, Pin Functions"\n'
