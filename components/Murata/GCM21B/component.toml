@@ -94,7 +94,7 @@ max        = 1.2
 unit       = "mm"
 conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.15), code 21"
 cite       = "DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), a"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row d4d4907b47ff"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed). Row for the +/-0.15 chip; the +/-0.20 row is land_a_020."
 
 [param.land_b_015]
@@ -107,7 +107,7 @@ max        = 0.8
 unit       = "mm"
 conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.15), code 21"
 cite       = "DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), b"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 03e8686581a9"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed)."
 
 [param.land_c_015]
@@ -120,7 +120,7 @@ max        = 1.4
 unit       = "mm"
 conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.15), code 21"
 cite       = "DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), c"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row d24a2c5f4c06"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed)."
 
 [param.land_a_020]
@@ -133,7 +133,7 @@ max        = 1.4
 unit       = "mm"
 conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.20), code 21"
 cite       = "DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), a"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row f3d3da21158e"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed)."
 
 [param.land_b_020]
@@ -146,7 +146,7 @@ max        = 0.8
 unit       = "mm"
 conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.20), code 21"
 cite       = "DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), b"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 490547472ecf"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed)."
 
 [param.land_c_020]
@@ -159,7 +159,7 @@ max        = 1.4
 unit       = "mm"
 conditions = "Reflow soldering, chip 2.0x1.25 (+/-0.20), code 21"
 cite       = "DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), c"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 5322360500e1"
 note       = "Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed)."
 
 # X7R per-part rows (GCM21BR72A104KA37, from its reference sheet). Keys without suffix, as for GCM188's X7R rows.
@@ -218,7 +218,7 @@ max        = 2.15
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, Type & Dimension, L (2.0+/-0.15)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 6d2f442ee681"
 note       = "min and max are the printed nominal 2.0 -/+ 0.15 (arithmetic); the DS prints 2.0+/-0.15."
 
 [param.width]
@@ -233,7 +233,7 @@ max        = 1.4
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, Type & Dimension, W (1.25+/-0.15)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 625eb5e9829c"
 note       = "min and max are the printed nominal 1.25 -/+ 0.15 (arithmetic); the DS prints 1.25+/-0.15."
 
 [param.thickness_t]
@@ -248,7 +248,7 @@ max        = 1.4
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, Type & Dimension, T (1.25+/-0.15)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 5385e890d6e5"
 note       = "min and max are the printed nominal 1.25 -/+ 0.15 (arithmetic). Catalog thickness column: 1.25mm +/-0.15mm for 92 rows, 1.25mm +/-0.2mm for 45 rows (open item)."
 
 [param.dim_e]
@@ -262,7 +262,7 @@ max        = 0.7
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, Type & Dimension, e (0.2 to 0.7)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row eb83299e8bf2"
 
 [param.dim_g]
 parts = ["GCM21BR72A104KA37"]
@@ -274,7 +274,7 @@ min        = 0.7
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, Type & Dimension, g (0.7 min.)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row e7ac2353d798"
 note       = "Printed as a minimum only; no max stored."
 
 # Specifications and Test Methods, initial (25 degC) limits (X7R reference sheet)
@@ -321,7 +321,7 @@ text       = "More than 20 N (destruction value)"
 unit       = ""
 conditions = "Speed 0.5 mm/s; placement diagram"
 cite       = "DS p.6, Specifications and Test Methods, No. 24 Beam Load Test"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 59a9d98cce00"
 
 # Mechanical and solder tests: IR limits after the test (scope na)
 
@@ -595,7 +595,7 @@ min        = 95
 unit       = "%"
 conditions = "Specifications and Test Methods No.16 (a) test conditions"
 cite       = "DS p.5, Specifications and Test Methods, No.16 Solderability (a)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row cee56f181ac4"
 note       = "Assembly acceptance criterion, not a circuit limit."
 
 # X7R dielectric rows (dielectric X7R, Murata public code R7 / X7R (EIA)). Source: the X7R reference sheet (DS p.2, p.12, p.13).
@@ -624,7 +624,7 @@ max        = 125
 unit       = "degC"
 conditions = ""
 cite       = "DS p.2, Rated Value, Operating Temp. Range (-55 to 125 degC)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row a0bf08233c30"
 check_ambient = true
 note       = "Read from the X7R reference sheet of GCM21BR72A104KA37. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every X7R catalog row uses it."
 
@@ -689,7 +689,7 @@ max        = 125
 unit       = "degC"
 conditions = ""
 cite       = "DS p.2 (GCM21A5C2E101FX01-00B-EN.pdf), Rated Value, Operating Temp. Range (-55 to 125 degC)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-24 page-image ds_review 3d70643598e1 row 3b4cdf48518c"
 check_ambient = true
 note       = "Read from the C0G reference sheet of GCM21A5C2E101FX01. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every C0G catalog row uses it."
 
@@ -750,3 +750,6 @@ note       = "Text row: the limit is the larger of a percentage and an absolute 
 # Open item: qualification-test rows not stored (as for GCM188): visual, dimensions, DPA (No. 5), voltage proof (No. 21),
 # solvents/shock/vibration/soldering/ESD capacitance (No. 9-15, only IR stored above), mounting method, rating section
 # (DS p.12 onward except the rows stored above).
+
+[pinout]
+verified = "human:kb1lqc 2026-11-24 page-image pinout c066a74bf782 pins b78130ca19ed"
