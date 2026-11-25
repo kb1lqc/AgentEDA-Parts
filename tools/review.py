@@ -27,6 +27,7 @@ Exit 0 = PR opened (or Done pressed), 1 = refused or a step failed.
 """
 
 import argparse
+import csv
 import datetime
 import hashlib
 import html
@@ -49,6 +50,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import stamp as S  # noqa: E402  (check_row: the exact rule stamp.py applies, so a tickable row is a stampable row)
 from lib import review_status as RS  # noqa: E402
+from lib import catalog as CAT  # noqa: E402  (export check of capacitor-series catalogs: docs/spec/capacitor.md)
 
 ROOT = Path(__file__).resolve().parent.parent
 AGENT = ("refused: running inside Claude Code (CLAUDECODE is set); a person must run review.py in their own shell "
@@ -256,6 +258,103 @@ def unlocated_item(d, key, params, root, rev):
             "toml": toml_block(d / "component.toml", f"[param.{key}]")}
 
 
+def cited_export(root, catalog_path):
+    """The export file the catalog's source cite names ("... export <file>, row <part>"), looked up in docs/datasheets/
+    then docs/vendor/; None when the cite or the file is missing."""
+    try:
+        with open(catalog_path, newline="", encoding="utf-8") as f:
+            first = next(csv.DictReader(f), None)
+    except OSError:
+        return None
+    m = re.search(r"export (\S+), row", (first or {}).get("source", ""))
+    for sub in ("docs/datasheets", "docs/vendor"):
+        if m and (Path(root) / sub / m[1]).is_file():
+            return Path(root) / sub / m[1]
+    return None
+
+
+def build_groups(root, dirs):
+    """The capacitor-series groups of the page (docs/spec/capacitor.md "Export check"): one entry per dielectric of each
+    murata-gcm catalog among dirs, with the export check result, the distinct combinations, the group's current human
+    stamp (its `verified` line, or None) and ref "<Value>:group:<dielectric>". tickable: MATCH and not yet stamped."""
+    out = []
+    for d in dirs:
+        d = Path(d)
+        part = read_toml(d / "component.toml").get("part", {})
+        if part.get("catalog_decoder") != "murata-gcm":
+            continue
+        export = cited_export(root, d / part.get("catalog", "catalog.csv"))
+        if export is None:
+            out.append({"part": d.name, "dielectric": "all", "dir": d, "export": None, "rows": 0, "result": "NO EXPORT",
+                        "differences": [], "combos": [], "stamp": None, "ref": None, "tickable": False,
+                        "group_sha256": None})
+            continue
+        res = CAT.export_check(d, export)
+        with open(export, newline="", encoding="utf-8-sig") as f:
+            expected, _, _ = CAT.build_rows(list(csv.DictReader(f)), d.name[3:], set(part.get("tc_param", {})), export.name)
+        record = read_toml(d / "review" / CAT.EXPORT_RECORD)
+        current = record.get("catalog", {}).get("sha256") == res["catalog_sha256"]
+        for diel, g in res["groups"].items():
+            prior = record.get("group", {}).get(diel, {})
+            stamp = prior.get("verified") if current and prior.get("group_sha256") == g["sha256"] else None
+            out.append({"part": d.name, "dielectric": diel, "dir": d, "export": export, "rows": g["rows"],
+                        "result": res["result"], "differences": res["differences"],
+                        "rows_expected": sorted((r for r in expected if r["dielectric"] == diel), key=lambda r: r["value"]),
+                        "stamp": stamp, "ref": f"{d.name}:group:{diel}", "tickable": res["result"] == "MATCH" and stamp is None,
+                        "group_sha256": g["sha256"]})
+    return out
+
+
+def legend_html(rows):
+    """The legend of one group: every code the group's part numbers use, with its meaning (the decode tables of
+    lib/catalog.py), and how to read the table. The decode is a cross-check, not a datasheet rule (docs/spec/capacitor.md)."""
+    esc = html.escape
+    seen = {}
+    for r in rows:
+        for label, code, meaning in CAT.fields_of(r["value"]) or []:
+            seen.setdefault((label, code), meaning)
+    order = {f: i for i, f in enumerate(CAT.FIELDS)}
+    items = "".join(f"<li><b>{esc(label)}</b> {esc(code)} = {esc(meaning)}</li>"
+                    for (label, code), meaning in sorted(seen.items(), key=lambda kv: (order[kv[0][0]], kv[0][1])))
+    return ('<details open><summary>Legend: how to read the part numbers</summary>'
+            '<p class="small">A part number is the catalog value plus a package letter (the export prints it with #). '
+            'Each row below splits it into fields; the last column is what the export prints for the same part. '
+            'The machine check already compared every field. Your tick confirms the decoded fields and the printed '
+            'values agree. The decode tables are a cross-check, not datasheet rules (docs/spec/capacitor.md).</p>'
+            f'<ul class="small">{items}</ul></details>')
+
+
+def group_html(g):
+    """One capacitor-series group on the page: heading, status, the distinct combinations with an export row each, and one
+    tick box when the group can be stamped (the box's value is the group ref; publish stamps it with lib.catalog)."""
+    esc = html.escape
+    head = f"<h2>{esc(g['part'])} {esc(g['dielectric'])}: {g['rows']} rows</h2>"
+    if g["export"] is None:
+        return (f'<div class="item">{head}<p class="warn">no export file: the catalog cites a file that is not in '
+                "docs/datasheets/ or docs/vendor/</p></div>")
+    parts = [head, f'<p class="mute small">Export: {esc(g["export"].name)}; group sha256 {esc(g["group_sha256"][:12])}</p>']
+    if g["result"] != "MATCH":
+        parts.append('<p class="warn">MISMATCH: ' + esc("; ".join(g["differences"][:3])) + "</p>")
+    if g["stamp"]:
+        m = re.match(r"human:(\S+) (\S+) ", g["stamp"])
+        parts.append(f'<p class="small">Ticked by {esc(m[1] if m else "?")} on {esc(m[2] if m else "?")}</p>')
+    rows = g["rows_expected"]
+    parts.append(legend_html(rows))
+    cells = []
+    for r in rows:
+        fields = CAT.fields_of(r["value"]) or []
+        decoded = "".join(f"<td>{esc(code)} = {esc(meaning)}</td>" for _, code, meaning in fields)
+        cells.append(f"<tr><td>{esc(r['value'])}</td>{decoded}"
+                     f"<td>{esc(r['capacitance'])}, {esc(r['tolerance'])}, {esc(r['rated_voltage'])}, {esc(r['thickness'])}</td></tr>")
+    head_cells = "".join(f"<th>{esc(f)}</th>" for f in ("Part", *CAT.FIELDS, "Export prints"))
+    parts.append(f'<details><summary>All {len(rows)} parts, decoded</summary>'
+                 f'<table class="stmt"><tr>{head_cells}</tr>{"".join(cells)}</table></details>')
+    if g["tickable"]:
+        parts.append(f'<label class="pick"><input type="checkbox" class="ok" value="{esc(g["ref"])}">'
+                     "matches the export: every combination above is the export's row</label>")
+    return f'<div class="item" id="group-{esc(g["ref"])}">' + "".join(parts) + "</div>"
+
+
 def ensure_cache(root, dirs, run=subprocess.run, dry_run=False):
     """Run tools/ds_review.py on the parts with no .review-cache/ (needs the local PDF). Returns the lines printed.
     dry_run: spawn nothing, return the command as "would run"."""
@@ -352,7 +451,7 @@ def card_html(card):
     return "".join(out) + "</div>"
 
 
-def render(title, parts, token, root, notes=(), block=None, images=None):
+def render(title, parts, token, root, notes=(), block=None, images=None, groups=()):
     """The page: a status line per part, then per part (fewest rows to check first; released parts folded) three
     sections (Limits, Used by equations, Pins & package) of rows: statement, crops, one tick box. Images are served
     by token-protected URL (/img/<id>); each distinct file is one entry of `images` ({id: Path}), however many rows
@@ -412,6 +511,9 @@ def render(title, parts, token, root, notes=(), block=None, images=None):
             "only rows whose statement matches the image; leave wrong or unclear rows unticked. Then press the button "
             "at the bottom.</p>"]
     body += [f'<p class="mute small">{esc(x)}</p>' for x in notes]
+    if groups:  # capacitor-series catalogs: one group per dielectric, stamped as a group (docs/spec/capacitor.md)
+        body.append("<h2>Catalog groups (capacitor series)</h2>")
+        body += [group_html(g) for g in groups]
     shown_parts = sorted((p for p in parts if p["items"] and not p["released"]), key=lambda p: (p["n"] - p["k"], p["value"]))  # the whole part's needs-check count
     folded = [p for p in parts if p not in shown_parts]
     for p in shown_parts:
@@ -478,7 +580,7 @@ def branch_name(values, login, day, taken):
     return name
 
 
-def publish(root, dirs, refs, run, emit, today=None, python=sys.executable):
+def publish(root, dirs, refs, run, emit, today=None, python=sys.executable, groups=None):
     """Stamp `refs` on a new branch from origin/main and open the PR. run(cmd) -> (rc, output), in the library root;
     emit(line) shows progress. Returns 0 = PR opened, 1 = stopped (the last lines say what was left)."""
     def sh(*cmd):
@@ -518,27 +620,43 @@ def publish(root, dirs, refs, run, emit, today=None, python=sys.executable):
     rc, out = sh("git", "switch", "-c", branch, "origin/main")
     if rc:
         return stop(f"could not create branch {branch}. Nothing was changed.", out)
-    with tempfile.NamedTemporaryFile("w", suffix=".txt", prefix="review-rows-", delete=False) as f:
-        f.write("\n".join(refs) + "\n")
-    try:
-        rc, out = sh(python, "tools/stamp.py", "--who", login, "--from", f.name)
-    finally:
-        os.unlink(f.name)
-    emit(*out.strip().splitlines())
+    row_refs = [r for r in refs if ":group:" not in r]
+    group_refs = [r for r in refs if ":group:" in r]
+    rc, out = 0, ""
+    if row_refs:
+        with tempfile.NamedTemporaryFile("w", suffix=".txt", prefix="review-rows-", delete=False) as f:
+            f.write("\n".join(row_refs) + "\n")
+        try:
+            rc, out = sh(python, "tools/stamp.py", "--who", login, "--from", f.name)
+        finally:
+            os.unlink(f.name)
+        emit(*out.strip().splitlines())
+    for ref in ([] if rc else group_refs):  # a catalog group: the export check stamps exactly the ticked dielectric
+        info = (groups or {}).get(ref)
+        if info is None or info["export"] is None:
+            emit(f"{ref}: no export file for this group")
+            rc = 1
+            break
+        diel = ref.partition(":group:")[2]
+        rc, out = sh(python, "-m", "lib.catalog", "export-check", str(info["export"]), str(info["dir"]), "--stamp", login,
+                     "--groups", diel)
+        emit(*out.strip().splitlines())
+        if rc:
+            break
     if rc:
         r1, o1 = sh("git", "switch", prev)
         r2, o2 = sh("git", "branch", "-D", branch)
         if r1 or r2:
-            return stop(f"stamp.py refused, and the cleanup failed ({(o1 + o2).strip()}): you are on "
+            return stop(f"stamping refused, and the cleanup failed ({(o1 + o2).strip()}): you are on "
                         f"{'?' if r1 else prev}; delete branch {branch} yourself. Nothing was stamped.")
-        return stop(f"stamp.py refused (above). Back on {prev}, branch {branch} deleted. Nothing was stamped.")
+        return stop(f"stamping refused (above). Back on {prev}, branch {branch} deleted. Nothing was stamped.")
     rel = [str(Path(d).relative_to(root)) for d in dirs if Path(d).name in values]
     rc, out = sh(python, "tools/verify.py", "--regen", *rel)
     if rc:
         return stop(f"verify failed (above). The stamps are on branch {branch}, not committed: fix and commit them, "
                     f"or discard them with git restore . && git switch {prev}.", out)
     rc, out = sh("git", "status", "--porcelain")
-    allowed = {f"{r}/{n}" for r in rel for n in ("component.toml", "review/review.toml", "README.md")}
+    allowed = {f"{r}/{n}" for r in rel for n in ("component.toml", "review/review.toml", "review/export_check.toml", "README.md")}
     allowed.add("README.md")  # the top-level status table, rewritten by verify.py --regen (lib.readme.update_top)
     changed = [ln[3:] for ln in out.splitlines() if ln.strip() and not ln.startswith("??")]
     extra = [p for p in changed if p not in allowed]
@@ -763,15 +881,16 @@ def main(argv=None):
         print(p["line"])
     if a.dry_run:
         notes.append("Dry run: the button shows the commands and runs none of them.")
-    tickable = [i["ref"] for p in parts for i in p["items"] if i["tier"] in TICKABLE]
+    groups = build_groups(root, list(used))
+    tickable = [i["ref"] for p in parts for i in p["items"] if i["tier"] in TICKABLE] + [g["ref"] for g in groups if g["tickable"]]
     dirs = [p["dir"] for p in parts]
     run = dry_runner() if a.dry_run else real_runner(root)
     def job(refs, emit):
         if a.dry_run:
             emit("(dry run: each command is shown, none is run)")
-        return publish(root, dirs, refs, run, emit)
+        return publish(root, dirs, refs, run, emit, groups={g["ref"]: g for g in groups if g["ref"]})
     images = {}
-    app = App(render(title, parts, "{TOKEN}", root, notes, a.block, images), tickable, job, images)
+    app = App(render(title, parts, "{TOKEN}", root, notes, a.block, images, groups), tickable, job, images)
     print(f"review page: {app.url}\n(stops after the stamp run, or press Done; Ctrl-C to quit)", flush=True)
     if not a.no_browser:
         webbrowser.open(app.url)
