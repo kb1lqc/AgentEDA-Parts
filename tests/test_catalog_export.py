@@ -7,6 +7,7 @@ import shutil
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from lib import catalog as C
 from lib import check as K
@@ -149,6 +150,10 @@ class RecordTests(unittest.TestCase):
         write_export(self.export, EXPORT_ROWS)
         write_catalog(self.folder / "catalog.csv", CATALOG)
         self.record = self.folder / "review" / "export_check.toml"
+        env = mock.patch.dict(os.environ)  # stamping is refused under CLAUDECODE: clear it for these tests only
+        env.start()
+        self.addCleanup(env.stop)
+        os.environ.pop("CLAUDECODE", None)
 
     def tearDown(self):
         shutil.rmtree(self.tmp)
@@ -175,15 +180,39 @@ class RecordTests(unittest.TestCase):
         self.assertFalse(self.record.exists())
 
     def test_agents_cannot_stamp(self):
-        os.environ["CLAUDECODE"] = "1"
-        try:
-            self.assertEqual(self.run_cmd("--stamp", "reviewer-1"), 1)
-        finally:
-            del os.environ["CLAUDECODE"]
+        os.environ["CLAUDECODE"] = "1"  # restored by the patch.dict in setUp
+        self.assertEqual(self.run_cmd("--stamp", "reviewer-1"), 1)
         self.assertFalse(self.record.exists())
 
     def test_bad_login_refused(self):
         self.assertEqual(self.run_cmd("--stamp", "-bad"), 2)
+
+    def test_groups_stamp_only_their_own_and_keep_the_rest(self):
+        self.assertEqual(self.run_cmd("--stamp", "reviewer-1", "--groups", "C0G"), 0)
+        text = self.record.read_text()
+        self.assertIn("export-check group C0G", text)
+        self.assertNotIn("export-check group X7R", text)
+        self.assertEqual(self.run_cmd("--stamp", "reviewer-2", "--groups", "X7R"), 0)
+        text = self.record.read_text()
+        self.assertIn("human:reviewer-1 ", text)  # C0G's stamp kept
+        self.assertIn("human:reviewer-2 ", text)
+        self.assertEqual(self.run_cmd(), 0)  # a machine-only rerun keeps both stamps
+        self.assertEqual(self.record.read_text().count('verified = "human:'), 2)
+
+    def test_changed_catalog_drops_stamps(self):
+        self.run_cmd("--stamp", "reviewer-1")
+        extra_export = EXPORT_ROWS + [("GCM21B5C1H223FA16#", "In Production", "C0G", "22,000pF", "±1%", "50Vdc")]
+        write_export(self.export, extra_export)
+        write_catalog(self.folder / "catalog.csv", CATALOG + [
+            ("GCM21B5C1H223FA16", "C0G", "22,000pF", "±1%", "50Vdc", "1.25mm ±0.15mm")])
+        self.assertEqual(self.run_cmd(), 0)  # a new, matching catalog and export: new hashes
+        text = self.record.read_text()
+        self.assertIn("GCM21B5C1H223FA16", self.folder.joinpath("catalog.csv").read_text())
+        self.assertNotIn("verified", text)  # the old stamps were for other hashes
+
+    def test_groups_must_exist(self):
+        self.assertEqual(self.run_cmd("--stamp", "reviewer-1", "--groups", "NP0"), 2)
+        self.assertFalse(self.record.exists())
 
     def test_stamp_date_feeds_verified_only_when_stamped_and_current(self):
         from lib.capacitor import export_stamp_date

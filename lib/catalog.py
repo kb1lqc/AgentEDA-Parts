@@ -261,37 +261,65 @@ EXPORT_RECORD = "export_check.toml"  # under review/ (docs/spec/capacitor.md "Ex
 WHO_RE = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})")  # a GitHub login
 
 
-def record_text(result, who=None, day=None):
+def record_text(result, who=None, day=None, groups=None, keep=None):
     """review/export_check.toml for a MATCH result: the file and catalog hashes, and per dielectric group its row count and
-    group hash. With who (a GitHub login), each group also gets `verified = "human:<who> <day> export-check group <d>"`."""
+    group hash. With who (a GitHub login), each group in `groups` (default: all) gets
+    `verified = "human:<who> <day> export-check group <d>"`. A group not stamped now keeps its line from `keep`
+    ({group: verified line}, see existing_stamps)."""
     lines = ["# Export check record (docs/spec/capacitor.md). Written by python3 -m lib.catalog export-check.", "",
              "[export]", f'file = "{result["export_file"]}"', f'sha256 = "{result["export_sha256"]}"', "",
              "[catalog]", f'sha256 = "{result["catalog_sha256"]}"']
     for d, g in result["groups"].items():
         lines += ["", f"[group.{d}]", f"rows = {g['rows']}", f'group_sha256 = "{g["sha256"]}"']
-        if who:
+        if who and (groups is None or d in groups):
             lines.append(f'verified = "human:{who} {day} export-check group {d}"')
+        elif keep and d in keep:
+            lines.append(f'verified = "{keep[d]}"')
     return "\n".join(lines) + "\n"
+
+
+def existing_stamps(record, result):
+    """{group: verified line} from a record already on disk, for the groups whose group hash is unchanged and whose file
+    hashes are the result's (a stamp for a row set that changed is not kept)."""
+    try:
+        with open(record, "rb") as fh:
+            old = tomllib.load(fh)
+    except (OSError, tomllib.TOMLDecodeError):
+        return {}
+    if old.get("catalog", {}).get("sha256") != result["catalog_sha256"] or old.get("export", {}).get("sha256") != result["export_sha256"]:
+        return {}
+    keep = {}
+    for d, g in result["groups"].items():
+        prior = old.get("group", {}).get(d, {})
+        if prior.get("group_sha256") == g["sha256"] and prior.get("verified"):
+            keep[d] = prior["verified"]
+    return keep
 
 
 def export_check_command(args):
     """export-check <vendor csv> <component dir> [--stamp <login>]: print the result; on MATCH write review/export_check.toml
     (refused with MISMATCH); --stamp adds each group's human stamp. Stamps are refused when CLAUDECODE is set (agents
     don't stamp, as tools/stamp.py)."""
-    who = None
-    if "--stamp" in args:
-        i = args.index("--stamp")
-        if i + 1 >= len(args):
-            print("ERROR: --stamp needs a GitHub login")
-            return 2
-        who, args = args[i + 1], args[:i] + args[i + 2:]
+    who, groups = None, None
+    for flag in ("--stamp", "--groups"):
+        if flag in args:
+            i = args.index(flag)
+            if i + 1 >= len(args):
+                print(f"ERROR: {flag} needs a value")
+                return 2
+            value, args = args[i + 1], args[:i] + args[i + 2:]
+            if flag == "--stamp":
+                who = value
+            else:
+                groups = set(value.split(","))
+    if who is not None:
         if not WHO_RE.fullmatch(who):
             print(f"ERROR: '{who}' is not a GitHub login")
             return 2
         if os.environ.get("CLAUDECODE"):
             print("refused: --stamp is for a person; agents don't stamp (CLAUDECODE is set)")
             return 1
-    if len(args) != 2:
+    if len(args) != 2 or (groups and who is None):
         print(__doc__)
         return 2
     export, folder = args
@@ -306,7 +334,11 @@ def export_check_command(args):
         return 1
     record = Path(folder) / "review" / EXPORT_RECORD
     record.parent.mkdir(exist_ok=True)
-    record.write_text(record_text(result, who, date.today().isoformat()), encoding="utf-8")
+    if groups is not None and not groups <= set(result["groups"]):
+        print(f"ERROR: --groups {sorted(groups - set(result['groups']))} not in this catalog")
+        return 2
+    record.write_text(record_text(result, who, date.today().isoformat(), groups, existing_stamps(record, result)),
+                      encoding="utf-8")
     print(f"wrote {record}" + (f" with stamps for {who}" if who else " (no stamps: run with --stamp <login>)"))
     return 0
 
