@@ -20,7 +20,7 @@ several matches, longer group, no unit cell in the group): the `ds_index` table,
 ## Ledger state (per row; pins change only when a stamp is added or its text changes)
 `HUMAN_VERIFIED` `human:` stamp, `hash == stamp_hash`, pins and the stamp's row/PDF hashes match · `MACHINE_CHECKED` any other
 stamp, pins match (never a human check) · `STALE` hash or the stamp's row hash differs · `PDF_CHANGED` the PDF differs from
-the pin or the stamp · `NEW` never stamped · `UNVERIFIED` stamp removed or malformed `human:` · `NOT_COVERED` variants.toml rows, catalog.csv, resistor-series values (not reviewed; never claim full coverage).
+the pin or the stamp · `NEW` never stamped · `UNVERIFIED` stamp removed or malformed `human:` · `NOT_COVERED` variants.toml rows, catalog.csv, resistor-series values (not reviewed; never claim full coverage). DRAFT: the catalog.csv of a capacitor series is instead reviewed by the export check in `docs/spec/capacitor.md` "Export check" (not yet implemented).
 Row hash: SHA-256 of `json.dumps(table without verified, sort_keys=True, separators=(",", ":"))`. `pdf_sha256` pins the
 PDF when the row first entered the ledger or was (re)stamped. Backfill: a stamp is pinned to the current hash
 (`baseline = true`) unless the row's hash at the commit that added the stamp line (git blame) differs: then STALE.
