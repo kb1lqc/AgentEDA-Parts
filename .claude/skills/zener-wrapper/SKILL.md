@@ -48,10 +48,10 @@ case moves several nets, say so in the case name. Prove one new case can fail by
 
 ## 3. Using wrappers from a Zener module
 
-Load by URL (`Module("github.com/kb1lqc/zener-library/components/<Mfr>/<Value>/<Value>.zen")`); relative paths that
+Load by URL (`Module("github.com/kb1lqc/AgentEDA-Parts/components/<Mfr>/<Value>/<Value>.zen")`); relative paths that
 leave a package fail ("escapes beyond package root"). The first build fails with "Run `pcb sync`": run it.
 ```zen
-INA = Module("github.com/kb1lqc/zener-library/components/TexasInstruments/INA821IDGK/INA821IDGK.zen")
+INA = Module("github.com/kb1lqc/AgentEDA-Parts/components/TexasInstruments/INA821IDGK/INA821IDGK.zen")
 INA(name="U1", VS_P=Power("V15", voltage="15V 5%"), IN_P=Net("SNS_P", voltage="0V to 130mV"),
     ambient=ambient, derate=derate)   # remaining pins as in the wrapper
 ```

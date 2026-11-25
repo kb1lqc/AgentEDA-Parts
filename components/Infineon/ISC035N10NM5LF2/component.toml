@@ -161,7 +161,7 @@ max        = 7.4
 unit       = "A"
 conditions = "VDS = 50 V, tp = 10 ms"
 cite       = "DS p.1, Table 1 Key performance parameters, I(VDS=50 V, tp=10 ms)"
-note       = "Printed in the Value column with no MIN/TYP/MAX label: stored as max. Same convention as the BSC040N10NS5 Table 1 key parameter vds_rating: a capability limit the design must stay below. Not checked in Zener. Table 1 gives no case temperature. Cross-check: the 10 ms line of Diagram 3 (TC = 25 degC) reads 7.30 A at 50 V (soa_tc25_10ms_50v), within read accuracy of 7.4 A; Diagram 4 (TC = 125 degC) reads 5.84 A. Table 1 is a printed value, not a curve."
+note       = "Printed with no MIN/TYP/MAX label: stored as max, a capability limit like BSC040N10NS5 vds_rating. Not checked in Zener. Table 1 gives no case temperature. Cross-check: Diagram 3 10 ms line (TC = 25 degC) reads 7.30 A at 50 V (soa_tc25_10ms_50v), within read accuracy of the printed 7.4 A; Diagram 4 (TC = 125 degC) reads 5.84 A."
 unchecked  = "not a voltage; owner: module"
 
 [param.soa_tc25_1us_12v]
@@ -900,7 +900,7 @@ unit       = "A"
 conditions = "ID = f(VDS), Tj = 25 degC; parameter VGS = 15 V; VDS = 2 V"
 cite       = "DS p.8, Diagram 6 Typ. output characteristics (figure), curve"
 curve      = true
-note       = "Clipped at the 700 A chart top: a lower bound of the typical curve, not a typ value. Axis fit (200 dpi, gridlines): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed). Near the 700 A chart top: value at the top edge, use with care."
+note       = "Curve reading, not a typ: clipped at the 700 A chart top, so a lower bound. Axis fit (200 dpi): VDS = 962 + 117.7 x V px; ID = (1048.5 - y) / 0.86214 A. Read accuracy about +/-1 %. Tj = 25 degC (printed). Use with care at the top edge."
 unchecked  = "curve read off Diagram 6, not a voltage; owner: module"
 
 [param.ioutput_tj25_vgs12v_vds0p5v]
@@ -1215,7 +1215,7 @@ conditions = "RDS(on) = f(VGS), ID = 50 A; parameter Tj = 25 degC; VGS = 8.24 V"
 cite       = "DS p.9, Diagram 9 Typ. drain-source on resistance (figure), curve"
 verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 curve      = true
-note       = "Axis fit (200 dpi, gridlines): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm. Read accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC): VGS 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent)."
+note       = "Curve reading. Axis fit (200 dpi): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm; accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC); 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent)."
 unchecked  = "curve read off Diagram 9, not a voltage; owner: module"
 
 [param.rds_tj175_vgs8p24v_id50a]
@@ -1229,7 +1229,7 @@ conditions = "RDS(on) = f(VGS), ID = 50 A; parameter Tj = 175 degC; VGS = 8.24 V
 cite       = "DS p.9, Diagram 9 Typ. drain-source on resistance (figure), curve"
 verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 curve      = true
-note       = "Axis fit (200 dpi, gridlines): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm. Read accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC): VGS 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent)."
+note       = "Curve reading. Axis fit (200 dpi): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm; accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC); 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent)."
 unchecked  = "curve read off Diagram 9, not a voltage; owner: module"
 
 [param.rds_tj175_vgs10v_id50a]
@@ -1243,7 +1243,7 @@ conditions = "RDS(on) = f(VGS), ID = 50 A; parameter Tj = 175 degC; VGS = 10 V"
 cite       = "DS p.9, Diagram 9 Typ. drain-source on resistance (figure), curve"
 verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 curve      = true
-note       = "Axis fit (200 dpi, gridlines): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm. Read accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC): VGS 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent)."
+note       = "Curve reading. Axis fit (200 dpi): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm; accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC); 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent)."
 unchecked  = "curve read off Diagram 9, not a voltage; owner: module"
 
 [param.rds_tj175_vgs12v_id50a]
@@ -1256,7 +1256,7 @@ unit       = "mohm"
 conditions = "RDS(on) = f(VGS), ID = 50 A; parameter Tj = 175 degC; VGS = 12 V"
 cite       = "DS p.9, Diagram 9 Typ. drain-source on resistance (figure), curve"
 curve      = true
-note       = "Axis fit (200 dpi, gridlines): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm. Read accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC): VGS 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent)."
+note       = "Curve reading. Axis fit (200 dpi): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm; accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC); 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent)."
 unchecked  = "curve read off Diagram 9, not a voltage; owner: module"
 
 [param.rds_tj175_vgs15v_id50a]
@@ -1269,7 +1269,7 @@ unit       = "mohm"
 conditions = "RDS(on) = f(VGS), ID = 50 A; parameter Tj = 175 degC; VGS = 15 V"
 cite       = "DS p.9, Diagram 9 Typ. drain-source on resistance (figure), curve"
 curve      = true
-note       = "Axis fit (200 dpi, gridlines): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm. Read accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC): VGS 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent)."
+note       = "Curve reading. Axis fit (200 dpi): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm; accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC); 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent)."
 unchecked  = "curve read off Diagram 9, not a voltage; owner: module"
 
 [param.iav_tjstart25_1us]
@@ -1282,7 +1282,7 @@ unit       = "A"
 conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 25 degC; tAV = 1 us"
 cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
 curve      = true
-note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of the three read points at tAV about 890 to 980 us (slope -0.60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %. Plateau at about 50 A (50.1 A read) before the knee; plateau is the common 50 A level."
+note       = "Curve reading. Axis fit (200 dpi): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of three read points at tAV about 890 to 980 us (slope -0.60 at 25 degC, -0.65 at 100 and 150 degC), evaluated at 1000 us. Accuracy about +/-1 %. Plateau about 50 A (50.1 A read) before the knee."
 unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
 
 [param.iav_tjstart25_10us]
@@ -1295,7 +1295,7 @@ unit       = "A"
 conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 25 degC; tAV = 10 us"
 cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
 curve      = true
-note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of the three read points at tAV about 890 to 980 us (slope -0.60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %. Plateau at about 50 A (50.1 A read) before the knee; plateau is the common 50 A level."
+note       = "Curve reading. Axis fit (200 dpi): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of three read points at tAV about 890 to 980 us (slope -0.60 at 25 degC, -0.65 at 100 and 150 degC), evaluated at 1000 us. Accuracy about +/-1 %. Plateau about 50 A (50.1 A read) before the knee."
 unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
 
 [param.iav_tjstart25_100us]
@@ -1308,7 +1308,7 @@ unit       = "A"
 conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 25 degC; tAV = 100 us"
 cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
 curve      = true
-note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of the three read points at tAV about 890 to 980 us (slope -0.60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %. Plateau at about 50 A (50.1 A read) before the knee; plateau is the common 50 A level."
+note       = "Curve reading. Axis fit (200 dpi): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of three read points at tAV about 890 to 980 us (slope -0.60 at 25 degC, -0.65 at 100 and 150 degC), evaluated at 1000 us. Accuracy about +/-1 %. Plateau about 50 A (50.1 A read) before the knee."
 unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
 
 [param.iav_tjstart25_1000us]
@@ -1334,7 +1334,7 @@ unit       = "A"
 conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 100 degC; tAV = 1 us"
 cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
 curve      = true
-note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of the three read points at tAV about 890 to 980 us (slope -0.60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %. Plateau at about 50 A (50.1 A read) before the knee; plateau is the common 50 A level."
+note       = "Curve reading. Axis fit (200 dpi): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of three read points at tAV about 890 to 980 us (slope -0.60 at 25 degC, -0.65 at 100 and 150 degC), evaluated at 1000 us. Accuracy about +/-1 %. Plateau about 50 A (50.1 A read) before the knee."
 unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
 
 [param.iav_tjstart100_10us]
@@ -1347,7 +1347,7 @@ unit       = "A"
 conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 100 degC; tAV = 10 us"
 cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
 curve      = true
-note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of the three read points at tAV about 890 to 980 us (slope -0.60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %. Plateau at about 50 A (50.1 A read) before the knee; plateau is the common 50 A level."
+note       = "Curve reading. Axis fit (200 dpi): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of three read points at tAV about 890 to 980 us (slope -0.60 at 25 degC, -0.65 at 100 and 150 degC), evaluated at 1000 us. Accuracy about +/-1 %. Plateau about 50 A (50.1 A read) before the knee."
 unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
 
 [param.iav_tjstart100_100us]
@@ -1360,7 +1360,7 @@ unit       = "A"
 conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 100 degC; tAV = 100 us"
 cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
 curve      = true
-note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of the three read points at tAV about 890 to 980 us (slope -0.60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %."
+note       = "Curve reading. Axis fit (200 dpi): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of three read points at tAV about 890 to 980 us, evaluated at 1000 us. Accuracy about +/-1 %."
 unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
 
 [param.iav_tjstart100_1000us]
@@ -1386,7 +1386,7 @@ unit       = "A"
 conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 150 degC; tAV = 1 us"
 cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
 curve      = true
-note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of the three read points at tAV about 890 to 980 us (slope -0.60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %. Plateau at about 50 A (50.1 A read) before the knee; plateau is the common 50 A level."
+note       = "Curve reading. Axis fit (200 dpi): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of three read points at tAV about 890 to 980 us (slope -0.60 at 25 degC, -0.65 at 100 and 150 degC), evaluated at 1000 us. Accuracy about +/-1 %. Plateau about 50 A (50.1 A read) before the knee."
 unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
 
 [param.iav_tjstart150_10us]
@@ -1399,7 +1399,7 @@ unit       = "A"
 conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 150 degC; tAV = 10 us"
 cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
 curve      = true
-note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of the three read points at tAV about 890 to 980 us (slope -0.60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %."
+note       = "Curve reading. Axis fit (200 dpi): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of three read points at tAV about 890 to 980 us, evaluated at 1000 us. Accuracy about +/-1 %."
 unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
 
 [param.iav_tjstart150_100us]
@@ -1412,7 +1412,7 @@ unit       = "A"
 conditions = "IAS = f(tAV), RGS = 25 ohm; parameter Tj,start = 150 degC; tAV = 100 us"
 cite       = "DS p.10, Diagram 14 Avalanche characteristics (figure), curve"
 curve      = true
-note       = "Axis fit (200 dpi, gridlines): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of the three read points at tAV about 890 to 980 us (slope -0.60 for 25 degC, -0.65 for 100 and 150 degC), evaluated at 1000 us. Read accuracy about +/-1 %."
+note       = "Curve reading. Axis fit (200 dpi): tAV = 10^((x - 960) / 193.2) us; IAV = 10^(2 - (y - 446.5) / 299.75) A. The 1000 us value is the log-log fit of three read points at tAV about 890 to 980 us, evaluated at 1000 us. Accuracy about +/-1 %."
 unchecked  = "curve read off Diagram 14, not a voltage; owner: module"
 
 [param.iav_tjstart150_1000us]

@@ -438,7 +438,7 @@ max        = 15
 unit       = "%"
 conditions = "Ref. temp 25 degC; temp range -55 to 125 degC; capacitance change over temperature"
 cite       = "DS p.2, Rated Value, Temp. coeff. or Cap. Change (-15 to 15 %)"
-note       = "Public STD code X7R (EIA). Capacitance change over temperature, not a DC-bias or aging limit (see the open items above). Read from the reference sheet of the one part this directory has; used for every X7R catalog row because -15 to 15 % over -55 to 125 degC is the X7R class limit the sheet prints for code R7 (open item: confirm for each other X7R part)."
+note       = "X7R (EIA) temperature coefficient: capacitance change over temperature, not a DC-bias or aging limit. Read from the reference sheet of the one part in this directory; used for every X7R catalog row because -15 to 15 % over -55 to 125 degC is the X7R class limit printed for code R7 (open item: confirm for each other X7R part)."
 
 [param.op_temp_x7r]
 dielectric = "X7R"
@@ -473,7 +473,7 @@ text       = "Not specified: the sheet shows only an example curve"
 unit       = ""
 conditions = "DC voltage applied"
 cite       = "DS p.14, Rating 5. DC Voltage and AC Voltage Characteristic (example figure)"
-note       = "X7R loses capacitance under DC bias; the DS example curve (sample R(R1), 0.1 uF, 50 VDC: a different temperature-characteristic code from this R7 part) shows a large loss approaching rated voltage; it is an example, not a rating for this part. capacitance_worst_pct/_ppm exclude it: do not use capacitance_worst_pct as an in-circuit minimum. The DS also requires the AC/pulse zero-to-peak voltage to stay within the rated DC voltage; the Zener check is DC steady state only."
+note       = "Not a rating for this part: the DS example curve (sample R(R1), 0.1 uF, 50 VDC, a different TC code) shows large X7R loss near rated voltage. capacitance_worst_pct/_ppm exclude it; do not use them as an in-circuit minimum. The DS also limits AC/pulse zero-to-peak voltage to the rated DC voltage; the Zener check is DC steady state only."
 
 [param.ac_peak]
 parts = ["GCM155R71H104KE02"]
@@ -512,7 +512,7 @@ max        = 30
 unit       = "ppm/degC"
 conditions = "Ref. temp 25 degC; temp range printed as 25 to 125 degC; coefficient 0 +/-30 ppm/degC"
 cite       = "DS p.2 (GCM1555C1H101FA16-01A-EN.pdf), Rated Value, Temp. coeff. or Cap. Change (0+/-30 ppm/degC), Temp. Range (25 to 125 degC)"
-note       = "Public STD code C0G (EIA). A temperature coefficient, not a percent-change class. The DS prints the range 25 to 125 degC only: no coefficient is printed below 25 degC. The -55 to -10 degC capacitance drift is in the Table A rows (capdrift_*_c0g); the -10 to 25 degC segment has no printed number (open item). capacitance_worst_ppm requires dt and refuses values outside 0 to 100 degC (docs/SPEC.md, Capacitor series)."
+note       = "C0G (EIA) temperature coefficient, not a percent-change class. Printed for 25 to 125 degC only. -55 to -10 degC drift is in the Table A rows (capdrift_*_c0g); -10 to 25 degC has no printed number (open item). capacitance_worst_ppm refuses dt outside 0 to 100 degC (docs/SPEC.md, Capacitor series)."
 
 [param.op_temp_c0g]
 dielectric = "C0G"

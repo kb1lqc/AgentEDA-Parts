@@ -43,3 +43,15 @@ Worst-case method (`wca`), stated so a human can check it by hand:
   `lib.inputs_section()` gives the report's "Input verification" section. `lib.human_review_needed()` lists the rows read without a current
   human stamp (`human:<name> ... row <hash12>`, bound to the row and PDF hashes; docs/spec/review.md): dicts with input, value, key, dir, review_key, ref (for
   `tools/stamp.py`), stamp, state, cite, reason.
+
+## Rules for AI assistants using a part
+
+- Use only values from `component.toml` (through `part.param(key)` or `part.inputs(fn)`). Never retype a datasheet
+  number. If a needed number is missing, say so; do not estimate it.
+- For worst case over temperature, use `scope = "full"` rows. `25C` rows hold only at 25 °C; `partial` rows do not
+  cover the whole grade. Follow the temperature recipe in `docs/spec/extract.md`.
+- `curve = true` values and `_typ` functions are estimates, never pass/fail bounds. `text` rows (for example
+  "Continuous") have no number.
+- Mark every value you choose as a design choice in code, as `examples/current_sense.py` does. For nominal analysis of
+  a bound-only spec, state the assumption with `Param.with_typ(...)`.
+- Read each part's README notes and conditions before using a row.

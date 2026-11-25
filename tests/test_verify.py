@@ -66,7 +66,7 @@ class TestVerify(unittest.TestCase):
         return v.verify(self.root, log_dir=self.logs, runner=fake, **kw)
 
     def test_default_log_dir_is_fresh_per_run(self):
-        # two runs at once must not share a log directory (zener-library #19)
+        # two runs at once must not share a log directory (AgentEDA-Parts #19)
         import shutil
         dirs = []
         for _ in range(2):

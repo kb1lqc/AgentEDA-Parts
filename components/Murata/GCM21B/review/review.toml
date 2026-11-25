@@ -11,8 +11,8 @@ datasheet_rev = "01A"
 pdf_sha256 = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b"
 pages = 32
 text_layer = true
-component_sha256 = "0956e1f94ab1a4355827b0cca87914e237c2ad6ddc899185040dd0de125421c6"
-render = "complete"
+component_sha256 = "cb40d619f2aa3a4ffde75162faea22618b8067a76f88520ded169aedd23e0d02"
+render = "NOT_RENDERED"
 backfill = "git blame"
 sheets = { "GCM21A5C2E101FX01-00B-EN.pdf" = "3d70643598e13efc9091495a9990c1304a7b4b0e014cca8112bd50c3d2fcc403", "GCM21BR72A104KA37-01A-EN.pdf" = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b" }
 
@@ -910,8 +910,8 @@ text_snippet = "(no text-layer line located)"
 [row.dc_bias]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): row has no symbol; text check: UNSURE row has no min/typ/max number"
-hash = "17cb625424f80646aa754959e53266f675d39828dbc8939c22e54bed9cc7e5da"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/GCM21BR72A104KA37-01A-EN.pdf); not rendered"
+hash = "4af3fd98c2b04dcfd144d1d07f028098e6fab55343347421bed647a7028ac3e3"
 pdf_sha256 = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b"
 printed_page = 13
 pdf_page = 13
@@ -944,10 +944,10 @@ render_key = "f53cd6e48b9158c5"
 text_snippet = "(no text-layer line located)"
 
 [row.tc_c0g]
-state = "MACHINE_CHECKED"
+state = "STALE"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'TC' not found as a table row; text check: UNSURE partial-scope row"
-hash = "fa4d2ff9564e77cbfbff17bbcf7642b07c92f4539e9a3d5c60c2e52f6641338d"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/GCM21A5C2E101FX01-00B-EN.pdf); not rendered"
+hash = "435958718ffd142d9ef282219b890764fe14e1bb78e39bd7b19c7ba314dda40d"
 stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 stamp_hash = "fa4d2ff9564e77cbfbff17bbcf7642b07c92f4539e9a3d5c60c2e52f6641338d"
 pdf_sha256 = "3d70643598e13efc9091495a9990c1304a7b4b0e014cca8112bd50c3d2fcc403"

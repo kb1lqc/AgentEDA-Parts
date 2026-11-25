@@ -11,8 +11,8 @@ datasheet_rev = "01A"
 pdf_sha256 = "1fde962935f54c93a56b74977f2399894b3df77cab2dff5e1c35bfae9d130282"
 pages = 33
 text_layer = true
-component_sha256 = "048e96c80e725f0a343af0f53dac668db2fd35a9e5d56c4ad921a7c06f06711a"
-render = "complete"
+component_sha256 = "c22ec5226cb3029b1f808d062b3c7f4086ea971ab34446e5d69f525c20555ace"
+render = "NOT_RENDERED"
 backfill = "git blame"
 sheets = { "GCM1555C1H101FA16-01A-EN.pdf" = "cd97b208daae0aea15da8da90690e3e12f9a5bd7875dc0f67513f9ab967f413a", "GCM155R71H104KE02-01A-EN.pdf" = "1fde962935f54c93a56b74977f2399894b3df77cab2dff5e1c35bfae9d130282" }
 
@@ -562,8 +562,8 @@ text_snippet = "       W                     \u03c6180mm Reel PAPER Tape W8P1   
 [row.tc_x7r]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'TC' not found as a table row; text check: UNSURE unit '%' not comparable"
-hash = "e338cb2235b40e104f9a44958e166a2f80cb7abdd18a9e04206c58a77f257388"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/GCM155R71H104KE02-01A-EN.pdf); not rendered"
+hash = "807e0dd8405d8ac46a38a867085998fd6837c135d1f817f918b490bb9a12b93a"
 pdf_sha256 = "1fde962935f54c93a56b74977f2399894b3df77cab2dff5e1c35bfae9d130282"
 printed_page = 2
 pdf_page = 2
@@ -616,8 +616,8 @@ text_snippet = "(no text-layer line located)"
 [row.dc_bias]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): row has no symbol; text check: UNSURE row has no min/typ/max number"
-hash = "d88ef867ce3991632295097f8d587180228cb6f5489c7147937dec0fa0098c62"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/GCM155R71H104KE02-01A-EN.pdf); not rendered"
+hash = "a35d1eea32eda80af874fa3e6631e91c9900217fe21c1ab07bec0fafed474219"
 pdf_sha256 = "1fde962935f54c93a56b74977f2399894b3df77cab2dff5e1c35bfae9d130282"
 printed_page = 14
 pdf_page = 14
@@ -670,8 +670,8 @@ text_snippet = "(no text-layer line located)"
 [row.tc_c0g]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'TC' not found as a table row; text check: UNSURE partial-scope row"
-hash = "49ba2b96e1ab13495d1513635db0c7bd184467fdf0ff1a28af9c34a2cd7d6864"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/GCM1555C1H101FA16-01A-EN.pdf); not rendered"
+hash = "7a8b9ee71b665db9f60c8841ac9d501efcf755928f8e90cef69077585049947f"
 pdf_sha256 = "cd97b208daae0aea15da8da90690e3e12f9a5bd7875dc0f67513f9ab967f413a"
 sheet = "GCM1555C1H101FA16-01A-EN.pdf"
 printed_page = 2

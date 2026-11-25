@@ -707,7 +707,7 @@ def dry_runner():
         elif cmd[:2] == ["gh", "api"]:
             out = "your-login"
         elif cmd[:3] == ["gh", "pr", "create"]:
-            out = "https://github.com/OWNER/zener-library/pull/0"
+            out = "https://github.com/OWNER/AgentEDA-Parts/pull/0"
         return 0, out
     return run
 

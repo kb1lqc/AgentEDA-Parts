@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The whole after-change chain for zener-library as one command. Exit 0 = PASS, 1 = any FAIL.
+"""The whole after-change chain for AgentEDA-Parts as one command. Exit 0 = PASS, 1 = any FAIL.
 
 Usage (repo root): python3 tools/verify.py [--all | DIR ...] [--regen] [--log-dir D] [--root R]
 
@@ -114,7 +114,7 @@ def root_pcb_version(root):
 def verify(root, dirs=None, all_dirs=False, regen=False, log_dir=None, runner=run_cmd):
     """Run the chain. Returns (exit code, summary text lines). `runner(cmd, cwd)` -> (rc, output) is injectable."""
     root = Path(root)
-    # a fresh directory per run, so two runs at once never share logs (zener-library #19)
+    # a fresh directory per run, so two runs at once never share logs (AgentEDA-Parts #19)
     log_dir = Path(log_dir) if log_dir else Path(tempfile.mkdtemp(prefix="zl-verify-"))
     log_dir.mkdir(parents=True, exist_ok=True)
     fails, counts, notes = [], {}, []

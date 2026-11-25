@@ -1,7 +1,8 @@
 # Library workflow history (humans only; agents do not load this)
 
-The old docs/WORKFLOW.md is docs/notes/workflow.md. It conflicts with CLAUDE.md in places (it says to extract text
-with `pdftotext -layout`, to commit at the end, and to supply files into `temporary/`); CLAUDE.md and docs/spec/ win.
+The old docs/WORKFLOW.md (later docs/notes/workflow.md, removed: its part types are in CONTRIBUTING.md) conflicted with
+CLAUDE.md (it said to extract text with `pdftotext -layout`, to commit at the end, and to supply files into `temporary/`);
+CLAUDE.md and docs/spec/ win.
 
 ## Derating policy
 Deferred to a dedicated NASA EEE-INST-002 effort. The `derate` wrapper config now exists (`lib/zen.py`).

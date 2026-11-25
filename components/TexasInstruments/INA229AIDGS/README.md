@@ -4,22 +4,23 @@
 
 Released: all 23 rows that matter checked (76 rows in all).
 
+Terms: [glossary](../../../CONTRIBUTING.md#glossary).
+
 ## Part
 
-- **mpn**: INA229AIDGSR
-- **alternates**: []
+- **MPN**: INA229AIDGSR
 - **manufacturer**: Texas Instruments
 - **description**: 85 V, 20-bit power/energy/charge monitor with SPI interface
 - **category**: power_monitor
 - **package**: VSSOP-10 (DGS0010A)
-- **datasheet_url**: [https://www.ti.com/lit/ds/symlink/ina229.pdf](https://www.ti.com/lit/ds/symlink/ina229.pdf)
-- **datasheet_file**: docs/datasheets/ina229.pdf
-- **datasheet_rev**: SLYS023A
-- **datasheet_date**: 2022-05
-- **temp_grade**: -40 to 125 degC
-- **kicad_symbol**: INA229AIDGS.kicad_sym
-- **kicad_footprint**: INA229AIDGS.kicad_mod
-- **step**: INA229AIDGS.step
+- **Datasheet URL**: [https://www.ti.com/lit/ds/symlink/ina229.pdf](https://www.ti.com/lit/ds/symlink/ina229.pdf)
+- **Datasheet file**: docs/datasheets/ina229.pdf
+- **Datasheet revision**: SLYS023A
+- **Datasheet date**: 2022-05
+- **Temperature grade**: -40 to 125 degC
+- **Symbol file**: INA229AIDGS.kicad_sym
+- **Footprint file**: INA229AIDGS.kicad_mod
+- **3D model**: INA229AIDGS.step
 
 ## Pins
 
@@ -137,7 +138,7 @@ Rows by scope: 25C 43, full 11, na 21 (25C rows hold only at 25 degC). Curve (gr
 
 ## Zener checks
 
-Generated wrapper: `INA229AIDGS.zen` (`python3 -m lib.zen`). abs_max and rec_op rows are errors (abs_max x derate); 25C and partial rows are waivable warnings; a checked net with no voltage is UNVERIFIED.
+Generated wrapper: `INA229AIDGS.zen` (`python3 -m lib.zen`). How each check reports: [wrapper checks](../../../docs/spec/wrapper.md#reading-the-zener-checks).
 
 | Param | Name | Checked against | Not checked / reason |
 |---|---|---|---|

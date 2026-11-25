@@ -758,7 +758,7 @@ max        = 0.175
 unit       = "V"
 conditions = "HGATE rising (after 32 cycles), VCC = 4V to 80V"
 cite       = "DS p.4, Electrical Characteristics, VTMR(R)"
-note       = "OPEN ITEM: DS Figure 4 caption says 'LTC4364-2 Only' but the p.15 text says the -1 also generates these cool-down TMR pulses; the text is followed. Shared by all six variants. Restart by HGATE rising at this crossing is the -2 function (DS p.14, p.15). The -1 also runs the 32 cool-down cycles that reach 0.15 V (DS p.15, Figure 4), so the threshold applies to -1 too. Used by calc.t_cool (dv_cycle = VTMR(G) - VTMR(R))."
+note       = "OPEN ITEM: DS Figure 4 caption says 'LTC4364-2 Only', but the p.15 text says -1 also runs the cool-down TMR cycles; the text is followed, so the threshold applies to all six variants. The -1 runs the 32 cool-down cycles that reach 0.15 V (DS p.15, Figure 4). Restart by HGATE rising at this crossing is the -2 function (DS p.14, p.15). Used by calc.t_cool (dv_cycle = VTMR(G) - VTMR(R))."
 
 [param.dvtmr]
 name       = "Early warning timer window"
@@ -999,7 +999,7 @@ typ        = -1.5
 unit       = "uA"
 conditions = "Maximum Allowable Leakage, VCC = 4V"
 cite       = "DS p.4, Electrical Characteristics, ISHDN (row 2)"
-note       = "Unmarked row (25 degC). Printed in the TYP column but labelled 'Maximum Allowable Leakage': this is a limit on EXTERNAL leakage on SHDN, not a typical device value. Supporting text: DS p.9, SHDN pin function, leakage current to ground at the pin should be limited to no more than 1 uA if no pull-up device is used. The table value (1.5 uA, DS p.4) and the p.9 text (1 uA) differ: open item. Not used as a device bound."
+note       = "25 degC. Printed in the TYP column but labelled 'Maximum Allowable Leakage': a limit on EXTERNAL leakage on SHDN, not a device typical. DS p.9 text: leakage to ground at SHDN no more than 1 uA without a pull-up. The table (1.5 uA, DS p.4) and p.9 (1 uA) differ: open item. Not used as a device bound."
 
 [param.ishdn_neg30]
 name       = "SHDN input current, SHDN = -30 V"

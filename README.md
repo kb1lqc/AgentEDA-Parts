@@ -1,256 +1,112 @@
-# Component library: datasheet numbers + equations + KiCad
+# Component library: datasheet numbers, equations, KiCad
 
-[![verify](https://github.com/kb1lqc/zener-library/actions/workflows/verify.yml/badge.svg)](https://github.com/kb1lqc/zener-library/actions/workflows/verify.yml) [![release](https://img.shields.io/github/v/tag/kb1lqc/zener-library?filter=v*&sort=semver&label=release)](https://github.com/kb1lqc/zener-library/tags)
+[![verify](https://github.com/kb1lqc/AgentEDA-Parts/actions/workflows/verify.yml/badge.svg)](https://github.com/kb1lqc/AgentEDA-Parts/actions/workflows/verify.yml) [![release](https://img.shields.io/github/v/tag/kb1lqc/AgentEDA-Parts?filter=v*&sort=semver&label=release)](https://github.com/kb1lqc/AgentEDA-Parts/tags)
 
-Every part here has three things a person or an AI needs to design with it and check the result:
+Each part is data (`component.toml`), datasheet math (`calc.py`), KiCad files, and a generated Zener wrapper for
+the `pcb` circuit tool. Every number has a page cite; a person checks each one against the datasheet.
 
-1. **Data** (`component.toml`): pins and datasheet parameters with min / typ / max, units, test conditions and a
-   page cite for every number.
-2. **Math** (`calc.py`): the datasheet's application equations as plain Python functions, each citing its page, plus
-   the datasheet's own worked examples, which the validator re-runs.
-3. **KiCad** (`.kicad_sym`, `.kicad_mod`, embedded STEP): symbol pins match the data exactly; footprint pads follow
-   the datasheet land pattern.
-4. **Zener wrapper** (`<Value>.zen`): generated from `component.toml` for circuit capture with Diode's `pcb`
-   toolchain: typed pins, the KiCad symbol and footprint, and DC checks on the voltages each instance declares.
-
-`lib/` turns those into worst-case and nominal numbers, tables and plots. The format is defined in
-[docs/SPEC.md](docs/SPEC.md); KiCad rules in [docs/KICAD.md](docs/KICAD.md).
-
-## Review parameters
-
-Before reviewing any part or circuit block, supply the datasheet PDFs locally.
-
-### Local datasheet PDFs
-
-Datasheet PDFs are **not committed** to this repository. The `docs/datasheets/` folder is git-ignored and may not exist
-after a fresh clone, so create it and copy the required PDFs into it. In particular:
-
-- Find the PDF path for a part in its `[part]` table, in `components/<Manufacturer>/<Value>/component.toml`.
-  It uses the `datasheet_file` field.
-- Put the PDF at that exact path under the repository root. For example, LTC4364MS declares
-  `docs/datasheets/ltc4364.pdf`, so that file must exist at `docs/datasheets/ltc4364.pdf`.
-- For every cited sheet in a component, also put that PDF in `docs/datasheets/`. Other sheets are named in a cite as
-  `DS p.<n> (<filename>.pdf), ...` and must use the same filename.
-- PDFs for one part may serve other parts or circuit-block reviews when the block uses the same datasheet.
-- Never commit datasheet PDFs.
-
-```sh
-mkdir -p docs/datasheets
-# Copy each required PDF into docs/datasheets/ using the filename in datasheet_file or its cite.
+```mermaid
+flowchart LR
+  DS[Datasheet PDF and vendor CAD<br/>git-ignored, never committed]
+  subgraph Written by people and AI
+    TOML[component.toml<br/>numbers and page cites]
+    PY[calc.py<br/>equations and EXAMPLES]
+  end
+  DS -. checked against .-> TOML
+  TOML --> GEN[python3 -m lib.zen and lib.readme]
+  GEN --> OUT[Value.zen and README.md<br/>generated, never edited]
+  TOML --> ANA[lib: nominal and worst-case analysis]
+  PY --> ANA
+  TOML -- a person ticks each row --> STAMP[verified line in component.toml]
 ```
 
-### Review one or more parts
-
-From the repository root:
-
-```sh
-python3 tools/ds_review.py components/<Manufacturer>/<Value>
-python3 tools/review.py <Value>
-```
-
-Replace `<Manufacturer>/<Value>` and `<Value>` with the actual component directory and directory name. The first
-command builds the local evidence cache and can be omitted when the cache already exists. `tools/review.py` reads
-`datasheet_file` for that part, renders the cited pages, opens the browser review page, and lets you tick stampable rows.
-
-For several specific parts:
-
-```sh
-python3 tools/review.py <Value1> <Value2>
-```
-
-### Review rows used by a circuit block
-
-When reviewing a block, the block and library checkouts must both be available, and every PDF used by the block's
-library inputs must be present in this repository's `docs/datasheets/` directory:
-
-```sh
-python3 tools/review.py --block <Block>
-```
-
-The default neighboring block checkout is `../ina229` if that directory exists, otherwise `../circuit-blocks`. Use
-another checkout explicitly with `--blocks-repo <path>`:
-
-```sh
-python3 tools/review.py --block <Block> --blocks-repo <path-to-blocks-repo>
-```
-
-The block option only narrows the displayed rows. It does not change a part's review status.
-
-### Why a row may have no checkbox
-
-A row is selectable only when it is stampable. Before the review page appears, ensure:
-
-- the exact `datasheet_file` PDF exists locally;
-- any PDF named in a row cite exists locally;
-- `python3 tools/ds_review.py <component-directory>` has generated or refreshed the evidence cache;
-- the working tree is otherwise clean when you later press the stamp button.
-
-If a row has no checkbox or the button stays at `Stamp 0 rows`, read the reason on the row. Missing evidence generally
-means rerunning `tools/ds_review.py` for that part; `Fix first` means correcting the row or its cite before it can be
-stamped. `DISAGREE` or `NOT_FOUND` rows must be fixed or clarified and cannot be stamped.
-
-Run `python3 tools/review.py` to open one page of the datasheet rows that matter for every part, tick the ones that
-match the datasheet image, and press one button to stamp them and open the PR. Status per part (generated by
-`python3 -m lib.readme`; rules in [docs/spec/review.md](docs/spec/review.md)):
-
-<!-- review-status:start -->
-| Part | Status | Review command |
-|---|---|---|
-| AnalogDevices/LTC4364MS | released | `python3 tools/review.py LTC4364MS` |
-| Infineon/BSC040N10NS5 | 0 of 17 | `python3 tools/review.py BSC040N10NS5` |
-| Infineon/ISC035N10NM5LF2 | 16 of 22 | `python3 tools/review.py ISC035N10NM5LF2` |
-| Infineon/ISC750P10LM | 0 of 17 | `python3 tools/review.py ISC750P10LM` |
-| Murata/GCM155 | 0 of 20 | `python3 tools/review.py GCM155` |
-| Murata/GCM188 | 0 of 20 | `python3 tools/review.py GCM188` |
-| Murata/GCM216 | 0 of 16 | `python3 tools/review.py GCM216` |
-| Murata/GCM219 | 0 of 16 | `python3 tools/review.py GCM219` |
-| Murata/GCM21A | 0 of 16 | `python3 tools/review.py GCM21A` |
-| Murata/GCM21B | 0 of 16 | `python3 tools/review.py GCM21B` |
-| Murata/GCM319 | 0 of 15 | `python3 tools/review.py GCM319` |
-| Murata/GCM31A | 0 of 15 | `python3 tools/review.py GCM31A` |
-| Murata/GCM31B | 0 of 16 | `python3 tools/review.py GCM31B` |
-| Murata/GCM31C | 0 of 23 | `python3 tools/review.py GCM31C` |
-| Murata/GCM31M | 0 of 16 | `python3 tools/review.py GCM31M` |
-| Murata/GCM32D | 0 of 20 | `python3 tools/review.py GCM32D` |
-| Murata/GCM32E | 0 of 20 | `python3 tools/review.py GCM32E` |
-| Murata/GCM32Q | released | `python3 tools/review.py GCM32Q` |
-| Panasonic/ERA-2AEB | 0 of 17 | `python3 tools/review.py ERA-2AEB` |
-| Panasonic/ERA-3AEB | 0 of 17 | `python3 tools/review.py ERA-3AEB` |
-| Panasonic/ERA-6AEB | 0 of 17 | `python3 tools/review.py ERA-6AEB` |
-| Panasonic/ERJ-2RKF | 0 of 14 | `python3 tools/review.py ERJ-2RKF` |
-| Panasonic/ERJ-3EKF | 4 of 14 | `python3 tools/review.py ERJ-3EKF` |
-| Panasonic/ERJ-6ENF | 0 of 17 | `python3 tools/review.py ERJ-6ENF` |
-| Panasonic/ERJ-8ENF | 0 of 17 | `python3 tools/review.py ERJ-8ENF` |
-| STMicroelectronics/STM32H723ZET6 | 0 of 40 | `python3 tools/review.py STM32H723ZET6` |
-| STMicroelectronics/VNF1248F | 0 of 35 | `python3 tools/review.py VNF1248F` |
-| TexasInstruments/INA229AIDGS | released | `python3 tools/review.py INA229AIDGS` |
-| TexasInstruments/INA241DGK | 0 of 21 | `python3 tools/review.py INA241DGK` |
-| TexasInstruments/INA821IDGK | 0 of 25 | `python3 tools/review.py INA821IDGK` |
-| TexasInstruments/TPS48000QDGXQ1 | 19 of 29 | `python3 tools/review.py TPS48000QDGXQ1` |
-| Vishay/WSK2512 | 6 of 21 | `python3 tools/review.py WSK2512` |
-| Vishay/WSK2512-LOW | 4 of 21 | `python3 tools/review.py WSK2512-LOW` |
-| Vishay/WSK2512R0250D | 0 of 23 | `python3 tools/review.py WSK2512R0250D` |
-<!-- review-status:end -->
-
-## Parts
-
-| Part | What | README |
-|---|---|---|
-| Infineon BSC040N10NS5 | 100 V N-channel OptiMOS 5 MOSFET, 4.0 mΩ max, PG-TDSON-8 (SuperSO8) | [README](components/Infineon/BSC040N10NS5/README.md) |
-| Infineon ISC035N10NM5LF2 | 100 V N-channel OptiMOS 5 Linear FET 2 (wide SOA), 3.5 mΩ max, PG-TDSON-8 | [README](components/Infineon/ISC035N10NM5LF2/README.md) |
-| Infineon ISC750P10LM | -100 V P-channel MOSFET, 75 mΩ max, PG-TDSON-8 (SuperSO8) | [README](components/Infineon/ISC750P10LM/README.md) |
-| TI INA821IDGK | Precision instrumentation amplifier, VSSOP-8 | [README](components/TexasInstruments/INA821IDGK/README.md) |
-| ADI LTC4364 MS family (6 variants: C/I/H grade x -1 latch-off / -2 auto-retry) | Surge stopper + ideal diode, MSOP-16 | [README](components/AnalogDevices/LTC4364MS/README.md) |
-| TI INA241 DGK family (10 variants: A1-A5 / B1-B5, gain 10/20/50/100/200) | -5 V to 110 V bidirectional current-sense amplifier, VSSOP-8 | [README](components/TexasInstruments/INA241DGK/README.md) |
-| TI TPS48000QDGXQ1 | Automotive 3.5-95 V high-side switch controller with short-circuit protection, VSSOP-19 | [README](components/TexasInstruments/TPS48000QDGXQ1/README.md) |
-| TI INA229AIDGS | 85 V, 20-bit power/energy/charge monitor, SPI, VSSOP-10 | [README](components/TexasInstruments/INA229AIDGS/README.md) |
-| ST STM32H723ZET6 | Cortex-M7 550 MHz MCU, 512 KB flash, LQFP144, -40 to 85 °C; core electrical sections (interface timing not yet extracted) | [README](components/STMicroelectronics/STM32H723ZET6/README.md) |
-| ST VNF1248F | 12/24/48 V high-side switch controller with e-fuse, SPI, QFN32L 5x5 | [README](components/STMicroelectronics/VNF1248F/README.md) |
-| Panasonic ERJ-2RKF series | Thick film resistor, 0402, ±1 %, 10 Ω to 1 MΩ (E24/E96); value is a design input | [README](components/Panasonic/ERJ-2RKF/README.md) |
-| Panasonic ERJ-3EKF series | Thick film resistor, 0603, ±1 %, 10 Ω to 1 MΩ (E24/E96); value is a design input | [README](components/Panasonic/ERJ-3EKF/README.md) |
-| Panasonic ERJ-6ENF series | Thick film resistor, 0805, ±1 %, 10 Ω to 2.2 MΩ (E24/E96); value is a design input | [README](components/Panasonic/ERJ-6ENF/README.md) |
-| Panasonic ERJ-8ENF series | Thick film resistor, 1206, ±1 %, 10 Ω to 2.2 MΩ (E24/E96); NRFND in the 2026.5 catalog | [README](components/Panasonic/ERJ-8ENF/README.md) |
-| Panasonic ERA-2AEB series | Thin film resistor, 0402, ±0.1 %, ±25 ppm/°C, 47 Ω to 100 kΩ (E24; E96 from 100 Ω) | [README](components/Panasonic/ERA-2AEB/README.md) |
-| Panasonic ERA-3AEB series | Thin film resistor, 0603, ±0.1 %, ±25 ppm/°C, 47 Ω to 330 kΩ (E24; E96 from 100 Ω) | [README](components/Panasonic/ERA-3AEB/README.md) |
-| Panasonic ERA-6AEB series | Thin film resistor, 0805, ±0.1 %, ±25 ppm/°C, 47 Ω to 1 MΩ (E24; E96 from 100 Ω) | [README](components/Panasonic/ERA-6AEB/README.md) |
-| Murata GCM155 series (0402) | Automotive X7R and C0G MLCC, 697 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM155/README.md) |
-| Murata GCM188 series (0603) | Automotive X7R and C0G MLCC, 633 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM188/README.md) |
-| Murata GCM21A series (0805, 1.0 mm) | Automotive X7R and C0G MLCC, 163 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM21A/README.md) |
-| Murata GCM21B series (0805, 1.25 mm) | Automotive X7R and C0G MLCC, 137 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM21B/README.md) |
-| Murata GCM216 series (0805, 0.6 mm) | Automotive X7R and C0G MLCC, 33 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM216/README.md) |
-| Murata GCM219 series (0805, 0.85 mm) | Automotive X7R and C0G MLCC, 49 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM219/README.md) |
-| Murata GCM319 series (1206, 0.85 mm) | Automotive C0G MLCC, 44 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM319/README.md) |
-| Murata GCM31A series (1206, 1.0 mm) | Automotive C0G MLCC, 147 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM31A/README.md) |
-| Murata GCM31B series (1206, 1.25 mm) | Automotive X7R and C0G MLCC, 22 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM31B/README.md) |
-| Murata GCM31C series (1206, 1.6 mm) | Automotive X7R and C0G MLCC, 82 catalog values (no 3D model yet); part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM31C/README.md) |
-| Murata GCM31M series (1206, 1.15 mm) | Automotive X7R and C0G MLCC, 18 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM31M/README.md) |
-| Murata GCM32D series (1210, 2.0 mm) | Automotive X7R and C0G MLCC, 41 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM32D/README.md) |
-| Murata GCM32E series (1210, 2.5 mm) | Automotive X7R and C0G MLCC, 43 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM32E/README.md) |
-| Murata GCM32Q series (1210, 1.5 mm) | Automotive X7R MLCC, 4 catalog values; part picked by capacitance, rated voltage, dielectric | [README](components/Murata/GCM32Q/README.md) |
-| Vishay Dale WSK2512 series | 4-terminal current-sense resistor, 2512, 5-200 mΩ, ±0.1/0.5/1 %, Vishay decade values; value and tolerance are design inputs | [README](components/Vishay/WSK2512/README.md) |
-| Vishay Dale WSK2512-LOW series | 4-terminal current-sense resistor, 2512, 1-4.9 mΩ, ±0.5/1 % (sub-1 mΩ excluded: no printed code) | [README](components/Vishay/WSK2512-LOW/README.md) |
-| Vishay Dale WSK2512R0250D | 25 mohm ±0.5 % 4-terminal current-sense resistor | [README](components/Vishay/WSK2512R0250D/README.md) |
-
-## Use it
-
-Python 3.11+ and matplotlib. No other dependencies.
+## Use a part
 
 ```python
 from lib import load, Param, wca, table
 
 ina = load("TexasInstruments/INA821IDGK")
-rg = Param.tol(2.61, 0.001, "kohm")               # design choice: 2.61 kohm, 0.1 %
-g = wca(ina.calc.gain, rg=rg)                      # worst case over every min/max corner
-vos = wca(ina.calc.vos_rti, unit="V", g=20.0, **ina.inputs("vos_rti"))   # inputs from the INPUTS map
+rg = Param.tol(2.61, 0.001, "kohm")                                      # design choice
+g = wca(ina.calc.gain, rg=rg)                                             # worst case over all min/max corners
+vos = wca(ina.calc.vos_rti, unit="V", g=20.0, **ina.inputs("vos_rti"))
 print(table([("Gain", g, ""), ("Offset (RTI)", vos, "full temperature")]))
 ```
 
-Worked circuit analysis, with tables, rating checks and plots:
-[examples/current_sense.py](examples/current_sense.py). Run `python3 -m examples.current_sense` to generate its
-report and plots in `examples/out/` (generated, not committed).
+`typ` is the function at every typ input. `min` and `max` are the lowest and highest results over all 2^n
+combinations of input min and max. A missing bound is an error, never a guess.
 
-How worst case works, so you can check it by hand: the result's typ is the function at every input's typ; its
-min/max are the lowest and highest results over all 2^n combinations of input min/max. A missing bound is an error,
-never a guess.
+Each part's README is its reference: every value with its cite, conditions and notes. A worked circuit analysis is in
+`examples/current_sense.py`. Use only values from `component.toml` (through `part.param(key)` or `part.inputs(fn)`);
+if a number you need is missing, say so rather than estimating it.
 
-## Two layers, one source of truth
+## Parts
 
-| Layer | Files | What it is for | Who edits it |
+Generated from each part's TOML by `python3 -m lib.readme`. "Status" counts the rows that matter that a person has
+checked (see the [glossary](CONTRIBUTING.md#glossary)).
+
+<!-- review-status:start -->
+| Part | What | Status | Review command |
 |---|---|---|---|
-| Data + math | `component.toml`, `calc.py` | Every datasheet number (min/typ/max, cite) and equation; worst-case and nominal analysis, tables, plots in Python | People and AI, verified against the datasheet |
-| Circuit capture | `<Value>.zen`, `pcb.toml` | Zener wrapper: pins as typed nets, KiCad symbol/footprint, part info, DC voltage/ambient checks | Nobody: generated by `python3 -m lib.zen` |
+| [AnalogDevices/LTC4364MS](components/AnalogDevices/LTC4364MS/README.md) | Surge stopper with ideal diode, 4-80 V, MSOP-16 (MS); -1 latch-off or -2 auto-retry, C/I/H grade | released | `python3 tools/review.py LTC4364MS` |
+| [Infineon/BSC040N10NS5](components/Infineon/BSC040N10NS5/README.md) | 100 V N-channel OptiMOS 5 power MOSFET, 136 A, 4.0 mohm max at VGS=10 V, PG-TDSON-8 (SuperSO8) | 0 of 17 | `python3 tools/review.py BSC040N10NS5` |
+| [Infineon/ISC035N10NM5LF2](components/Infineon/ISC035N10NM5LF2/README.md) | 100 V N-channel OptiMOS 5 Linear FET 2 (hot swap / e-fuse), 164 A, 3.5 mohm max, PG-TDSON-8-59 | 16 of 22 | `python3 tools/review.py ISC035N10NM5LF2` |
+| [Infineon/ISC750P10LM](components/Infineon/ISC750P10LM/README.md) | -100 V P-channel OptiMOS Power-Transistor, logic level, -32 A, 75 mohm max at VGS = -10 V, PG-TDSON-8 (SuperSO8) | 0 of 17 | `python3 tools/review.py ISC750P10LM` |
+| [Murata/GCM155](components/Murata/GCM155/README.md) | Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 1005M (0402), AEC-Q200 (GCM series) | 0 of 20 | `python3 tools/review.py GCM155` |
+| [Murata/GCM188](components/Murata/GCM188/README.md) | Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 1608M (0603), AEC-Q200 (GCM series) | 0 of 20 | `python3 tools/review.py GCM188` |
+| [Murata/GCM216](components/Murata/GCM216/README.md) | Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 2012M (0805), thickness 0.6 mm (code 6), AEC-Q200 (GCM series) | 0 of 16 | `python3 tools/review.py GCM216` |
+| [Murata/GCM219](components/Murata/GCM219/README.md) | Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 2012M (0805), thickness 0.85 mm (code 9), AEC-Q200 (GCM series) | 0 of 16 | `python3 tools/review.py GCM219` |
+| [Murata/GCM21A](components/Murata/GCM21A/README.md) | Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 2012M (0805), thickness 1.0 mm (code A), AEC-Q200 (GCM series) | 0 of 16 | `python3 tools/review.py GCM21A` |
+| [Murata/GCM21B](components/Murata/GCM21B/README.md) | Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 2012M (0805), thickness 1.25 mm (code B), AEC-Q200 (GCM series) | 0 of 16 | `python3 tools/review.py GCM21B` |
+| [Murata/GCM319](components/Murata/GCM319/README.md) | Chip multilayer ceramic capacitors, C0G (5C), 3216M (1206), thickness 0.85 mm (code 9), AEC-Q200 (GCM series) | 0 of 15 | `python3 tools/review.py GCM319` |
+| [Murata/GCM31A](components/Murata/GCM31A/README.md) | Chip multilayer ceramic capacitors, C0G (5C), 3216M (1206), thickness 1.0 mm (code A), AEC-Q200 (GCM series) | 0 of 15 | `python3 tools/review.py GCM31A` |
+| [Murata/GCM31B](components/Murata/GCM31B/README.md) | Chip multilayer ceramic capacitors, C0G (5C) and X7R (R7), 3216M (1206), thickness 1.25 mm (code B), AEC-Q200 (GCM series) | 0 of 16 | `python3 tools/review.py GCM31B` |
+| [Murata/GCM31C](components/Murata/GCM31C/README.md) | Chip multilayer ceramic capacitors, C0G (5C) and X7R (R7), 3216M (1206), thickness 1.6 mm (code C), AEC-Q200 (GCM series) | 0 of 23 | `python3 tools/review.py GCM31C` |
+| [Murata/GCM31M](components/Murata/GCM31M/README.md) | Chip multilayer ceramic capacitors, C0G (5C) and X7R (R7), 3216M (1206), thickness 1.15 mm (code M), AEC-Q200 (GCM series) | 0 of 16 | `python3 tools/review.py GCM31M` |
+| [Murata/GCM32D](components/Murata/GCM32D/README.md) | Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 3225M (1210), thickness 2.0 mm (code D), AEC-Q200 (GCM series) | 0 of 20 | `python3 tools/review.py GCM32D` |
+| [Murata/GCM32E](components/Murata/GCM32E/README.md) | Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 3225M (1210), thickness 2.5 mm (code E), AEC-Q200 (GCM series) | 0 of 20 | `python3 tools/review.py GCM32E` |
+| [Murata/GCM32Q](components/Murata/GCM32Q/README.md) | Chip multilayer ceramic capacitors, X7R (R7), 3225M (1210), thickness 1.5 mm (code Q), AEC-Q200 (GCM series) | released | `python3 tools/review.py GCM32Q` |
+| [Panasonic/ERA-2AEB](components/Panasonic/ERA-2AEB/README.md) | 0402 (1005 metric) 0.063 W +/-0.1 % +/-25 ppm/degC thin film chip resistor, ERA-2AEB (47 to 100 k ohm, E24/E96) | 0 of 17 | `python3 tools/review.py ERA-2AEB` |
+| [Panasonic/ERA-3AEB](components/Panasonic/ERA-3AEB/README.md) | 0603 (1608 metric) 0.1 W +/-0.1 % +/-25 ppm/degC thin film chip resistor, ERA-3AEB (47 to 330 k ohm, E24/E96) | 0 of 17 | `python3 tools/review.py ERA-3AEB` |
+| [Panasonic/ERA-6AEB](components/Panasonic/ERA-6AEB/README.md) | 0805 (2012 metric) 0.125 W +/-0.1 % +/-25 ppm/degC thin film chip resistor, ERA-6AEB (47 to 1 M ohm, E24/E96) | 0 of 17 | `python3 tools/review.py ERA-6AEB` |
+| [Panasonic/ERJ-2RKF](components/Panasonic/ERJ-2RKF/README.md) | 0402 (1005 metric) 0.1 W +/-1 % thick film chip resistor, ERJ-2RKF series (10 ohm to 1 Mohm, E24/E96) | 0 of 14 | `python3 tools/review.py ERJ-2RKF` |
+| [Panasonic/ERJ-3EKF](components/Panasonic/ERJ-3EKF/README.md) | 0603 (1608 metric) 0.1 W +/-1 % thick film chip resistor, ERJ-3EKF series (10 ohm to 1 Mohm, E24/E96) | 4 of 14 | `python3 tools/review.py ERJ-3EKF` |
+| [Panasonic/ERJ-6ENF](components/Panasonic/ERJ-6ENF/README.md) | 0805 (2012 metric) 0.125 W +/-1 % thick film chip resistor, ERJ-6ENF series (10 ohm to 2.2 Mohm, E24/E96) | 0 of 17 | `python3 tools/review.py ERJ-6ENF` |
+| [Panasonic/ERJ-8ENF](components/Panasonic/ERJ-8ENF/README.md) | 1206 (3216 metric) 0.25 W +/-1 % thick film chip resistor, ERJ-8ENF series (10 ohm to 2.2 Mohm, E24/E96); NRFND | 0 of 17 | `python3 tools/review.py ERJ-8ENF` |
+| [STMicroelectronics/STM32H723ZET6](components/STMicroelectronics/STM32H723ZET6/README.md) | Arm Cortex-M7 MCU, 550 MHz, 512 KB flash, LQFP144 (20 x 20 mm), -40 to 85 degC | 0 of 40 | `python3 tools/review.py STM32H723ZET6` |
+| [STMicroelectronics/VNF1248F](components/STMicroelectronics/VNF1248F/README.md) | High-side switch controller with intelligent fuse protection, 6-60 V (70 V transient), AEC-Q100, QFN32L 5x5 mm | 0 of 35 | `python3 tools/review.py VNF1248F` |
+| [TexasInstruments/INA229AIDGS](components/TexasInstruments/INA229AIDGS/README.md) | 85 V, 20-bit power/energy/charge monitor with SPI interface | released | `python3 tools/review.py INA229AIDGS` |
+| [TexasInstruments/INA241DGK](components/TexasInstruments/INA241DGK/README.md) | Bidirectional current-sense amplifier, -5 V to 110 V common mode, 2.7 V to 20 V supply, VSSOP-8 (DGK) | 0 of 21 | `python3 tools/review.py INA241DGK` |
+| [TexasInstruments/INA821IDGK](components/TexasInstruments/INA821IDGK/README.md) | Precision instrumentation amplifier, 4.5-36 V | 0 of 25 | `python3 tools/review.py INA821IDGK` |
+| [TexasInstruments/TPS48000QDGXQ1](components/TexasInstruments/TPS48000QDGXQ1/README.md) | 100 V automotive low-IQ high-side driver with reverse polarity, short-circuit protection and diagnostics, VSSOP-19 (DGX), TPS4800-Q1 data sheet | 19 of 29 | `python3 tools/review.py TPS48000QDGXQ1` |
+| [Vishay/WSK2512](components/Vishay/WSK2512/README.md) | 0.005 to 0.2 ohm (decade values) +/-0.1 % / +/-0.5 % / +/-1.0 % 1 W 4-terminal (Kelvin) Power Metal Strip current-sense resistor series, 2512 | 6 of 21 | `python3 tools/review.py WSK2512` |
+| [Vishay/WSK2512-LOW](components/Vishay/WSK2512-LOW/README.md) | 0.0005 to 0.0049 ohm (decade values) +/-0.5 % / +/-1.0 % 1 W 4-terminal (Kelvin) Power Metal Strip current-sense resistor series, 2512 | 4 of 21 | `python3 tools/review.py WSK2512-LOW` |
+| [Vishay/WSK2512R0250D](components/Vishay/WSK2512R0250D/README.md) | 0.025 ohm +/-0.5 % 1 W 4-terminal (Kelvin) Power Metal Strip current-sense resistor, 2512 | 0 of 23 | `python3 tools/review.py WSK2512R0250D` |
+<!-- review-status:end -->
 
-Which datasheet rows become Zener checks is written in `component.toml` (`check_pins`, `check_ambient`, or an
-`unchecked` reason), so the checks are reviewed with the data. Each part's README has a "Zener checks" table.
-Using a part in a Zener module:
+## Use in a Zener module
 
 ```zen
-INA = Module("github.com/kb1lqc/zener-library/components/TexasInstruments/INA821IDGK/INA821IDGK.zen")
+INA = Module("github.com/kb1lqc/AgentEDA-Parts/components/TexasInstruments/INA821IDGK/INA821IDGK.zen")
 INA(name="U1", VS_P=Power("V15", voltage="15V 5%"), VS_N=Power("VN15", voltage="-15V 5%"),
     IN_P=Net("SNS_P", voltage="0V to 130mV"), IN_N=Net("SNS_N", voltage="0V"), RG1=Net("RG1"), RG2=Net("RG2"),
     REF=Net("REF", voltage="0V"), OUT=Net("VOUT"), ambient=ambient, derate=derate)
 ```
-then `pcb sync`. Every checked net needs a declared voltage range, or the build reports UNVERIFIED. Details:
-docs/SPEC.md "Zener wrapper" and the `zener-wrapper` skill in `.claude/skills/`.
 
-## Check it
+Run `pcb sync`. Every checked net needs a declared voltage range, or the build reports UNVERIFIED. Each part's README
+lists which of its rows the wrapper checks ("Zener checks").
+
+## Check
 
 ```sh
-python3 -m lib.check                     # data vs symbol vs footprint, units, cites, datasheet examples
-python3 -m unittest discover -s tests    # library tests + Zener wrapper builds (skipped without pcb)
-python3 -m lib.zen                       # regenerate each Zener wrapper from its data (needs pcb for pcb fmt)
-python3 -m lib.readme                    # regenerate each component README from its data
-pcb build -Wstyle -Dwarnings components/TexasInstruments/INA821IDGK   # build one wrapper
-python3 -m examples.current_sense        # regenerate the worked example
+python3 tools/verify.py            # after every change: builds the parts you changed and runs every check
+python3 tools/verify.py --all      # every part (what CI runs)
 ```
 
-A human verifies a part by opening its datasheet next to its README: every row and every equation names its page.
+`verify.py` runs `lib.check`, `lib.zen`, `lib.readme`, the datasheet review check, `pcb build -Wstyle -Dwarnings` on each
+part, and the unit tests. It prints one PASS line, or the first five failures and a log path.
 
-## For AI assistants designing with this library
+## Contribute
 
-- Use only parameters from `component.toml` (via `part.param(key)` or `part.inputs(fn)`); never retype a datasheet
-  number. If a needed number is not there, say so; do not estimate it.
-- Use `scope = "full"` rows for worst case over temperature. `25C` rows hold only at 25 °C; `partial` rows do not
-  cover the whole grade. Follow the temperature recipe in docs/SPEC.md.
-- `curve = true` values and `_typ` functions are estimates, never pass/fail bounds. `text` rows (for example
-  "Continuous") have no number.
-- Mark every value you choose as a design choice in code, as `examples/current_sense.py` does. For nominal analysis
-  of a bound-only spec, state the assumption with `Param.with_typ(...)`.
-- Read each part's README notes and conditions before using a row: footnotes and datasheet ambiguities are recorded
-  there.
-
-## Add a part
-
-Step-by-step guide for new contributors, including human verification: [CONTRIBUTING.md](CONTRIBUTING.md).
-
-1. Put the datasheet PDF in `docs/datasheets/` and the vendor KiCad/STEP download in `docs/vendor/<Value>/`
-   (both are git-ignored).
-2. Fix up the symbol and footprint per docs/KICAD.md into `components/<Manufacturer>/<Value>/`.
-3. Write `component.toml` and `calc.py` per docs/SPEC.md, reading table pages as rendered images
-   (`pdftoppm -r 150 -png -f N -l N`), not extracted text.
-4. Give every abs_max / rec_op row `check_pins`, `check_ambient` or an `unchecked` reason, then
-   `python3 -m lib.check` clean, `python3 -m lib.zen`, `python3 -m lib.readme`.
-5. Add `tests/zen/<Value>_harness.zen` and its cases in `tests/test_zen.py`; all tests pass.
-6. Have a second reviewer check every number against the page images.
-A short guide to the workflow and part types is [docs/notes/workflow.md](docs/notes/workflow.md). The full procedure, with defaults for every judgement call, is in [CLAUDE.md](CLAUDE.md).
-
+- Add a part, check a part, release: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Data and equation format: [docs/SPEC.md](docs/SPEC.md). KiCad rules: [docs/KICAD.md](docs/KICAD.md).
+- Datasheet numbers are checked by a person against the page image. Agents never stamp a row.

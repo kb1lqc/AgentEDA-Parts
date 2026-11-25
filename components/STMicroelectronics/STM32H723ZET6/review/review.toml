@@ -11,8 +11,8 @@ datasheet_rev = "DS13313 Rev 5"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 pages = 237
 text_layer = true
-component_sha256 = "afe361aa50a5785ff1f8cc6ea454e1aa74a22bd408265fb615608715e033a4e5"
-render = "complete"
+component_sha256 = "44b106c410efd3e3008327b55b876b215e782a7c53bcba4b9c749e7ec3842183"
+render = "NOT_RENDERED"
 backfill = "git blame"
 sheets = { "stm32h723ze.pdf" = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492" }
 
@@ -592,8 +592,8 @@ text_snippet = "VESD(CDM) voltage (charge device"
 [row.vdd_op]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (table 'Table 12. General operating conditions'): no unit cell in the row group (merged with other rows); text check: UNSURE row uses convention 'min_ref'"
-hash = "f26a7b546c6b320f58170a78bf25a982b99ab092ef81f28dc7d846f6b0aa002e"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "884c25981b3550dbef17fc5842af47d2bba728cff86613543b759442f49365c9"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 90
 pdf_page = 90
@@ -24499,8 +24499,8 @@ text_snippet = "   Symbol                Parameter                              
 [row.inj_neg_pa12_pe8]
 state = "NEW"
 status = "UNSURE"
-reason = "no MIN/TYP/MAX header on the cited page; row found by symbol, row group of 6 lines; footnotes shown"
-hash = "445920b535f958a3c9e1a0f40126c8c0d932ea53ef17bcbec16da2d9bb7da3ec"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "df3758541c815fe3f120c9e29282dac2a0b89ed5e87d626385c1b6aee43da3be"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 125
 pdf_page = 125
@@ -24979,8 +24979,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_ilkg_ft_u_above_vdd]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (table 'Table 51. I/O static characteristics'): symbol 'Ilkg' not found as a table row; text check: UNSURE symbol not found as the first/Symbol-column word of any table line"
-hash = "e735a4986138d49c76a8f66446ff821ea5e1f3a4c84e668376e009ccd2f7e491"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "a61485190d57ca97adfba00484e7d01e85bcc74550736b0b288d2887d187e6ec"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 126
 pdf_page = 126
@@ -25942,8 +25942,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s10_fmax_c50_27_36]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'Fmax' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "eefdb889e8d3caf29183f21021507ed8640b2030085a1cca9adf40d8754f0a98"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "ee3c022dea8789a3a8068462e16e3e97455e69e83681afcca4d939f3f2fb598a"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -25960,8 +25960,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s10_trtf_c50_27_36]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'tr/tf' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "8f8244425a182bc7598e4adb564746918ead0047b998d274e4dc84bbdf17b457"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "41149ea3002df5a8623b0ac3966f59e60f024b47e60119b58d4afaccd4fd5f1e"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -25978,8 +25978,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s10_fmax_c50_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'Fmax' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "db17417a393cfd374611a8ad40bab112ecb6b13605d136491d1ef37b49ec56ce"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "ece365f494e6796aed55c55d05e689d2dc6ae5479851055c99e82112b36fbf2a"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -25996,8 +25996,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s10_trtf_c50_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'tr/tf' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "7e340bc690da8ab2ce1ede6a18c0fe3eba9ad705dbc14915858022c03cb60da5"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "d2bafdbfd832eb864ae8912025b592e1848f4b9f139c74c13855a42baa2ec1cf"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26014,8 +26014,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s10_fmax_c30_27_36]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'Fmax' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "aa16d85fee6c2ce0de0eda904201a86475e267ec52266b2a3dd1314bc7c1128b"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "4cf246626fcec27758f2eeb288eb35b7655d27ec7a91c64b057ba63fcdc97e5d"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26032,8 +26032,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s10_trtf_c30_27_36]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'tr/tf' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "03b77d0a913b05479dc1df912b201d0bb901508a03e364ac8cafe7f0a665dbf4"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "487a70ad81e28f7d64d1a7f8d1ee09dafd990c7e931cf41f9caff296d05e3f19"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26050,8 +26050,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s10_fmax_c30_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'Fmax' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "f81c362021dbdfd14b023401030479b76304b3b190b160e69ecd2407b77f558f"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "8048e9acec68915da735a22f1d2e7c2bda51db311b41d0fb2341fbebccf9b52e"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26068,8 +26068,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s10_trtf_c30_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'tr/tf' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "ad4b80a74875755d2d574736668149beb5c2ba5c9ec78761a0a494536ef5b0b3"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "f09012b2b2cefc9fca0215558e94075585a57966ae64d9b293e5d1e2305d2fc3"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26086,8 +26086,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s10_fmax_c10_27_36]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'Fmax' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "baee20ea2d053762c927b55f96378d55e128e70b8c2e5a4ac0ab6324e1282f0d"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "768712ba961c7a74227b85a5dab513480b2383181dca4ffc94709552d79f7a0d"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26104,8 +26104,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s10_trtf_c10_27_36]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'tr/tf' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "f02c3a863b1a9e8a6cdb2d6975d976c0a1977fec3df019bcabeadacdc21b9c9f"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "38cbe94d45e56acfe1a88ec44e3bd04c6ce314df5a16bfae0fff3523d243a248"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26122,8 +26122,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s10_fmax_c10_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'Fmax' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "decf30cb6ec6387bc2956918d4742beacfe8413c86c6e9fce9654e396787380c"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "f6d1502350376ae62d2ce0b5c0d766df3578c463c745b12727afff946f572d62"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26140,8 +26140,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s10_trtf_c10_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'tr/tf' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "87e137b40651f02ae29ea00f02f79caf76d1668d3ffc5306a4867ee7b8f52ba6"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "b76bc0dd52b3959176be78a61fa7f7c3638cc614ae9d90a6f75f0e8f35b70984"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26158,8 +26158,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s11_fmax_c50_27_36]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'Fmax' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "31bc37507aaaad60b7af549893b1cbd948394a785caf560b8032ba4e5190e25a"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "069f84b2b6c377e3ec17f9e5ce986a4f3ce4f893cfd7b69defa18ba46a3c5bc5"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26176,8 +26176,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s11_trtf_c50_27_36]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'tr/tf' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "884f40e8b2f15b75af1a1b25ae19cc2fb6dc1ae2a417f195fec7c44d58253f8d"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "c8258d893a9859333562ffc2bb06f174d3eed504e2954eeeccd70ba4563846c3"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26194,8 +26194,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s11_fmax_c50_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'Fmax' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "d1d384f2027cfae12b12ec7cd4b5bd7873b76005bac702b51394f5f89adda0d6"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "77104cbcb1d24edce5adacf5962d87343c0c057ad1641e1a8b376078a2bb208e"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26212,8 +26212,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s11_trtf_c50_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'tr/tf' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "df603f1e84b34b287674964ff18d60b745b021ba1e37509ac94602106e493960"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "1586c0b2954973ddd025dcd75da4a3b4a4c5afef7f6fdd61839e37f6ad601245"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26230,8 +26230,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s11_fmax_c30_27_36]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'Fmax' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "52cc6736ee45295ba6262afbb1c5e507b1af0ff6de7da460e03e4de406ca9ac1"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "1eea8707fac0f145ff1d8006a3b9be62151f27d3f896aa1eb8d908d36425a6ad"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26248,8 +26248,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s11_trtf_c30_27_36]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'tr/tf' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "8285ca6079dc69c2243b21872eac8ebfba3c6a48dff84509f90c47afeb38cb39"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "ac1248824e24bd7b7e4dc546a0d145dfa2fba67f63d521449f225cba4d5c182b"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26266,8 +26266,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s11_fmax_c30_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'Fmax' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "6496ae88cba6db8043bd08fb496ca09c26ff2e1dab750c517dfc9f2c4d48e42a"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "d756ee669473233bfcea2c52c6af0a634325f5f21091cc0369a720d26668eed3"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26284,8 +26284,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s11_trtf_c30_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'tr/tf' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "ed71acf88a21f1698f1ad69c620cd1469eae2d18165ac8a4d36c069ac796d51e"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "852db96d11d9901f08f75f12f3f718281aa9ccade3d18ab97c423d4448312b59"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26302,8 +26302,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s11_fmax_c10_27_36]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'Fmax' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "07380eb439f1a63053f936dd7620b0fc2a60617d92665e1c029cca40439b574a"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "62cda6bd1a1e7c2c5887b0ab976af0a4ef9e1cd10738b63748584a588b11b782"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26320,8 +26320,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s11_trtf_c10_27_36]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'tr/tf' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "d8103f8d84e0d9995cfcfd16e3b1b3b8d20a895cbcc17c84d022d0c92cf87756"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "5fa2fd6d33e441719af8bf422556e5992a78e70d0b6fcfda4f9c4780d73af9c5"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26338,8 +26338,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s11_fmax_c10_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'Fmax' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "7b3f344a4815068942bc50557ac34879e230718504ba638028b95939ca4a4f46"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "80270422377ae260f71d0e29b5cede031b1dd1759083eff3cb18c651df6cdbfb"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26356,8 +26356,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t54_s11_trtf_c10_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'tr/tf' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "46bfa9e6970072c186bf7c3f40d775949fdbcb4237cdcee3a13d46e994271dc6"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "40d625a9a35c38247ce5f6e9468b84ac0f2bd6d921099157ed8af4f8c5fe95d1"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 132
 pdf_page = 132
@@ -26590,8 +26590,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t55_s10_fmax_c50_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'Fmax' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "2966915357642e46ee23f8cea085b729cea17921a39f2b8c7bb6fb3af084258e"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "a0128330d5ff13393a646115a6c4be714dc444204b0f9e3b71b188815fd73c38"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 133
 pdf_page = 133
@@ -26608,8 +26608,8 @@ text_snippet = "            Fmax         Maximum frequency             C=30 pF, 
 [row.io_t55_s10_trtf_c50_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'tr/tf' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "05ceace77f4cc9d3760e13d02c37f40a10b013dcd98857de49f6b5adfc65b2d3"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "5d4ae181684347cd03336f504fcbfde62ed92265e7bb0e279e7127150c5fed21"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 133
 pdf_page = 133
@@ -26626,8 +26626,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t55_s10_fmax_c30_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'Fmax' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "ae208cfbe3e4f4d11f0084b1670772dc0d876ff7019322ab5f78f00f1c5d2f0a"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "383820bc40c17917d1bf41e3ca09b3eda8fac46ef0749e98b07740a6eb31983d"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 133
 pdf_page = 133
@@ -26644,8 +26644,8 @@ text_snippet = "            Fmax         Maximum frequency             C=30 pF, 
 [row.io_t55_s10_trtf_c30_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'tr/tf' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "a3f78aa28b1084a454d0e5f93cc263b830a94351c96193a4f6884d098514a389"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "83fcbb7bfd23e6e10d75ca0c03c5ca4379c08165b39bf4c9e1b18b5c69a1da5a"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 133
 pdf_page = 133
@@ -26662,8 +26662,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t55_s10_fmax_c10_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'Fmax' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "eb30de7548bbf0fb877bd44983e802f6ad316b5936d7a6a588d047f4eed7e28f"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "7a92ae272da42e6fea8bb540e3e2d0c068c193e6baba2a15c0881f408d5d6b51"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 133
 pdf_page = 133
@@ -26680,8 +26680,8 @@ text_snippet = "            Fmax         Maximum frequency             C=30 pF, 
 [row.io_t55_s10_trtf_c10_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'tr/tf' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "8f5b5772d4093bde62eeca44426a7072fd1d653966dcc1977312f7c06e50ef32"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "0015d900696c4b4d25e3ba74e05289786618da97b50d1e6dda937e359687bdbb"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 133
 pdf_page = 133
@@ -26698,8 +26698,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t55_s11_fmax_c50_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'Fmax' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "10a4892545b2d5afa6c92e50d2af2db90c5588e1090730e5a4dfa86f15140da8"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "11fa7ca89eda584eaafc3727c00a442c7caf22dc489519de9d3bda0c5b1d5914"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 133
 pdf_page = 133
@@ -26716,8 +26716,8 @@ text_snippet = "            Fmax         Maximum frequency             C=30 pF, 
 [row.io_t55_s11_trtf_c50_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'tr/tf' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "435b659309525f2f2a6138eac0f451e289ebf70556df24a26aa17eb1b9db153f"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "b2b2d77de221327780a786a155a49ff4e9abbc5f49dfb5dc38e17b2ce3f3be8e"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 133
 pdf_page = 133
@@ -26734,8 +26734,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t55_s11_fmax_c30_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'Fmax' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "37e86f0a43cabfdf5e79fd869d0b767ebfa16091a85091edbf514c02d75b6581"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "c7798e381eab8a1f9d99e4072cbcd2ee997d5d97d46817dc454f350c72b06a2b"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 133
 pdf_page = 133
@@ -26752,8 +26752,8 @@ text_snippet = "            Fmax         Maximum frequency             C=30 pF, 
 [row.io_t55_s11_trtf_c30_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'tr/tf' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "9e3bcde98d10c9c97421d75525062b9f877f8a001793db88d258c10d3776148b"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "11ebb8b3821c7cfe5a1c0191c4eb113934a3acf90000e0d24793bb83112461ad"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 133
 pdf_page = 133
@@ -26770,8 +26770,8 @@ text_snippet = "(no text-layer line located)"
 [row.io_t55_s11_fmax_c10_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'Fmax' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "3b3f78881f8e5b597f1dfdde64a56ac649d052840c227101a375917779e98913"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "37f950f8ebdeabd67997c133b204fdfd709d478a57f0ea836bb6ab10da4dd5ac"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 133
 pdf_page = 133
@@ -26788,8 +26788,8 @@ text_snippet = "            Fmax         Maximum frequency             C=30 pF, 
 [row.io_t55_s11_trtf_c10_162_27]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'tr/tf' not found as a table row; text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "ca2bc1ac761eb4c4aaefefab03eb84e8a4ad4cd0504704ca7aea6b379331ac34"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "14b7d5f05de5157d7614dcf3e3178f7b1385d1043cb948c698b9b8b06c107b39"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 133
 pdf_page = 133
@@ -27004,8 +27004,8 @@ text_snippet = "                derived from tests performed under the ambient t
 [row.adc16_vref_plus_ge2]
 state = "NEW"
 status = "UNSURE"
-reason = "row uses convention 'max_ref'; row found by symbol (table_xcheck match), row group of 3 lines; a footnote marker is present; its note is not on this page"
-hash = "b8bb1fc06a5ac84ec5f7b8ed77cd863f385fd8f74b3b48c8433f9484f376f7c3"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/stm32h723ze.pdf); not rendered"
+hash = "e24f37509345dca2b88f2a9a83d4023bb53c6660140c91920ff7e0bc0d8defa2"
 pdf_sha256 = "0a5bec4bfab75d44768e917943db1ffc8ebf7f291b6cdd2a17b8d1642e210492"
 printed_page = 162
 pdf_page = 162

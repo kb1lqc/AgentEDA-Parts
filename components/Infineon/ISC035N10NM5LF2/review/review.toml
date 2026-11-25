@@ -11,8 +11,8 @@ datasheet_rev = "Revision 2.3"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
 pages = 16
 text_layer = true
-component_sha256 = "9b25fca143bb760df8f2fb03ed49646bdce6cd727434ede04d3298d5591583fd"
-render = "complete"
+component_sha256 = "ab099ba52f5b1c8da31d8a8e9f7e92fc818f79648579baf6de24fa73e70c72ec"
+render = "NOT_RENDERED"
 backfill = "git blame"
 sheets = { "infineon-isc035n10nm5lf2-datasheet-en.pdf" = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94" }
 
@@ -131,8 +131,8 @@ stamped_toml = "[param.id_pulse]\nname       = \"Pulsed drain current\"\nsymbol 
 [row.id_lin_50v_10ms]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): committed max not printed in the matched row group (wrong row?); text check: UNSURE no MIN/TYP/MAX header on the cited page"
-hash = "c09d6a6c132ac1690c156868d36026a69df37244c849497c501cd0d08e0aac85"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/infineon/infineon-isc035n10nm5lf2-datasheet-en.pdf); not rendered"
+hash = "fbe7508aeb540a57131a57cae956556ad0c2cd5417d2d307c684cfcfcf1b993c"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
 printed_page = 1
 pdf_page = 1
@@ -1285,8 +1285,8 @@ text_snippet = "                 10 1                                           
 [row.ioutput_tj25_vgs15v_vds2v]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): row group longer than 16 lines; text check: UNSURE row uses convention 'curve'"
-hash = "83f723cfa5ec8d5713d8501fa3ad252ea43d8c58aecb545c8fde51b32e2da033"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/infineon/infineon-isc035n10nm5lf2-datasheet-en.pdf); not rendered"
+hash = "ceac555328c19885c39ee61270ac444e0cf6d8cbbbac964bf1cd0f6b11f8446d"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
 printed_page = 8
 pdf_page = 8
@@ -1723,10 +1723,10 @@ render_key = "02d9f8f9375797d1"
 text_snippet = "  RDS(on) [m ]"
 
 [row.rds_tj25_vgs8p24v_id50a]
-state = "MACHINE_CHECKED"
+state = "STALE"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'RDS(on)' not found as a table row; text check: UNSURE row uses convention 'curve'"
-hash = "6ee3f47501a759c9f0995f4ad2563a1ae984e259901ef15389ceabd5f887d01c"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/infineon/infineon-isc035n10nm5lf2-datasheet-en.pdf); not rendered"
+hash = "b4b7fcc4519380f9cae0c18141d35883ab607093d9c381fbfd35068144a1c677"
 stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 stamp_hash = "6ee3f47501a759c9f0995f4ad2563a1ae984e259901ef15389ceabd5f887d01c"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
@@ -1745,10 +1745,10 @@ text_snippet = "                                                                
 stamped_toml = "[param.rds_tj25_vgs8p24v_id50a]\nname       = \"Drain-source on resistance, Tj = 25 degC, VGS = 8.24 V, ID = 50 A (curve)\"\nsymbol     = \"RDS(on)\"\nkind       = \"electrical\"\nscope      = \"na\"\ntyp        = 3.94\nunit       = \"mohm\"\nconditions = \"RDS(on) = f(VGS), ID = 50 A; parameter Tj = 25 degC; VGS = 8.24 V\"\ncite       = \"DS p.9, Diagram 9 Typ. drain-source on resistance (figure), curve\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\ncurve      = true\nnote       = \"Axis fit (200 dpi, gridlines): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm. Read accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC): VGS 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent).\"\nunchecked  = \"curve read off Diagram 9, not a voltage; owner: module\""
 
 [row.rds_tj175_vgs8p24v_id50a]
-state = "MACHINE_CHECKED"
+state = "STALE"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'RDS(on)' not found as a table row; text check: UNSURE row uses convention 'curve'"
-hash = "734e5c8b9acd00b0078cc59e1bf102ef39f36f5c10400378c88fad437265ddb9"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/infineon/infineon-isc035n10nm5lf2-datasheet-en.pdf); not rendered"
+hash = "2b97b78100735f8868937d0452382261d22f0c5e284f1633523a36e23ed1760b"
 stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 stamp_hash = "734e5c8b9acd00b0078cc59e1bf102ef39f36f5c10400378c88fad437265ddb9"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
@@ -1767,10 +1767,10 @@ text_snippet = "                                                                
 stamped_toml = "[param.rds_tj175_vgs8p24v_id50a]\nname       = \"Drain-source on resistance, Tj = 175 degC, VGS = 8.24 V, ID = 50 A (curve)\"\nsymbol     = \"RDS(on)\"\nkind       = \"electrical\"\nscope      = \"na\"\ntyp        = 7.92\nunit       = \"mohm\"\nconditions = \"RDS(on) = f(VGS), ID = 50 A; parameter Tj = 175 degC; VGS = 8.24 V\"\ncite       = \"DS p.9, Diagram 9 Typ. drain-source on resistance (figure), curve\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\ncurve      = true\nnote       = \"Axis fit (200 dpi, gridlines): VGS = 218 + 60.1 x (VGS - 6) px; RDS(on) = (1049 - y) / 75.6 mohm. Read accuracy about +/-1 %. Printed ID = 50 A. Chart starts at VGS about 7.1 V (25 degC) and 8.2 V (175 degC): VGS 6 and 7 V are off chart (25 degC line above 8 mohm at 7 V; 175 degC absent).\"\nunchecked  = \"curve read off Diagram 9, not a voltage; owner: module\""
 
 [row.rds_tj175_vgs10v_id50a]
-state = "MACHINE_CHECKED"
+state = "STALE"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'RDS(on)' not found as a table row; text check: UNSURE row uses convention 'curve'"
-hash = "b5264420b112b5b4790205cbcd6c83166e84a2b09d3ab55e35ba8472c112ea73"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/infineon/infineon-isc035n10nm5lf2-datasheet-en.pdf); not rendered"
+hash = "7dc0463977dd5cdae2a5e31d0ea102af4f3763822050b55e2cd2df8adb64a636"
 stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 stamp_hash = "b5264420b112b5b4790205cbcd6c83166e84a2b09d3ab55e35ba8472c112ea73"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
@@ -1791,8 +1791,8 @@ stamped_toml = "[param.rds_tj175_vgs10v_id50a]\nname       = \"Drain-source on r
 [row.rds_tj175_vgs12v_id50a]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'RDS(on)' not found as a table row; text check: UNSURE row uses convention 'curve'"
-hash = "3e54a44455d919b3eb8cba60e2c9142641eff5aec1fcd25695ab9208073aecb4"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/infineon/infineon-isc035n10nm5lf2-datasheet-en.pdf); not rendered"
+hash = "3f96affae222d27199a3693a9a95c593cea07ad8f1bad54cc10063368137e41e"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
 printed_page = 9
 pdf_page = 9
@@ -1809,8 +1809,8 @@ text_snippet = "                                                                
 [row.rds_tj175_vgs15v_id50a]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'RDS(on)' not found as a table row; text check: UNSURE row uses convention 'curve'"
-hash = "b5efbd0caf2da9af6b25d6ce331b7e6a27d97fbf54485014e5d2223e722b1ee7"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/infineon/infineon-isc035n10nm5lf2-datasheet-en.pdf); not rendered"
+hash = "9909088847ce4d733fc507db7419f00643e36d0bb0061976fc9150a0844a2096"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
 printed_page = 9
 pdf_page = 9
@@ -1827,8 +1827,8 @@ text_snippet = "                                                                
 [row.iav_tjstart25_1us]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'IAV' not found as a table row; text check: UNSURE row uses convention 'curve'"
-hash = "5d085e8a35ef6408aa9ccb1e7d83e20dcf90ecaeb8b5dc3a3ac7476bd35d9108"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/infineon/infineon-isc035n10nm5lf2-datasheet-en.pdf); not rendered"
+hash = "15815ce94d5cf10107acc14d0e5fe974447f971c09c0227c0c438c5609b4be07"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
 printed_page = 10
 pdf_page = 10
@@ -1845,8 +1845,8 @@ text_snippet = "  IF [A]                                                        
 [row.iav_tjstart25_10us]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'IAV' not found as a table row; text check: UNSURE row uses convention 'curve'"
-hash = "fccbdcfea461305351792ae3f4d7eb4c7ed62679438f61b2fcd970f0565bef9c"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/infineon/infineon-isc035n10nm5lf2-datasheet-en.pdf); not rendered"
+hash = "e5d4a96bb71df97c481301f8330adb8d85de95f3678430db25e03bc684f6c9c6"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
 printed_page = 10
 pdf_page = 10
@@ -1863,8 +1863,8 @@ text_snippet = "  IF [A]                                                        
 [row.iav_tjstart25_100us]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'IAV' not found as a table row; text check: UNSURE row uses convention 'curve'"
-hash = "0e834ce7f334ed9eaefb57d91974a7c90836fb50c708e5c6fc550b3eb3597c19"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/infineon/infineon-isc035n10nm5lf2-datasheet-en.pdf); not rendered"
+hash = "28e02018314569bd31c9f1d64e852a285bb2e0cf2858ad9946a037eb86e61c3c"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
 printed_page = 10
 pdf_page = 10
@@ -1899,8 +1899,8 @@ text_snippet = "  IF [A]                                                        
 [row.iav_tjstart100_1us]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'IAV' not found as a table row; text check: UNSURE row uses convention 'curve'"
-hash = "7bd8a90162f343c75e5a5e916aba8faf7ff8b8daad9766e0ffd1b447960d3853"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/infineon/infineon-isc035n10nm5lf2-datasheet-en.pdf); not rendered"
+hash = "b49d875ccf23d0494b5f3ebee9c5bb73023f0a311cede6e8cacbced5414a0083"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
 printed_page = 10
 pdf_page = 10
@@ -1917,8 +1917,8 @@ text_snippet = "  IF [A]                                                        
 [row.iav_tjstart100_10us]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'IAV' not found as a table row; text check: UNSURE row uses convention 'curve'"
-hash = "973e3805d00e41132e6b331a4b6b1246e5f863c9b7803222dda03b8edd8f4c11"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/infineon/infineon-isc035n10nm5lf2-datasheet-en.pdf); not rendered"
+hash = "1f08d08130000426ec937e53e8be63660da82aea0014ac57ac2c00a166ff0fe8"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
 printed_page = 10
 pdf_page = 10
@@ -1935,8 +1935,8 @@ text_snippet = "  IF [A]                                                        
 [row.iav_tjstart100_100us]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'IAV' not found as a table row; text check: UNSURE row uses convention 'curve'"
-hash = "9ba2fba7d66833c1ca400effa3fb802b18a147a85c6e8c44eb86ee0975542103"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/infineon/infineon-isc035n10nm5lf2-datasheet-en.pdf); not rendered"
+hash = "3df284eddd3b1d3d36f1aa143565c9a0707d97e36779805844e70cbd8a390040"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
 printed_page = 10
 pdf_page = 10
@@ -1971,8 +1971,8 @@ text_snippet = "  IF [A]                                                        
 [row.iav_tjstart150_1us]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'IAV' not found as a table row; text check: UNSURE row uses convention 'curve'"
-hash = "cba8bb1d2d789963bc88c72f7b290f848874188fe7573f17da775eb5aecaefd9"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/infineon/infineon-isc035n10nm5lf2-datasheet-en.pdf); not rendered"
+hash = "a1b826de3a9552ab253d31f368f09d76b21de9651c19024958749463d572f1ab"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
 printed_page = 10
 pdf_page = 10
@@ -1989,8 +1989,8 @@ text_snippet = "  IF [A]                                                        
 [row.iav_tjstart150_10us]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'IAV' not found as a table row; text check: UNSURE row uses convention 'curve'"
-hash = "59bb8f55afe9aaa9861e6e8f3e05d1bb437b79b2789678c5946836721442a9c5"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/infineon/infineon-isc035n10nm5lf2-datasheet-en.pdf); not rendered"
+hash = "0d294b78ee310d5165c91cd9fd0a1b7f6e4f7104eb6ef24071ccc9645ad380ca"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
 printed_page = 10
 pdf_page = 10
@@ -2007,8 +2007,8 @@ text_snippet = "  IF [A]                                                        
 [row.iav_tjstart150_100us]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'IAV' not found as a table row; text check: UNSURE row uses convention 'curve'"
-hash = "a18b712067bb02cc94db4c96ac299a19434ed50cb0e93fd7bb65d967e5558323"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/infineon/infineon-isc035n10nm5lf2-datasheet-en.pdf); not rendered"
+hash = "c0e1151a13a78064efcd5e36f628c89f4535a5af8bbc53ac973a3b51e6aa9071"
 pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
 printed_page = 10
 pdf_page = 10

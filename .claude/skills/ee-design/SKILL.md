@@ -5,7 +5,7 @@ description: Use when designing, sizing, selecting parts for or reviewing any ci
 
 # EE design approach
 
-Bound every claim with data, never guess a number, show the trade-off, let the designer make judgment calls. Part data and equations come from the zener-library (`component.toml`, `calc.py`, `lib/`). This skill governs circuit design; library-part extraction uses the library's defaults table instead of questions.
+Bound every claim with data, never guess a number, show the trade-off, let the designer make judgment calls. Part data and equations come from the AgentEDA-Parts (`component.toml`, `calc.py`, `lib/`). This skill governs circuit design; library-part extraction uses the library's defaults table instead of questions.
 
 ## Principles
 - **Worst-case analysis bounds every requirement.** Derive every value over all min/max corners (tolerance, temperature, supply, part-to-part); state requirement, result, margin. Typical-only values are never bounds; curve-read values are labelled estimates.

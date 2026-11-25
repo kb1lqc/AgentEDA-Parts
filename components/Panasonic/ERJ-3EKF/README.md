@@ -4,21 +4,22 @@
 
 Checked by a person: 4 of 14 rows that matter (25 rows in all). Review: python3 tools/review.py ERJ-3EKF
 
+Terms: [glossary](../../../CONTRIBUTING.md#glossary).
+
 ## Part
 
-- **alternates**: []
 - **manufacturer**: Panasonic
 - **description**: 0603 (1608 metric) 0.1 W +/-1 % thick film chip resistor, ERJ-3EKF series (10 ohm to 1 Mohm, E24/E96)
 - **category**: resistor_thick_film
 - **package**: 0603 (1608 metric)
-- **datasheet_url**: [https://industrial.panasonic.com/cdbs/www-data/pdf/RDA0000/AOA0000C304.pdf](https://industrial.panasonic.com/cdbs/www-data/pdf/RDA0000/AOA0000C304.pdf)
-- **datasheet_file**: docs/datasheets/AOA0000C304.pdf
-- **datasheet_rev**: 29-May-25 (page footers, pp.1-4)
-- **datasheet_date**: 2025-05-29
-- **temp_grade**: -55 to 155 degC
-- **kicad_symbol**: ERJ-3EKF.kicad_sym
-- **kicad_footprint**: ERJ-3EKF.kicad_mod
-- **step**: ERJ-3EKF.step
+- **Datasheet URL**: [https://industrial.panasonic.com/cdbs/www-data/pdf/RDA0000/AOA0000C304.pdf](https://industrial.panasonic.com/cdbs/www-data/pdf/RDA0000/AOA0000C304.pdf)
+- **Datasheet file**: docs/datasheets/AOA0000C304.pdf
+- **Datasheet revision**: 29-May-25 (page footers, pp.1-4)
+- **Datasheet date**: 2025-05-29
+- **Temperature grade**: -55 to 155 degC
+- **Symbol file**: ERJ-3EKF.kicad_sym
+- **Footprint file**: ERJ-3EKF.kicad_mod
+- **3D model**: ERJ-3EKF.step
 
 ## Series
 
@@ -93,7 +94,7 @@ Rows by scope: na 24 (25C rows hold only at 25 degC). Curve (graph) rows: 1. Tex
 
 ## Zener checks
 
-Generated wrapper: `ERJ-3EKF.zen` (`python3 -m lib.zen`). abs_max and rec_op rows are errors (abs_max x derate); 25C and partial rows are waivable warnings; a checked net with no voltage is UNVERIFIED.
+Generated wrapper: `ERJ-3EKF.zen` (`python3 -m lib.zen`). How each check reports: [wrapper checks](../../../docs/spec/wrapper.md#reading-the-zener-checks).
 
 | Param | Name | Checked against | Not checked / reason |
 |---|---|---|---|

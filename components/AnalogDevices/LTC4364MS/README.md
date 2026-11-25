@@ -4,19 +4,21 @@
 
 Released: all 33 rows that matter checked (82 rows in all).
 
+Terms: [glossary](../../../CONTRIBUTING.md#glossary).
+
 ## Part
 
 - **manufacturer**: Analog Devices
 - **description**: Surge stopper with ideal diode, 4-80 V, MSOP-16 (MS); -1 latch-off or -2 auto-retry, C/I/H grade
 - **category**: surge_stopper
 - **package**: MSOP-16 (MS), LTC DWG 05-08-1669 Rev A
-- **datasheet_url**: [https://www.analog.com/media/en/technical-documentation/data-sheets/ltc4364-1-4364-2.pdf](https://www.analog.com/media/en/technical-documentation/data-sheets/ltc4364-1-4364-2.pdf)
-- **datasheet_file**: docs/datasheets/ltc4364.pdf
-- **datasheet_rev**: Rev. B
-- **datasheet_date**: 2023-01
-- **kicad_symbol**: LTC4364MS.kicad_sym
-- **kicad_footprint**: LTC4364MS.kicad_mod
-- **step**: embedded
+- **Datasheet URL**: [https://www.analog.com/media/en/technical-documentation/data-sheets/ltc4364-1-4364-2.pdf](https://www.analog.com/media/en/technical-documentation/data-sheets/ltc4364-1-4364-2.pdf)
+- **Datasheet file**: docs/datasheets/ltc4364.pdf
+- **Datasheet revision**: Rev. B
+- **Datasheet date**: 2023-01
+- **Symbol file**: LTC4364MS.kicad_sym
+- **Footprint file**: LTC4364MS.kicad_mod
+- **3D model**: embedded
 
 ## Variants
 
@@ -105,7 +107,7 @@ Shared data below applies to every variant unless a row names its variants.
 | TMR pull-down current, shutdown | ITMR(DN) | 0.3 | 0.75 | 1.5 | mA | Shutdown | DS p.4, Electrical Characteristics, ITMR(DN) Shutdown |  |
 | TMR fault threshold (FLT falls) | VTMR(F) | 1.22 | 1.25 | 1.28 | V | FLT falling, VCC = 4V to 80V | DS p.4, Electrical Characteristics, VTMR(F) | checked (kb1lqc, 2026-11-23) |
 | TMR gate-off threshold (HGATE falls) | VTMR(G) | 1.32 | 1.35 | 1.38 | V | HGATE falling, VCC = 4V to 80V | DS p.4, Electrical Characteristics, VTMR(G) | checked (kb1lqc, 2026-11-23) |
-| TMR retry threshold, 32nd crossing (0.15 V; HGATE rises only for -2) | VTMR(R) | 0.125 | 0.15 | 0.175 | V | HGATE rising (after 32 cycles), VCC = 4V to 80V Note: OPEN ITEM: DS Figure 4 caption says 'LTC4364-2 Only' but the p.15 text says the -1 also generates these cool-down TMR pulses; the text is followed. Shared by all six variants. Restart by HGATE rising at this crossing is the -2 function (DS p.14, p.15). The -1 also runs the 32 cool-down cycles that reach 0.15 V (DS p.15, Figure 4), so the threshold applies to -1 too. Used by calc.t_cool (dv_cycle = VTMR(G) - VTMR(R)). | DS p.4, Electrical Characteristics, VTMR(R) |  |
+| TMR retry threshold, 32nd crossing (0.15 V; HGATE rises only for -2) | VTMR(R) | 0.125 | 0.15 | 0.175 | V | HGATE rising (after 32 cycles), VCC = 4V to 80V Note: OPEN ITEM: DS Figure 4 caption says 'LTC4364-2 Only', but the p.15 text says -1 also runs the cool-down TMR cycles; the text is followed, so the threshold applies to all six variants. The -1 runs the 32 cool-down cycles that reach 0.15 V (DS p.15, Figure 4). Restart by HGATE rising at this crossing is the -2 function (DS p.14, p.15). Used by calc.t_cool (dv_cycle = VTMR(G) - VTMR(R)). | DS p.4, Electrical Characteristics, VTMR(R) |  |
 | Early warning timer window | dVTMR | 75 | 100 | 125 | mV | VTMR(G) - VTMR(F), VCC = 4V to 80V | DS p.4, Electrical Characteristics, Early Warning Timer Window | checked (kb1lqc, 2026-11-23) |
 | UV input threshold (falling) | VUV | 1.22 | 1.25 | 1.28 | V | UV falling, VCC = 4V to 80V | DS p.4, Electrical Characteristics, VUV | checked (kb1lqc, 2026-11-23) |
 | UV input hysteresis | VUV(HYST) | 25 | 50 | 80 | mV |  | DS p.4, Electrical Characteristics, VUV(HYST) |  |
@@ -125,7 +127,7 @@ Shared data below applies to every variant unless a row names its variants.
 | SHDN input threshold | VSHDN | 0.5 | 1.6 | 2.2 | V | VCC = 4V to 80V | DS p.4, Electrical Characteristics, VSHDN |  |
 | SHDN pin float voltage | VSHDN(FLT) | 2.3 | 4 | 6.5 | V | VCC = 12V to 80V | DS p.4, Electrical Characteristics, VSHDN(FLT) |  |
 | SHDN input current, SHDN = 0.5 V | ISHDN |  | -3.3 | -1 | uA | SHDN = 0.5V Note: DS prints this negative quantity in magnitude order (MIN column -1); stored in numeric order: printed MAX -> min, printed MIN -> max. | DS p.4, Electrical Characteristics, ISHDN (row 1) |  |
-| SHDN maximum allowable leakage, VCC = 4 V | ISHDN |  | -1.5 |  | uA | Maximum Allowable Leakage, VCC = 4V Note: Unmarked row (25 degC). Printed in the TYP column but labelled 'Maximum Allowable Leakage': this is a limit on EXTERNAL leakage on SHDN, not a typical device value. Supporting text: DS p.9, SHDN pin function, leakage current to ground at the pin should be limited to no more than 1 uA if no pull-up device is used. The table value (1.5 uA, DS p.4) and the p.9 text (1 uA) differ: open item. Not used as a device bound. | DS p.4, Electrical Characteristics, ISHDN (row 2) |  |
+| SHDN maximum allowable leakage, VCC = 4 V | ISHDN |  | -1.5 |  | uA | Maximum Allowable Leakage, VCC = 4V Note: 25 degC. Printed in the TYP column but labelled 'Maximum Allowable Leakage': a limit on EXTERNAL leakage on SHDN, not a device typical. DS p.9 text: leakage to ground at SHDN no more than 1 uA without a pull-up. The table (1.5 uA, DS p.4) and p.9 (1 uA) differ: open item. Not used as a device bound. | DS p.4, Electrical Characteristics, ISHDN (row 2) |  |
 | SHDN input current, SHDN = -30 V | ISHDN | -300 | -120 |  | uA | SHDN = -30V Note: DS prints this negative quantity in magnitude order (MAX column -300); stored in numeric order: printed MAX -> min, printed MIN -> max. | DS p.4, Electrical Characteristics, ISHDN (row 3) |  |
 | Retry duty cycle, overvoltage (LTC4364-2 function) |  |  | 0.125 | 0.2 | % | FB = 1.5V, VCC = 80V, OUT = 16V Variants: LTC4364CMS-2, LTC4364IMS-2, LTC4364HMS-2. Note: Auto-retry duty cycle, overvoltage. Restricted to the -2 variants: the -1 latches and does not retry (DS p.15; feature 0.1 % retry duty cycle, DS p.1, LTC4364-2). | DS p.4, Electrical Characteristics, D, Retry Duty Cycle, Overvoltage |  |
 | Retry duty cycle, output short (LTC4364-2 function) |  |  | 0.075 | 0.12 | % | dVSNS = 60mV, VCC - OUT = 12V Variants: LTC4364CMS-2, LTC4364IMS-2, LTC4364HMS-2. Note: Auto-retry duty cycle, output short. Restricted to the -2 variants: the -1 latches and does not retry (DS p.15; DS p.1, LTC4364-2). | DS p.4, Electrical Characteristics, D, Retry Duty Cycle, Output Short |  |
@@ -166,7 +168,7 @@ Rows by scope: 25C 2, full 64, na 16, partial 1 (25C rows hold only at 25 degC).
 
 ## Zener checks
 
-Generated wrapper: `<Variant>.zen` (`python3 -m lib.zen`). abs_max and rec_op rows are errors (abs_max x derate); 25C and partial rows are waivable warnings; a checked net with no voltage is UNVERIFIED.
+Generated wrapper: `<Variant>.zen` (`python3 -m lib.zen`). How each check reports: [wrapper checks](../../../docs/spec/wrapper.md#reading-the-zener-checks).
 
 | Param | Name | Checked against | Not checked / reason |
 |---|---|---|---|
