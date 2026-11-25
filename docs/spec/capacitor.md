@@ -85,3 +85,41 @@ package_alternates = ["W", "J", "V"]     # other letters: the same part in other
 - `lib.readme` adds a "Series" section (catalog count, MPN rule, selection, wrapper, a table per dielectric) and shows
   "Applies to: dielectric X7R." / "Applies to: parts ..." in the Conditions of restricted rows.
 - Zener: see "Capacitor wrapper".
+
+## Export check (review of catalog.csv)
+
+Status: the comparison, group hashes and `export-check` command are implemented (`lib/catalog.py`, tests in
+`tests/test_catalog_export.py`). Not yet: the human stamp, its record, and `lib.check` wiring. A capacitor series' catalog rows are reviewed through the export they cite, not
+through a datasheet table (there is none per part). Export: the manufacturer product-list CSV named in the `source`
+cite, which must be a file under `docs/datasheets/` or `docs/vendor/`; the cite's file name must match it exactly.
+The export is used **in addition to** the datasheet PDFs, not instead of them: the PDFs (the reference sheet of each
+size and dielectric, cited `DS p.`) source the per-dielectric and per-size rows, and the export sources the per-part
+values (capacitance, tolerance, rated voltage, thickness) that the PDFs do not print per part. Both are local files in
+`docs/datasheets/`; a catalog row's `source` cite names the export, and its param notes name the datasheet page.
+
+- **Comparison (machine, `lib.catalog`, run by `lib.check` and `tools/verify.py`).** For each catalog row, the export
+  row is the one whose `Part Number` is `value + "#"`. Compared, as printed and then as numbers:
+  `dielectric` (Temperature characteristics), `capacitance` (Capacitance, converted to pF), `tolerance` (Tolerance of
+  capacitance), `rated_voltage` (Rated Voltage DC), `thickness` (Thickness). Any difference, a missing export row or a
+  repeated part number is a MISMATCH.
+- **Completeness.** The export rows with the directory's size and thickness code, `Product Status` = In Production and
+  an allowed dielectric (the rule of `lib.catalog` generation) must be exactly the catalog's values. An export row not in
+  the catalog, or a catalog value not in the export, is a MISMATCH.
+- **Record.** `python3 -m lib.catalog export-check <export> <component dir>` prints the result (`MATCH` or `MISMATCH`),
+  the export file name, the row count, each dielectric group's row count and hash, and the first differences; exit 0
+  only on MATCH. The file hashes are in `export_check()`'s result. A committed record is not written yet: `lib.check`
+  allows only `review.toml` under `review/`, so where the record lives is an open item with the stamp format.
+- **Human check.** One person tick per group: a group is the catalog rows of one size directory with one dielectric
+  (for example, GCM21B C0G, GCM21B X7R), and only after `MATCH` for those rows. The tick is recorded as a stamp that
+  names the export SHA-256, the catalog SHA-256, the group (dielectric), the row count, and a hash of the group's
+  sorted export and catalog rows (format to be set in `docs/spec/review.md`). A tick is current only while all of
+  those still match; any changed, added or removed row makes it stale.
+- **Review page.** The group shows one line per distinct capacitance, tolerance and rated-voltage combination in it,
+  each with its export row (the printed columns), not one line per catalog row. The status line reads, for example,
+  "GCM21B C0G: 42 rows, MATCH, ticked by <login> <date>".
+- **Not covered.** The comparison proves the catalog agrees with the export, not that the export agrees with the
+  factory. Values the export does not print (DC bias, aging) stay as they are.
+
+Open items for the reviewer: (1) the group unit (size and dielectric) is the default; confirm it; (2) whether the Murata export
+must be the one dated in the cite (2026-11-14) or any export that passes the check; (3) the cite file name in every
+catalog.csv (currently `gcm-series-product-list-2026-11-14.csv`, the file on disk is `series-product-list.csv`).

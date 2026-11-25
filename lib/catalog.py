@@ -1,6 +1,7 @@
 """Write a capacitor series catalog.csv from a manufacturer product-list export.
 
     python3 -m lib.catalog murata-gcm <vendor csv> <component dir> [--dielectrics X7R,C0G]
+    python3 -m lib.catalog export-check <vendor csv> <component dir>   compare the committed catalog.csv with the export
 
 The component directory name gives the size and thickness code (GCM155: size 15, thickness 5; GCM21A: size 21,
 thickness A). The allowed dielectrics default to the keys of `[part] tc_param` in the directory's component.toml, so a
@@ -13,6 +14,8 @@ export is consistent with itself and with these tables; it does not prove the ta
 """
 
 import csv
+import hashlib
+import json
 import re
 import sys
 import tomllib
@@ -185,7 +188,82 @@ def write_catalog(path, rows):
         writer.writerows(rows)
 
 
+def sha256_file(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def group_hash(export_rows, catalog_rows):
+    """SHA-256 of one dielectric group: the export rows and the committed catalog rows, each sorted by value and written
+    as JSON with sorted keys. A changed, added or removed row on either side changes it (docs/spec/capacitor.md
+    "Export check")."""
+    def canon(rows):
+        return sorted(rows, key=lambda r: r["value"])
+    data = json.dumps({"export": canon(export_rows), "catalog": canon(catalog_rows)}, sort_keys=True,
+                      separators=(",", ":"), ensure_ascii=False)
+    return hashlib.sha256(data.encode("utf-8")).hexdigest()
+
+
+def committed_rows(path):
+    """The rows of a committed catalog.csv in the lib.capacitor.CATALOG_COLUMNS shape (no comparison, no decode)."""
+    with open(path, newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        if reader.fieldnames != CATALOG_COLUMNS:
+            raise ValueError(f"{path.name}: columns must be exactly {CATALOG_COLUMNS}, found {reader.fieldnames}")
+        return list(reader)
+
+
+def export_check(folder, export):
+    """Compare a committed catalog.csv with the manufacturer export it cites (docs/spec/capacitor.md "Export check").
+
+    The expected rows are what the generator would write from the export (build_rows: the same decode, the same
+    In Production and dielectric filters). The committed rows must equal them exactly: a row missing, an extra row, or
+    a row whose fields differ is a difference. Returns a dict: result ("MATCH" or "MISMATCH"), export_sha256,
+    catalog_sha256, export file name, rows (count), groups {dielectric: {rows, sha256}} (from the expected rows, so the
+    record names what was compared), differences (first 5), errors (export decode errors, the generator's wording)."""
+    folder, export = Path(folder), Path(export)
+    toml = tomllib.loads((folder / "component.toml").read_text(encoding="utf-8"))
+    code = folder.name[3:]
+    if not re.fullmatch(r"GCM[0-9]{2}[0-9A-Z]", folder.name):
+        raise ValueError(f"directory '{folder.name}' is not GCM<size 2 digits><thickness code>")
+    dielectrics = list(toml.get("part", {}).get("tc_param", {}))
+    if not dielectrics:
+        raise ValueError("no dielectrics: a [part] tc_param table in component.toml is needed")
+    catalog = folder / toml["part"].get("catalog", "catalog.csv")
+    with open(export, newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        missing = [c for c in PRINTED_FIELDS if c not in (reader.fieldnames or [])]
+        if missing:
+            raise ValueError(f"export lacks columns {missing}")
+        expected, errors, _skipped = build_rows(list(reader), code, set(dielectrics), export.name)
+    actual = committed_rows(catalog)
+    exp_by, act_by = {r["value"]: r for r in expected}, {r["value"]: r for r in actual}
+    differences = []
+    for value in sorted(exp_by.keys() - act_by.keys()):
+        differences.append(f"{value}: in the export, missing from catalog.csv")
+    for value in sorted(act_by.keys() - exp_by.keys()):
+        differences.append(f"{value}: in catalog.csv, not an In Production export row of this size and dielectric")
+    for value in sorted(exp_by.keys() & act_by.keys()):
+        for field in CATALOG_COLUMNS:
+            if exp_by[value][field] != act_by[value][field]:
+                differences.append(f"{value}: {field} is '{act_by[value][field]}', export gives '{exp_by[value][field]}'")
+    groups = {d: {"rows": sum(r["dielectric"] == d for r in expected),
+                  "sha256": group_hash([r for r in expected if r["dielectric"] == d],
+                                       [r for r in actual if r["dielectric"] == d])} for d in dielectrics}
+    result = "MATCH" if not (differences or errors) else "MISMATCH"
+    return {"result": result, "export_file": export.name, "export_sha256": sha256_file(export),
+            "catalog_sha256": sha256_file(catalog), "rows": len(expected), "groups": groups,
+            "differences": differences[:5], "errors": errors}
+
+
 def main(argv):
+    if len(argv) == 3 and argv[0] == "export-check":
+        result = export_check(argv[2], argv[1])
+        print(f"{Path(argv[2]).name}: {result['result']}: {result['rows']} rows, export {result['export_file']}")
+        for d, g in result["groups"].items():
+            print(f"  {d}: {g['rows']} rows, group sha256 {g['sha256'][:12]}")
+        for line in result["differences"] + result["errors"][:5]:
+            print(f"  {line}")
+        return 0 if result["result"] == "MATCH" else 1
     if len(argv) < 3 or argv[0] != "murata-gcm":
         print(__doc__)
         return 2
