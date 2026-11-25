@@ -76,6 +76,37 @@ def capacitance_code(code):
     return Decimal(code[:2]) * Decimal(10) ** int(code[2])
 
 
+FIELDS = ("Size", "Thickness", "Dielectric", "Voltage", "Capacitance", "Tolerance", "Individual code")
+
+
+def pretty_capacitance(pf):
+    """'10 µF', '2.2 nF', '0.5 pF' from a capacitance in pF (Decimal)."""
+    for unit, scale in (("µF", Decimal(10) ** 6), ("nF", Decimal(10) ** 3)):
+        if pf >= scale:
+            return f"{(pf / scale).normalize():f} {unit}"
+    return f"{pf.normalize():f} pF"
+
+
+def fields_of(value):
+    """The fields of a catalog value's part number as (field, code, meaning) in FIELDS order, or None when the value is not
+    in the GCM form. Meanings come from the decode tables above, so a code missing from a table says so. The individual
+    code (packaging and specification) is not decoded."""
+    m = PART_RE.fullmatch(value + "#")
+    if not m:
+        return None
+    size, thick, diel, volt, cap, tol, spec = m.groups()
+    missing = "not in the decode table"
+    return [
+        ("Size", size, f"{SIZE[size][0]} × {SIZE[size][1]} mm" if size in SIZE else missing),
+        ("Thickness", thick, f"{THICKNESS[thick]} mm" if thick in THICKNESS else missing),
+        ("Dielectric", diel, DIELECTRIC.get(diel, missing)),
+        ("Voltage", volt, f"{VOLTAGE[volt]} V" if volt in VOLTAGE else missing),
+        ("Capacitance", cap, pretty_capacitance(capacitance_code(cap)) if CAP_CODE_RE.fullmatch(cap) else "not a capacitance code"),
+        ("Tolerance", tol, TOLERANCE.get(tol, missing)),
+        ("Individual code", spec, "not decoded"),
+    ]
+
+
 def decode(row, offline=False):
     """Mismatch texts for one export row (empty list = the part number agrees with every column it encodes).
 

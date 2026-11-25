@@ -51,7 +51,24 @@ class GroupsTests(unittest.TestCase):
         self.assertTrue(all(g["tickable"] for g in gs.values()))
         self.assertEqual(gs["C0G"]["ref"], "GCM21B:group:C0G")
         self.assertEqual(gs["C0G"]["rows"], 3)
-        self.assertEqual(sum(c[3] for c in gs["C0G"]["combos"]), 3)  # every part is in a combination
+        self.assertEqual([r["value"] for r in gs["C0G"]["rows_expected"]],
+                         ["GCM21B5C1H183FA16", "GCM21B5C1H183GA16", "GCM21B5C1H203JA16"])  # every part, in value order
+
+    def test_fields_decode_one_part(self):
+        fields = {label: (code, meaning) for label, code, meaning in CAT.fields_of("GCM21BR70J106KE22")}
+        self.assertEqual(fields["Dielectric"], ("R7", "X7R"))
+        self.assertEqual(fields["Voltage"], ("0J", "6.3 V"))
+        self.assertEqual(fields["Capacitance"], ("106", "10 µF"))
+        self.assertEqual(fields["Tolerance"], ("K", "+/-10%"))
+        self.assertEqual(fields["Thickness"], ("B", "1.25 mm"))
+        self.assertIsNone(CAT.fields_of("not-a-part"))
+
+    def test_legend_lists_only_codes_in_the_group(self):
+        g = next(g for g in self.groups() if g["dielectric"] == "C0G")
+        legend = R.legend_html(g["rows_expected"])
+        self.assertIn("5C = C0G", legend)
+        self.assertNotIn("R7 = X7R", legend)
+        self.assertIn("183 = 18 nF", legend)  # 18 x 10^3 pF
 
     def test_group_html_has_one_tick_box_with_the_group_ref(self):
         g = next(g for g in self.groups() if g["dielectric"] == "X7R")

@@ -273,16 +273,6 @@ def cited_export(root, catalog_path):
     return None
 
 
-def combos_of(rows, dielectric):
-    """Distinct (capacitance, tolerance, rated voltage) of one dielectric's expected rows: (cap, tol, volt, parts, one
-    example value, its export cite), in value order."""
-    seen = {}
-    for r in sorted(rows, key=lambda r: r["value"]):
-        if r["dielectric"] == dielectric:
-            seen.setdefault((r["capacitance"], r["tolerance"], r["rated_voltage"]), []).append(r)
-    return [(c, t, v, len(rs), rs[0]["value"], rs[0]["source"]) for (c, t, v), rs in seen.items()]
-
-
 def build_groups(root, dirs):
     """The capacitor-series groups of the page (docs/spec/capacitor.md "Export check"): one entry per dielectric of each
     murata-gcm catalog among dirs, with the export check result, the distinct combinations, the group's current human
@@ -308,10 +298,30 @@ def build_groups(root, dirs):
             prior = record.get("group", {}).get(diel, {})
             stamp = prior.get("verified") if current and prior.get("group_sha256") == g["sha256"] else None
             out.append({"part": d.name, "dielectric": diel, "dir": d, "export": export, "rows": g["rows"],
-                        "result": res["result"], "differences": res["differences"], "combos": combos_of(expected, diel),
+                        "result": res["result"], "differences": res["differences"],
+                        "rows_expected": sorted((r for r in expected if r["dielectric"] == diel), key=lambda r: r["value"]),
                         "stamp": stamp, "ref": f"{d.name}:group:{diel}", "tickable": res["result"] == "MATCH" and stamp is None,
                         "group_sha256": g["sha256"]})
     return out
+
+
+def legend_html(rows):
+    """The legend of one group: every code the group's part numbers use, with its meaning (the decode tables of
+    lib/catalog.py), and how to read the table. The decode is a cross-check, not a datasheet rule (docs/spec/capacitor.md)."""
+    esc = html.escape
+    seen = {}
+    for r in rows:
+        for label, code, meaning in CAT.fields_of(r["value"]) or []:
+            seen.setdefault((label, code), meaning)
+    order = {f: i for i, f in enumerate(CAT.FIELDS)}
+    items = "".join(f"<li><b>{esc(label)}</b> {esc(code)} = {esc(meaning)}</li>"
+                    for (label, code), meaning in sorted(seen.items(), key=lambda kv: (order[kv[0][0]], kv[0][1])))
+    return ('<details open><summary>Legend: how to read the part numbers</summary>'
+            '<p class="small">A part number is the catalog value plus a package letter (the export prints it with #). '
+            'Each row below splits it into fields; the last column is what the export prints for the same part. '
+            'The machine check already compared every field. Your tick confirms the decoded fields and the printed '
+            'values agree. The decode tables are a cross-check, not datasheet rules (docs/spec/capacitor.md).</p>'
+            f'<ul class="small">{items}</ul></details>')
 
 
 def group_html(g):
@@ -328,10 +338,17 @@ def group_html(g):
     if g["stamp"]:
         m = re.match(r"human:(\S+) (\S+) ", g["stamp"])
         parts.append(f'<p class="small">Ticked by {esc(m[1] if m else "?")} on {esc(m[2] if m else "?")}</p>')
-    parts.append('<table class="stmt"><tr><th>Capacitance</th><th>Tolerance</th><th>Rated voltage</th><th>Parts</th>'
-                 '<th>Example (export row)</th></tr>'
-                 + "".join(f"<tr><td>{esc(c)}</td><td>{esc(t)}</td><td>{esc(v)}</td><td>{n}</td>"
-                           f"<td>{esc(val)} ({esc(src)})</td></tr>" for c, t, v, n, val, src in g["combos"]) + "</table>")
+    rows = g["rows_expected"]
+    parts.append(legend_html(rows))
+    cells = []
+    for r in rows:
+        fields = CAT.fields_of(r["value"]) or []
+        decoded = "".join(f"<td>{esc(code)} = {esc(meaning)}</td>" for _, code, meaning in fields)
+        cells.append(f"<tr><td>{esc(r['value'])}</td>{decoded}"
+                     f"<td>{esc(r['capacitance'])}, {esc(r['tolerance'])}, {esc(r['rated_voltage'])}, {esc(r['thickness'])}</td></tr>")
+    head_cells = "".join(f"<th>{esc(f)}</th>" for f in ("Part", *CAT.FIELDS, "Export prints"))
+    parts.append(f'<details><summary>All {len(rows)} parts, decoded</summary>'
+                 f'<table class="stmt"><tr>{head_cells}</tr>{"".join(cells)}</table></details>')
     if g["tickable"]:
         parts.append(f'<label class="pick"><input type="checkbox" class="ok" value="{esc(g["ref"])}">'
                      "matches the export: every combination above is the export's row</label>")
