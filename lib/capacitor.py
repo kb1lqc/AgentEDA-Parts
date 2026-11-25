@@ -7,8 +7,10 @@ arithmetic is shared here so Python and Zener agree.
 """
 
 import csv
+import hashlib
 import math
 import re
+import tomllib
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -164,14 +166,30 @@ def choose(rows, capacitance, rated_voltage, dielectric, tolerance=None):
     return found[0]
 
 
-def selection_params(row):
-    """(capacitance, tolerance, rated_v) Params for one catalog row, SI. The row's `source` is their cite."""
+def export_stamp_date(folder, catalog_path, dielectric):
+    """Date of the human export-check stamp of one dielectric group (review/export_check.toml, docs/spec/capacitor.md
+    "Export check"), or None: no record, no stamp for the group, or a record made from another catalog.csv (stale)."""
+    try:
+        with open(Path(folder) / "review" / "export_check.toml", "rb") as fh:
+            record = tomllib.load(fh)
+        catalog_sha = hashlib.sha256(Path(catalog_path).read_bytes()).hexdigest()
+    except (OSError, tomllib.TOMLDecodeError):
+        return None
+    if record.get("catalog", {}).get("sha256") != catalog_sha:
+        return None
+    verified = record.get("group", {}).get(dielectric, {}).get("verified") or ""
+    m = re.fullmatch(r"human:\S+ (\d{4}-\d{2}-\d{2}) export-check group \S+", verified)
+    return m[1] if m else None
+
+
+def selection_params(row, stamp_date=None):
+    """(capacitance, tolerance, rated_v) Params for one catalog row, SI. The row's `source` is their cite. stamp_date: the
+    date of the group's human export-check stamp (export_stamp_date); None means the values are unverified."""
     delta = row.c * row.tolerance_fraction()
     # Machine-readable manufacturer export, parsed by tested code: no person or model transcribed these numbers. The
-    # `verified` stamp says so (method), dated by the export; no date in the source -> unverified (fail safe).
-    date = re.search(r"\d{4}-\d{2}-\d{2}", row.source or "")
-    verified = (f"manufacturer-export {date[0]} machine-readable product list parsed by lib.catalog, no transcription"
-                if date else None)
+    # `verified` stamp says so (method) and is dated by the human stamp of the group; no stamp -> unverified (fail safe).
+    verified = (f"manufacturer-export {stamp_date} machine-readable product list parsed by lib.catalog, no transcription"
+                if stamp_date else None)
     note = "From the manufacturer catalog (catalog.csv), not a datasheet table. " \
            "Excludes DC-bias, aging and temperature effects: see calc.capacitance_worst_pct / _ppm."
     capacitance = Param(min=row.c - delta, typ=row.c, max=row.c + delta, unit="F", name="Capacitance", symbol="C",

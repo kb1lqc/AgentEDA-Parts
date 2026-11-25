@@ -367,7 +367,7 @@ class TestLedger(unittest.TestCase):
             (copy / "review" / ".DS_Store").write_bytes(b"x")  # OS litter (git-ignored) is not a finding
             text = self.errors(copy)
             for name in ("evidence/a.png", "params/vref.md", "DELTA.md", "github-issue.md", "unmapped.md", "README.md"):
-                self.assertIn(f"review/{name}: only review/review.toml is committed", text)
+                self.assertIn(f"review/{name}: only review/review.toml and review/export_check.toml are committed", text)
             self.assertNotIn(".DS_Store", text)
 
     def test_state_is_recomputed_never_trusted(self):

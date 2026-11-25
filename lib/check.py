@@ -480,6 +480,65 @@ def _ledger_rows(f):
 REVIEW_MODES = {}  # component dir -> (mode, images matched); check_ledger fills it, main prints one mode line
 
 
+REVIEW_FILES = ("review.toml", catalog.EXPORT_RECORD)  # the only committed files under review/
+EXPORT_STAMP = re.compile(r"human:[A-Za-z0-9](?:[A-Za-z0-9-]{0,38}) \d{4}-\d{2}-\d{2} export-check group (\S+)")
+
+
+def stray_review_files(folder):
+    """ERROR per file under review/ that is not a committed review record (docs/spec/review.md)."""
+    folder = Path(folder)
+    return [("ERROR", f"review/{p.relative_to(folder / 'review')}: only review/review.toml and review/export_check.toml are "
+                     f"committed (page images and generated pages live in the git-ignored .review-cache/); delete it")
+            for p in sorted((folder / "review").rglob("*")) if p.is_file() and p.name not in REVIEW_FILES
+            and not p.name.startswith(".")]
+
+
+def check_export_record(folder):
+    """review/export_check.toml (docs/spec/capacitor.md "Export check"). Always: valid TOML; the catalog hash is the committed
+    catalog.csv's (else STALE); a group's `verified` is a human stamp for that group. Evidence mode (the cited export is
+    in docs/datasheets/ or docs/vendor/): the export check is run again and the export hash and every group hash must
+    match the record."""
+    folder = Path(folder)
+    f = folder / "review" / catalog.EXPORT_RECORD
+    if not f.exists():
+        return []
+    rerun = f"rerun python3 -m lib.catalog export-check <export> {folder}"
+    try:
+        with open(f, "rb") as fh:
+            rec = tomllib.load(fh)
+        with open(folder / "component.toml", "rb") as fh:
+            part = tomllib.load(fh).get("part", {})
+    except (OSError, tomllib.TOMLDecodeError) as e:
+        return [("ERROR", f"review/export_check.toml or component.toml is not valid TOML ({e})")]
+    out = []
+    cat = folder / part.get("catalog", "catalog.csv")
+    if not cat.is_file():
+        out.append(("ERROR", f"review/export_check.toml: {cat.name} is missing"))
+    elif rec.get("catalog", {}).get("sha256") != catalog.sha256_file(cat):
+        out.append(("ERROR", f"review/export_check.toml is STALE: {cat.name} changed since the export check ({rerun})"))
+    groups = rec.get("group", {})
+    for d, g in groups.items():
+        v = g.get("verified")
+        if v is not None and not (isinstance(v, str) and (m := EXPORT_STAMP.fullmatch(v)) and m[1] == d):
+            out.append(("ERROR", f"review/export_check.toml group {d}: verified is not a human stamp for group {d}"))
+    name = rec.get("export", {}).get("file", "")
+    root = folder.resolve().parents[2]
+    found = [p for p in (root / "docs" / "datasheets" / name, root / "docs" / "vendor" / name) if name and p.is_file()]
+    if found:  # evidence mode: run the check again
+        try:
+            res = catalog.export_check(folder, found[0])
+        except ValueError as e:
+            return out + [("ERROR", f"review/export_check.toml: {e}")]
+        if res["export_sha256"] != rec.get("export", {}).get("sha256"):
+            out.append(("ERROR", f"review/export_check.toml: {name} changed since the export check ({rerun})"))
+        if res["result"] != "MATCH":
+            out.append(("ERROR", f"export check is MISMATCH now: {'; '.join((res['differences'] + res['errors'])[:3])}"))
+        for d, g in res["groups"].items():
+            if groups.get(d, {}).get("group_sha256") != g["sha256"]:
+                out.append(("ERROR", f"group {d} changed since its export check ({rerun})"))
+    return out
+
+
 def check_ledger(folder):
     """review/ (docs/spec/review.md). Always (ledger-only mode): valid TOML, nothing but review.toml under review/, a row per
     Param whose hash is the row's and whose stamp is its `verified`. Evidence mode (the row's PDF is in
@@ -487,7 +546,7 @@ def check_ledger(folder):
     folder = Path(folder)
     f = folder / "review" / "review.toml"
     if not f.exists():
-        return []
+        return stray_review_files(folder)
     rerun = f"rerun python3 tools/ds_review.py {folder}"
     try:
         with open(f, "rb") as fh:
@@ -497,10 +556,7 @@ def check_ledger(folder):
         params = comp.get("param", {})
     except (OSError, tomllib.TOMLDecodeError) as e:
         return [("ERROR", f"review/review.toml or component.toml is not valid TOML ({e}): {rerun}")]
-    out = [("ERROR", f"review/{p.relative_to(folder / 'review')}: only review/review.toml is committed (page images and "
-                     f"generated pages live in the git-ignored .review-cache/); delete it and {rerun}")
-           for p in sorted((folder / "review").rglob("*")) if p.is_file() and p.name != "review.toml"
-           and not p.name.startswith(".")]
+    out = stray_review_files(folder)
     rows, inp = ledger.get("row", {}), ledger.get("inputs", {})
     main = Path(inp.get("datasheet_file", "")).name
     for key, table in params.items():
@@ -623,7 +679,7 @@ def _check_component(folder):
     except tomllib.TOMLDecodeError as e:
         return [("ERROR", f"component.toml or variants.toml is not valid TOML: {e}")]
     part, pins = data.get("part", {}), data.get("pin", [])
-    out = check_part(part, folder, family=bool(variants)) + check_pins(pins) + check_ledger(folder)
+    out = check_part(part, folder, family=bool(variants)) + check_pins(pins) + check_ledger(folder) + check_export_record(folder)
     out += finding_messages(rules.cite_findings(data, variants))
     out += finding_messages(rules.cite_sheet_findings(data, variants))
     out += finding_messages(rules.cite_unbracketed_findings(data, sheet_names(folder, ROOT), variants))

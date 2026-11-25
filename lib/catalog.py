@@ -16,9 +16,11 @@ export is consistent with itself and with these tables; it does not prove the ta
 import csv
 import hashlib
 import json
+import os
 import re
 import sys
 import tomllib
+from datetime import date
 from decimal import Decimal
 from pathlib import Path
 
@@ -255,15 +257,63 @@ def export_check(folder, export):
             "differences": differences[:5], "errors": errors}
 
 
+EXPORT_RECORD = "export_check.toml"  # under review/ (docs/spec/capacitor.md "Export check")
+WHO_RE = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})")  # a GitHub login
+
+
+def record_text(result, who=None, day=None):
+    """review/export_check.toml for a MATCH result: the file and catalog hashes, and per dielectric group its row count and
+    group hash. With who (a GitHub login), each group also gets `verified = "human:<who> <day> export-check group <d>"`."""
+    lines = ["# Export check record (docs/spec/capacitor.md). Written by python3 -m lib.catalog export-check.", "",
+             "[export]", f'file = "{result["export_file"]}"', f'sha256 = "{result["export_sha256"]}"', "",
+             "[catalog]", f'sha256 = "{result["catalog_sha256"]}"']
+    for d, g in result["groups"].items():
+        lines += ["", f"[group.{d}]", f"rows = {g['rows']}", f'group_sha256 = "{g["sha256"]}"']
+        if who:
+            lines.append(f'verified = "human:{who} {day} export-check group {d}"')
+    return "\n".join(lines) + "\n"
+
+
+def export_check_command(args):
+    """export-check <vendor csv> <component dir> [--stamp <login>]: print the result; on MATCH write review/export_check.toml
+    (refused with MISMATCH); --stamp adds each group's human stamp. Stamps are refused when CLAUDECODE is set (agents
+    don't stamp, as tools/stamp.py)."""
+    who = None
+    if "--stamp" in args:
+        i = args.index("--stamp")
+        if i + 1 >= len(args):
+            print("ERROR: --stamp needs a GitHub login")
+            return 2
+        who, args = args[i + 1], args[:i] + args[i + 2:]
+        if not WHO_RE.fullmatch(who):
+            print(f"ERROR: '{who}' is not a GitHub login")
+            return 2
+        if os.environ.get("CLAUDECODE"):
+            print("refused: --stamp is for a person; agents don't stamp (CLAUDECODE is set)")
+            return 1
+    if len(args) != 2:
+        print(__doc__)
+        return 2
+    export, folder = args
+    result = export_check(folder, export)
+    print(f"{Path(folder).name}: {result['result']}: {result['rows']} rows, export {result['export_file']}")
+    for d, g in result["groups"].items():
+        print(f"  {d}: {g['rows']} rows, group sha256 {g['sha256'][:12]}")
+    for line in result["differences"] + result["errors"][:5]:
+        print(f"  {line}")
+    if result["result"] != "MATCH":
+        print("not written: the export check must be MATCH")
+        return 1
+    record = Path(folder) / "review" / EXPORT_RECORD
+    record.parent.mkdir(exist_ok=True)
+    record.write_text(record_text(result, who, date.today().isoformat()), encoding="utf-8")
+    print(f"wrote {record}" + (f" with stamps for {who}" if who else " (no stamps: run with --stamp <login>)"))
+    return 0
+
+
 def main(argv):
-    if len(argv) == 3 and argv[0] == "export-check":
-        result = export_check(argv[2], argv[1])
-        print(f"{Path(argv[2]).name}: {result['result']}: {result['rows']} rows, export {result['export_file']}")
-        for d, g in result["groups"].items():
-            print(f"  {d}: {g['rows']} rows, group sha256 {g['sha256'][:12]}")
-        for line in result["differences"] + result["errors"][:5]:
-            print(f"  {line}")
-        return 0 if result["result"] == "MATCH" else 1
+    if argv[:1] == ["export-check"]:
+        return export_check_command(argv[1:])
     if len(argv) < 3 or argv[0] != "murata-gcm":
         print(__doc__)
         return 2

@@ -46,12 +46,11 @@ class Verified(unittest.TestCase):
         c = lib.load("Murata/GCM188")
         row = c.catalog()[0]
         from lib.capacitor import selection_params
-        for prm in selection_params(row):
+        for prm in selection_params(row, "2026-11-24"):  # the date of the group's human export-check stamp
             self.assertRegex(prm.verified, rules.VERIFIED_RE)
-            self.assertTrue(prm.verified.startswith("manufacturer-export 2026-11-14 "))
-        nodate = row.__class__(**{**row.__dict__, "source": "hand typed"}) if hasattr(row, "__dict__") else None
-        if nodate is not None:
-            self.assertIsNone(selection_params(nodate)[0].verified)
+            self.assertTrue(prm.verified.startswith("manufacturer-export 2026-11-24 "))
+        for prm in selection_params(row):  # no stamp: unverified, whatever the cite says
+            self.assertIsNone(prm.verified)
 
     def test_verdict_and_section(self):
         p = lib.load("TexasInstruments/TPS48000QDGXQ1")
@@ -219,7 +218,7 @@ class HumanReview(unittest.TestCase):
         self.assertEqual((ov["review_key"], ov["ref"]), ("variant.LTC4364CMS-1.dvsns_0c125c", None))
         self.assertEqual(rows["LTC4364CMS-1:abs_vcc"]["ref"], "LTC4364MS:abs_vcc")
         cap = rows[f"GCM188[{x7r.value}]:capacitance"]
-        self.assertEqual((cap["review_key"], cap["ref"], cap["reason"]), (None, None, "machine stamp"))
+        self.assertEqual((cap["review_key"], cap["ref"], cap["reason"]), (None, None, "no stamp"))  # no export-check stamp yet
         self.assertEqual(rows[f"GCM188[{x7r.value}]:tc_x7r"]["ref"], "GCM188:tc_x7r")
         self.assertEqual(rows[f"GCM188[{x7r.value}]:tolerance"]["review_key"], None)  # catalog row, not a TOML row
         self.assertEqual(rows["WSK2512:tcr_5m_200m"]["ref"], "WSK2512:tcr_5m_200m")
