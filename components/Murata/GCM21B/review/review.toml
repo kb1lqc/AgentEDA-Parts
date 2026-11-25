@@ -11,14 +11,16 @@ datasheet_rev = "01A"
 pdf_sha256 = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b"
 pages = 32
 text_layer = true
-component_sha256 = "cb40d619f2aa3a4ffde75162faea22618b8067a76f88520ded169aedd23e0d02"
+component_sha256 = "938470072ceaf77e3e5a0a3881b8c1792efde96bb7dda20597eadcee78700efc"
 render = "NOT_RENDERED"
 backfill = "git blame"
 sheets = { "GCM21A5C2E101FX01-00B-EN.pdf" = "3d70643598e13efc9091495a9990c1304a7b4b0e014cca8112bd50c3d2fcc403", "GCM21BR72A104KA37-01A-EN.pdf" = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b" }
 
 [pinout]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 hash = "b78130ca19ed0eade2fb8cbf7eb362327e8855e063f1ae174954c0bdb57b1a3b"
+stamp = "human:kb1lqc 2026-11-24 page-image pinout c066a74bf782 pins b78130ca19ed"
+stamp_hash = "b78130ca19ed0eade2fb8cbf7eb362327e8855e063f1ae174954c0bdb57b1a3b"
 pdf_sha256 = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b"
 
 [[pinout.page]]
@@ -30,14 +32,13 @@ dpi = 150
 render_key = "c03a6a2bc21ec42d"
 
 [row.land_a_015]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'a' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "d4d4907b47ff0df3eff98b65361acfaef2e764fee2cba61b6be4d55b2d111d76"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row d4d4907b47ff"
 stamp_hash = "d4d4907b47ff0df3eff98b65361acfaef2e764fee2cba61b6be4d55b2d111d76"
 pdf_sha256 = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b"
-baseline = true
 printed_page = 27
 pdf_page = 27
 toml_lines = "87-98"
@@ -49,17 +50,16 @@ crop_box = "full_page"
 dpi = 150
 render_key = "67450b7a66176c05"
 text_snippet = "                               Series                                                Chip(L\u00d7W)                             a              b              c\n                         Flow soldering can only be used for products with a chip size of 1.6x0.8mm to 3.2x1.6mm.                                                  (in mm)\n                               Series                                                                                       a             b              c"
-stamped_toml = "[param.land_a_015]\nname       = \"Land pattern dimension a (reflow)\"\nsymbol     = \"a\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.2\nmax        = 1.2\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 2.0x1.25 (+/-0.15), code 21\"\ncite       = \"DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), a\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed). Row for the +/-0.15 chip; the +/-0.20 row is land_a_020.\""
+stamped_toml = "[param.land_a_015]\nname       = \"Land pattern dimension a (reflow)\"\nsymbol     = \"a\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.2\nmax        = 1.2\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 2.0x1.25 (+/-0.15), code 21\"\ncite       = \"DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), a\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row d4d4907b47ff\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed). Row for the +/-0.15 chip; the +/-0.20 row is land_a_020.\""
 
 [row.land_b_015]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'b' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "03e8686581a9b0a784f1844b4e4b142b4387b72b37d76dc5e8276c315a89b7f8"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 03e8686581a9"
 stamp_hash = "03e8686581a9b0a784f1844b4e4b142b4387b72b37d76dc5e8276c315a89b7f8"
 pdf_sha256 = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b"
-baseline = true
 printed_page = 27
 pdf_page = 27
 toml_lines = "100-111"
@@ -71,17 +71,16 @@ crop_box = "full_page"
 dpi = 150
 render_key = "67450b7a66176c05"
 text_snippet = "                               Series                                                Chip(L\u00d7W)                             a              b              c\n                               Series                                                                                       a             b              c"
-stamped_toml = "[param.land_b_015]\nname       = \"Land pattern dimension b (reflow)\"\nsymbol     = \"b\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.6\nmax        = 0.8\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 2.0x1.25 (+/-0.15), code 21\"\ncite       = \"DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), b\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed).\""
+stamped_toml = "[param.land_b_015]\nname       = \"Land pattern dimension b (reflow)\"\nsymbol     = \"b\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.6\nmax        = 0.8\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 2.0x1.25 (+/-0.15), code 21\"\ncite       = \"DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), b\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 03e8686581a9\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed).\""
 
 [row.land_c_015]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'c' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "d24a2c5f4c06608ffaf650a37afd6dcf0afcf4a6814ad03f53ea7a0f13d1373e"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row d24a2c5f4c06"
 stamp_hash = "d24a2c5f4c06608ffaf650a37afd6dcf0afcf4a6814ad03f53ea7a0f13d1373e"
 pdf_sha256 = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b"
-baseline = true
 printed_page = 27
 pdf_page = 27
 toml_lines = "113-124"
@@ -93,17 +92,16 @@ crop_box = "full_page"
 dpi = 150
 render_key = "67450b7a66176c05"
 text_snippet = "                               Series                                                Chip(L\u00d7W)                             a              b              c\n                               Series                                                                                       a             b              c"
-stamped_toml = "[param.land_c_015]\nname       = \"Land pattern dimension c (reflow)\"\nsymbol     = \"c\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.2\nmax        = 1.4\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 2.0x1.25 (+/-0.15), code 21\"\ncite       = \"DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), c\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed).\""
+stamped_toml = "[param.land_c_015]\nname       = \"Land pattern dimension c (reflow)\"\nsymbol     = \"c\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.2\nmax        = 1.4\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 2.0x1.25 (+/-0.15), code 21\"\ncite       = \"DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.15), c\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row d24a2c5f4c06\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed).\""
 
 [row.land_a_020]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'a' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "f3d3da21158e21ba2c73cda274366986a70c6e185133fedcac7689bbe6bf69d3"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row f3d3da21158e"
 stamp_hash = "f3d3da21158e21ba2c73cda274366986a70c6e185133fedcac7689bbe6bf69d3"
 pdf_sha256 = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b"
-baseline = true
 printed_page = 27
 pdf_page = 27
 toml_lines = "126-137"
@@ -115,17 +113,16 @@ crop_box = "full_page"
 dpi = 150
 render_key = "67450b7a66176c05"
 text_snippet = "                               Series                                                Chip(L\u00d7W)                             a              b              c\n                         Flow soldering can only be used for products with a chip size of 1.6x0.8mm to 3.2x1.6mm.                                                  (in mm)\n                               Series                                                                                       a             b              c"
-stamped_toml = "[param.land_a_020]\nname       = \"Land pattern dimension a (reflow)\"\nsymbol     = \"a\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.0\nmax        = 1.4\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 2.0x1.25 (+/-0.20), code 21\"\ncite       = \"DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), a\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed).\""
+stamped_toml = "[param.land_a_020]\nname       = \"Land pattern dimension a (reflow)\"\nsymbol     = \"a\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.0\nmax        = 1.4\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 2.0x1.25 (+/-0.20), code 21\"\ncite       = \"DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), a\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row f3d3da21158e\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed).\""
 
 [row.land_b_020]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'b' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "490547472ecfb72eb14e53f382c65fd40bf6e96b639d3610dacf0626a17a7e18"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 490547472ecf"
 stamp_hash = "490547472ecfb72eb14e53f382c65fd40bf6e96b639d3610dacf0626a17a7e18"
 pdf_sha256 = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b"
-baseline = true
 printed_page = 27
 pdf_page = 27
 toml_lines = "139-150"
@@ -137,17 +134,16 @@ crop_box = "full_page"
 dpi = 150
 render_key = "67450b7a66176c05"
 text_snippet = "                               Series                                                Chip(L\u00d7W)                             a              b              c\n                               Series                                                                                       a             b              c"
-stamped_toml = "[param.land_b_020]\nname       = \"Land pattern dimension b (reflow)\"\nsymbol     = \"b\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.6\nmax        = 0.8\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 2.0x1.25 (+/-0.20), code 21\"\ncite       = \"DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), b\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed).\""
+stamped_toml = "[param.land_b_020]\nname       = \"Land pattern dimension b (reflow)\"\nsymbol     = \"b\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.6\nmax        = 0.8\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 2.0x1.25 (+/-0.20), code 21\"\ncite       = \"DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), b\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 490547472ecf\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed).\""
 
 [row.land_c_020]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'c' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "5322360500e174c6623d22b7601e6d9294a8ca82babc044f5ad4eca19065a41e"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 5322360500e1"
 stamp_hash = "5322360500e174c6623d22b7601e6d9294a8ca82babc044f5ad4eca19065a41e"
 pdf_sha256 = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b"
-baseline = true
 printed_page = 27
 pdf_page = 27
 toml_lines = "152-163"
@@ -159,7 +155,7 @@ crop_box = "full_page"
 dpi = 150
 render_key = "67450b7a66176c05"
 text_snippet = "                               Series                                                Chip(L\u00d7W)                             a              b              c\n                               Series                                                                                       a             b              c"
-stamped_toml = "[param.land_c_020]\nname       = \"Land pattern dimension c (reflow)\"\nsymbol     = \"c\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.2\nmax        = 1.4\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 2.0x1.25 (+/-0.20), code 21\"\ncite       = \"DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), c\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed).\""
+stamped_toml = "[param.land_c_020]\nname       = \"Land pattern dimension c (reflow)\"\nsymbol     = \"c\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.2\nmax        = 1.4\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 2.0x1.25 (+/-0.20), code 21\"\ncite       = \"DS p.27 (GCM21BR72A104KA37-01A-EN.pdf), 2. Land Dimensions, Table 2 Reflow Soldering Method, 2.0x1.25 (+/-0.20), c\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 5322360500e1\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed).\""
 
 [row.capacitance_ds]
 state = "NEW"
@@ -216,14 +212,13 @@ render_key = "c03a6a2bc21ec42d"
 text_snippet = "(no text-layer line located)"
 
 [row.length]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'L' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "6d2f442ee68198f5929edf380e6f9de2a11fcd7989ad9369a00352c6efe6e2aa"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 6d2f442ee681"
 stamp_hash = "6d2f442ee68198f5929edf380e6f9de2a11fcd7989ad9369a00352c6efe6e2aa"
 pdf_sha256 = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b"
-baseline = true
 printed_page = 2
 pdf_page = 2
 toml_lines = "209-222"
@@ -235,17 +230,16 @@ crop_box = "full_page"
 dpi = 150
 render_key = "c03a6a2bc21ec42d"
 text_snippet = "          (Ex.)      GCM                      21                      B                       R7                     2A                104                     K            A37              L\n        L                    \u03c6180mm Reel Plastic Tape W8P4                                       3000 pcs./Reel"
-stamped_toml = "[param.length]\nparts = [\"GCM21BR72A104KA37\"]\nname       = \"Length (L)\"\nsymbol     = \"L\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.85\ntyp        = 2.0\nmax        = 2.15\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, L (2.0+/-0.15)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"min and max are the printed nominal 2.0 -/+ 0.15 (arithmetic); the DS prints 2.0+/-0.15.\""
+stamped_toml = "[param.length]\nparts = [\"GCM21BR72A104KA37\"]\nname       = \"Length (L)\"\nsymbol     = \"L\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.85\ntyp        = 2.0\nmax        = 2.15\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, L (2.0+/-0.15)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 6d2f442ee681\"\nnote       = \"min and max are the printed nominal 2.0 -/+ 0.15 (arithmetic); the DS prints 2.0+/-0.15.\""
 
 [row.width]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): committed min, typ, max not printed in the matched row group (wrong row?); text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "625eb5e9829c807861a61aecc9c54f171aaff931fec78fdf237b9350a94bda2c"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 625eb5e9829c"
 stamp_hash = "625eb5e9829c807861a61aecc9c54f171aaff931fec78fdf237b9350a94bda2c"
 pdf_sha256 = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b"
-baseline = true
 printed_page = 2
 pdf_page = 2
 toml_lines = "224-237"
@@ -257,17 +251,16 @@ crop_box = "full_page"
 dpi = 150
 render_key = "c03a6a2bc21ec42d"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.width]\nparts = [\"GCM21BR72A104KA37\"]\nname       = \"Width (W)\"\nsymbol     = \"W\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.1\ntyp        = 1.25\nmax        = 1.4\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, W (1.25+/-0.15)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"min and max are the printed nominal 1.25 -/+ 0.15 (arithmetic); the DS prints 1.25+/-0.15.\""
+stamped_toml = "[param.width]\nparts = [\"GCM21BR72A104KA37\"]\nname       = \"Width (W)\"\nsymbol     = \"W\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.1\ntyp        = 1.25\nmax        = 1.4\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, W (1.25+/-0.15)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 625eb5e9829c\"\nnote       = \"min and max are the printed nominal 1.25 -/+ 0.15 (arithmetic); the DS prints 1.25+/-0.15.\""
 
 [row.thickness_t]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): committed min, typ, max not printed in the matched row group (wrong row?); text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "5385e890d6e5cae6e447f7f7b41a13d53778e91f8d2a347845abb1bf3ea9393e"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 5385e890d6e5"
 stamp_hash = "5385e890d6e5cae6e447f7f7b41a13d53778e91f8d2a347845abb1bf3ea9393e"
 pdf_sha256 = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b"
-baseline = true
 printed_page = 2
 pdf_page = 2
 toml_lines = "239-252"
@@ -279,17 +272,16 @@ crop_box = "full_page"
 dpi = 150
 render_key = "c03a6a2bc21ec42d"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.thickness_t]\nparts = [\"GCM21BR72A104KA37\"]\nname       = \"Thickness (T)\"\nsymbol     = \"T\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.1\ntyp        = 1.25\nmax        = 1.4\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, T (1.25+/-0.15)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"min and max are the printed nominal 1.25 -/+ 0.15 (arithmetic). Catalog thickness column: 1.25mm +/-0.15mm for 92 rows, 1.25mm +/-0.2mm for 45 rows (open item).\""
+stamped_toml = "[param.thickness_t]\nparts = [\"GCM21BR72A104KA37\"]\nname       = \"Thickness (T)\"\nsymbol     = \"T\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.1\ntyp        = 1.25\nmax        = 1.4\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, T (1.25+/-0.15)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 5385e890d6e5\"\nnote       = \"min and max are the printed nominal 1.25 -/+ 0.15 (arithmetic). Catalog thickness column: 1.25mm +/-0.15mm for 92 rows, 1.25mm +/-0.2mm for 45 rows (open item).\""
 
 [row.dim_e]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "vendor 'Murata' not in the text-check tested set; row found by symbol, row group of 2 lines; no footnote marker on the row or header"
 hash = "eb83299e8bf2c0266de30cd9ce1b3499a16f8eaaeb94d75128a299af255e1ef4"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row eb83299e8bf2"
 stamp_hash = "eb83299e8bf2c0266de30cd9ce1b3499a16f8eaaeb94d75128a299af255e1ef4"
 pdf_sha256 = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b"
-baseline = true
 printed_page = 2
 pdf_page = 2
 toml_lines = "254-265"
@@ -305,17 +297,16 @@ header_sha256 = "c6a41dbc1980f3d621ddb7ce884d140e569b173ee6f147543f226fd8200d9a3
 header_box = [35.2, 57.8, 663.5, 135.4]
 header_key = "dc63daad17370abc"
 text_snippet = "        Please refer to the product information page for more information on ceramic capacitors.   \u2192 Ceramic capacitor product information\n        Various data can be obtained directly from the product search. \u2192 Product search (SMD)\u200b\n    \u25a0 MURATA Part No. System\n                                           (L\u00d7W)                  (T)                      Characteristics       Voltage                                  Tolerance      Specification\n         2.0+/-0.15    1.25+/-0.15                   1.25+/-0.15             0.2 to 0.7             0.7 min."
-stamped_toml = "[param.dim_e]\nparts = [\"GCM21BR72A104KA37\"]\nname       = \"Terminal width (e)\"\nsymbol     = \"e\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.2\nmax        = 0.7\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, e (0.2 to 0.7)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\""
+stamped_toml = "[param.dim_e]\nparts = [\"GCM21BR72A104KA37\"]\nname       = \"Terminal width (e)\"\nsymbol     = \"e\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.2\nmax        = 0.7\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, e (0.2 to 0.7)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row eb83299e8bf2\""
 
 [row.dim_g]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "vendor 'Murata' not in the text-check tested set; row found by symbol, row group of 2 lines; no footnote marker on the row or header"
 hash = "e7ac2353d7988823d886146a082af95bcd34861f70a5a52eb36434af66b50895"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row e7ac2353d798"
 stamp_hash = "e7ac2353d7988823d886146a082af95bcd34861f70a5a52eb36434af66b50895"
 pdf_sha256 = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b"
-baseline = true
 printed_page = 2
 pdf_page = 2
 toml_lines = "267-278"
@@ -331,7 +322,7 @@ header_sha256 = "c6a41dbc1980f3d621ddb7ce884d140e569b173ee6f147543f226fd8200d9a3
 header_box = [35.2, 57.8, 663.5, 135.4]
 header_key = "dc63daad17370abc"
 text_snippet = "        Please refer to the product information page for more information on ceramic capacitors.   \u2192 Ceramic capacitor product information\n        Various data can be obtained directly from the product search. \u2192 Product search (SMD)\u200b\n    \u25a0 MURATA Part No. System\n                                           (L\u00d7W)                  (T)                      Characteristics       Voltage                                  Tolerance      Specification\n         2.0+/-0.15    1.25+/-0.15                   1.25+/-0.15             0.2 to 0.7             0.7 min."
-stamped_toml = "[param.dim_g]\nparts = [\"GCM21BR72A104KA37\"]\nname       = \"Gap between terminals (g)\"\nsymbol     = \"g\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.7\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, g (0.7 min.)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed as a minimum only; no max stored.\""
+stamped_toml = "[param.dim_g]\nparts = [\"GCM21BR72A104KA37\"]\nname       = \"Gap between terminals (g)\"\nsymbol     = \"g\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.7\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, g (0.7 min.)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row e7ac2353d798\"\nnote       = \"Printed as a minimum only; no max stored.\""
 
 [row.df_25c]
 state = "NEW"
@@ -388,14 +379,13 @@ render_key = "15cebcc76ee8b7f6"
 text_snippet = "(no text-layer line located)"
 
 [row.beam_load]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE row has no min/typ/max number"
 hash = "59a9d98cce0038e2c5c21988479e52827445627805f0013e5d16adf6fd6f4af2"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 59a9d98cce00"
 stamp_hash = "59a9d98cce0038e2c5c21988479e52827445627805f0013e5d16adf6fd6f4af2"
 pdf_sha256 = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b"
-baseline = true
 printed_page = 6
 pdf_page = 6
 toml_lines = "315-324"
@@ -407,7 +397,7 @@ crop_box = "full_page"
 dpi = 200
 render_key = "15cebcc76ee8b7f6"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.beam_load]\nparts = [\"GCM21BR72A104KA37\"]\nname       = \"Beam load test, destruction value\"\nkind       = \"mechanical\"\nscope      = \"na\"\ntext       = \"More than 20 N (destruction value)\"\nunit       = \"\"\nconditions = \"Speed 0.5 mm/s; placement diagram\"\ncite       = \"DS p.6, Specifications and Test Methods, No. 24 Beam Load Test\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\""
+stamped_toml = "[param.beam_load]\nparts = [\"GCM21BR72A104KA37\"]\nname       = \"Beam load test, destruction value\"\nkind       = \"mechanical\"\nscope      = \"na\"\ntext       = \"More than 20 N (destruction value)\"\nunit       = \"\"\nconditions = \"Speed 0.5 mm/s; placement diagram\"\ncite       = \"DS p.6, Specifications and Test Methods, No. 24 Beam Load Test\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row 59a9d98cce00\""
 
 [row.solvents_ir]
 state = "NEW"
@@ -824,14 +814,13 @@ render_key = "f5a347aa4c922688"
 text_snippet = "(no text-layer line located)"
 
 [row.solderability]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE unit '%' not comparable"
 hash = "cee56f181ac44e431f558f276661bde53f8b488b210a87f67ce47ae4d6b8a323"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row cee56f181ac4"
 stamp_hash = "cee56f181ac44e431f558f276661bde53f8b488b210a87f67ce47ae4d6b8a323"
 pdf_sha256 = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b"
-baseline = true
 printed_page = 5
 pdf_page = 5
 toml_lines = "589-599"
@@ -843,7 +832,7 @@ crop_box = "full_page"
 dpi = 200
 render_key = "18019b5ff3bfde2f"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.solderability]\nparts = [\"GCM21BR72A104KA37\"]\nname       = \"Solderability: terminations soldered evenly and continuously\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 95\nunit       = \"%\"\nconditions = \"Specifications and Test Methods No.16 (a) test conditions\"\ncite       = \"DS p.5, Specifications and Test Methods, No.16 Solderability (a)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Assembly acceptance criterion, not a circuit limit.\""
+stamped_toml = "[param.solderability]\nparts = [\"GCM21BR72A104KA37\"]\nname       = \"Solderability: terminations soldered evenly and continuously\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 95\nunit       = \"%\"\nconditions = \"Specifications and Test Methods No.16 (a) test conditions\"\ncite       = \"DS p.5, Specifications and Test Methods, No.16 Solderability (a)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row cee56f181ac4\"\nnote       = \"Assembly acceptance criterion, not a circuit limit.\""
 
 [row.tc_x7r]
 state = "MACHINE_CHECKED"
@@ -868,14 +857,13 @@ text_snippet = "(no text-layer line located)"
 stamped_toml = "[param.tc_x7r]\ndielectric = \"X7R\"\nname       = \"Temperature characteristic, R7 (X7R)\"\nsymbol     = \"TC\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = -15\nmax        = 15\nunit       = \"%\"\nconditions = \"Ref. temp 25 degC; temp range -55 to 125 degC; capacitance change over temperature\"\ncite       = \"DS p.2, Rated Value, Temp. coeff. or Cap. Change (-15 to 15 %)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Public STD code X7R (EIA). Capacitance change over temperature, not a DC-bias or aging limit. Read from the reference sheet of the one part this directory has; used for every X7R catalog row (open item: confirm for each other X7R part).\""
 
 [row.op_temp_x7r]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "a0bf08233c30646bf9886894d816f2274965bfd30e3f76b09a4a92d31bd08f23"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row a0bf08233c30"
 stamp_hash = "a0bf08233c30646bf9886894d816f2274965bfd30e3f76b09a4a92d31bd08f23"
 pdf_sha256 = "c066a74bf78261e704b54d05baee57e4397ac891b2c446e7554b8f6aca0c9d1b"
-baseline = true
 printed_page = 2
 pdf_page = 2
 toml_lines = "617-629"
@@ -887,7 +875,7 @@ crop_box = "full_page"
 dpi = 150
 render_key = "c03a6a2bc21ec42d"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.op_temp_x7r]\ndielectric = \"X7R\"\nname       = \"Operating temperature range\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = -55\nmax        = 125\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.2, Rated Value, Operating Temp. Range (-55 to 125 degC)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\ncheck_ambient = true\nnote       = \"Read from the X7R reference sheet of GCM21BR72A104KA37. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every X7R catalog row uses it.\""
+stamped_toml = "[param.op_temp_x7r]\ndielectric = \"X7R\"\nname       = \"Operating temperature range\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = -55\nmax        = 125\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.2, Rated Value, Operating Temp. Range (-55 to 125 degC)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review c066a74bf782 row a0bf08233c30\"\ncheck_ambient = true\nnote       = \"Read from the X7R reference sheet of GCM21BR72A104KA37. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every X7R catalog row uses it.\""
 
 [row.self_heating]
 state = "NEW"
@@ -967,14 +955,13 @@ text_snippet = "(no text-layer line located)"
 stamped_toml = "[param.tc_c0g]\ndielectric = \"C0G\"\nname       = \"Temperature characteristic, C0G (EIA)\"\nsymbol     = \"TC\"\nkind       = \"electrical\"\nscope      = \"partial\"\nmin        = -30\nmax        = 30\nunit       = \"ppm/degC\"\nconditions = \"Ref. temp 25 degC; temp range printed as 25 to 125 degC; coefficient 0 +/-30 ppm/degC\"\ncite       = \"DS p.2 (GCM21A5C2E101FX01-00B-EN.pdf), Rated Value, Temp. coeff. or Cap. Change (0+/-30 ppm/degC), Temp. Range (25 to 125 degC)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Public STD code C0G (EIA). A temperature coefficient, not a percent-change class. The DS prints the range 25 to 125 degC only: no coefficient is printed below 25 degC. The -55 to -10 degC capacitance drift is in the Table A rows (capdrift_*_c0g); the -10 to 25 degC segment has no printed number (open item). capacitance_worst_ppm requires dt and refuses values outside 0 to 100 degC (docs/SPEC.md, Capacitor series).\""
 
 [row.op_temp_c0g]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "3b4cdf48518c5408e824ed07be5e1a958afc94d2a8bb42d9408c4293bd8f8db3"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-24 page-image ds_review 3d70643598e1 row 3b4cdf48518c"
 stamp_hash = "3b4cdf48518c5408e824ed07be5e1a958afc94d2a8bb42d9408c4293bd8f8db3"
 pdf_sha256 = "3d70643598e13efc9091495a9990c1304a7b4b0e014cca8112bd50c3d2fcc403"
-baseline = true
 sheet = "GCM21A5C2E101FX01-00B-EN.pdf"
 printed_page = 2
 pdf_page = 2
@@ -987,7 +974,7 @@ crop_box = "full_page"
 dpi = 150
 render_key = "b9b67f2ecf68fd25"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.op_temp_c0g]\ndielectric = \"C0G\"\nname       = \"Operating temperature range\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = -55\nmax        = 125\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.2 (GCM21A5C2E101FX01-00B-EN.pdf), Rated Value, Operating Temp. Range (-55 to 125 degC)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\ncheck_ambient = true\nnote       = \"Read from the C0G reference sheet of GCM21A5C2E101FX01. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every C0G catalog row uses it.\""
+stamped_toml = "[param.op_temp_c0g]\ndielectric = \"C0G\"\nname       = \"Operating temperature range\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = -55\nmax        = 125\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.2 (GCM21A5C2E101FX01-00B-EN.pdf), Rated Value, Operating Temp. Range (-55 to 125 degC)\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review 3d70643598e1 row 3b4cdf48518c\"\ncheck_ambient = true\nnote       = \"Read from the C0G reference sheet of GCM21A5C2E101FX01. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every C0G catalog row uses it.\""
 
 [row.capdrift_m55_c0g]
 state = "NEW"
