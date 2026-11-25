@@ -535,7 +535,7 @@ max        = 30
 unit       = "ppm/degC"
 conditions = "Ref. temp 25 degC; temp range printed as 25 to 125 degC; coefficient 0 +/-30 ppm/degC"
 cite       = "DS p.2, Rated Value, Temp. coeff. or Cap. Change (0+/-30 ppm/degC), Temp. Range (25 to 125 degC)"
-note       = "Public STD code C0G (EIA). A temperature coefficient, not a percent-change class. The DS prints the range 25 to 125 degC only: no coefficient is printed below 25 degC. The -55 to -10 degC capacitance drift is in the Table A rows (capdrift_*_c0g); the -10 to 25 degC segment has no printed number (open item). capacitance_worst_ppm requires dt and refuses values outside 0 to 100 degC (docs/SPEC.md, Capacitor series)."
+note       = "C0G (EIA) temperature coefficient, not a percent-change class. Printed for 25 to 125 degC only. -55 to -10 degC drift is in the Table A rows (capdrift_*_c0g); -10 to 25 degC has no printed number (open item). capacitance_worst_ppm refuses dt outside 0 to 100 degC (docs/SPEC.md, Capacitor series)."
 
 [param.op_temp_c0g]
 dielectric = "C0G"

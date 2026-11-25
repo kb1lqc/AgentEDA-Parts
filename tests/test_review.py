@@ -340,10 +340,10 @@ class Readme(Stamped):
     def test_top_table_and_markers(self):
         (self.d / "calc.py").write_text('INPUTS = {"f": {"a": "iq.typ"}}\n')
         self.assertEqual(readme.top_table(self.root),
-                         "| Part | Status | Review command |\n|---|---|---|\n"
-                         "| Acme/X | released | `python3 tools/review.py X` |\n")
+                         "| Part | What | Status | Review command |\n|---|---|---|---|\n"
+                         "| [Acme/X](components/Acme/X/README.md) |  | released | `python3 tools/review.py X` |\n")
         (self.d / "calc.py").write_text('INPUTS = {"f": {"a": "iq.typ", "b": "vos"}}\n')
-        self.assertIn("| Acme/X | 1 of 2 |", readme.top_table(self.root))
+        self.assertIn("| [Acme/X](components/Acme/X/README.md) |  | 1 of 2 |", readme.top_table(self.root))
         top = self.root / "README.md"
         self.assertFalse(readme.update_top(self.root))  # no file or no markers: nothing written
         top.write_text("hand\n<!-- review-status:start -->\nold\n<!-- review-status:end -->\ntail\n")
@@ -927,7 +927,7 @@ class Publish(unittest.TestCase):
         self.assertEqual(rc, 0, lines)
         cmds = [ln for ln in lines if ln.startswith("$ ")]
         self.assertEqual(len(cmds), 13)
-        self.assertEqual(lines[-1], "PR: https://github.com/OWNER/zener-library/pull/0")
+        self.assertEqual(lines[-1], "PR: https://github.com/OWNER/AgentEDA-Parts/pull/0")
         self.assertIn("$ git add -- components/Acme/X/README.md components/Acme/X/component.toml "
                       "components/Acme/X/review/review.toml", lines)  # only the stamped part
 

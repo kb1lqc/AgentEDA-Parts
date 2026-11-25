@@ -11,8 +11,8 @@ datasheet_rev = "01A"
 pdf_sha256 = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a"
 pages = 32
 text_layer = true
-component_sha256 = "2aca139ce26e1912a9003667fafd300a55a0099b422f4a7fa52038b0bc4ae689"
-render = "complete"
+component_sha256 = "5989b29598ea00d62e910424e8546d25b99a10e9181e09f5f0ae55a218014d86"
+render = "NOT_RENDERED"
 backfill = "git blame"
 sheets = { "GCM1885C1H101GA16-01A-EN.pdf" = "0f6e6a1b2bd8caa59b44ecbe0fe2fa027c5825c5211762b5905be76f3049b250", "GCM188R71H104KA57-01A-EN.pdf" = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a" }
 
@@ -758,10 +758,10 @@ text_snippet = "       W                     \u03c6180mm Reel PAPER Tape W8P2   
 stamped_toml = "[param.width]\nparts = [\"GCM188R71H104KA57\"]\nname       = \"Width (W)\"\nsymbol     = \"W\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.7\ntyp        = 0.8\nmax        = 0.9\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, W (0.8+/-0.1)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"min and max are the printed nominal 0.8 -/+ 0.1 (arithmetic); the DS prints 0.8+/-0.1.\""
 
 [row.tc_x7r]
-state = "MACHINE_CHECKED"
+state = "STALE"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'TC' not found as a table row; text check: UNSURE unit '%' not comparable"
-hash = "e338cb2235b40e104f9a44958e166a2f80cb7abdd18a9e04206c58a77f257388"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/GCM188R71H104KA57-01A-EN.pdf); not rendered"
+hash = "807e0dd8405d8ac46a38a867085998fd6837c135d1f817f918b490bb9a12b93a"
 stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 stamp_hash = "e338cb2235b40e104f9a44958e166a2f80cb7abdd18a9e04206c58a77f257388"
 pdf_sha256 = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a"
@@ -822,8 +822,8 @@ text_snippet = "(no text-layer line located)"
 [row.dc_bias]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): row has no symbol; text check: UNSURE row has no min/typ/max number"
-hash = "bd30edc1e4f48b19bb1f9181ba281039777ff8c0d771f64ed13446721148202e"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/GCM188R71H104KA57-01A-EN.pdf); not rendered"
+hash = "530f673e8324df3c02632d68a7d091f92e0278dd32a8304a1c0da039756f6f9c"
 pdf_sha256 = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a"
 printed_page = 13
 pdf_page = 13
@@ -878,10 +878,10 @@ text_snippet = "(no text-layer line located)"
 stamped_toml = "[param.solderability]\nparts = [\"GCM188R71H104KA57\"]\nname       = \"Solderability: terminations soldered evenly and continuously\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 95\nunit       = \"%\"\nconditions = \"Specifications and Test Methods No.16 (a) test conditions\"\ncite       = \"DS p.5, Specifications and Test Methods, No.16 Solderability (a)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Assembly acceptance criterion, not a circuit limit.\""
 
 [row.tc_c0g]
-state = "MACHINE_CHECKED"
+state = "STALE"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'TC' not found as a table row; text check: UNSURE partial-scope row"
-hash = "59415bf843c598799d22008980bc37a2e8a4f3e371461ee7f257e557d1552bda"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/GCM1885C1H101GA16-01A-EN.pdf); not rendered"
+hash = "9a26912dda242362f95efc05875305a70d4da76d767e4b8bca61dd47238bb0a4"
 stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 stamp_hash = "59415bf843c598799d22008980bc37a2e8a4f3e371461ee7f257e557d1552bda"
 pdf_sha256 = "0f6e6a1b2bd8caa59b44ecbe0fe2fa027c5825c5211762b5905be76f3049b250"

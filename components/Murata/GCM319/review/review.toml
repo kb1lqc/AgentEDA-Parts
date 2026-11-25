@@ -11,8 +11,8 @@ datasheet_rev = "01A"
 pdf_sha256 = "d5fc8cbbb68f642453ddcd5ed51b3f3c633bc8f4dceed8c486f3161fd09416c0"
 pages = 32
 text_layer = true
-component_sha256 = "8dea2148f4efd97079aa7dcf0582fc777d2e424920f6054d0964aecc31465e96"
-render = "complete"
+component_sha256 = "ac3bfc8f067b78c3e1a0088566c97f00c0f3b79f1289df551c804c91a5fffa3c"
+render = "NOT_RENDERED"
 backfill = "git blame"
 sheets = { "GCM3195C1H273FA16-01A-EN.pdf" = "d5fc8cbbb68f642453ddcd5ed51b3f3c633bc8f4dceed8c486f3161fd09416c0", "GCM31CR71E475KA55-01A-EN.pdf" = "87ece5c944c1c8178de10ba9fd8104632693922446e6828f68a54aa5844e87aa" }
 
@@ -694,8 +694,8 @@ text_snippet = "(no text-layer line located)"
 [row.tc_c0g]
 state = "NEW"
 status = "UNSURE"
-reason = "fallback (full page): symbol 'TC' not found as a table row; text check: UNSURE partial-scope row"
-hash = "8f22e43d78852a96371a8002feff1ff85bbd0b21d0cd20d421d124cd86c2dcb4"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/GCM3195C1H273FA16-01A-EN.pdf); not rendered"
+hash = "cc41bb2cc7610c1e17642d040fe81309a54d7c76d6288d3fe48741c61f483628"
 pdf_sha256 = "d5fc8cbbb68f642453ddcd5ed51b3f3c633bc8f4dceed8c486f3161fd09416c0"
 printed_page = 2
 pdf_page = 2

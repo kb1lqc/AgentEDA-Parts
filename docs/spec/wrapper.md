@@ -31,6 +31,15 @@ What the generator emits, so a reviewer can predict the file from the TOML:
 - Every `abs_max`/`rec_op` row without a check is listed as `# UNCHECKED: <key>: <name> (<cite>); <reason>`.
 - Checks are DC steady state only (stated in the wrapper docstring).
 
+## Reading the Zener checks
+
+The "Zener checks" table in each part README lists, per TOML row, the pins it checks, or why it does not.
+
+- Errors: `abs_max` and `rec_op` rows (`abs_max` limits are multiplied by `derate`).
+- Waivable warnings: `25C` and `partial` rows; waive with `waive_<key>` and a cited rationale.
+- `UNVERIFIED`: a checked net has no declared voltage range.
+- `owner: module | board | assembly`: who must check a row the wrapper does not check.
+
 ### Series wrapper
 
 A resistor series component (see "Series components") gets one wrapper, `<Value>.zen`. It differs from the above as follows:

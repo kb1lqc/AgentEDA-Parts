@@ -11,8 +11,8 @@ datasheet_rev = "SLUSEZ1B Rev. B"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"
 pages = 38
 text_layer = true
-component_sha256 = "9b1fcac58b3cad82ce1a456e92e9a7dd29198491ade237cc2a3654a7d3937dbf"
-render = "complete"
+component_sha256 = "4167c7c87ab545a0475749b83c77f7a468a87c467bfe21c99e1b8faabc46231d"
+render = "NOT_RENDERED"
 backfill = "git blame"
 sheets = { "tps4800-q1.pdf" = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839" }
 
@@ -393,10 +393,10 @@ text_snippet = "                VS to GND                                       
 stamped_toml = "[param.rec_vs]\nname       = \"VS voltage to GND, operating\"\nsymbol     = \"VS\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = 3.5\nmax        = 95\nmin_ref    = \"GND\"\nmax_ref    = \"GND\"\nunit       = \"V\"\nconditions = \"Recommended operating, to GND\"\ncite       = \"DS p.5, 5.3 Recommended Operating Conditions, Input Pins, VS to GND\"\nverified   = \"human:kb1lqc 2026-11-24 page-image ds_review f4566ecc335e row adfafd30424d\"\nnote       = \"Same span as the electrical row vs_op (DS p.6, 5.5 Supply voltage, VS 3.5 to 95 V). Checked here once.\"\ncheck_pins = [\"VS\"]"
 
 [row.rec_vs_scp_min]
-state = "MACHINE_CHECKED"
+state = "STALE"
 status = "UNSURE"
-reason = "fallback (table '5.3 Recommended Operating Conditions'): symbol 'VS' not found as a table row; text check: UNSURE row uses convention 'min_ref'"
-hash = "82085c848c2b9ae5a65d6dd7fdbdc968acd0c3fedec142b1fb9b0e46a079c4fa"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/tps4800-q1.pdf); not rendered"
+hash = "3126844efdd78fbb9b241a522a8c61ce73bb0a3c14b0ae04446778eb3d9d5ee5"
 stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 stamp_hash = "82085c848c2b9ae5a65d6dd7fdbdc968acd0c3fedec142b1fb9b0e46a079c4fa"
 pdf_sha256 = "f4566ecc335efc377bad43422c0b3c3955e0408f7ceea089c950c74388d2a839"

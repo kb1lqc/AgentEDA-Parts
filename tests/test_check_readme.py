@@ -400,7 +400,7 @@ class TestPinoutName(unittest.TestCase):
 class TestReadme(unittest.TestCase):
     def test_datasheet_url_is_link(self):
         text = readme.build(FIX / "LDO1")
-        self.assertIn("- **datasheet_url**: [https://example.com/ldo1.pdf](https://example.com/ldo1.pdf)", text)
+        self.assertIn("- **Datasheet URL**: [https://example.com/ldo1.pdf](https://example.com/ldo1.pdf)", text)
 
     def test_new_rendering(self):
         text = readme.build(FIX / "LDO1")

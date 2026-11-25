@@ -4,22 +4,23 @@
 
 Checked by a person: 19 of 29 rows that matter (94 rows in all). Review: python3 tools/review.py TPS48000QDGXQ1
 
+Terms: [glossary](../../../CONTRIBUTING.md#glossary).
+
 ## Part
 
-- **mpn**: TPS48000QDGXRQ1
-- **alternates**: []
+- **MPN**: TPS48000QDGXRQ1
 - **manufacturer**: Texas Instruments
 - **description**: 100 V automotive low-IQ high-side driver with reverse polarity, short-circuit protection and diagnostics, VSSOP-19 (DGX), TPS4800-Q1 data sheet
 - **category**: high_side_driver
 - **package**: VSSOP-19 (DGX), 5.1 x 3.0 mm nominal (DS p.1 Package Information)
-- **datasheet_url**: [https://www.ti.com/lit/ds/symlink/tps4800-q1.pdf](https://www.ti.com/lit/ds/symlink/tps4800-q1.pdf)
-- **datasheet_file**: docs/datasheets/tps4800-q1.pdf
-- **datasheet_rev**: SLUSEZ1B Rev. B
-- **datasheet_date**: 2026-03
-- **temp_grade**: TJ -40 to 150 degC; ambient -40 to 125 degC (grade 1)
-- **kicad_symbol**: TPS48000QDGXQ1.kicad_sym
-- **kicad_footprint**: TPS48000QDGXQ1.kicad_mod
-- **step**: TPS48000QDGXQ1.step
+- **Datasheet URL**: [https://www.ti.com/lit/ds/symlink/tps4800-q1.pdf](https://www.ti.com/lit/ds/symlink/tps4800-q1.pdf)
+- **Datasheet file**: docs/datasheets/tps4800-q1.pdf
+- **Datasheet revision**: SLUSEZ1B Rev. B
+- **Datasheet date**: 2026-03
+- **Temperature grade**: TJ -40 to 150 degC; ambient -40 to 125 degC (grade 1)
+- **Symbol file**: TPS48000QDGXQ1.kicad_sym
+- **Footprint file**: TPS48000QDGXQ1.kicad_mod
+- **3D model**: TPS48000QDGXQ1.step
 
 ## Pins
 
@@ -71,7 +72,7 @@ Checked by a person: 19 of 29 rows that matter (94 rows in all). Review: python3
 | Parameter | Symbol | Min | Typ | Max | Unit | Conditions | Cite | Checked |
 |---|---|---|---|---|---|---|---|---|
 | VS voltage to GND, operating | VS | 3.5 (rel. GND) |  | 95 (rel. GND) | V | Recommended operating, to GND Note: Same span as the electrical row vs_op (DS p.6, 5.5 Supply voltage, VS 3.5 to 95 V). Checked here once. | DS p.5, 5.3 Recommended Operating Conditions, Input Pins, VS to GND | checked (kb1lqc, 2026-11-24) |
-| VS minimum for short-circuit protection | VS | 4 (rel. GND) |  |  | V | Minimum voltage on the VS pin for short circuit protection Note: Printed MIN only (no MAX). Reference GND assumed as for the VS row above; the DS gives no reference in this row. Checked against the VS net (minimum only). scope = partial (waivable warning): the row applies only when short-circuit protection is used; below 4 V the part still operates per rec_vs (3.5 V). A module that disables SCP (CS+, CS-, VS tied, ISCP and TMR to GND, DS p.4 Table 4-1) waives it with waive_rec_vs_scp_min. | DS p.5, 5.3 Recommended Operating Conditions, Input Pins, Minimum voltage on VS pin for Short Circuit Protection |  |
+| VS minimum for short-circuit protection | VS | 4 (rel. GND) |  |  | V | Minimum voltage on the VS pin for short circuit protection Note: Printed MIN only. Reference GND assumed as for the VS row (the DS gives none here). Scope partial (waivable): applies only with short-circuit protection in use; below 4 V the part still operates per rec_vs (3.5 V). A module that disables SCP (CS+, CS-, VS tied; ISCP and TMR to GND, DS p.4 Table 4-1) waives it with waive_rec_vs_scp_min. | DS p.5, 5.3 Recommended Operating Conditions, Input Pins, Minimum voltage on VS pin for Short Circuit Protection |  |
 | External bias voltage on ISCP, maximum |  |  |  | 3 (rel. GND) | V | Only when ISCP is externally biased instead of using RISCP Note: Design-text limit, not in the 5.3 table; stricter than the 5.5 V abs max (abs_iscp_tmr_scp_test). | DS p.17, 7.3.3 Short-Circuit Protection, text under the V(SCP_BIAS) equation: 'External bias voltage on ISCP pin should not exceed 3V.' |  |
 | EN/UVLO, INP, CS_SEL voltage to GND, operating | EN/UVLO, INP, CS_SEL | 0 (rel. GND) |  | 65 (rel. GND) | V | Recommended operating, to GND Note: Reference GND from the row title. | DS p.5, 5.3 Recommended Operating Conditions, Input Pins, EN/UVLO, INP, CS_SEL to GND | checked (kb1lqc, 2026-11-24) |
 | FLT voltage to GND, operating | FLT | 0 (rel. GND) |  | 15 (rel. GND) | V | Recommended operating, to GND Note: Open-drain output of the part; the pull-up rail is set by the module. | DS p.5, 5.3 Recommended Operating Conditions, Output Pins, FLT to GND | checked (kb1lqc, 2026-11-24) |
@@ -164,7 +165,7 @@ Rows by scope: full 61, na 30, partial 2 (25C rows hold only at 25 degC). Curve 
 
 ## Zener checks
 
-Generated wrapper: `TPS48000QDGXQ1.zen` (`python3 -m lib.zen`). abs_max and rec_op rows are errors (abs_max x derate); 25C and partial rows are waivable warnings; a checked net with no voltage is UNVERIFIED.
+Generated wrapper: `TPS48000QDGXQ1.zen` (`python3 -m lib.zen`). How each check reports: [wrapper checks](../../../docs/spec/wrapper.md#reading-the-zener-checks).
 
 | Param | Name | Checked against | Not checked / reason |
 |---|---|---|---|

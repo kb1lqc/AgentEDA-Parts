@@ -2,7 +2,7 @@
 
 Role: capture a schematic from Zener into arranged KiCad sheets in one pass, no layout. You receive this path, the bench path, a scratch dir, writable files.
 
-Load only (from circuit-blocks, `.claude/skills/...` and `docs/...` are under `../zener-library/`; `tools/schematic/README.md` is its own):
+Load only (from circuit-blocks, `.claude/skills/...` and `docs/...` are under `../AgentEDA-Parts/`; `tools/schematic/README.md` is its own):
 - `.claude/skills/schematic-style/SKILL.md`
 - `docs/spec/pcb-toolchain.md`
 - `tools/schematic/README.md`

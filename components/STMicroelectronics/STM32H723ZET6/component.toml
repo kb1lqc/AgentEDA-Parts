@@ -1372,7 +1372,7 @@ max          = 3.6
 unit         = "V"
 conditions   = ""
 cite         = "DS p.90, Table 12. General operating conditions, VDD"
-note         = "Footnote 1 (DS p.91): when RESET is released functionality is guaranteed down to VPDRmax, or to VDDmin when PDR is OFF; PDR_ON pin disables PDR and is not on all packages (pin 143 is on LQFP144). Table 13 (DS p.92) raises the minimum to 1.7 V for VOS0 with the LDO and to 2 V for SVOS4/5 LDO at TJ 125 degC: rows vos_cfg_*; the 1.62 V check is the loosest case (open item: the voltage scale is a firmware choice)."
+note         = "Footnote 1 (DS p.91): functional down to VPDRmax after RESET release, or VDDmin with PDR off (PDR_ON pin; not on all packages, pin 143 on LQFP144). Table 13 (DS p.92) raises the minimum to 1.7 V (VOS0, LDO) and 2 V (SVOS4/5 LDO, TJ 125 degC): rows vos_cfg_*. The 1.62 V check is the loosest case (open item: voltage scale is a firmware choice)."
 min_ref      = "VSS"
 max_ref      = "VSS"
 check_pins   = ["VDD"]
@@ -15640,7 +15640,7 @@ max        = 5.0
 unit       = "mA"
 conditions = "Negative injection, I/O in floating input mode; pins: PA12, PE8"
 cite       = "DS p.125, 6.3.15 I/O current injection characteristics, Table 50. I/O current injection susceptibility, IINJ, PA12, PE8"
-note       = "Magnitude: for negative injection compare with -value (Table 10 abs_i_inj_pin stores it signed). Functional susceptibility (printed as magnitude, mA), not a voltage or current rating; sign is from the column header. Guaranteed by characterization (DS note 1). Failure criteria (DS p.125 text): ADC error above 5 LSB TUE, adjacent-pin leakage outside -5 uA/+0 uA, or other functional failure. Sample test, no temperature printed."
+note       = "Printed as a magnitude (mA); the negative limit is -value (Table 10 abs_i_inj_pin stores it signed). Functional susceptibility, not a rating. Guaranteed by characterization (DS note 1). Failure criteria (DS p.125): ADC error above 5 LSB TUE, adjacent-pin leakage outside -5 uA/+0 uA, or other functional failure. Sample test, no temperature printed."
 
 [param.inj_pos_pa12_pe8]
 name       = "I/O functional susceptibility to positive current injection"
@@ -15862,7 +15862,7 @@ max        = 5000.0
 unit       = "nA"
 conditions = "Max(VDDXXX) < VIN <= 5.5 V, FT_u I/O"
 cite       = "DS p.126, 6.3.16 I/O port characteristics, Table 51. I/O static characteristics, Ilkg, FT_u IO (Max(VDDXXX) < VIN <= 5.5 V row)"
-note       = "Footnote 7: to sustain a voltage above MIN(VDD, VDDA, VDD33USB) + 0.3 V the internal pull-up and pull-down must be disabled. Largest printed Ilkg max; used as Ilkg(max) in pad_leakage_total_max. Pad leakage note (DS p.127 footnote 4): the pad leakage of the I/O itself; total product pad leakage is 10 uA + (number of I/Os where VIN is applied) x Ilkg(max). Table 51 footnotes on DS p.127."
+note       = "Footnote 7: above MIN(VDD, VDDA, VDD33USB) + 0.3 V, the internal pull-up and pull-down must be disabled. Largest printed Ilkg max; used as Ilkg(max) in pad_leakage_total_max. Per DS p.127 footnote 4 this is the I/O pad leakage; total = 10 uA + (I/Os with VIN applied) x Ilkg(max). Table 51 footnotes, DS p.127."
 
 [param.io_ilkg_tt_xx]
 name       = "TT_xx input leakage current, 0 < VIN <= Max(VDDXXX)"
@@ -16411,7 +16411,7 @@ max        = 85.0
 unit       = "MHz"
 conditions = "Speed 10, HSLV OFF, C=50 pF, 2.7 V <= VDD <= 3.6 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), Fmax, speed 10, C=50 pF, 2.7 V <= VDD <= 3.6 V"
-note       = "Footnote 2: fmax achieved at 45-55 % duty cycle, loaded by the specified capacitance. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 2: fmax at 45-55 % duty cycle, loaded by the specified capacitance; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s10_trtf_c50_27_36]
 name       = "Output fall/rise time, speed 10"
@@ -16422,7 +16422,7 @@ max        = 3.8
 unit       = "ns"
 conditions = "Speed 10, HSLV OFF, C=50 pF, 2.7 V <= VDD <= 3.6 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), tr/tf, speed 10, C=50 pF, 2.7 V <= VDD <= 3.6 V"
-note       = "Footnote 3: tr/tf defined between 10 % and 90 % of the output waveform. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 3: tr/tf between 10 % and 90 % of the output waveform; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s10_fmax_c50_162_27]
 name       = "Maximum output frequency, speed 10"
@@ -16433,7 +16433,7 @@ max        = 35.0
 unit       = "MHz"
 conditions = "Speed 10, HSLV OFF, C=50 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), Fmax, speed 10, C=50 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 2: fmax achieved at 45-55 % duty cycle, loaded by the specified capacitance. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 2: fmax at 45-55 % duty cycle, loaded by the specified capacitance; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s10_trtf_c50_162_27]
 name       = "Output fall/rise time, speed 10"
@@ -16444,7 +16444,7 @@ max        = 6.9
 unit       = "ns"
 conditions = "Speed 10, HSLV OFF, C=50 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), tr/tf, speed 10, C=50 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 3: tr/tf defined between 10 % and 90 % of the output waveform. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 3: tr/tf between 10 % and 90 % of the output waveform; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s10_fmax_c30_27_36]
 name       = "Maximum output frequency, speed 10"
@@ -16455,7 +16455,7 @@ max        = 110.0
 unit       = "MHz"
 conditions = "Speed 10, HSLV OFF, C=30 pF, 2.7 V <= VDD <= 3.6 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), Fmax, speed 10, C=30 pF, 2.7 V <= VDD <= 3.6 V"
-note       = "Footnote 2: fmax achieved at 45-55 % duty cycle, loaded by the specified capacitance. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 2: fmax at 45-55 % duty cycle, loaded by the specified capacitance; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s10_trtf_c30_27_36]
 name       = "Output fall/rise time, speed 10"
@@ -16466,7 +16466,7 @@ max        = 2.8
 unit       = "ns"
 conditions = "Speed 10, HSLV OFF, C=30 pF, 2.7 V <= VDD <= 3.6 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), tr/tf, speed 10, C=30 pF, 2.7 V <= VDD <= 3.6 V"
-note       = "Footnote 3: tr/tf defined between 10 % and 90 % of the output waveform. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 3: tr/tf between 10 % and 90 % of the output waveform; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s10_fmax_c30_162_27]
 name       = "Maximum output frequency, speed 10"
@@ -16477,7 +16477,7 @@ max        = 40.0
 unit       = "MHz"
 conditions = "Speed 10, HSLV OFF, C=30 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), Fmax, speed 10, C=30 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 2: fmax achieved at 45-55 % duty cycle, loaded by the specified capacitance. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 2: fmax at 45-55 % duty cycle, loaded by the specified capacitance; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s10_trtf_c30_162_27]
 name       = "Output fall/rise time, speed 10"
@@ -16488,7 +16488,7 @@ max        = 5.2
 unit       = "ns"
 conditions = "Speed 10, HSLV OFF, C=30 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), tr/tf, speed 10, C=30 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 3: tr/tf defined between 10 % and 90 % of the output waveform. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 3: tr/tf between 10 % and 90 % of the output waveform; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s10_fmax_c10_27_36]
 name       = "Maximum output frequency, speed 10"
@@ -16499,7 +16499,7 @@ max        = 166.0
 unit       = "MHz"
 conditions = "Speed 10, HSLV OFF, C=10 pF, 2.7 V <= VDD <= 3.6 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), Fmax, speed 10, C=10 pF, 2.7 V <= VDD <= 3.6 V"
-note       = "Footnote 2: fmax achieved at 45-55 % duty cycle, loaded by the specified capacitance. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 2: fmax at 45-55 % duty cycle, loaded by the specified capacitance; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s10_trtf_c10_27_36]
 name       = "Output fall/rise time, speed 10"
@@ -16510,7 +16510,7 @@ max        = 1.8
 unit       = "ns"
 conditions = "Speed 10, HSLV OFF, C=10 pF, 2.7 V <= VDD <= 3.6 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), tr/tf, speed 10, C=10 pF, 2.7 V <= VDD <= 3.6 V"
-note       = "Footnote 3: tr/tf defined between 10 % and 90 % of the output waveform. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 3: tr/tf between 10 % and 90 % of the output waveform; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s10_fmax_c10_162_27]
 name       = "Maximum output frequency, speed 10"
@@ -16521,7 +16521,7 @@ max        = 100.0
 unit       = "MHz"
 conditions = "Speed 10, HSLV OFF, C=10 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), Fmax, speed 10, C=10 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 2: fmax achieved at 45-55 % duty cycle, loaded by the specified capacitance. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 2: fmax at 45-55 % duty cycle, loaded by the specified capacitance; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s10_trtf_c10_162_27]
 name       = "Output fall/rise time, speed 10"
@@ -16532,7 +16532,7 @@ max        = 3.3
 unit       = "ns"
 conditions = "Speed 10, HSLV OFF, C=10 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), tr/tf, speed 10, C=10 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 3: tr/tf defined between 10 % and 90 % of the output waveform. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 3: tr/tf between 10 % and 90 % of the output waveform; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s11_fmax_c50_27_36]
 name       = "Maximum output frequency, speed 11"
@@ -16543,7 +16543,7 @@ max        = 100.0
 unit       = "MHz"
 conditions = "Speed 11, HSLV OFF, C=50 pF, 2.7 V <= VDD <= 3.6 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), Fmax, speed 11, C=50 pF, 2.7 V <= VDD <= 3.6 V"
-note       = "Footnote 2: fmax achieved at 45-55 % duty cycle, loaded by the specified capacitance. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 2: fmax at 45-55 % duty cycle, loaded by the specified capacitance; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s11_trtf_c50_27_36]
 name       = "Output fall/rise time, speed 11"
@@ -16554,7 +16554,7 @@ max        = 3.3
 unit       = "ns"
 conditions = "Speed 11, HSLV OFF, C=50 pF, 2.7 V <= VDD <= 3.6 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), tr/tf, speed 11, C=50 pF, 2.7 V <= VDD <= 3.6 V"
-note       = "Footnote 3: tr/tf defined between 10 % and 90 % of the output waveform. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 3: tr/tf between 10 % and 90 % of the output waveform; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s11_fmax_c50_162_27]
 name       = "Maximum output frequency, speed 11"
@@ -16565,7 +16565,7 @@ max        = 50.0
 unit       = "MHz"
 conditions = "Speed 11, HSLV OFF, C=50 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), Fmax, speed 11, C=50 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 2: fmax achieved at 45-55 % duty cycle, loaded by the specified capacitance. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 2: fmax at 45-55 % duty cycle, loaded by the specified capacitance; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s11_trtf_c50_162_27]
 name       = "Output fall/rise time, speed 11"
@@ -16576,7 +16576,7 @@ max        = 6.6
 unit       = "ns"
 conditions = "Speed 11, HSLV OFF, C=50 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), tr/tf, speed 11, C=50 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 3: tr/tf defined between 10 % and 90 % of the output waveform. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 3: tr/tf between 10 % and 90 % of the output waveform; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s11_fmax_c30_27_36]
 name       = "Maximum output frequency, speed 11"
@@ -16587,7 +16587,7 @@ max        = 133.0
 unit       = "MHz"
 conditions = "Speed 11, HSLV OFF, C=30 pF, 2.7 V <= VDD <= 3.6 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), Fmax, speed 11, C=30 pF, 2.7 V <= VDD <= 3.6 V"
-note       = "Footnote 2: fmax achieved at 45-55 % duty cycle, loaded by the specified capacitance. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 2: fmax at 45-55 % duty cycle, loaded by the specified capacitance; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s11_trtf_c30_27_36]
 name       = "Output fall/rise time, speed 11"
@@ -16598,7 +16598,7 @@ max        = 2.4
 unit       = "ns"
 conditions = "Speed 11, HSLV OFF, C=30 pF, 2.7 V <= VDD <= 3.6 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), tr/tf, speed 11, C=30 pF, 2.7 V <= VDD <= 3.6 V"
-note       = "Footnote 3: tr/tf defined between 10 % and 90 % of the output waveform. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 3: tr/tf between 10 % and 90 % of the output waveform; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s11_fmax_c30_162_27]
 name       = "Maximum output frequency, speed 11"
@@ -16609,7 +16609,7 @@ max        = 66.0
 unit       = "MHz"
 conditions = "Speed 11, HSLV OFF, C=30 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), Fmax, speed 11, C=30 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 2: fmax achieved at 45-55 % duty cycle, loaded by the specified capacitance. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 2: fmax at 45-55 % duty cycle, loaded by the specified capacitance; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s11_trtf_c30_162_27]
 name       = "Output fall/rise time, speed 11"
@@ -16620,7 +16620,7 @@ max        = 4.5
 unit       = "ns"
 conditions = "Speed 11, HSLV OFF, C=30 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), tr/tf, speed 11, C=30 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 3: tr/tf defined between 10 % and 90 % of the output waveform. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 3: tr/tf between 10 % and 90 % of the output waveform; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s11_fmax_c10_27_36]
 name       = "Maximum output frequency, speed 11"
@@ -16631,7 +16631,7 @@ max        = 220.0
 unit       = "MHz"
 conditions = "Speed 11, HSLV OFF, C=10 pF, 2.7 V <= VDD <= 3.6 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), Fmax, speed 11, C=10 pF, 2.7 V <= VDD <= 3.6 V"
-note       = "Footnote 2: fmax achieved at 45-55 % duty cycle, loaded by the specified capacitance. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 2: fmax at 45-55 % duty cycle, loaded by the specified capacitance; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s11_trtf_c10_27_36]
 name       = "Output fall/rise time, speed 11"
@@ -16642,7 +16642,7 @@ max        = 1.5
 unit       = "ns"
 conditions = "Speed 11, HSLV OFF, C=10 pF, 2.7 V <= VDD <= 3.6 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), tr/tf, speed 11, C=10 pF, 2.7 V <= VDD <= 3.6 V"
-note       = "Footnote 3: tr/tf defined between 10 % and 90 % of the output waveform. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 3: tr/tf between 10 % and 90 % of the output waveform; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s11_fmax_c10_162_27]
 name       = "Maximum output frequency, speed 11"
@@ -16653,7 +16653,7 @@ max        = 85.0
 unit       = "MHz"
 conditions = "Speed 11, HSLV OFF, C=10 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), Fmax, speed 11, C=10 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 2: fmax achieved at 45-55 % duty cycle, loaded by the specified capacitance. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 2: fmax at 45-55 % duty cycle, loaded by the specified capacitance; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t54_s11_trtf_c10_162_27]
 name       = "Output fall/rise time, speed 11"
@@ -16664,7 +16664,7 @@ max        = 2.7
 unit       = "ns"
 conditions = "Speed 11, HSLV OFF, C=10 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.132, Table 54. Output timing characteristics (HSLV OFF), tr/tf, speed 11, C=10 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 3: tr/tf defined between 10 % and 90 % of the output waveform. Guaranteed by design (footnote 1). No temperature printed, scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 3: tr/tf between 10 % and 90 % of the output waveform; guaranteed by design (footnote 1). No temperature printed. Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t55_s00_fmax_c50_162_27]
 name       = "Maximum output frequency, HSLV ON, speed 00"
@@ -16807,7 +16807,7 @@ max        = 55.0
 unit       = "MHz"
 conditions = "Speed 10, HSLV ON, C=50 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.133, Table 55. Output timing characteristics (HSLV ON), Fmax, speed 10, C=50 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 2: fmax achieved at 45-55 % duty cycle, loaded by the specified capacitance. Guaranteed by design (footnote 1). Scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 2: fmax at 45-55 % duty cycle, loaded by the specified capacitance; guaranteed by design (footnote 1). Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t55_s10_trtf_c50_162_27]
 name       = "Output fall/rise time, HSLV ON, speed 10"
@@ -16818,7 +16818,7 @@ max        = 5.8
 unit       = "ns"
 conditions = "Speed 10, HSLV ON, C=50 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.133, Table 55. Output timing characteristics (HSLV ON), tr/tf, speed 10, C=50 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 3: tr/tf defined between 10 % and 90 % of the output waveform. Guaranteed by design (footnote 1). Scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 3: tr/tf between 10 % and 90 % of the output waveform; guaranteed by design (footnote 1). Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t55_s10_fmax_c30_162_27]
 name       = "Maximum output frequency, HSLV ON, speed 10"
@@ -16829,7 +16829,7 @@ max        = 80.0
 unit       = "MHz"
 conditions = "Speed 10, HSLV ON, C=30 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.133, Table 55. Output timing characteristics (HSLV ON), Fmax, speed 10, C=30 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 2: fmax achieved at 45-55 % duty cycle, loaded by the specified capacitance. Guaranteed by design (footnote 1). Scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 2: fmax at 45-55 % duty cycle, loaded by the specified capacitance; guaranteed by design (footnote 1). Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t55_s10_trtf_c30_162_27]
 name       = "Output fall/rise time, HSLV ON, speed 10"
@@ -16840,7 +16840,7 @@ max        = 4.0
 unit       = "ns"
 conditions = "Speed 10, HSLV ON, C=30 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.133, Table 55. Output timing characteristics (HSLV ON), tr/tf, speed 10, C=30 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 3: tr/tf defined between 10 % and 90 % of the output waveform. Guaranteed by design (footnote 1). Scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 3: tr/tf between 10 % and 90 % of the output waveform; guaranteed by design (footnote 1). Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t55_s10_fmax_c10_162_27]
 name       = "Maximum output frequency, HSLV ON, speed 10"
@@ -16851,7 +16851,7 @@ max        = 133.0
 unit       = "MHz"
 conditions = "Speed 10, HSLV ON, C=10 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.133, Table 55. Output timing characteristics (HSLV ON), Fmax, speed 10, C=10 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 2: fmax achieved at 45-55 % duty cycle, loaded by the specified capacitance. Guaranteed by design (footnote 1). Scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 2: fmax at 45-55 % duty cycle, loaded by the specified capacitance; guaranteed by design (footnote 1). Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t55_s10_trtf_c10_162_27]
 name       = "Output fall/rise time, HSLV ON, speed 10"
@@ -16862,7 +16862,7 @@ max        = 2.4
 unit       = "ns"
 conditions = "Speed 10, HSLV ON, C=10 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.133, Table 55. Output timing characteristics (HSLV ON), tr/tf, speed 10, C=10 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 3: tr/tf defined between 10 % and 90 % of the output waveform. Guaranteed by design (footnote 1). Scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 3: tr/tf between 10 % and 90 % of the output waveform; guaranteed by design (footnote 1). Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t55_s11_fmax_c50_162_27]
 name       = "Maximum output frequency, HSLV ON, speed 11"
@@ -16873,7 +16873,7 @@ max        = 60.0
 unit       = "MHz"
 conditions = "Speed 11, HSLV ON, C=50 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.133, Table 55. Output timing characteristics (HSLV ON), Fmax, speed 11, C=50 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 2: fmax achieved at 45-55 % duty cycle, loaded by the specified capacitance. Guaranteed by design (footnote 1). Scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 2: fmax at 45-55 % duty cycle, loaded by the specified capacitance; guaranteed by design (footnote 1). Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t55_s11_trtf_c50_162_27]
 name       = "Output fall/rise time, HSLV ON, speed 11"
@@ -16884,7 +16884,7 @@ max        = 5.3
 unit       = "ns"
 conditions = "Speed 11, HSLV ON, C=50 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.133, Table 55. Output timing characteristics (HSLV ON), tr/tf, speed 11, C=50 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 3: tr/tf defined between 10 % and 90 % of the output waveform. Guaranteed by design (footnote 1). Scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 3: tr/tf between 10 % and 90 % of the output waveform; guaranteed by design (footnote 1). Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t55_s11_fmax_c30_162_27]
 name       = "Maximum output frequency, HSLV ON, speed 11"
@@ -16895,7 +16895,7 @@ max        = 90.0
 unit       = "MHz"
 conditions = "Speed 11, HSLV ON, C=30 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.133, Table 55. Output timing characteristics (HSLV ON), Fmax, speed 11, C=30 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 2: fmax achieved at 45-55 % duty cycle, loaded by the specified capacitance. Guaranteed by design (footnote 1). Scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 2: fmax at 45-55 % duty cycle, loaded by the specified capacitance; guaranteed by design (footnote 1). Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t55_s11_trtf_c30_162_27]
 name       = "Output fall/rise time, HSLV ON, speed 11"
@@ -16906,7 +16906,7 @@ max        = 3.6
 unit       = "ns"
 conditions = "Speed 11, HSLV ON, C=30 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.133, Table 55. Output timing characteristics (HSLV ON), tr/tf, speed 11, C=30 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 3: tr/tf defined between 10 % and 90 % of the output waveform. Guaranteed by design (footnote 1). Scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 3: tr/tf between 10 % and 90 % of the output waveform; guaranteed by design (footnote 1). Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t55_s11_fmax_c10_162_27]
 name       = "Maximum output frequency, HSLV ON, speed 11"
@@ -16917,7 +16917,7 @@ max        = 175.0
 unit       = "MHz"
 conditions = "Speed 11, HSLV ON, C=10 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.133, Table 55. Output timing characteristics (HSLV ON), Fmax, speed 11, C=10 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 2: fmax achieved at 45-55 % duty cycle, loaded by the specified capacitance. Guaranteed by design (footnote 1). Scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 2: fmax at 45-55 % duty cycle, loaded by the specified capacitance; guaranteed by design (footnote 1). Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_t55_s11_trtf_c10_162_27]
 name       = "Output fall/rise time, HSLV ON, speed 11"
@@ -16928,7 +16928,7 @@ max        = 1.9
 unit       = "ns"
 conditions = "Speed 11, HSLV ON, C=10 pF, 1.62 V <= VDD <= 2.7 V"
 cite       = "DS p.133, Table 55. Output timing characteristics (HSLV ON), tr/tf, speed 11, C=10 pF, 1.62 V <= VDD <= 2.7 V"
-note       = "Footnote 3: tr/tf defined between 10 % and 90 % of the output waveform. Guaranteed by design (footnote 1). Scope na. Footnote 4 (compensation system enabled) printed on speed 10/11 rows; applied to every speed 10/11 row (a superscript 'v' with no printed footnote marks three rows: speed 10 tr/tf C=10 pF 1.62-2.7 V, speed 11 Fmax C=50 pF and C=30 pF 2.7-3.6 V; read as footnote 4: open item). "
+note       = "Footnote 3: tr/tf between 10 % and 90 % of the output waveform; guaranteed by design (footnote 1). Footnote 4 (compensation on speed 10/11) applies to every speed 10/11 row; three rows with an unprinted 'v' are read as footnote 4 (open item: speed 10 tr/tf C=10 pF 1.62-2.7 V; speed 11 Fmax C=50 and 30 pF 2.7-3.6 V)."
 
 [param.io_pxyc_switch_boosted]
 name       = "Pxy_C to Pxy analog switch impedance"
@@ -17071,7 +17071,7 @@ max_ref    = "VDDA"
 unit       = "V"
 conditions = "VDDA >= 2 V"
 cite       = "DS p.162, Table 80. 16-bit ADC characteristics, VREF+ (VDDA >= 2 V row)"
-note       = "Printed maximum is VDDA: stored as max = 0 with max_ref = VDDA. Minimum 1.62 V absolute. scope = partial (waivable warning) on purpose: VREF+ tied to VDDA, the usual LQFP144 wiring, fails the independent-net worst case (VREF+.max > VDDA.min) although it is exactly VDDA; waive with waive_adc16_vref_plus_ge2 in that case. For VDDA < 2 V the DS requires VREF+ = VDDA (adc16_vref_plus_lt2)."
+note       = "Printed maximum is VDDA: stored as max = 0 with max_ref = VDDA; minimum 1.62 V absolute. Scope partial (waivable) on purpose: VREF+ tied to VDDA (usual LQFP144 wiring) fails the independent-net worst case though it equals VDDA; waive with waive_adc16_vref_plus_ge2. For VDDA < 2 V the DS requires VREF+ = VDDA (adc16_vref_plus_lt2)."
 check_pins = ["VREF+"]
 
 [param.adc16_vref_plus_lt2]

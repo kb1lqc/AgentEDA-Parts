@@ -11,8 +11,8 @@ datasheet_rev = "Rev.2.4"
 pdf_sha256 = "9ae3b45be3256cadb288a4d16b3ebe6cedb3bb0da7851b0c6d4b6a11391ffb0e"
 pages = 13
 text_layer = true
-component_sha256 = "49d67b98a13eae91419a205efa356464052ae08a9e8cb00370fda599c3d0538c"
-render = "complete"
+component_sha256 = "44a219e2eb994ef7292624b5811b6ccf1162ebd9c608e7794edb2a1e7eb37b3e"
+render = "NOT_RENDERED"
 backfill = "git blame"
 sheets = { "infineon-bsc040n10ns5-datasheet-en.pdf" = "9ae3b45be3256cadb288a4d16b3ebe6cedb3bb0da7851b0c6d4b6a11391ffb0e" }
 
@@ -32,8 +32,8 @@ render_key = "6844f453fb351577"
 [row.vds_rating]
 state = "NEW"
 status = "UNSURE"
-reason = "row uses convention 'max_ref'; row found by symbol; no footnote marker on the row or header"
-hash = "51a29ae0900b21e01d8e66756f6c60c86bad7bdb40aab0bc9b44afa2f32ffa94"
+reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/infineon/infineon-bsc040n10ns5-datasheet-en.pdf); not rendered"
+hash = "5fe7c514fb8c2c0f875a802293da0a2ecdcf237c3315e234a842a88f79752207"
 pdf_sha256 = "9ae3b45be3256cadb288a4d16b3ebe6cedb3bb0da7851b0c6d4b6a11391ffb0e"
 printed_page = 1
 pdf_page = 1

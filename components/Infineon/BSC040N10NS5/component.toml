@@ -96,7 +96,7 @@ max        = 100
 unit       = "V"
 conditions = ""
 cite       = "DS p.1, Table 1 Key Performance Parameters, VDS"
-note       = "Not a row of the Maximum ratings table (DS p.3). The DS gives no temperature for it. The guaranteed minimum breakdown voltage is V(BR)DSS = 100 V at 25 degC (vbr_dss, DS p.4 Table 4). Printed with no MIN/TYP/MAX label: stored as max. Only the upper bound is checked; the body-diode negative drain voltage is not a row in this DS."
+note       = "Not in the Maximum ratings table (DS p.3); no temperature printed. Printed with no MIN/TYP/MAX label: stored as max, so only the upper bound is checked. Guaranteed minimum breakdown is V(BR)DSS = 100 V at 25 degC (vbr_dss, DS p.4 Table 4). The body-diode negative drain voltage is not a row in this DS."
 check_pins = ["D"]
 max_ref    = "S"
 

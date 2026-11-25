@@ -4,21 +4,22 @@
 
 Checked by a person: 6 of 21 rows that matter (39 rows in all). Review: python3 tools/review.py WSK2512
 
+Terms: [glossary](../../../CONTRIBUTING.md#glossary).
+
 ## Part
 
-- **alternates**: []
 - **manufacturer**: Vishay Dale
 - **description**: 0.005 to 0.2 ohm (decade values) +/-0.1 % / +/-0.5 % / +/-1.0 % 1 W 4-terminal (Kelvin) Power Metal Strip current-sense resistor series, 2512
 - **category**: current_sense_resistor
 - **package**: 2512 (4-terminal Kelvin, Power Metal Strip)
-- **datasheet_url**: [https://www.vishay.com/doc?30108](https://www.vishay.com/doc?30108)
-- **datasheet_file**: docs/datasheets/wsk2512.pdf
-- **datasheet_rev**: 11-Dec-2023 (Document 30108)
-- **datasheet_date**: 2023-12-11
-- **temp_grade**: -65 to +170 degC
-- **kicad_symbol**: WSK2512.kicad_sym
-- **kicad_footprint**: WSK2512.kicad_mod
-- **step**: none
+- **Datasheet URL**: [https://www.vishay.com/doc?30108](https://www.vishay.com/doc?30108)
+- **Datasheet file**: docs/datasheets/wsk2512.pdf
+- **Datasheet revision**: 11-Dec-2023 (Document 30108)
+- **Datasheet date**: 2023-12-11
+- **Temperature grade**: -65 to +170 degC
+- **Symbol file**: WSK2512.kicad_sym
+- **Footprint file**: WSK2512.kicad_mod
+- **3D model**: none
 
 ## Series
 
@@ -109,7 +110,7 @@ Rows by scope: na 38 (25C rows hold only at 25 degC). Curve (graph) rows: 2. Tex
 
 ## Zener checks
 
-Generated wrapper: `WSK2512.zen` (`python3 -m lib.zen`). abs_max and rec_op rows are errors (abs_max x derate); 25C and partial rows are waivable warnings; a checked net with no voltage is UNVERIFIED.
+Generated wrapper: `WSK2512.zen` (`python3 -m lib.zen`). How each check reports: [wrapper checks](../../../docs/spec/wrapper.md#reading-the-zener-checks).
 
 | Param | Name | Checked against | Not checked / reason |
 |---|---|---|---|

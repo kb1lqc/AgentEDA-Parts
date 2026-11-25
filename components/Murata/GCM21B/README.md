@@ -4,19 +4,20 @@
 
 Released: all 16 rows that matter checked (54 rows in all); 3 used values not covered (catalog.csv, series).
 
+Terms: [glossary](../../../CONTRIBUTING.md#glossary).
+
 ## Part
 
 - **manufacturer**: Murata
 - **description**: Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 2012M (0805), thickness 1.25 mm (code B), AEC-Q200 (GCM series)
 - **category**: capacitor_mlcc
 - **package**: 2012M (0805)
-- **datasheet_url**: 
-- **datasheet_file**: docs/datasheets/GCM21BR72A104KA37-01A-EN.pdf
-- **datasheet_rev**: 01A
-- **datasheet_date**: 2026-04
-- **kicad_symbol**: GCM21B.kicad_sym
-- **kicad_footprint**: GCM21B.kicad_mod
-- **step**: GCM21B.step
+- **Datasheet file**: docs/datasheets/GCM21BR72A104KA37-01A-EN.pdf
+- **Datasheet revision**: 01A
+- **Datasheet date**: 2026-04
+- **Symbol file**: GCM21B.kicad_sym
+- **Footprint file**: GCM21B.kicad_mod
+- **3D model**: GCM21B.step
 
 ## Series
 
@@ -81,8 +82,8 @@ Released: all 16 rows that matter checked (54 rows in all); 3 used values not co
 | Dissipation factor, high-temperature operating life | DF |  |  | 0.035 |  | Max operating temp +/-3 degC, 1000 h, 200 % of rated voltage Applies to: parts GCM21BR72A104KA37. | DS p.4, Specifications and Test Methods, No. 8 High Temperature Operating Life, Q or D.F. |  |
 | Insulation resistance, high-temperature operating life | IR |  | More than 50 ohm*F (printed 'More than 50 Ω・F'), IR x C |  |  | Room temperature, after the high-temperature operating life test Applies to: parts GCM21BR72A104KA37. | DS p.4, Specifications and Test Methods, No. 8 High Temperature Operating Life, I.R. (Room Temp.) |  |
 | Temperature characteristic, R7 (X7R) | TC | -15 |  | 15 | % | Ref. temp 25 degC; temp range -55 to 125 degC; capacitance change over temperature Applies to: dielectric X7R. Note: Public STD code X7R (EIA). Capacitance change over temperature, not a DC-bias or aging limit. Read from the reference sheet of the one part this directory has; used for every X7R catalog row (open item: confirm for each other X7R part). | DS p.2, Rated Value, Temp. coeff. or Cap. Change (-15 to 15 %) |  |
-| Capacitance change with DC bias |  |  | Not specified: the sheet shows only an example curve |  |  | DC voltage applied Applies to: parts GCM21BR72A104KA37. Note: X7R loses capacitance under DC bias; the DS example curve (0.1 uF, 50 VDC sample) shows a large loss approaching rated voltage; it is an example, not a rating for this part. capacitance_worst_pct/_ppm exclude it: do not use capacitance_worst_pct as an in-circuit minimum. The DS also requires the AC/pulse zero-to-peak voltage to stay within the rated DC voltage; the Zener check is DC steady state only. | DS p.13, Rating 5. DC Voltage and AC Voltage Characteristic (example figure) |  |
-| Temperature characteristic, C0G (EIA) | TC | -30 |  | 30 | ppm/degC | Ref. temp 25 degC; temp range printed as 25 to 125 degC; coefficient 0 +/-30 ppm/degC Applies to: dielectric C0G. Note: Public STD code C0G (EIA). A temperature coefficient, not a percent-change class. The DS prints the range 25 to 125 degC only: no coefficient is printed below 25 degC. The -55 to -10 degC capacitance drift is in the Table A rows (capdrift_*_c0g); the -10 to 25 degC segment has no printed number (open item). capacitance_worst_ppm requires dt and refuses values outside 0 to 100 degC (docs/SPEC.md, Capacitor series). | DS p.2 (GCM21A5C2E101FX01-00B-EN.pdf), Rated Value, Temp. coeff. or Cap. Change (0+/-30 ppm/degC), Temp. Range (25 to 125 degC) |  |
+| Capacitance change with DC bias |  |  | Not specified: the sheet shows only an example curve |  |  | DC voltage applied Applies to: parts GCM21BR72A104KA37. Note: Not a rating for this part: the DS example curve (0.1 uF, 50 VDC sample) shows large X7R loss near rated voltage. capacitance_worst_pct/_ppm exclude it; do not use them as an in-circuit minimum. The DS also limits AC/pulse zero-to-peak voltage to the rated DC voltage; the Zener check is DC steady state only. | DS p.13, Rating 5. DC Voltage and AC Voltage Characteristic (example figure) |  |
+| Temperature characteristic, C0G (EIA) | TC | -30 |  | 30 | ppm/degC | Ref. temp 25 degC; temp range printed as 25 to 125 degC; coefficient 0 +/-30 ppm/degC Applies to: dielectric C0G. Note: C0G (EIA) temperature coefficient, not a percent-change class. Printed for 25 to 125 degC only. -55 to -10 degC drift is in the Table A rows (capdrift_*_c0g); -10 to 25 degC has no printed number (open item). capacitance_worst_ppm refuses dt outside 0 to 100 degC (docs/SPEC.md, Capacitor series). | DS p.2 (GCM21A5C2E101FX01-00B-EN.pdf), Rated Value, Temp. coeff. or Cap. Change (0+/-30 ppm/degC), Temp. Range (25 to 125 degC) |  |
 | Capacitance change at -55 degC vs 25 degC (Table A) | dC | -0.24 |  | 0.58 | % | Reference 25 degC, no bias; measured at -55 degC Applies to: dielectric C0G. Note: Printed Max 0.58, Min -0.24: stored as min -0.24, max 0.58 (printed columns). Covers only the -55 degC point. | DS p.7 (GCM21A5C2E101FX01-00B-EN.pdf), Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -55 degC |  |
 | Capacitance change at -30 degC vs 25 degC (Table A) | dC | -0.17 |  | 0.4 | % | Reference 25 degC, no bias; measured at -30 degC Applies to: dielectric C0G. Note: Printed Max 0.4, Min -0.17: stored as min -0.17, max 0.4 (printed columns). Covers only the -30 degC point. | DS p.7 (GCM21A5C2E101FX01-00B-EN.pdf), Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -30 degC |  |
 | Capacitance change at -10 degC vs 25 degC (Table A) | dC | -0.11 |  | 0.25 | % | Reference 25 degC, no bias; measured at -10 degC Applies to: dielectric C0G. Note: Printed Max 0.25, Min -0.11: stored as min -0.11, max 0.25 (printed columns). Covers only the -10 degC point. | DS p.7 (GCM21A5C2E101FX01-00B-EN.pdf), Table A Capacitance Change between at Reference Temp. and at each Temp. (%), 5C, -10 degC |  |
@@ -112,7 +113,7 @@ Rows by scope: 25C 3, full 1, na 45, partial 4 (25C rows hold only at 25 degC). 
 
 ## Zener checks
 
-Generated wrapper: `GCM21B.zen` (`python3 -m lib.zen`). abs_max and rec_op rows are errors (abs_max x derate); 25C and partial rows are waivable warnings; a checked net with no voltage is UNVERIFIED.
+Generated wrapper: `GCM21B.zen` (`python3 -m lib.zen`). How each check reports: [wrapper checks](../../../docs/spec/wrapper.md#reading-the-zener-checks).
 
 | Param | Name | Checked against | Not checked / reason |
 |---|---|---|---|

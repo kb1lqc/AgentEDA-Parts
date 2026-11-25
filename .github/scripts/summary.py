@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Write the GitHub job summary (Markdown on stdout) for a verify run.
-Usage: summary.py library <verify log>          (zener-library)
+Usage: summary.py library <verify log>          (AgentEDA-Parts)
        summary.py blocks <verify log> [<schematic log>...]   (circuit-blocks)
 The verify logs are the captured stdout of tools/verify.py; the first line is PASS: ... or FAIL: ... ."""
 import re
@@ -36,7 +36,7 @@ def library(log):
     series = len(list(Path("components").glob("*/*/catalog.csv")))
     equations = sum(len(re.findall(r"^def [a-z]", c.read_text(), re.M)) for c in Path("components").glob("*/*/calc.py"))
     tests = re.search(r"tests (\d+)", line)
-    out = head(ok, "zener-library: every part checked against its datasheet data")
+    out = head(ok, "AgentEDA-Parts: every part checked against its datasheet data")
     out += ["| | |", "|---|---|",
             f"| Gate | `tools/verify.py --all`: **{line}** |",
             f"| Components | {len(tomls)} ({families} families, {series} catalog series) |",

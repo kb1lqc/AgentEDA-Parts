@@ -451,7 +451,7 @@ unit       = "V"
 conditions = "Minimum voltage on the VS pin for short circuit protection"
 cite       = "DS p.5, 5.3 Recommended Operating Conditions, Input Pins, Minimum voltage on VS pin for Short Circuit Protection"
 verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
-note       = "Printed MIN only (no MAX). Reference GND assumed as for the VS row above; the DS gives no reference in this row. Checked against the VS net (minimum only). scope = partial (waivable warning): the row applies only when short-circuit protection is used; below 4 V the part still operates per rec_vs (3.5 V). A module that disables SCP (CS+, CS-, VS tied, ISCP and TMR to GND, DS p.4 Table 4-1) waives it with waive_rec_vs_scp_min."
+note       = "Printed MIN only. Reference GND assumed as for the VS row (the DS gives none here). Scope partial (waivable): applies only with short-circuit protection in use; below 4 V the part still operates per rec_vs (3.5 V). A module that disables SCP (CS+, CS-, VS tied; ISCP and TMR to GND, DS p.4 Table 4-1) waives it with waive_rec_vs_scp_min."
 check_pins = ["VS"]
 
 [param.rec_iscp_bias]

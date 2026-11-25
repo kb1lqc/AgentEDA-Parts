@@ -11,9 +11,6 @@ docs/vendor/
 .review-cache/
 *_unused/
 
-# Drop folder for new parts before import
-temporary/
-
 # Generated outputs (rebuilt by running the scripts)
 examples/out/
 _harness.zen

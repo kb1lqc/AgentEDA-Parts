@@ -4,19 +4,20 @@
 
 Released: all 5 rows that matter checked (6 rows in all); 3 used values not covered (catalog.csv, series).
 
+Terms: [glossary](../../../CONTRIBUTING.md#glossary).
+
 ## Part
 
 - **manufacturer**: Murata
 - **description**: Chip multilayer ceramic capacitors, X7R (R7), 3225M (1210), thickness 1.5 mm (code Q), AEC-Q200 (GCM series)
 - **category**: capacitor_mlcc
 - **package**: 3225M (1210)
-- **datasheet_url**: 
-- **datasheet_file**: docs/datasheets/GCM32Q7U2J682JX01-00B-EN.pdf
-- **datasheet_rev**: 00B
-- **datasheet_date**: 2026-04
-- **kicad_symbol**: GCM32Q.kicad_sym
-- **kicad_footprint**: GCM32Q.kicad_mod
-- **step**: GCM32Q.step
+- **Datasheet file**: docs/datasheets/GCM32Q7U2J682JX01-00B-EN.pdf
+- **Datasheet revision**: 00B
+- **Datasheet date**: 2026-04
+- **Symbol file**: GCM32Q.kicad_sym
+- **Footprint file**: GCM32Q.kicad_mod
+- **3D model**: GCM32Q.step
 
 ## Series
 
@@ -63,7 +64,7 @@ Rows by scope: full 1, na 4 (25C rows hold only at 25 degC). Curve (graph) rows:
 
 ## Zener checks
 
-Generated wrapper: `GCM32Q.zen` (`python3 -m lib.zen`). abs_max and rec_op rows are errors (abs_max x derate); 25C and partial rows are waivable warnings; a checked net with no voltage is UNVERIFIED.
+Generated wrapper: `GCM32Q.zen` (`python3 -m lib.zen`). How each check reports: [wrapper checks](../../../docs/spec/wrapper.md#reading-the-zener-checks).
 
 | Param | Name | Checked against | Not checked / reason |
 |---|---|---|---|

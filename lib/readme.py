@@ -18,6 +18,12 @@ PARAM_HEADERS = ["Parameter", "Symbol", "Min", "Typ", "Max", "Unit", "Conditions
 PART_ORDER = ["mpn", "alternates", "manufacturer", "description", "category", "package", "datasheet_url",
               "datasheet_file", "datasheet_rev", "datasheet_date", "temp_grade", "kicad_symbol",
               "kicad_footprint", "step"]
+LABELS = {"mpn": "MPN", "alternates": "Alternate MPNs", "datasheet_url": "Datasheet URL",
+          "datasheet_file": "Datasheet file", "datasheet_rev": "Datasheet revision",
+          "datasheet_date": "Datasheet date", "temp_grade": "Temperature grade", "kicad_symbol": "Symbol file",
+          "kicad_footprint": "Footprint file", "step": "3D model"}
+GLOSSARY = "Terms: [glossary](../../../CONTRIBUTING.md#glossary)."
+ZEN_LEGEND = "[wrapper checks](../../../docs/spec/wrapper.md#reading-the-zener-checks)"
 
 
 def cell(x):
@@ -123,8 +129,7 @@ def zen_checks(params):
             rows.append([key, t.get("name", ""), "UNCHECKED", t["unchecked"]])
     if not rows:
         return "No Zener checks declared.\n"
-    note = ("Generated wrapper: `{v}.zen` (`python3 -m lib.zen`). abs_max and rec_op rows are errors (abs_max x "
-            "derate); 25C and partial rows are waivable warnings; a checked net with no voltage is UNVERIFIED.\n\n")
+    note = f"Generated wrapper: `{{v}}.zen` (`python3 -m lib.zen`). How each check reports: {ZEN_LEGEND}.\n\n"
     return note + md_table(["Param", "Name", "Checked against", "Not checked / reason"], rows)
 
 
@@ -156,14 +161,21 @@ def variants_table(part, variants):
     return md_table(["Value"] + cols, rows)
 
 
-def variant_sections(variants):
+def param_table(rows, show_checked):
+    """A parameter table; the Checked column appears only once some row of the part is checked."""
+    if show_checked:
+        return md_table(PARAM_HEADERS, rows)
+    return md_table(PARAM_HEADERS[:-1], [r[:-1] for r in rows])
+
+
+def variant_sections(variants, show_checked=False):
     """'Variant-specific parameters' tables, one per variant that has parameter overrides."""
     text = ""
     for name, v in variants.items():
         rows = [r for kind in KINDS for r in param_rows(v.get("param", {}), kind)]
         if rows:
             text += f"\n## Variant-specific parameters: {name}\n\n"
-            text += md_table(PARAM_HEADERS, rows)
+            text += param_table(rows, show_checked)
     return text
 
 
@@ -262,11 +274,17 @@ def build(folder):
     checked = checked_rows(folder, local_pdf=False)  # ledger only: the README never depends on a local PDF or cache
     text = f"{HEADER}\n\n# {part.get('value', folder.name)}\n\n"
     r = review_status.review(folder, ROOT, local_pdf=False)
-    text += f"{review_status.readme_line(folder.name, r)}\n\n## Part\n\n"
+    text += f"{review_status.readme_line(folder.name, r)}\n\n{GLOSSARY}\n\n## Part\n\n"
     for key in PART_ORDER:
-        if key in part:
-            val = f"[{part[key]}]({part[key]})" if key == "datasheet_url" and part[key] else part[key]
-            text += f"- **{key}**: {val}\n"
+        val = part.get(key)
+        if val in (None, "", []):
+            continue
+        if isinstance(val, list):
+            val = ", ".join(val)
+        if key == "datasheet_url":
+            val = f"[{val}]({val})"
+        text += f"- **{LABELS.get(key, key)}**: {val}\n"
+    show_checked = bool(checked)
     if variants:
         text += "\n## Variants\n\nShared data below applies to every variant unless a row names its variants.\n\n"
         text += variants_table(part, variants)
@@ -281,8 +299,8 @@ def build(folder):
         rows = param_rows(shared, kind, checked)
         if rows:
             text += f"\n## Parameters: {kind}\n\n"
-            text += md_table(PARAM_HEADERS, rows)
-    text += variant_sections(variants)
+            text += param_table(rows, show_checked)
+    text += variant_sections(variants, show_checked)
     every = list(shared.values()) + [t for v in variants.values() for t in v.get("param", {}).values()]
     text += "\n## Limits of this data\n\n" + limits_line(every)
     lookup = {k: t for v in variants.values() for k, t in v.get("param", {}).items()} | shared  # for INPUTS text
@@ -301,14 +319,16 @@ START, END = "<!-- review-status:start -->", "<!-- review-status:end -->"
 
 
 def top_table(root):
-    """Review status of every component directory under root (ledger only, sorted by path)."""
+    """Part list with review status: every component directory under root (ledger only, sorted by path)."""
     rows = []
     for toml in sorted(Path(root).glob("components/*/*/component.toml")):
         d = toml.parent
         r = review_status.review(d, root, local_pdf=False)
-        rows.append([f"{d.parent.name}/{d.name}", "released" if r["released"] else f"{r['k']} of {r['n']}",
+        desc = ((tomllib.loads(toml.read_text(encoding="utf-8")).get("part") or {}).get("description", ""))
+        link = f"[{d.parent.name}/{d.name}](components/{d.parent.name}/{d.name}/README.md)"
+        rows.append([link, desc, "released" if r["released"] else f"{r['k']} of {r['n']}",
                      f"`python3 tools/review.py {d.name}`"])
-    return md_table(["Part", "Status", "Review command"], rows)
+    return md_table(["Part", "What", "Status", "Review command"], rows)
 
 
 def update_top(root):
