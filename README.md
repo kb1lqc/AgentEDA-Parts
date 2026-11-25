@@ -105,7 +105,7 @@ match the datasheet image, and press one button to stamp them and open the PR. S
 | Murata/GCM216 | 0 of 16 | `python3 tools/review.py GCM216` |
 | Murata/GCM219 | 0 of 16 | `python3 tools/review.py GCM219` |
 | Murata/GCM21A | 0 of 16 | `python3 tools/review.py GCM21A` |
-| Murata/GCM21B | 0 of 16 | `python3 tools/review.py GCM21B` |
+| Murata/GCM21B | released | `python3 tools/review.py GCM21B` |
 | Murata/GCM319 | 0 of 15 | `python3 tools/review.py GCM319` |
 | Murata/GCM31A | 0 of 15 | `python3 tools/review.py GCM31A` |
 | Murata/GCM31B | 0 of 16 | `python3 tools/review.py GCM31B` |

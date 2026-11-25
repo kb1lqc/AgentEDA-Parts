@@ -10,7 +10,9 @@ sha256 = "6dc895b084382dd884d4607a646128ac053ba8935a0baa43fb50620bebbaf479"
 [group.X7R]
 rows = 70
 group_sha256 = "7d968900ccfa9b238987a1c68187b76d585f286362bcdc171a532b0369e1ffdd"
+verified = "human:kb1lqc 2026-11-24 export-check group X7R"
 
 [group.C0G]
 rows = 67
 group_sha256 = "90e4b2df86db56e571fc4205d52d4750e4f8247125ad4c83d27c45fad86a5d4b"
+verified = "human:kb1lqc 2026-11-24 export-check group C0G"
