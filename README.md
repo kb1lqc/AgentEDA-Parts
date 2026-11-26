@@ -39,6 +39,21 @@ Each part's README is its reference: every value with its cite, conditions and n
 `examples/current_sense.py`. Use only values from `component.toml` (through `part.param(key)` or `part.inputs(fn)`);
 if a number you need is missing, say so rather than estimating it.
 
+## Check a part (human)
+
+Every number is checked by a person against the datasheet page image before it counts. Full steps:
+[CONTRIBUTING.md](CONTRIBUTING.md#verify-parameters-the-human-check).
+
+```sh
+python3 tools/review.py INA229AIDGS                     # check one part
+python3 tools/review.py --list-blocks                    # circuit blocks you can check
+python3 tools/review.py --block INA229HighSideMonitor    # only the rows that block reads
+```
+
+- Run it in your own terminal. The page lists each row with its datasheet crop and one tick box.
+- Tick a row only when it matches the page. Wrong: fix the TOML, run `python3 tools/verify.py --regen`. Unclear: leave it unticked and open an issue.
+- `--block` and `--list-blocks` read the circuit-blocks repo next to this one (`../ina229` or `../circuit-blocks`).
+
 ## Parts
 
 Generated from each part's TOML by `python3 -m lib.readme`. "Status" counts the rows that matter that a person has
