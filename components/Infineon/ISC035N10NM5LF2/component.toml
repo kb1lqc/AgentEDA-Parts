@@ -112,6 +112,7 @@ max        = 164
 unit       = "A"
 conditions = "VGS = 10 V, TC = 25 degC"
 cite       = "DS p.3, Table 2 Maximum ratings, Continuous drain current ID (row 1)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 7e144939b785 row 453031af6861"
 note       = "Footnote 1: rating refers to the product only with absolute maximum values, case temperature as specified; derate for other case temperatures (Diagram 2)."
 unchecked  = "not a voltage; owner: module"
 
@@ -124,6 +125,7 @@ max        = 116
 unit       = "A"
 conditions = "VGS = 10 V, TC = 100 degC"
 cite       = "DS p.3, Table 2 Maximum ratings, Continuous drain current ID (row 2)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 7e144939b785 row 7e9b30ed83af"
 unchecked  = "not a voltage; owner: module"
 
 [param.id_pcb]
@@ -1453,6 +1455,7 @@ max        = 217
 unit       = "W"
 conditions = "TC = 25 degC"
 cite       = "DS p.3, Table 2 Maximum ratings, Power dissipation Ptot (row 1)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 7e144939b785 row 70d80d9017c5"
 note       = "Ptot = f(TC) is Diagram 1 (curve, not extracted). Stored at TC = 25 degC only."
 unchecked  = "not a voltage; owner: module"
 
@@ -1507,6 +1510,7 @@ max        = 20
 unit       = "degC/W"
 conditions = ""
 cite       = "DS p.4, Table 3 Thermal characteristics, Thermal resistance junction-case, top"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 7e144939b785 row 4645c4454185"
 note       = "Top side is not the drain-to-PCB path; calc.tj_from_case uses the bottom row."
 
 [param.rth_ja]
@@ -1688,7 +1692,7 @@ typ        = 2.0
 unit       = ""
 conditions = "ID = 50 A, VGS = 10 V, normalized to 25 degC, Tj = 150 degC"
 cite       = "DS p.9, Diagram 10 figure Normalized drain-source on resistance, RDS(on)=f(Tj), ID = 50 A, VGS = 10 V, read at Tj = 150 degC"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 7e144939b785 row 02bbe506ec38"
 curve      = true
 note       = "Read by eye, +/-0.05 (re-read at 220 dpi against the 25 degC = 1.0 point). Unlabelled single line: typical curve, not a bound. The curve runs to about 175 degC (factor about 2.3 there); 150 degC is the printed Tj max."
 
@@ -2027,3 +2031,6 @@ unit       = "nC"
 conditions = "VR = 50 V, IF = 50 A, diF/dt = 100 A/us"
 cite       = "DS p.6, Table 7 Reverse diode, Reverse recovery charge Qrr (footnote 10)"
 note       = "Defined by design. Not subject to production test (footnote 10)."
+
+[pinout]
+verified = "human:kb1lqc 2026-11-26 page-image pinout 7e144939b785 pins 532281e14093"

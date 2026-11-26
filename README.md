@@ -64,7 +64,7 @@ checked (see the [glossary](CONTRIBUTING.md#glossary)).
 |---|---|---|---|
 | [AnalogDevices/LTC4364MS](components/AnalogDevices/LTC4364MS/README.md) | Surge stopper with ideal diode, 4-80 V, MSOP-16 (MS); -1 latch-off or -2 auto-retry, C/I/H grade | released | `python3 tools/review.py LTC4364MS` |
 | [Infineon/BSC040N10NS5](components/Infineon/BSC040N10NS5/README.md) | 100 V N-channel OptiMOS 5 power MOSFET, 136 A, 4.0 mohm max at VGS=10 V, PG-TDSON-8 (SuperSO8) | 0 of 17 | `python3 tools/review.py BSC040N10NS5` |
-| [Infineon/ISC035N10NM5LF2](components/Infineon/ISC035N10NM5LF2/README.md) | 100 V N-channel OptiMOS 5 Linear FET 2 (hot swap / e-fuse), 164 A, 3.5 mohm max, PG-TDSON-8-59 | 16 of 22 | `python3 tools/review.py ISC035N10NM5LF2` |
+| [Infineon/ISC035N10NM5LF2](components/Infineon/ISC035N10NM5LF2/README.md) | 100 V N-channel OptiMOS 5 Linear FET 2 (hot swap / e-fuse), 164 A, 3.5 mohm max, PG-TDSON-8-59 | released | `python3 tools/review.py ISC035N10NM5LF2` |
 | [Infineon/ISC750P10LM](components/Infineon/ISC750P10LM/README.md) | -100 V P-channel OptiMOS Power-Transistor, logic level, -32 A, 75 mohm max at VGS = -10 V, PG-TDSON-8 (SuperSO8) | 0 of 17 | `python3 tools/review.py ISC750P10LM` |
 | [Murata/GCM155](components/Murata/GCM155/README.md) | Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 1005M (0402), AEC-Q200 (GCM series) | 0 of 20 | `python3 tools/review.py GCM155` |
 | [Murata/GCM188](components/Murata/GCM188/README.md) | Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 1608M (0603), AEC-Q200 (GCM series) | 0 of 20 | `python3 tools/review.py GCM188` |
