@@ -2,7 +2,7 @@
 
 # ERJ-3EKF
 
-Checked by a person: 4 of 14 rows that matter (25 rows in all). Review: python3 tools/review.py ERJ-3EKF
+Released: all 14 rows that matter checked (25 rows in all).
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 
@@ -57,9 +57,9 @@ Rated voltage at decade values, computed from `p70`, `v_limit` and the formula a
 | Limiting element voltage | V limit |  |  | 75 | V | Note: Upper limit on RCWV (footnote *2): RCWV = sqrt(Power rating x Resistance value) or this limit, whichever is less. See rcwv_rule. | DS PDF p.3, Ratings <+/-1 %>, Limiting element voltage (V), ERJ3EK row | checked (kb1lqc, 2026-11-24) |
 | Maximum overload voltage | V overload |  |  | 150 | V | Note: Upper limit on the overload test voltage (footnote *3): OTV = specified magnification x RCWV or this limit, whichever is less. | DS PDF p.3, Ratings <+/-1 %>, Maximum overload voltage (V), ERJ3EK row |  |
 | Rated continuous working voltage, RCWV | RCWV |  | sqrt(Power rating x Resistance value), or limiting element voltage, whichever less |  | V | Note: Formula, not a number. calc.py rated_voltage implements it. | DS PDF p.3, Ratings <+/-1 %>, footnote *2 |  |
-| Category temperature range | T category | -55 |  | 155 | degC | Note: Read as ambient, the axis of the derating figure (DS PDF p.3). Ratings are for the case temperature below this limit (footnote *1). | DS PDF p.3, Ratings <+/-1 %>, Category temperature range (degC), ERJ3EK row (shared with ERJ2RK and ERJ6EN) |  |
-| Derating knee: full rated power up to | TA knee |  | 70 |  | degC | Note: Printed in the text, not read off the graph. Used by calc.rated_power. | DS PDF p.3, Power derating curve (text: 'above 70 degC, power rating shall be derated') |  |
-| Derating: 0 % rated power at | TA zero |  | 155 |  | degC | Note: Read off the graph (no printed number). The 155 degC line is used because this part's category range is -55 to +155 degC; the steeper 125 degC line is labelled ERJXG,1G,1R. Linear between knee and zero (graph shape). Curve-based estimate; reading uncertainty not quantified (open item). | DS PDF p.3, Power derating curve (figure: the 155 degC line reaches 0 %) (curve) |  |
+| Category temperature range | T category | -55 |  | 155 | degC | Note: Read as ambient, the axis of the derating figure (DS PDF p.3). Ratings are for the case temperature below this limit (footnote *1). | DS PDF p.3, Ratings <+/-1 %>, Category temperature range (degC), ERJ3EK row (shared with ERJ2RK and ERJ6EN) | checked (kb1lqc, 2026-11-26) |
+| Derating knee: full rated power up to | TA knee |  | 70 |  | degC | Note: Printed in the text, not read off the graph. Used by calc.rated_power. | DS PDF p.3, Power derating curve (text: 'above 70 degC, power rating shall be derated') | checked (kb1lqc, 2026-11-26) |
+| Derating: 0 % rated power at | TA zero |  | 155 |  | degC | Note: Read off the graph (no printed number). The 155 degC line is used because this part's category range is -55 to +155 degC; the steeper 125 degC line is labelled ERJXG,1G,1R. Linear between knee and zero (graph shape). Curve-based estimate; reading uncertainty not quantified (open item). | DS PDF p.3, Power derating curve (figure: the 155 degC line reaches 0 %) (curve) | checked (kb1lqc, 2026-11-26) |
 
 ## Parameters: electrical
 
@@ -81,12 +81,12 @@ Rated voltage at decade values, computed from `p70`, `v_limit` and the formula a
 
 | Parameter | Symbol | Min | Typ | Max | Unit | Conditions | Cite | Checked |
 |---|---|---|---|---|---|---|---|---|
-| Body length | L | 1.45 | 1.6 | 1.75 | mm | Note: Printed 1.60+/-0.15. The ERJ3E row is shared with ERJ3R in the DS table. | DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column L |  |
-| Body width | W | 0.75 | 0.8 | 0.95 | mm | Note: Printed 0.80 +0.15/-0.05 (asymmetric): min = 0.75, max = 0.95 (arithmetic on the printed tolerance). | DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column W |  |
-| Terminal width, a | a | 0.1 | 0.3 | 0.5 | mm | Note: Printed 0.30+/-0.20. | DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column a |  |
-| Terminal width, b | b | 0.15 | 0.3 | 0.45 | mm | Note: Printed 0.30+/-0.15. | DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column b |  |
-| Terminal thickness, T | T | 0.35 | 0.45 | 0.55 | mm | Note: Printed 0.45+/-0.10. | DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column T |  |
-| Mass (reference) |  |  | 2 |  | mg | Reference value, per part Note: 2 g per 1000 pcs = 2 mg per part (per-part value in mg keeps the printed digits). Reference only, not a bound. | DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), Mass (Weight) (Reference) (g/1000 pcs) = 2 |  |
+| Body length | L | 1.45 | 1.6 | 1.75 | mm | Note: Printed 1.60+/-0.15. The ERJ3E row is shared with ERJ3R in the DS table. | DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column L | checked (kb1lqc, 2026-11-26) |
+| Body width | W | 0.75 | 0.8 | 0.95 | mm | Note: Printed 0.80 +0.15/-0.05 (asymmetric): min = 0.75, max = 0.95 (arithmetic on the printed tolerance). | DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column W | checked (kb1lqc, 2026-11-26) |
+| Terminal width, a | a | 0.1 | 0.3 | 0.5 | mm | Note: Printed 0.30+/-0.20. | DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column a | checked (kb1lqc, 2026-11-26) |
+| Terminal width, b | b | 0.15 | 0.3 | 0.45 | mm | Note: Printed 0.30+/-0.15. | DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column b | checked (kb1lqc, 2026-11-26) |
+| Terminal thickness, T | T | 0.35 | 0.45 | 0.55 | mm | Note: Printed 0.45+/-0.10. | DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column T | checked (kb1lqc, 2026-11-26) |
+| Mass (reference) |  |  | 2 |  | mg | Reference value, per part Note: 2 g per 1000 pcs = 2 mg per part (per-part value in mg keeps the printed digits). Reference only, not a bound. | DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), Mass (Weight) (Reference) (g/1000 pcs) = 2 | checked (kb1lqc, 2026-11-26) |
 
 ## Limits of this data
 

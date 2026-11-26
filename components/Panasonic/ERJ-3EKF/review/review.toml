@@ -11,14 +11,16 @@ datasheet_rev = "29-May-25 (page footers, pp.1-4)"
 pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
 pages = 8
 text_layer = true
-component_sha256 = "dfbe87d2536f2ae2886dc7c0edd1fbae78fb8edf91765489b410eb7ff1599249"
+component_sha256 = "97d6968fd812bb4ee21a0f23cfb7ae7ec7781c7f794b2141803fd0b9023dae77"
 render = "complete"
 backfill = "git blame"
 sheets = { "AOA0000C304.pdf" = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378" }
 
 [pinout]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 hash = "0b6eb34da570119a641a4a2599f5a7b74fd4989de8109718bf0757d38e304169"
+stamp = "human:kb1lqc 2026-11-26 page-image pinout 78825b819853 pins 0b6eb34da570"
+stamp_hash = "0b6eb34da570119a641a4a2599f5a7b74fd4989de8109718bf0757d38e304169"
 pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
 
 [[pinout.page]]
@@ -108,14 +110,13 @@ header_key = "24b220d98afe0c4b"
 text_snippet = "    <\u00b11 %\uff1e\n(header line not matched)\n                      Power rating*1                                          Resistance                     Resistance\n   *3 : Overload test voltage (OTV) shall be determined from OTV = specified magnification (refer to performance) \u00d7 RCWV"
 
 [row.category_temp]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'T category' not found as a table row; text check: UNSURE vendor 'Panasonic' not in the text-check tested set"
 hash = "4ea48947d5e052a6a74d42aafce65bd12dbc39b504f66eb38c50783cd410ef0b"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 4ea48947d5e0"
 stamp_hash = "4ea48947d5e052a6a74d42aafce65bd12dbc39b504f66eb38c50783cd410ef0b"
 pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
-baseline = true
 pdf_page = 3
 toml_lines = "106-118"
 image = "evidence/page_p3.png"
@@ -126,17 +127,16 @@ crop_box = "full_page"
 dpi = 200
 render_key = "3db725f16ecf781f"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.category_temp]\nname       = \"Category temperature range\"\nsymbol     = \"T category\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = -55\nmax        = 155\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS PDF p.3, Ratings <+/-1 %>, Category temperature range (degC), ERJ3EK row (shared with ERJ2RK and ERJ6EN)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Read as ambient, the axis of the derating figure (DS PDF p.3). Ratings are for the case temperature below this limit (footnote *1).\"\ncheck_ambient = true"
+stamped_toml = "[param.category_temp]\nname       = \"Category temperature range\"\nsymbol     = \"T category\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = -55\nmax        = 155\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS PDF p.3, Ratings <+/-1 %>, Category temperature range (degC), ERJ3EK row (shared with ERJ2RK and ERJ6EN)\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 4ea48947d5e0\"\nnote       = \"Read as ambient, the axis of the derating figure (DS PDF p.3). Ratings are for the case temperature below this limit (footnote *1).\"\ncheck_ambient = true"
 
 [row.derate_knee]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'TA knee' not found as a table row; text check: UNSURE vendor 'Panasonic' not in the text-check tested set"
 hash = "847f50ae63eb62d11c10d89127edd14d3197ce3f7b38b9039e6ff2536979bcbb"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 847f50ae63eb"
 stamp_hash = "847f50ae63eb62d11c10d89127edd14d3197ce3f7b38b9039e6ff2536979bcbb"
 pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
-baseline = true
 pdf_page = 3
 toml_lines = "120-131"
 image = "evidence/page_p3.png"
@@ -147,17 +147,16 @@ crop_box = "full_page"
 dpi = 200
 render_key = "3db725f16ecf781f"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.derate_knee]\nname       = \"Derating knee: full rated power up to\"\nsymbol     = \"TA knee\"\nkind       = \"rec_op\"\nscope      = \"na\"\ntyp        = 70\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS PDF p.3, Power derating curve (text: 'above 70 degC, power rating shall be derated')\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed in the text, not read off the graph. Used by calc.rated_power.\"\nunchecked  = \"derating knee (printed in text, not a limit); used by calc.rated_power\""
+stamped_toml = "[param.derate_knee]\nname       = \"Derating knee: full rated power up to\"\nsymbol     = \"TA knee\"\nkind       = \"rec_op\"\nscope      = \"na\"\ntyp        = 70\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS PDF p.3, Power derating curve (text: 'above 70 degC, power rating shall be derated')\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 847f50ae63eb\"\nnote       = \"Printed in the text, not read off the graph. Used by calc.rated_power.\"\nunchecked  = \"derating knee (printed in text, not a limit); used by calc.rated_power\""
 
 [row.derate_zero]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'TA zero' not found as a table row; text check: UNSURE row uses convention 'curve'"
 hash = "6b637750b504e550efa2fad5c39f8787a47169e30ad514dd58bb8ce263c54b0e"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 6b637750b504"
 stamp_hash = "6b637750b504e550efa2fad5c39f8787a47169e30ad514dd58bb8ce263c54b0e"
 pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
-baseline = true
 pdf_page = 3
 toml_lines = "133-145"
 image = "evidence/page_p3.png"
@@ -168,7 +167,7 @@ crop_box = "full_page"
 dpi = 200
 render_key = "3db725f16ecf781f"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.derate_zero]\nname       = \"Derating: 0 % rated power at\"\nsymbol     = \"TA zero\"\nkind       = \"rec_op\"\nscope      = \"na\"\ntyp        = 155\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS PDF p.3, Power derating curve (figure: the 155 degC line reaches 0 %)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\ncurve      = true\nnote       = \"Read off the graph (no printed number). The 155 degC line is used because this part's category range is -55 to +155 degC; the steeper 125 degC line is labelled ERJXG,1G,1R. Linear between knee and zero (graph shape). Curve-based estimate; reading uncertainty not quantified (open item).\"\nunchecked  = \"curve value; used by calc.rated_power\""
+stamped_toml = "[param.derate_zero]\nname       = \"Derating: 0 % rated power at\"\nsymbol     = \"TA zero\"\nkind       = \"rec_op\"\nscope      = \"na\"\ntyp        = 155\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS PDF p.3, Power derating curve (figure: the 155 degC line reaches 0 %)\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 6b637750b504\"\ncurve      = true\nnote       = \"Read off the graph (no printed number). The 155 degC line is used because this part's category range is -55 to +155 degC; the steeper 125 degC line is labelled ERJXG,1G,1R. Linear between knee and zero (graph shape). Curve-based estimate; reading uncertainty not quantified (open item).\"\nunchecked  = \"curve value; used by calc.rated_power\""
 
 [row.tol]
 state = "HUMAN_VERIFIED"
@@ -372,14 +371,13 @@ render_key = "3db725f16ecf781f"
 text_snippet = "(no text-layer line located)"
 
 [row.dim_l]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'Dimensions (mm)'): symbol 'L' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Panasonic' not in the text-check tested set"
 hash = "7dba16d8884d588102c7672751faf8f508aa8c4c6f492918b7a32867f07b3bbc"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 7dba16d8884d"
 stamp_hash = "7dba16d8884d588102c7672751faf8f508aa8c4c6f492918b7a32867f07b3bbc"
 pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
-baseline = true
 pdf_page = 4
 toml_lines = "282-294"
 image = "evidence/table_p4_y185.png"
@@ -390,17 +388,16 @@ crop_box = [33.1, 185.4, 559.9, 783.0]
 dpi = 200
 render_key = "d496b924b3260b54"
 text_snippet = "                                                                                                                        L\n                                     L                              W                               a                              b                               T              (g/1000 pcs)"
-stamped_toml = "[param.dim_l]\nname       = \"Body length\"\nsymbol     = \"L\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.45\ntyp        = 1.60\nmax        = 1.75\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column L\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed 1.60+/-0.15. The ERJ3E row is shared with ERJ3R in the DS table.\""
+stamped_toml = "[param.dim_l]\nname       = \"Body length\"\nsymbol     = \"L\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.45\ntyp        = 1.60\nmax        = 1.75\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column L\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 7dba16d8884d\"\nnote       = \"Printed 1.60+/-0.15. The ERJ3E row is shared with ERJ3R in the DS table.\""
 
 [row.dim_w]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'Dimensions (mm)'): symbol 'W' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Panasonic' not in the text-check tested set"
 hash = "36db17641e6a6f6739c869d84ddc91b50cd79402335b2bbd5f0cf83fce09539a"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 36db17641e6a"
 stamp_hash = "36db17641e6a6f6739c869d84ddc91b50cd79402335b2bbd5f0cf83fce09539a"
 pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
-baseline = true
 pdf_page = 4
 toml_lines = "296-308"
 image = "evidence/table_p4_y185.png"
@@ -411,17 +408,16 @@ crop_box = [33.1, 185.4, 559.9, 783.0]
 dpi = 200
 render_key = "d496b924b3260b54"
 text_snippet = "                                                                         W\n                                     L                              W                               a                              b                               T              (g/1000 pcs)"
-stamped_toml = "[param.dim_w]\nname       = \"Body width\"\nsymbol     = \"W\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.75\ntyp        = 0.80\nmax        = 0.95\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column W\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed 0.80 +0.15/-0.05 (asymmetric): min = 0.75, max = 0.95 (arithmetic on the printed tolerance).\""
+stamped_toml = "[param.dim_w]\nname       = \"Body width\"\nsymbol     = \"W\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.75\ntyp        = 0.80\nmax        = 0.95\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column W\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 36db17641e6a\"\nnote       = \"Printed 0.80 +0.15/-0.05 (asymmetric): min = 0.75, max = 0.95 (arithmetic on the printed tolerance).\""
 
 [row.dim_a]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'Dimensions (mm)'): symbol 'a' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Panasonic' not in the text-check tested set"
 hash = "92aa2cb6ee9d523e7fdaf05941a881da545366ae4a2c119eb235946c56f57126"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 92aa2cb6ee9d"
 stamp_hash = "92aa2cb6ee9d523e7fdaf05941a881da545366ae4a2c119eb235946c56f57126"
 pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
-baseline = true
 pdf_page = 4
 toml_lines = "310-322"
 image = "evidence/table_p4_y185.png"
@@ -432,17 +428,16 @@ crop_box = [33.1, 185.4, 559.9, 783.0]
 dpi = 200
 render_key = "d496b924b3260b54"
 text_snippet = "                                                                                                   a\n                                     L                              W                               a                              b                               T              (g/1000 pcs)\n   Should a safety concern arise regarding this product, please be sure to contact us immediately.                                                                                  29-May-25"
-stamped_toml = "[param.dim_a]\nname       = \"Terminal width, a\"\nsymbol     = \"a\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.10\ntyp        = 0.30\nmax        = 0.50\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column a\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed 0.30+/-0.20.\""
+stamped_toml = "[param.dim_a]\nname       = \"Terminal width, a\"\nsymbol     = \"a\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.10\ntyp        = 0.30\nmax        = 0.50\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column a\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 92aa2cb6ee9d\"\nnote       = \"Printed 0.30+/-0.20.\""
 
 [row.dim_b]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'Dimensions (mm)'): symbol 'b' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Panasonic' not in the text-check tested set"
 hash = "eb7cf91d46bda87f759ff7d4ca720f7dc0f5d468b650a539ef6fd2799f0d08fc"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row eb7cf91d46bd"
 stamp_hash = "eb7cf91d46bda87f759ff7d4ca720f7dc0f5d468b650a539ef6fd2799f0d08fc"
 pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
-baseline = true
 pdf_page = 4
 toml_lines = "324-336"
 image = "evidence/table_p4_y185.png"
@@ -453,17 +448,16 @@ crop_box = [33.1, 185.4, 559.9, 783.0]
 dpi = 200
 render_key = "d496b924b3260b54"
 text_snippet = "                                                                                  b\n                                     L                              W                               a                              b                               T              (g/1000 pcs)"
-stamped_toml = "[param.dim_b]\nname       = \"Terminal width, b\"\nsymbol     = \"b\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.15\ntyp        = 0.30\nmax        = 0.45\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column b\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed 0.30+/-0.15.\""
+stamped_toml = "[param.dim_b]\nname       = \"Terminal width, b\"\nsymbol     = \"b\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.15\ntyp        = 0.30\nmax        = 0.45\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column b\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row eb7cf91d46bd\"\nnote       = \"Printed 0.30+/-0.15.\""
 
 [row.dim_t]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'Dimensions (mm)'): symbol 'T' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Panasonic' not in the text-check tested set"
 hash = "87a7fe66c84da8211a9c774efb069961a5304955194f7a3d262b68a8383461f0"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 87a7fe66c84d"
 stamp_hash = "87a7fe66c84da8211a9c774efb069961a5304955194f7a3d262b68a8383461f0"
 pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
-baseline = true
 pdf_page = 4
 toml_lines = "338-350"
 image = "evidence/table_p4_y185.png"
@@ -474,17 +468,16 @@ crop_box = [33.1, 185.4, 559.9, 783.0]
 dpi = 200
 render_key = "d496b924b3260b54"
 text_snippet = "                                                                        T\n                                     L                              W                               a                              b                               T              (g/1000 pcs)"
-stamped_toml = "[param.dim_t]\nname       = \"Terminal thickness, T\"\nsymbol     = \"T\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.35\ntyp        = 0.45\nmax        = 0.55\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column T\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed 0.45+/-0.10.\""
+stamped_toml = "[param.dim_t]\nname       = \"Terminal thickness, T\"\nsymbol     = \"T\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.35\ntyp        = 0.45\nmax        = 0.55\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column T\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 87a7fe66c84d\"\nnote       = \"Printed 0.45+/-0.10.\""
 
 [row.mass]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'Dimensions (mm)'): row has no symbol; text check: UNSURE vendor 'Panasonic' not in the text-check tested set"
 hash = "29c804669fbe0c6e7bb44fb0e69a0c34c3abc78def65acc7e15e40931b6e4d2e"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 29c804669fbe"
 stamp_hash = "29c804669fbe0c6e7bb44fb0e69a0c34c3abc78def65acc7e15e40931b6e4d2e"
 pdf_sha256 = "78825b819853a63f57cc18214f321d2f1da9dc205a7e58af7db18ae73563e378"
-baseline = true
 pdf_page = 4
 toml_lines = "352-361"
 image = "evidence/table_p4_y185.png"
@@ -495,7 +488,7 @@ crop_box = [33.1, 185.4, 559.9, 783.0]
 dpi = 200
 render_key = "d496b924b3260b54"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.mass]\nname       = \"Mass (reference)\"\nkind       = \"mechanical\"\nscope      = \"na\"\ntyp        = 2\nunit       = \"mg\"\nconditions = \"Reference value, per part\"\ncite       = \"DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), Mass (Weight) (Reference) (g/1000 pcs) = 2\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"2 g per 1000 pcs = 2 mg per part (per-part value in mg keeps the printed digits). Reference only, not a bound.\""
+stamped_toml = "[param.mass]\nname       = \"Mass (reference)\"\nkind       = \"mechanical\"\nscope      = \"na\"\ntyp        = 2\nunit       = \"mg\"\nconditions = \"Reference value, per part\"\ncite       = \"DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), Mass (Weight) (Reference) (g/1000 pcs) = 2\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 29c804669fbe\"\nnote       = \"2 g per 1000 pcs = 2 mg per part (per-part value in mg keeps the printed digits). Reference only, not a bound.\""
 
 [row.series]
 state = "NOT_COVERED"
