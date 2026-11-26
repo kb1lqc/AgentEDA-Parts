@@ -1029,8 +1029,14 @@ class Main(unittest.TestCase):
         self.assertTrue(stamp)
         self.assertEqual(sorted(d.replace("stamp.py", "review.py") for d in stamp), sorted(d for d in deny if "review.py" in d))
 
-    def test_default_blocks_repo(self):
-        self.assertIn(RV.default_blocks_repo(ROOT).name, ("ina229", "circuit-blocks"))
+    def test_blocks_repo_is_flag_then_env_never_a_guess(self):
+        with mock.patch.dict(os.environ, {}, clear=True):
+            with self.assertRaises(ValueError):
+                RV.blocks_repo(None)
+            self.assertEqual(RV.blocks_repo("/x/blocks"), Path("/x/blocks").resolve())
+        with mock.patch.dict(os.environ, {"CIRCUIT_BLOCKS": "/y/blocks"}, clear=True):
+            self.assertEqual(RV.blocks_repo(None), Path("/y/blocks").resolve())
+            self.assertEqual(RV.blocks_repo("/x/blocks"), Path("/x/blocks").resolve())
 
 
 if __name__ == "__main__":

@@ -112,8 +112,9 @@ python3 tools/review.py INA229AIDGS --dry-run           # try the page; shows th
 
 ### Circuit blocks
 
-`--list-blocks` and `--block` read the blocks repo, not this one. By default it is `../ina229` if that folder exists,
-else `../circuit-blocks` (both next to this checkout). Use `--blocks-repo <path>` for another checkout.
+`--list-blocks` and `--block` read the AgentEDA-Blocks repo, not this one. Point them at your checkout with
+`--blocks-repo <path>` or the `CIRCUIT_BLOCKS` environment variable (the same variable `tools/risk_rank.py` reads).
+There is no default folder: without either, the tool refuses and says so.
 
 - A block is listed only after its `analysis.py` has written
   `benches/<Block>/docs/design-analysis/library-inputs.json` in that repo. Run the block's analysis first.

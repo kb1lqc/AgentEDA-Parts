@@ -52,7 +52,7 @@ python3 tools/review.py --block INA229HighSideMonitor    # only the rows that bl
 
 - Run it in your own terminal. The page lists each row with its datasheet crop and one tick box.
 - Tick a row only when it matches the page. Wrong: fix the TOML, run `python3 tools/verify.py --regen`. Unclear: leave it unticked and open an issue.
-- `--block` and `--list-blocks` read the circuit-blocks repo next to this one (`../ina229` or `../circuit-blocks`).
+- `--block` and `--list-blocks` read the AgentEDA-Blocks repo: pass `--blocks-repo <path>` or set `CIRCUIT_BLOCKS`.
 
 ## Parts
 

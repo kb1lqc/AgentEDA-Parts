@@ -7,7 +7,7 @@ Usage (library repo root):
   python3 tools/review.py --block <Block> [--blocks-repo DIR]   the rows a circuit block reads
   python3 tools/review.py --list-blocks [--blocks-repo DIR]     the blocks --block can read
 --block reads <blocks repo>/benches/<Block>/docs/design-analysis/library-inputs.json (written by the block's
-analysis.py). Default blocks repo: ../ina229 if it exists, else ../circuit-blocks.
+analysis.py). The blocks repo is --blocks-repo <path>, else $CIRCUIT_BLOCKS (AgentEDA-Blocks checkout); no default.
 
 Each row is checked (a current human stamp), needs check, or reference: docs/spec/review.md "Human view" (the rows
 that matter; --block only narrows the page, never a part's status; the pinout is a row, stamped `<Value>:pinout`). The
@@ -92,11 +92,12 @@ def cache_dir(root, d):
     return Path(root) / ".review-cache" / Path(d).parent.name / Path(d).name
 
 
-def default_blocks_repo(root):
-    for name in ("ina229", "circuit-blocks"):
-        if (Path(root).parent / name).is_dir():
-            return Path(root).parent / name
-    return Path(root).parent / "circuit-blocks"
+def blocks_repo(flag):
+    """--blocks-repo, else $CIRCUIT_BLOCKS (the same variable tools/risk_rank.py reads). No default folder."""
+    p = flag or os.environ.get("CIRCUIT_BLOCKS")
+    if not p:
+        raise ValueError("no blocks repo: give --blocks-repo <path> or set CIRCUIT_BLOCKS to your AgentEDA-Blocks checkout")
+    return Path(p).resolve()
 
 
 def block_inputs(blocks_repo, block):
@@ -830,7 +831,7 @@ def main(argv=None):
     ap.add_argument("--block", help="circuit block name: show the rows its analysis reads")
     ap.add_argument("--list-blocks", action="store_true", help="list the blocks --block can read (blocks repo: --blocks-repo) "
                     "and exit; no Value, no --block")
-    ap.add_argument("--blocks-repo", help="circuit-blocks checkout (default: ../ina229 if it exists, else ../circuit-blocks)")
+    ap.add_argument("--blocks-repo", help="AgentEDA-Blocks checkout (default: $CIRCUIT_BLOCKS)")
     ap.add_argument("--dry-run", action="store_true", help="for a person trying the page: show the git, gh, stamp and "
                     "ds_review commands, run none (agents don't run review.py)")
     ap.add_argument("--no-browser", action="store_true", help="print the page URL instead of opening a browser")
@@ -845,7 +846,11 @@ def main(argv=None):
         ap.error("--list-blocks takes no --block and no Value")
     root = Path(a.root).resolve()
     if a.list_blocks:
-        repo = Path(a.blocks_repo).resolve() if a.blocks_repo else default_blocks_repo(root)
+        try:
+            repo = blocks_repo(a.blocks_repo)
+        except ValueError as e:
+            print(f"refused: {e}")
+            return 1
         print(f"blocks repo: {repo}")
         names = list_blocks(repo)
         if not names:
@@ -857,7 +862,7 @@ def main(argv=None):
     notes = []
     try:
         if a.block:
-            repo = Path(a.blocks_repo).resolve() if a.blocks_repo else default_blocks_repo(root)
+            repo = blocks_repo(a.blocks_repo)
             notes.append(f"Block {a.block}, blocks repo {repo}.")
             used = RS.used_rows(root, block_inputs(repo, a.block))
             title = f"Rows to check: {a.block}"
