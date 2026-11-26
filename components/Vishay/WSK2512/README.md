@@ -2,7 +2,7 @@
 
 # WSK2512
 
-Checked by a person: 6 of 21 rows that matter (39 rows in all). Review: python3 tools/review.py WSK2512
+Released: all 21 rows that matter checked (39 rows in all).
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 
@@ -82,7 +82,7 @@ Rated voltage at decade values, computed from `p70` and the formula above:
 | Resistance change, bias humidity |  | -0.5 |  | 0.5 | % | +85 degC, 85 % RH, 10 % bias, 1000 h Note: Printed ± 0.5 %. Total limit ±(0.5 % of R + 0.0005 ohm); add perf_offset_ohm. | DS p.3, PERFORMANCE, Bias humidity, TEST LIMITS |  |
 | Resistance change, mechanical shock |  | -0.5 |  | 0.5 | % | 100 g for 6 ms, 5 pulses Note: Printed ± 0.5 %. Total limit ±(0.5 % of R + 0.0005 ohm); add perf_offset_ohm. | DS p.3, PERFORMANCE, Mechanical shock, TEST LIMITS |  |
 | Resistance change, vibration |  | -0.5 |  | 0.5 | % | Frequency varied 10 Hz to 2000 Hz in 1 min, 3 directions, 12 h Note: Printed ± 0.5 %. Total limit ±(0.5 % of R + 0.0005 ohm); add perf_offset_ohm. | DS p.3, PERFORMANCE, Vibration, TEST LIMITS |  |
-| Resistance change, load life |  | -1.0 |  | 1.0 | % | 1000 h at rated power, +70 degC, 1.5 h ON, 0.5 h OFF Note: Printed ± 1.0 % (not 0.5 %). Total limit ±(1.0 % of R + 0.0005 ohm); add perf_offset_ohm. | DS p.3, PERFORMANCE, Load life, TEST LIMITS |  |
+| Resistance change, load life |  | -1.0 |  | 1.0 | % | 1000 h at rated power, +70 degC, 1.5 h ON, 0.5 h OFF Note: Printed ± 1.0 % (not 0.5 %). Total limit ±(1.0 % of R + 0.0005 ohm); add perf_offset_ohm. | DS p.3, PERFORMANCE, Load life, TEST LIMITS | checked (kb1lqc, 2026-11-26) |
 | Resistance change, resistance to solder heat |  | -0.5 |  | 0.5 | % | +260 degC solder, 10 s to 12 s dwell, 25 mm/s emergence Note: Printed ± 0.5 %. Total limit ±(0.5 % of R + 0.0005 ohm); add perf_offset_ohm. | DS p.3, PERFORMANCE, Resistance to solder heat, TEST LIMITS |  |
 | Resistance change, moisture resistance |  | -0.5 |  | 0.5 | % | MIL-STD-202, method 106, 0 % power, 7a and 7b not required Note: Printed ± 0.5 %. Total limit ±(0.5 % of R + 0.0005 ohm); add perf_offset_ohm. | DS p.3, PERFORMANCE, Moisture resistance, TEST LIMITS |  |
 
@@ -90,19 +90,19 @@ Rated voltage at decade values, computed from `p70` and the formula above:
 
 | Parameter | Symbol | Min | Typ | Max | Unit | Conditions | Cite | Checked |
 |---|---|---|---|---|---|---|---|---|
-| Body length | L | 6.096 | 6.35 | 6.604 | mm | Note: Printed 6.35 +/-0.254 mm (0.250 in). Same for all resistance rows. min/max = nominal ±0.254 mm (arithmetic on the printed tolerance). | DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column L |  |
-| Body width | W | 2.926 | 3.18 | 3.434 | mm | Note: Printed 3.18 +/-0.254 mm (0.125 in). Same for all resistance rows. min/max = nominal ±0.254 mm (arithmetic on the printed tolerance). | DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column W |  |
-| Body height | H | 0.381 | 0.635 | 0.889 | mm | Note: Printed 0.635 +/-0.254 mm (0.025 in). Same for all resistance rows. min/max = nominal ±0.254 mm (arithmetic on the printed tolerance). | DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column H |  |
-| Terminal length (T) | T | 0.936 | 1.19 | 1.444 | mm | Note: Printed 1.19 +/-0.254 mm (0.047 in) for 0.005 to 0.2 ohm; other rows differ. min/max = nominal ±0.254 mm (arithmetic on the printed tolerance). | DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column T |  |
-| Terminal width, A | A | 0.508 | 0.762 | 1.016 | mm | Note: Printed 0.762 +/-0.254 mm (0.030 in). Same for all resistance rows. min/max = nominal ±0.254 mm (arithmetic on the printed tolerance). | DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column A |  |
-| Terminal width, B | B | 0.254 | 0.508 | 0.762 | mm | Note: Printed 0.508 +/-0.254 mm (0.020 in). Same for all resistance rows. min/max = nominal ±0.254 mm (arithmetic on the printed tolerance). | DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column B |  |
-| Land pattern dimension a (DS p.2 diagram) | a |  | 2.29 |  | mm | Note: Printed 0.090 in (2.29 mm). INFERRED: a = X length of the current pad (footprint pad 1 X); the figure extension lines span the sense-pad outer end to the current-pad inner end. | DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column a |  |
-| Land pattern dimension b (DS p.2 diagram) | b |  | 3.3 |  | mm | Note: Printed 0.130 in (3.30 mm). INFERRED feature, not printed: overall Y span of the pattern (3.30 = footprint -1.651..+1.651 mm). Arrow b runs from the top of the upper current pad to the bottom of the sense pad. | DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column b |  |
-| Land pattern dimension c (DS p.2 diagram) | c |  | 0.76 |  | mm | Note: Printed 0.030 in (0.76 mm). INFERRED feature, not printed: width of the sense pad (arrow c spans its short edge). | DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column c |  |
-| Land pattern dimension d (DS p.2 diagram) | d |  | 0.51 |  | mm | Note: Printed 0.020 in (0.51 mm). INFERRED feature, not printed: gap between the current pad and the sense pad (arrow d). | DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column d |  |
-| Land pattern dimension e (DS p.2 diagram) | e |  | 1.7 |  | mm | Note: Printed 0.067 in (1.70 mm). INFERRED feature, not printed: length of the sense pad (arrow e spans its long edge). | DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column e |  |
-| Land pattern dimension l (DS p.2 diagram) | l |  | 3.68 |  | mm | Note: Printed 0.145 in (3.68 mm). INFERRED, supported by footprint and figure: l = gap between the two current pads. | DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column l |  |
-| Weight |  |  | 63.6 |  | mg | typical; DS prints 63.6 g per 1000 pieces Note: Per part: 63.6 g per 1000 pieces = 63.6 mg per part. Typical only. | DS p.1, Standard Electrical Specifications, WEIGHT (typical) g/1000 pieces, row WSK2512 |  |
+| Body length | L | 6.096 | 6.35 | 6.604 | mm | Note: Printed 6.35 +/-0.254 mm (0.250 in). Same for all resistance rows. min/max = nominal ±0.254 mm (arithmetic on the printed tolerance). | DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column L | checked (kb1lqc, 2026-11-26) |
+| Body width | W | 2.926 | 3.18 | 3.434 | mm | Note: Printed 3.18 +/-0.254 mm (0.125 in). Same for all resistance rows. min/max = nominal ±0.254 mm (arithmetic on the printed tolerance). | DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column W | checked (kb1lqc, 2026-11-26) |
+| Body height | H | 0.381 | 0.635 | 0.889 | mm | Note: Printed 0.635 +/-0.254 mm (0.025 in). Same for all resistance rows. min/max = nominal ±0.254 mm (arithmetic on the printed tolerance). | DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column H | checked (kb1lqc, 2026-11-26) |
+| Terminal length (T) | T | 0.936 | 1.19 | 1.444 | mm | Note: Printed 1.19 +/-0.254 mm (0.047 in) for 0.005 to 0.2 ohm; other rows differ. min/max = nominal ±0.254 mm (arithmetic on the printed tolerance). | DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column T | checked (kb1lqc, 2026-11-26) |
+| Terminal width, A | A | 0.508 | 0.762 | 1.016 | mm | Note: Printed 0.762 +/-0.254 mm (0.030 in). Same for all resistance rows. min/max = nominal ±0.254 mm (arithmetic on the printed tolerance). | DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column A | checked (kb1lqc, 2026-11-26) |
+| Terminal width, B | B | 0.254 | 0.508 | 0.762 | mm | Note: Printed 0.508 +/-0.254 mm (0.020 in). Same for all resistance rows. min/max = nominal ±0.254 mm (arithmetic on the printed tolerance). | DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column B | checked (kb1lqc, 2026-11-26) |
+| Land pattern dimension a (DS p.2 diagram) | a |  | 2.29 |  | mm | Note: Printed 0.090 in (2.29 mm). INFERRED: a = X length of the current pad (footprint pad 1 X); the figure extension lines span the sense-pad outer end to the current-pad inner end. | DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column a | checked (kb1lqc, 2026-11-26) |
+| Land pattern dimension b (DS p.2 diagram) | b |  | 3.3 |  | mm | Note: Printed 0.130 in (3.30 mm). INFERRED feature, not printed: overall Y span of the pattern (3.30 = footprint -1.651..+1.651 mm). Arrow b runs from the top of the upper current pad to the bottom of the sense pad. | DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column b | checked (kb1lqc, 2026-11-26) |
+| Land pattern dimension c (DS p.2 diagram) | c |  | 0.76 |  | mm | Note: Printed 0.030 in (0.76 mm). INFERRED feature, not printed: width of the sense pad (arrow c spans its short edge). | DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column c | checked (kb1lqc, 2026-11-26) |
+| Land pattern dimension d (DS p.2 diagram) | d |  | 0.51 |  | mm | Note: Printed 0.020 in (0.51 mm). INFERRED feature, not printed: gap between the current pad and the sense pad (arrow d). | DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column d | checked (kb1lqc, 2026-11-26) |
+| Land pattern dimension e (DS p.2 diagram) | e |  | 1.7 |  | mm | Note: Printed 0.067 in (1.70 mm). INFERRED feature, not printed: length of the sense pad (arrow e spans its long edge). | DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column e | checked (kb1lqc, 2026-11-26) |
+| Land pattern dimension l (DS p.2 diagram) | l |  | 3.68 |  | mm | Note: Printed 0.145 in (3.68 mm). INFERRED, supported by footprint and figure: l = gap between the two current pads. | DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column l | checked (kb1lqc, 2026-11-26) |
+| Weight |  |  | 63.6 |  | mg | typical; DS prints 63.6 g per 1000 pieces Note: Per part: 63.6 g per 1000 pieces = 63.6 mg per part. Typical only. | DS p.1, Standard Electrical Specifications, WEIGHT (typical) g/1000 pieces, row WSK2512 | checked (kb1lqc, 2026-11-26) |
 
 ## Limits of this data
 

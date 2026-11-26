@@ -113,7 +113,7 @@ max        = 155
 unit       = "degC"
 conditions = ""
 cite       = "DS PDF p.3, Ratings <+/-1 %>, Category temperature range (degC), ERJ3EK row (shared with ERJ2RK and ERJ6EN)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 4ea48947d5e0"
 note       = "Read as ambient, the axis of the derating figure (DS PDF p.3). Ratings are for the case temperature below this limit (footnote *1)."
 check_ambient = true
 
@@ -126,7 +126,7 @@ typ        = 70
 unit       = "degC"
 conditions = ""
 cite       = "DS PDF p.3, Power derating curve (text: 'above 70 degC, power rating shall be derated')"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 847f50ae63eb"
 note       = "Printed in the text, not read off the graph. Used by calc.rated_power."
 unchecked  = "derating knee (printed in text, not a limit); used by calc.rated_power"
 
@@ -139,7 +139,7 @@ typ        = 155
 unit       = "degC"
 conditions = ""
 cite       = "DS PDF p.3, Power derating curve (figure: the 155 degC line reaches 0 %)"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 6b637750b504"
 curve      = true
 note       = "Read off the graph (no printed number). The 155 degC line is used because this part's category range is -55 to +155 degC; the steeper 125 degC line is labelled ERJXG,1G,1R. Linear between knee and zero (graph shape). Curve-based estimate; reading uncertainty not quantified (open item)."
 unchecked  = "curve value; used by calc.rated_power"
@@ -290,7 +290,7 @@ max        = 1.75
 unit       = "mm"
 conditions = ""
 cite       = "DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column L"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 7dba16d8884d"
 note       = "Printed 1.60+/-0.15. The ERJ3E row is shared with ERJ3R in the DS table."
 
 [param.dim_w]
@@ -304,7 +304,7 @@ max        = 0.95
 unit       = "mm"
 conditions = ""
 cite       = "DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column W"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 36db17641e6a"
 note       = "Printed 0.80 +0.15/-0.05 (asymmetric): min = 0.75, max = 0.95 (arithmetic on the printed tolerance)."
 
 [param.dim_a]
@@ -318,7 +318,7 @@ max        = 0.50
 unit       = "mm"
 conditions = ""
 cite       = "DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column a"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 92aa2cb6ee9d"
 note       = "Printed 0.30+/-0.20."
 
 [param.dim_b]
@@ -332,7 +332,7 @@ max        = 0.45
 unit       = "mm"
 conditions = ""
 cite       = "DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column b"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row eb7cf91d46bd"
 note       = "Printed 0.30+/-0.15."
 
 [param.dim_t]
@@ -346,7 +346,7 @@ max        = 0.55
 unit       = "mm"
 conditions = ""
 cite       = "DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), column T"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 87a7fe66c84d"
 note       = "Printed 0.45+/-0.10."
 
 [param.mass]
@@ -357,7 +357,10 @@ typ        = 2
 unit       = "mg"
 conditions = "Reference value, per part"
 cite       = "DS PDF p.4, Dimensions (mm) table, row ERJ3E (0603), Mass (Weight) (Reference) (g/1000 pcs) = 2"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 78825b819853 row 29c804669fbe"
 note       = "2 g per 1000 pcs = 2 mg per part (per-part value in mg keeps the printed digits). Reference only, not a bound."
 
 # No land pattern is printed in this datasheet. The footprint is supplied by the owner (open item).
+
+[pinout]
+verified = "human:kb1lqc 2026-11-26 page-image pinout 78825b819853 pins 0b6eb34da570"

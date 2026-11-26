@@ -340,6 +340,7 @@ max        = 1.0
 unit       = "%"
 conditions = "1000 h at rated power, +70 degC, 1.5 h ON, 0.5 h OFF"
 cite       = "DS p.3, PERFORMANCE, Load life, TEST LIMITS"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 73ea94ab5ca7"
 note       = "Printed ± 1.0 % (not 0.5 %). Total limit ±(1.0 % of R + 0.0005 ohm); add perf_offset_ohm."
 
 [param.perf_solder_heat]
@@ -378,7 +379,7 @@ max        = 6.604
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column L"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 5060f55a3dc8"
 note       = "Printed 6.35 +/-0.254 mm (0.250 in). Same for all resistance rows. min/max = nominal ±0.254 mm (arithmetic on the printed tolerance)."
 
 [param.dim_w]
@@ -392,7 +393,7 @@ max        = 3.434
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column W"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row a909de691a90"
 note       = "Printed 3.18 +/-0.254 mm (0.125 in). Same for all resistance rows. min/max = nominal ±0.254 mm (arithmetic on the printed tolerance)."
 
 [param.dim_h]
@@ -406,7 +407,7 @@ max        = 0.889
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column H"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 01dce4977c5b"
 note       = "Printed 0.635 +/-0.254 mm (0.025 in). Same for all resistance rows. min/max = nominal ±0.254 mm (arithmetic on the printed tolerance)."
 
 [param.dim_t]
@@ -420,7 +421,7 @@ max        = 1.444
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column T"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row b703dd8a069a"
 note       = "Printed 1.19 +/-0.254 mm (0.047 in) for 0.005 to 0.2 ohm; other rows differ. min/max = nominal ±0.254 mm (arithmetic on the printed tolerance)."
 
 [param.dim_a]
@@ -434,7 +435,7 @@ max        = 1.016
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column A"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 50a42076c781"
 note       = "Printed 0.762 +/-0.254 mm (0.030 in). Same for all resistance rows. min/max = nominal ±0.254 mm (arithmetic on the printed tolerance)."
 
 [param.dim_b]
@@ -448,7 +449,7 @@ max        = 0.762
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column B"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 51cee1e27a14"
 note       = "Printed 0.508 +/-0.254 mm (0.020 in). Same for all resistance rows. min/max = nominal ±0.254 mm (arithmetic on the printed tolerance)."
 
 # Land pattern (DS p.2, SOLDER PAD DIMENSIONS, row 0.005 to 0.2). The DS labels these only by letter on the
@@ -463,7 +464,7 @@ typ        = 2.29
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column a"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 13a90edaed0b"
 note       = "Printed 0.090 in (2.29 mm). INFERRED: a = X length of the current pad (footprint pad 1 X); the figure extension lines span the sense-pad outer end to the current-pad inner end."
 
 [param.pad_b]
@@ -475,7 +476,7 @@ typ        = 3.30
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column b"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row b67db4dfd09b"
 note       = "Printed 0.130 in (3.30 mm). INFERRED feature, not printed: overall Y span of the pattern (3.30 = footprint -1.651..+1.651 mm). Arrow b runs from the top of the upper current pad to the bottom of the sense pad."
 
 [param.pad_c]
@@ -487,7 +488,7 @@ typ        = 0.76
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column c"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 293579918943"
 note       = "Printed 0.030 in (0.76 mm). INFERRED feature, not printed: width of the sense pad (arrow c spans its short edge)."
 
 [param.pad_d]
@@ -499,7 +500,7 @@ typ        = 0.51
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column d"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 2ac7b8fb1f26"
 note       = "Printed 0.020 in (0.51 mm). INFERRED feature, not printed: gap between the current pad and the sense pad (arrow d)."
 
 [param.pad_e]
@@ -511,7 +512,7 @@ typ        = 1.70
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column e"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row a97c2842c699"
 note       = "Printed 0.067 in (1.70 mm). INFERRED feature, not printed: length of the sense pad (arrow e spans its long edge)."
 
 [param.pad_l]
@@ -523,7 +524,7 @@ typ        = 3.68
 unit       = "mm"
 conditions = ""
 cite       = "DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column l"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 70c059aae59b"
 note       = "Printed 0.145 in (3.68 mm). INFERRED, supported by footprint and figure: l = gap between the two current pads."
 
 [param.weight]
@@ -534,5 +535,8 @@ typ        = 63.6
 unit       = "mg"
 conditions = "typical; DS prints 63.6 g per 1000 pieces"
 cite       = "DS p.1, Standard Electrical Specifications, WEIGHT (typical) g/1000 pieces, row WSK2512"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row ffed09cfe47e"
 note       = "Per part: 63.6 g per 1000 pieces = 63.6 mg per part. Typical only."
+
+[pinout]
+verified = "human:kb1lqc 2026-11-26 page-image pinout 2ee8a9067539 pins 9ac15ff224f5"

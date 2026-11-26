@@ -11,14 +11,16 @@ datasheet_rev = "11-Dec-2023 (Document 30108)"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
 pages = 5
 text_layer = true
-component_sha256 = "a634ddfa90ae3935ef07bbf93ca73c18c1339e942b3758cac65916ce0a6d4ad4"
+component_sha256 = "94edbcd78bbab79c58a2508b63ae6bcd501bc10b104c6b6d4c11e8ca4ba6ed3b"
 render = "complete"
 backfill = "git blame"
 sheets = { "wsk2512.pdf" = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff" }
 
 [pinout]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 hash = "9ac15ff224f59a3e8365ee3969b932931b5fe72237da395f3b7c5e4cbdbb31b8"
+stamp = "human:kb1lqc 2026-11-26 page-image pinout 2ee8a9067539 pins 9ac15ff224f5"
+stamp_hash = "9ac15ff224f59a3e8365ee3969b932931b5fe72237da395f3b7c5e4cbdbb31b8"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
 
 [[pinout.page]]
@@ -472,14 +474,16 @@ render_key = "864036f6422b4d41"
 text_snippet = "(no text-layer line located)"
 
 [row.perf_load_life]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE unit '%' not comparable"
 hash = "73ea94ab5ca73e50f329afe10506eaf5392ff85e0582ea0b41f096d911f2f54a"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 73ea94ab5ca7"
+stamp_hash = "73ea94ab5ca73e50f329afe10506eaf5392ff85e0582ea0b41f096d911f2f54a"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
 printed_page = 3
 pdf_page = 3
-toml_lines = "334-343"
+toml_lines = "334-344"
 image = "evidence/page_p3.png"
 image_sha256 = "09e1d6d3d0a4613dd9b217afbd7be67a4a1780dd7f3e382d95066f3dffe1cf00"
 image_bytes = 96188
@@ -488,6 +492,7 @@ crop_box = "full_page"
 dpi = 200
 render_key = "864036f6422b4d41"
 text_snippet = "(no text-layer line located)"
+stamped_toml = "[param.perf_load_life]\nname       = \"Resistance change, load life\"\nkind       = \"electrical\"\nscope      = \"na\"\nmin        = -1.0\nmax        = 1.0\nunit       = \"%\"\nconditions = \"1000 h at rated power, +70 degC, 1.5 h ON, 0.5 h OFF\"\ncite       = \"DS p.3, PERFORMANCE, Load life, TEST LIMITS\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 73ea94ab5ca7\"\nnote       = \"Printed \u00b1 1.0 % (not 0.5 %). Total limit \u00b1(1.0 % of R + 0.0005 ohm); add perf_offset_ohm.\""
 
 [row.perf_solder_heat]
 state = "MACHINE_CHECKED"
@@ -500,7 +505,7 @@ pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
 baseline = true
 printed_page = 3
 pdf_page = 3
-toml_lines = "345-355"
+toml_lines = "346-356"
 image = "evidence/page_p3.png"
 image_sha256 = "09e1d6d3d0a4613dd9b217afbd7be67a4a1780dd7f3e382d95066f3dffe1cf00"
 image_bytes = 96188
@@ -519,7 +524,7 @@ hash = "c8a175ebb26c87bcc0a58bba719f5715aca5a85cfaa768540ea3c80c1f70f8cb"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
 printed_page = 3
 pdf_page = 3
-toml_lines = "357-366"
+toml_lines = "358-367"
 image = "evidence/page_p3.png"
 image_sha256 = "09e1d6d3d0a4613dd9b217afbd7be67a4a1780dd7f3e382d95066f3dffe1cf00"
 image_bytes = 96188
@@ -530,17 +535,16 @@ render_key = "864036f6422b4d41"
 text_snippet = "(no text-layer line located)"
 
 [row.dim_l]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'DIMENSIONS'): symbol 'L' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Vishay Dale' not in the text-check tested set"
 hash = "5060f55a3dc865441f8029f7bb81ce403718b175b43fdee62177ad1e1058be47"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 5060f55a3dc8"
 stamp_hash = "5060f55a3dc865441f8029f7bb81ce403718b175b43fdee62177ad1e1058be47"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
-baseline = true
 printed_page = 2
 pdf_page = 2
-toml_lines = "370-382"
+toml_lines = "371-383"
 image = "evidence/table_p2_y427.png"
 image_sha256 = "fe34668ad32f1debe7107714589b88c15e7d96ba7ff744a3765f9726e4d00c8f"
 image_bytes = 1066
@@ -549,20 +553,19 @@ crop_box = [53.7, 427.8, 558.3, 442.3]
 dpi = 150
 render_key = "7bf64dc38f9d01bf"
 text_snippet = "                                                                         L                              W\n                          RANGE                   L                      W               H                   T               A               B"
-stamped_toml = "[param.dim_l]\nname       = \"Body length\"\nsymbol     = \"L\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 6.096\ntyp        = 6.35\nmax        = 6.604\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column L\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed 6.35 +/-0.254 mm (0.250 in). Same for all resistance rows. min/max = nominal \u00b10.254 mm (arithmetic on the printed tolerance).\""
+stamped_toml = "[param.dim_l]\nname       = \"Body length\"\nsymbol     = \"L\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 6.096\ntyp        = 6.35\nmax        = 6.604\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column L\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 5060f55a3dc8\"\nnote       = \"Printed 6.35 +/-0.254 mm (0.250 in). Same for all resistance rows. min/max = nominal \u00b10.254 mm (arithmetic on the printed tolerance).\""
 
 [row.dim_w]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'DIMENSIONS'): symbol 'W' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Vishay Dale' not in the text-check tested set"
 hash = "a909de691a9051700240847c79395c3b20330ed9e09337ee350c1a13e2cf3e9c"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row a909de691a90"
 stamp_hash = "a909de691a9051700240847c79395c3b20330ed9e09337ee350c1a13e2cf3e9c"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
-baseline = true
 printed_page = 2
 pdf_page = 2
-toml_lines = "384-396"
+toml_lines = "385-397"
 image = "evidence/table_p2_y427.png"
 image_sha256 = "fe34668ad32f1debe7107714589b88c15e7d96ba7ff744a3765f9726e4d00c8f"
 image_bytes = 1066
@@ -571,20 +574,19 @@ crop_box = [53.7, 427.8, 558.3, 442.3]
 dpi = 150
 render_key = "7bf64dc38f9d01bf"
 text_snippet = "                                                                         L                              W\n                          RANGE                   L                      W               H                   T               A               B"
-stamped_toml = "[param.dim_w]\nname       = \"Body width\"\nsymbol     = \"W\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 2.926\ntyp        = 3.18\nmax        = 3.434\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column W\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed 3.18 +/-0.254 mm (0.125 in). Same for all resistance rows. min/max = nominal \u00b10.254 mm (arithmetic on the printed tolerance).\""
+stamped_toml = "[param.dim_w]\nname       = \"Body width\"\nsymbol     = \"W\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 2.926\ntyp        = 3.18\nmax        = 3.434\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column W\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row a909de691a90\"\nnote       = \"Printed 3.18 +/-0.254 mm (0.125 in). Same for all resistance rows. min/max = nominal \u00b10.254 mm (arithmetic on the printed tolerance).\""
 
 [row.dim_h]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'DIMENSIONS'): symbol 'H' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Vishay Dale' not in the text-check tested set"
 hash = "01dce4977c5bd0afc9c61b2b6966fc43db37e2865f3fa0e60de057d5747df18f"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 01dce4977c5b"
 stamp_hash = "01dce4977c5bd0afc9c61b2b6966fc43db37e2865f3fa0e60de057d5747df18f"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
-baseline = true
 printed_page = 2
 pdf_page = 2
-toml_lines = "398-410"
+toml_lines = "399-411"
 image = "evidence/table_p2_y427.png"
 image_sha256 = "fe34668ad32f1debe7107714589b88c15e7d96ba7ff744a3765f9726e4d00c8f"
 image_bytes = 1066
@@ -593,20 +595,19 @@ crop_box = [53.7, 427.8, 558.3, 442.3]
 dpi = 150
 render_key = "7bf64dc38f9d01bf"
 text_snippet = "                                                                                                            H\n                          RANGE                   L                      W               H                   T               A               B"
-stamped_toml = "[param.dim_h]\nname       = \"Body height\"\nsymbol     = \"H\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.381\ntyp        = 0.635\nmax        = 0.889\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column H\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed 0.635 +/-0.254 mm (0.025 in). Same for all resistance rows. min/max = nominal \u00b10.254 mm (arithmetic on the printed tolerance).\""
+stamped_toml = "[param.dim_h]\nname       = \"Body height\"\nsymbol     = \"H\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.381\ntyp        = 0.635\nmax        = 0.889\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column H\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 01dce4977c5b\"\nnote       = \"Printed 0.635 +/-0.254 mm (0.025 in). Same for all resistance rows. min/max = nominal \u00b10.254 mm (arithmetic on the printed tolerance).\""
 
 [row.dim_t]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'DIMENSIONS'): symbol 'T' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Vishay Dale' not in the text-check tested set"
 hash = "b703dd8a069a9cb49cd9a8e85927760337302b644892c5bb0b5491e543e7ecd6"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row b703dd8a069a"
 stamp_hash = "b703dd8a069a9cb49cd9a8e85927760337302b644892c5bb0b5491e543e7ecd6"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
-baseline = true
 printed_page = 2
 pdf_page = 2
-toml_lines = "412-424"
+toml_lines = "413-425"
 image = "evidence/table_p2_y427.png"
 image_sha256 = "fe34668ad32f1debe7107714589b88c15e7d96ba7ff744a3765f9726e4d00c8f"
 image_bytes = 1066
@@ -615,20 +616,19 @@ crop_box = [53.7, 427.8, 558.3, 442.3]
 dpi = 150
 render_key = "7bf64dc38f9d01bf"
 text_snippet = "                                                      B       A               T\n                          RANGE                   L                      W               H                   T               A               B"
-stamped_toml = "[param.dim_t]\nname       = \"Terminal length (T)\"\nsymbol     = \"T\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.936\ntyp        = 1.19\nmax        = 1.444\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column T\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed 1.19 +/-0.254 mm (0.047 in) for 0.005 to 0.2 ohm; other rows differ. min/max = nominal \u00b10.254 mm (arithmetic on the printed tolerance).\""
+stamped_toml = "[param.dim_t]\nname       = \"Terminal length (T)\"\nsymbol     = \"T\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.936\ntyp        = 1.19\nmax        = 1.444\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column T\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row b703dd8a069a\"\nnote       = \"Printed 1.19 +/-0.254 mm (0.047 in) for 0.005 to 0.2 ohm; other rows differ. min/max = nominal \u00b10.254 mm (arithmetic on the printed tolerance).\""
 
 [row.dim_a]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'DIMENSIONS'): symbol 'A' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Vishay Dale' not in the text-check tested set"
 hash = "50a42076c781dd3424abce338db08110284624b6880474036dd946915520dd08"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 50a42076c781"
 stamp_hash = "50a42076c781dd3424abce338db08110284624b6880474036dd946915520dd08"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
-baseline = true
 printed_page = 2
 pdf_page = 2
-toml_lines = "426-438"
+toml_lines = "427-439"
 image = "evidence/table_p2_y427.png"
 image_sha256 = "fe34668ad32f1debe7107714589b88c15e7d96ba7ff744a3765f9726e4d00c8f"
 image_bytes = 1066
@@ -637,20 +637,19 @@ crop_box = [53.7, 427.8, 558.3, 442.3]
 dpi = 150
 render_key = "7bf64dc38f9d01bf"
 text_snippet = "                                                      B       A               T\n                          RANGE                   L                      W               H                   T               A               B"
-stamped_toml = "[param.dim_a]\nname       = \"Terminal width, A\"\nsymbol     = \"A\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.508\ntyp        = 0.762\nmax        = 1.016\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column A\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed 0.762 +/-0.254 mm (0.030 in). Same for all resistance rows. min/max = nominal \u00b10.254 mm (arithmetic on the printed tolerance).\""
+stamped_toml = "[param.dim_a]\nname       = \"Terminal width, A\"\nsymbol     = \"A\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.508\ntyp        = 0.762\nmax        = 1.016\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column A\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 50a42076c781\"\nnote       = \"Printed 0.762 +/-0.254 mm (0.030 in). Same for all resistance rows. min/max = nominal \u00b10.254 mm (arithmetic on the printed tolerance).\""
 
 [row.dim_b]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (table 'DIMENSIONS'): symbol 'B' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Vishay Dale' not in the text-check tested set"
 hash = "51cee1e27a14544fc5caa2a7d2c346d51bd050c90a7d298fafa4bd0bfd4b0bca"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 51cee1e27a14"
 stamp_hash = "51cee1e27a14544fc5caa2a7d2c346d51bd050c90a7d298fafa4bd0bfd4b0bca"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
-baseline = true
 printed_page = 2
 pdf_page = 2
-toml_lines = "440-452"
+toml_lines = "441-453"
 image = "evidence/table_p2_y427.png"
 image_sha256 = "fe34668ad32f1debe7107714589b88c15e7d96ba7ff744a3765f9726e4d00c8f"
 image_bytes = 1066
@@ -659,20 +658,19 @@ crop_box = [53.7, 427.8, 558.3, 442.3]
 dpi = 150
 render_key = "7bf64dc38f9d01bf"
 text_snippet = "                                                      B       A               T\n                          RANGE                   L                      W               H                   T               A               B"
-stamped_toml = "[param.dim_b]\nname       = \"Terminal width, B\"\nsymbol     = \"B\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.254\ntyp        = 0.508\nmax        = 0.762\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column B\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed 0.508 +/-0.254 mm (0.020 in). Same for all resistance rows. min/max = nominal \u00b10.254 mm (arithmetic on the printed tolerance).\""
+stamped_toml = "[param.dim_b]\nname       = \"Terminal width, B\"\nsymbol     = \"B\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.254\ntyp        = 0.508\nmax        = 0.762\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, DIMENSIONS table (mm in brackets), row 0.005 to 0.2, column B\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 51cee1e27a14\"\nnote       = \"Printed 0.508 +/-0.254 mm (0.020 in). Same for all resistance rows. min/max = nominal \u00b10.254 mm (arithmetic on the printed tolerance).\""
 
 [row.pad_a]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'a' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Vishay Dale' not in the text-check tested set"
 hash = "13a90edaed0be0ea07a045535078ad5836f0c1165864e3ed8044248c0305f92e"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 13a90edaed0b"
 stamp_hash = "13a90edaed0be0ea07a045535078ad5836f0c1165864e3ed8044248c0305f92e"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
-baseline = true
 printed_page = 2
 pdf_page = 2
-toml_lines = "457-467"
+toml_lines = "458-468"
 image = "evidence/page_p2.png"
 image_sha256 = "4b1a89bf79ba9e005e9fb29e580facc0726cb2f9b26eb3fd7ea33f88e44358fa"
 image_bytes = 79740
@@ -681,20 +679,19 @@ crop_box = "full_page"
 dpi = 200
 render_key = "c8d1b41e8b713faa"
 text_snippet = "                                                          c          e        a\n                          RANGE                   a                      b                   c               d               e                l"
-stamped_toml = "[param.pad_a]\nname       = \"Land pattern dimension a (DS p.2 diagram)\"\nsymbol     = \"a\"\nkind       = \"mechanical\"\nscope      = \"na\"\ntyp        = 2.29\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column a\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed 0.090 in (2.29 mm). INFERRED: a = X length of the current pad (footprint pad 1 X); the figure extension lines span the sense-pad outer end to the current-pad inner end.\""
+stamped_toml = "[param.pad_a]\nname       = \"Land pattern dimension a (DS p.2 diagram)\"\nsymbol     = \"a\"\nkind       = \"mechanical\"\nscope      = \"na\"\ntyp        = 2.29\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column a\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 13a90edaed0b\"\nnote       = \"Printed 0.090 in (2.29 mm). INFERRED: a = X length of the current pad (footprint pad 1 X); the figure extension lines span the sense-pad outer end to the current-pad inner end.\""
 
 [row.pad_b]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'b' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Vishay Dale' not in the text-check tested set"
 hash = "b67db4dfd09b69ee14eebc9a5559935ec4c04524fe7859a7a40b56d2c58baeed"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row b67db4dfd09b"
 stamp_hash = "b67db4dfd09b69ee14eebc9a5559935ec4c04524fe7859a7a40b56d2c58baeed"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
-baseline = true
 printed_page = 2
 pdf_page = 2
-toml_lines = "469-479"
+toml_lines = "470-480"
 image = "evidence/page_p2.png"
 image_sha256 = "4b1a89bf79ba9e005e9fb29e580facc0726cb2f9b26eb3fd7ea33f88e44358fa"
 image_bytes = 79740
@@ -703,20 +700,19 @@ crop_box = "full_page"
 dpi = 200
 render_key = "c8d1b41e8b713faa"
 text_snippet = "                                              b       d\n                          RANGE                   a                      b                   c               d               e                l"
-stamped_toml = "[param.pad_b]\nname       = \"Land pattern dimension b (DS p.2 diagram)\"\nsymbol     = \"b\"\nkind       = \"mechanical\"\nscope      = \"na\"\ntyp        = 3.30\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column b\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed 0.130 in (3.30 mm). INFERRED feature, not printed: overall Y span of the pattern (3.30 = footprint -1.651..+1.651 mm). Arrow b runs from the top of the upper current pad to the bottom of the sense pad.\""
+stamped_toml = "[param.pad_b]\nname       = \"Land pattern dimension b (DS p.2 diagram)\"\nsymbol     = \"b\"\nkind       = \"mechanical\"\nscope      = \"na\"\ntyp        = 3.30\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column b\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row b67db4dfd09b\"\nnote       = \"Printed 0.130 in (3.30 mm). INFERRED feature, not printed: overall Y span of the pattern (3.30 = footprint -1.651..+1.651 mm). Arrow b runs from the top of the upper current pad to the bottom of the sense pad.\""
 
 [row.pad_c]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'c' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Vishay Dale' not in the text-check tested set"
 hash = "2935799189439f92f7bf64986fcab226657514c272b90cc411a3d66c061e273a"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 293579918943"
 stamp_hash = "2935799189439f92f7bf64986fcab226657514c272b90cc411a3d66c061e273a"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
-baseline = true
 printed_page = 2
 pdf_page = 2
-toml_lines = "481-491"
+toml_lines = "482-492"
 image = "evidence/page_p2.png"
 image_sha256 = "4b1a89bf79ba9e005e9fb29e580facc0726cb2f9b26eb3fd7ea33f88e44358fa"
 image_bytes = 79740
@@ -725,20 +721,19 @@ crop_box = "full_page"
 dpi = 200
 render_key = "c8d1b41e8b713faa"
 text_snippet = "                                                          c          e        a\n                          RANGE                   a                      b                   c               d               e                l"
-stamped_toml = "[param.pad_c]\nname       = \"Land pattern dimension c (DS p.2 diagram)\"\nsymbol     = \"c\"\nkind       = \"mechanical\"\nscope      = \"na\"\ntyp        = 0.76\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column c\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed 0.030 in (0.76 mm). INFERRED feature, not printed: width of the sense pad (arrow c spans its short edge).\""
+stamped_toml = "[param.pad_c]\nname       = \"Land pattern dimension c (DS p.2 diagram)\"\nsymbol     = \"c\"\nkind       = \"mechanical\"\nscope      = \"na\"\ntyp        = 0.76\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column c\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 293579918943\"\nnote       = \"Printed 0.030 in (0.76 mm). INFERRED feature, not printed: width of the sense pad (arrow c spans its short edge).\""
 
 [row.pad_d]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'd' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Vishay Dale' not in the text-check tested set"
 hash = "2ac7b8fb1f26c4f54c67caa4ce4a8ca0d8b63a2c67ee5c301f01f484356f8403"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 2ac7b8fb1f26"
 stamp_hash = "2ac7b8fb1f26c4f54c67caa4ce4a8ca0d8b63a2c67ee5c301f01f484356f8403"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
-baseline = true
 printed_page = 2
 pdf_page = 2
-toml_lines = "493-503"
+toml_lines = "494-504"
 image = "evidence/page_p2.png"
 image_sha256 = "4b1a89bf79ba9e005e9fb29e580facc0726cb2f9b26eb3fd7ea33f88e44358fa"
 image_bytes = 79740
@@ -747,20 +742,19 @@ crop_box = "full_page"
 dpi = 200
 render_key = "c8d1b41e8b713faa"
 text_snippet = "                                              b       d\n                          RANGE                   a                      b                   c               d               e                l"
-stamped_toml = "[param.pad_d]\nname       = \"Land pattern dimension d (DS p.2 diagram)\"\nsymbol     = \"d\"\nkind       = \"mechanical\"\nscope      = \"na\"\ntyp        = 0.51\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column d\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed 0.020 in (0.51 mm). INFERRED feature, not printed: gap between the current pad and the sense pad (arrow d).\""
+stamped_toml = "[param.pad_d]\nname       = \"Land pattern dimension d (DS p.2 diagram)\"\nsymbol     = \"d\"\nkind       = \"mechanical\"\nscope      = \"na\"\ntyp        = 0.51\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column d\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 2ac7b8fb1f26\"\nnote       = \"Printed 0.020 in (0.51 mm). INFERRED feature, not printed: gap between the current pad and the sense pad (arrow d).\""
 
 [row.pad_e]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'e' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Vishay Dale' not in the text-check tested set"
 hash = "a97c2842c699d53e071adcfd86327f7acc5748d9d0a68639594cb55a6516ec59"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row a97c2842c699"
 stamp_hash = "a97c2842c699d53e071adcfd86327f7acc5748d9d0a68639594cb55a6516ec59"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
-baseline = true
 printed_page = 2
 pdf_page = 2
-toml_lines = "505-515"
+toml_lines = "506-516"
 image = "evidence/page_p2.png"
 image_sha256 = "4b1a89bf79ba9e005e9fb29e580facc0726cb2f9b26eb3fd7ea33f88e44358fa"
 image_bytes = 79740
@@ -769,20 +763,19 @@ crop_box = "full_page"
 dpi = 200
 render_key = "c8d1b41e8b713faa"
 text_snippet = "                                                          c          e        a\n                          RANGE                   a                      b                   c               d               e                l"
-stamped_toml = "[param.pad_e]\nname       = \"Land pattern dimension e (DS p.2 diagram)\"\nsymbol     = \"e\"\nkind       = \"mechanical\"\nscope      = \"na\"\ntyp        = 1.70\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column e\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed 0.067 in (1.70 mm). INFERRED feature, not printed: length of the sense pad (arrow e spans its long edge).\""
+stamped_toml = "[param.pad_e]\nname       = \"Land pattern dimension e (DS p.2 diagram)\"\nsymbol     = \"e\"\nkind       = \"mechanical\"\nscope      = \"na\"\ntyp        = 1.70\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column e\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row a97c2842c699\"\nnote       = \"Printed 0.067 in (1.70 mm). INFERRED feature, not printed: length of the sense pad (arrow e spans its long edge).\""
 
 [row.pad_l]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'l' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Vishay Dale' not in the text-check tested set"
 hash = "70c059aae59b7bc4d7ccc631bd4f7d38c6b6fbf14ed32152b2b2107953c45af6"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 70c059aae59b"
 stamp_hash = "70c059aae59b7bc4d7ccc631bd4f7d38c6b6fbf14ed32152b2b2107953c45af6"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
-baseline = true
 printed_page = 2
 pdf_page = 2
-toml_lines = "517-527"
+toml_lines = "518-528"
 image = "evidence/page_p2.png"
 image_sha256 = "4b1a89bf79ba9e005e9fb29e580facc0726cb2f9b26eb3fd7ea33f88e44358fa"
 image_bytes = 79740
@@ -791,20 +784,19 @@ crop_box = "full_page"
 dpi = 200
 render_key = "c8d1b41e8b713faa"
 text_snippet = "                                                                                         l\n                          RANGE                   a                      b                   c               d               e                l"
-stamped_toml = "[param.pad_l]\nname       = \"Land pattern dimension l (DS p.2 diagram)\"\nsymbol     = \"l\"\nkind       = \"mechanical\"\nscope      = \"na\"\ntyp        = 3.68\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column l\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed 0.145 in (3.68 mm). INFERRED, supported by footprint and figure: l = gap between the two current pads.\""
+stamped_toml = "[param.pad_l]\nname       = \"Land pattern dimension l (DS p.2 diagram)\"\nsymbol     = \"l\"\nkind       = \"mechanical\"\nscope      = \"na\"\ntyp        = 3.68\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, SOLDER PAD DIMENSIONS (mm in brackets), row 0.005 to 0.2, column l\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row 70c059aae59b\"\nnote       = \"Printed 0.145 in (3.68 mm). INFERRED, supported by footprint and figure: l = gap between the two current pads.\""
 
 [row.weight]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; cite row label matches 3 lines; text check: UNSURE vendor 'Vishay Dale' not in the text-check tested set"
 hash = "ffed09cfe47e7d996edaf1ce0d384f4d07de658bad413032d08a517862b0e4bf"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row ffed09cfe47e"
 stamp_hash = "ffed09cfe47e7d996edaf1ce0d384f4d07de658bad413032d08a517862b0e4bf"
 pdf_sha256 = "2ee8a9067539bd2cabb08845219bac55d506b1ca892a2dbaeed343dd1ed10cff"
-baseline = true
 printed_page = 1
 pdf_page = 1
-toml_lines = "529-538"
+toml_lines = "530-539"
 image = "evidence/page_p1.png"
 image_sha256 = "3e994e77b9b93999f13fade05606fb65b420bf271e45e13d65cbd7da81f05c66"
 image_bytes = 151905
@@ -813,7 +805,7 @@ crop_box = "full_page"
 dpi = 200
 render_key = "df462fe45c5ec28f"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.weight]\nname       = \"Weight\"\nkind       = \"mechanical\"\nscope      = \"na\"\ntyp        = 63.6\nunit       = \"mg\"\nconditions = \"typical; DS prints 63.6 g per 1000 pieces\"\ncite       = \"DS p.1, Standard Electrical Specifications, WEIGHT (typical) g/1000 pieces, row WSK2512\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Per part: 63.6 g per 1000 pieces = 63.6 mg per part. Typical only.\""
+stamped_toml = "[param.weight]\nname       = \"Weight\"\nkind       = \"mechanical\"\nscope      = \"na\"\ntyp        = 63.6\nunit       = \"mg\"\nconditions = \"typical; DS prints 63.6 g per 1000 pieces\"\ncite       = \"DS p.1, Standard Electrical Specifications, WEIGHT (typical) g/1000 pieces, row WSK2512\"\nverified   = \"human:kb1lqc 2026-11-26 page-image ds_review 2ee8a9067539 row ffed09cfe47e\"\nnote       = \"Per part: 63.6 g per 1000 pieces = 63.6 mg per part. Typical only.\""
 
 [row.series]
 state = "NOT_COVERED"
