@@ -273,6 +273,7 @@ max_ref    = "VS"
 unit       = "V"
 conditions = "V(VS) <= 0 V"
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Input Pins, EN/UVLO, OV, INP, CS_SEL, V(VS) <= 0 V (V(VS) to (70 + V(VS)))"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review f4566ecc335e row 24eb3f4c3988"
 note       = "Printed as V(VS) (MIN) and (70 + V(VS)) (MAX): min = 0 V and max = 70 V, both relative to VS (min_ref/max_ref = VS). Rail-relative row (Defaults table)."
 unchecked  = "Reverse-polarity condition (V(VS) <= 0 V) is not the normal operating point; the module must keep the input pins within V(VS)..V(VS)+70 V; owner: module"
 
@@ -331,6 +332,7 @@ max        = 100
 unit       = "mA"
 conditions = "1 ms"
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Sink current, I(CS+), I(CS-), 1 msec"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review f4566ecc335e row 33bc6ad85fe2"
 note       = "Printed MIN -100 and MAX 100 mA. Stored numerically (min <= max). Current rating, not a voltage."
 unchecked  = "Current rating over 1 ms, not a voltage check; owner: module"
 
@@ -374,7 +376,7 @@ max        = 150
 unit       = "degC"
 conditions = ""
 cite       = "DS p.5, 5.1 Absolute Maximum Ratings, Storage temperature, Tstg"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review f4566ecc335e row 83b1804835be"
 unchecked  = "Storage temperature; owner: assembly"
 
 # ESD ratings: DS p.5, 5.2 ESD Ratings. Printed as +/- values (min = -X, max = X).
@@ -389,7 +391,7 @@ max        = 2000
 unit       = "V"
 conditions = "HBM per AEC Q100-002"
 cite       = "DS p.5, 5.2 ESD Ratings, Human body model (HBM), per AEC Q100-002"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review f4566ecc335e row 2b58c0662630"
 note       = "Printed +/-2000 V; min = -2000, max = 2000 (Defaults table, +/- limit)."
 unchecked  = "ESD rating; owner: assembly"
 
@@ -403,6 +405,7 @@ max        = 750
 unit       = "V"
 conditions = "CDM per AEC Q100-011, corner pins EN/UVLO, VS, SCP_TEST"
 cite       = "DS p.5, 5.2 ESD Ratings, Charged device model (CDM), Corner pins (EN/UVLO, VS, SCP_TEST)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review f4566ecc335e row 1050eb3e3806"
 note       = "Printed +/-750 V; min = -750, max = 750."
 unchecked  = "ESD rating; owner: assembly"
 
@@ -416,6 +419,7 @@ max        = 500
 unit       = "V"
 conditions = "CDM per AEC Q100-011, other pins"
 cite       = "DS p.5, 5.2 ESD Ratings, Charged device model (CDM), Other pins"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review f4566ecc335e row 7165fd719ac2"
 note       = "Printed +/-500 V; min = -500, max = 500."
 unchecked  = "ESD rating; owner: assembly"
 
@@ -450,7 +454,7 @@ min_ref    = "GND"
 unit       = "V"
 conditions = "Minimum voltage on the VS pin for short circuit protection"
 cite       = "DS p.5, 5.3 Recommended Operating Conditions, Input Pins, Minimum voltage on VS pin for Short Circuit Protection"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review f4566ecc335e row 3126844efdd7"
 note       = "Printed MIN only. Reference GND assumed as for the VS row (the DS gives none here). Scope partial (waivable): applies only with short-circuit protection in use; below 4 V the part still operates per rec_vs (3.5 V). A module that disables SCP (CS+, CS-, VS tied; ISCP and TMR to GND, DS p.4 Table 4-1) waives it with waive_rec_vs_scp_min."
 check_pins = ["VS"]
 
@@ -574,6 +578,7 @@ typ        = 28.6
 unit       = "degC/W"
 conditions = "DGX, 19 pins"
 cite       = "DS p.6, 5.4 Thermal Information, RthJC(top), DGX 19 PINS"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review f4566ecc335e row 68f5bfc836c6"
 note       = "Single printed value; typ only."
 
 [param.rth_jb]
@@ -986,7 +991,7 @@ max        = 318
 unit       = "mV"
 conditions = "R(ISCP) = 140.5 kohm"
 cite       = "DS p.7, 5.5 Electrical Characteristics, Short Circuit Protection, V(SCP), R(ISCP) = 140.5 kohm"
-verified   = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+verified   = "human:kb1lqc 2026-11-26 page-image ds_review f4566ecc335e row 9b710edc2ec1"
 
 [param.v_scp_r28k]
 name       = "SCP threshold, R(ISCP) = 28 kohm"
@@ -1409,3 +1414,6 @@ unit       = "uA"
 conditions = "Stated in the text of the CTMR equation section"
 cite       = "DS p.18, 7.3.3.1 Short-Circuit Protection With Auto-Retry, 'ITMR is internal pull-up current of 80 uA' (text under eq. 6)"
 note       = "Typ-only value from the text, not an Electrical Characteristics row; the table gives I(TMR_SRC_CB) 87 uA typ (DS p.7). Eq. 6 uses 80 uA as printed; design eq. 11 uses 87 uA. Conflict is recorded in the decision log. Stored as typ (never a bound). The DS states no temperature for it (scope na). Not used by INPUTS."
+
+[pinout]
+verified = "human:kb1lqc 2026-11-26 page-image pinout f4566ecc335e pins 285bf2bbd55a"
