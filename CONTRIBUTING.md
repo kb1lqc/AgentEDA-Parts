@@ -98,16 +98,27 @@ Read `docs/spec/extract.md` for the defaults used for every judgement call. The 
 
 ## Verify parameters (the human check)
 
-Run this in your own terminal, not an agent's, from the repo root, with the PDFs in `docs/datasheets/`:
+Run this in your own terminal, not an agent's, from the repo root, with the PDFs in `docs/datasheets/` and poppler
+installed (see Setup). A person ticks each row; no agent runs this tool.
 
 ```sh
+python3 tools/review.py INA229AIDGS                     # one part (its folder name under components/<Mfr>/)
+python3 tools/review.py INA229AIDGS TPS48000QDGXQ1      # several parts
 python3 tools/review.py                                 # every part
-python3 tools/review.py INA229AIDGS                     # one or more parts
-python3 tools/review.py --block INA229HighSideMonitor   # only the rows a circuit block reads
+python3 tools/review.py --list-blocks                   # the circuit blocks you can review
+python3 tools/review.py --block INA229HighSideMonitor   # only the rows that block reads
+python3 tools/review.py INA229AIDGS --dry-run           # try the page; shows the commands the button would run, runs none
 ```
 
-`--block` reads the block's `library-inputs.json` from a checkout next to this one (`../ina229`, else
-`../circuit-blocks`; or `--blocks-repo <path>`). It narrows the page and never changes a part's status.
+### Circuit blocks
+
+`--list-blocks` and `--block` read the AgentEDA-Blocks repo, not this one. Point them at your checkout with
+`--blocks-repo <path>` or the `CIRCUIT_BLOCKS` environment variable (the same variable `tools/risk_rank.py` reads).
+There is no default folder: without either, the tool refuses and says so.
+
+- A block is listed only after its `analysis.py` has written
+  `benches/<Block>/docs/design-analysis/library-inputs.json` in that repo. Run the block's analysis first.
+- `--block` narrows the page to the rows that block reads. It never changes a part's status.
 
 The page opens in your browser. It starts with one status line per part, then shows the rows that matter, grouped
 into Limits, Used by equations, and Pins & package. Each row has its statement, the datasheet crops, and one tick box.
