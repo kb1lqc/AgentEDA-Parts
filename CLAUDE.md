@@ -47,13 +47,22 @@ Reference packages: `components/TexasInstruments/INA821IDGK/` (amplifier), `.../
 4. **Zener wrapper**: wrapper brief and `zener-wrapper` skill.
 5. **Verify**: verifier and adversarial reviewer in parallel. Apply findings that cite the DS or the spec; log the
    rest as open items. A format change: spec first, then data, then `lib/` with tests. One targeted re-review.
-6. **Generate** `python3 -m lib.readme`; re-run examples that use it.
+6. **Generate** `python3 -m lib.readme`; re-run examples that use it. Catalog series (MLCC): with the manufacturer
+   export in `docs/datasheets/`, run `python3 -m lib.catalog export-check <export.csv> <dir>` and commit
+   `review/export_check.toml` (derived rows: a script proves them, no human tick).
 7. **Report** (Done evidence below).
 
 Apply the Defaults table instead of asking: Decision Log row, open item, continue.
 **Stop and ask** only for: missing datasheet; unnamed package/grade/option choice; mirrored, rotated or mismatched
 footprint; pin count or position conflict in the DS; missing NC/EP wording; two defaults that conflict; anything unsafe.
 (Circuit design follows `ee-design` stop-and-ask.)
+
+## Review: one goal
+A person verifies only what a machine cannot. Classes: DERIVED (script re-proves it each verify, no stamp), HUMAN
+(read from a PDF table, figure or equation, or used by a calc: one hash-bound tick), REFERENCE (display only).
+Agent findings (verifier, adversarial) go to the PR description as applied or open items; nothing from them is committed.
+Agents never stamp. Component PRs carry no stamps; the human check is its own `review/*` PR of stamps only
+(`docs/spec/review.md`, `docs/spec/review-view.md`, CONTRIBUTING.md).
 
 ## Done: evidence to show
 1. Pin table (number, name, type, function, cite); symbol match and format version.

@@ -3,7 +3,14 @@
 [![verify](https://github.com/kb1lqc/AgentEDA-Parts/actions/workflows/verify.yml/badge.svg)](https://github.com/kb1lqc/AgentEDA-Parts/actions/workflows/verify.yml) [![release](https://img.shields.io/github/v/tag/kb1lqc/AgentEDA-Parts?filter=v*&sort=semver&label=release)](https://github.com/kb1lqc/AgentEDA-Parts/tags)
 
 Each part is data (`component.toml`), datasheet math (`calc.py`), KiCad files, and a generated Zener wrapper for
-the `pcb` circuit tool. Every number has a page cite; a person checks each one against the datasheet.
+the `pcb` circuit tool. Every number has a page cite. One rule decides who checks it: **a person checks what a
+machine cannot.**
+
+| Class | What | Checked by |
+|---|---|---|
+| Derived | Catalog values decoded from a manufacturer part number and export (MLCC `catalog.csv`) | A script, in `tools/verify.py` (`docs/spec/capacitor.md` "Export check"). No tick. |
+| Human | Anything read from a datasheet table, figure or equation: absolute maximums, thermal limits, package and land rows, the pinout, every value a calculation uses | A person, on the page image. One tick per row. |
+| Reference | Everything else (test limits, assembly, mass) | Nobody. Shown, never used by an analysis. |
 
 ```mermaid
 flowchart LR
@@ -41,7 +48,8 @@ if a number you need is missing, say so rather than estimating it.
 
 ## Check a part (human)
 
-Every number is checked by a person against the datasheet page image before it counts. Full steps:
+Every human-class row (table above) is checked by a person against the datasheet page image before it counts. Derived
+rows need no tick. A review PR contains only stamps. Full steps:
 [CONTRIBUTING.md](CONTRIBUTING.md#verify-parameters-the-human-check).
 
 ```sh

@@ -8,7 +8,15 @@
 
 ## Why a person checks the numbers
 
-Worst-case analysis uses these numbers as limits, so a typo or misread table can pass a bad design.
+Worst-case analysis uses these numbers as limits, so a typo or misread table can pass a bad design. The review has one
+goal: a person verifies where a machine cannot.
+
+- **Derived:** a script proves it again on every `verify` (for a catalog series, each `catalog.csv` row decoded from its
+  part number and compared with the manufacturer export). No tick, no stamp, no agent record.
+- **Human:** a number read from a PDF table, figure or equation. Ticked by a person, once, against the page image.
+- **Reference:** not used by any analysis; shown only.
+- Agents (verifier, adversarial reviewer) find defects before the PR. Their findings are applied or listed in the PR
+  description as open items; nothing from them is committed and none of it counts as a check.
 
 - A person opens the datasheet page and compares each number in the file with the image.
 - Machine results do not count. A `verified` value written by a script or an AI (for example `sonnet-audit ...`) is
@@ -83,7 +91,11 @@ Read `docs/spec/extract.md` for the defaults used for every judgement call. The 
    With no folder names it checks the parts you changed; with no changes it stops with `nothing was built`. If it
    reports a stale `review/review.toml`, run it with `--regen` and commit the updated file. CI fails a PR whose
    `review/review.toml` is stale.
-9. **Open a pull request** with `gh pr create`. CI runs `tools/verify.py --all`. Rows still awaiting a human check do
+   For a catalog series (MLCC), also run the export check with the manufacturer export in `docs/datasheets/`:
+   `python3 -m lib.catalog export-check <export.csv> components/<Mfr>/<Value>`. On MATCH it writes
+   `review/export_check.toml`; commit it. Derived rows then need no tick.
+9. **Open a pull request** with `gh pr create`. This PR holds the part, its generated files and the export record, with
+   no human stamps. The human check comes next, in its own PR (below). CI runs `tools/verify.py --all`. Rows still awaiting a human check do
    not fail CI. A bot comment on the PR shows `<k> of <n> rows that matter checked` for each part the PR changes.
 
 ### Part types
@@ -99,7 +111,9 @@ Read `docs/spec/extract.md` for the defaults used for every judgement call. The 
 ## Verify parameters (the human check)
 
 Run this in your own terminal, not an agent's, from the repo root, with the PDFs in `docs/datasheets/` and poppler
-installed (see Setup). A person ticks each row; no agent runs this tool.
+installed (see Setup). A person ticks each row; no agent runs this tool. Do the check on a `review/<part>-<login>-<date>`
+branch whose PR contains only stamps (`verified` lines, the part's `review/` and README); fixes to numbers, code or docs
+go in a separate PR.
 
 ```sh
 python3 tools/review.py INA229AIDGS                     # one part (its folder name under components/<Mfr>/)
@@ -173,7 +187,8 @@ summary and pushes nothing. Turn off `dry_run` only when the plan is right.
 
 | Term | Meaning |
 |---|---|
-| rows that matter | Rows a person must tick: absolute maximums, mechanical rows, junction-to-case and maximum junction temperature, every value the library uses, and the pinout. |
+| rows that matter | Rows a person must tick: absolute maximums, package dimension and land rows (not assembly-test, mass or weight rows), junction-to-case and maximum junction temperature, every value a calculation uses (including a catalog series' temperature-coefficient rows), and the pinout. Rule: `docs/spec/review-view.md`. |
+| derived | A value a script proves on every verify (catalog rows against the manufacturer export). Needs no tick. |
 | used value not covered | A value the library uses that the review record does not cover yet (a catalog or variant key). It is not counted in k or n. |
 | stamp (verified line) | The `verified = "human:<login> ..."` line a person writes after ticking a row against the page image. |
 | checked, needs check, reference | Row states on the review page. |
