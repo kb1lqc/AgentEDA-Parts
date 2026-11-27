@@ -2,7 +2,7 @@
 
 # WSK2512
 
-Released: all 21 rows that matter checked (39 rows in all).
+Released: all 20 rows that matter checked (39 rows in all).
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

@@ -33,6 +33,8 @@ Optional keys, each described below: `series_vlimit` may be absent, `series_tole
 - The allowed values are every `E24` / `E96` mantissa (literal lists in `lib/series.py`, 24 and 96 values per decade)
   times a power of ten that falls in the `value_param` range, sorted and unique (E24 has values E96 lacks, for
   example 2.7). Each is the float nearest its printed decimal: 2.61 x 10^3 is `2610.0`, the same float `2.61e3` gives.
+- **Derived list.** Only the E24/E96/decade list membership is derived: it is tested against an independently committed
+  published list (test data). `mpn()`, `series_eseries_min` and the range rows stay PDF-derived and human-stamped.
 - `series_eseries_min` (optional, keys from `e_series`, positive ohm) drops that E-series' values below its minimum
   (use it where the catalog prints no part-number code for them); a value that another listed series contains stays
   allowed (E24 47 ohm with `E96 = 100`; E96 47.5 ohm is out). `lib.check`, `part.values()` and the wrapper's

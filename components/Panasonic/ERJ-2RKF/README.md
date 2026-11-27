@@ -2,7 +2,7 @@
 
 # ERJ-2RKF
 
-Checked by a person: 0 of 14 rows that matter (25 rows in all). Review: python3 tools/review.py ERJ-2RKF
+Checked by a person: 0 of 13 rows that matter (25 rows in all). Review: python3 tools/review.py ERJ-2RKF
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

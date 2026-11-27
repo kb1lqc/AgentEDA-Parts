@@ -9,8 +9,9 @@ import tomllib
 from pathlib import Path
 
 from . import capacitor, catalog, kicad, rules, series
-from .component import (ROOT, _repo_root, ledger_state_of, load_calc, merge_variant, pinout_hash, row_hash, run_example,
-                        variants_of)
+from . import review_status
+from .component import (ROOT, _repo_root, ledger_state_of, load_calc, merge_variant, override_rows, pinout_hash, row_hash,
+                        run_example, variants_of)
 from .units import to_si
 
 PART_FIELDS = ["value", "mpn", "manufacturer", "description", "category", "package", "datasheet_url",
@@ -481,7 +482,7 @@ REVIEW_MODES = {}  # component dir -> (mode, images matched); check_ledger fills
 
 
 REVIEW_FILES = ("review.toml", catalog.EXPORT_RECORD)  # the only committed files under review/
-EXPORT_STAMP = re.compile(r"human:[A-Za-z0-9](?:[A-Za-z0-9-]{0,38}) \d{4}-\d{2}-\d{2} export-check group (\S+)")
+EXPORT_STAMP = capacitor.parse_group_stamp  # one parser for the machine and the legacy human `verified` line
 
 
 def stray_review_files(folder):
@@ -495,7 +496,8 @@ def stray_review_files(folder):
 
 def check_export_record(folder):
     """review/export_check.toml (docs/spec/capacitor.md "Export check"). Always: valid TOML; the catalog hash is the committed
-    catalog.csv's (else STALE); a group's `verified` is a human stamp for that group. Evidence mode (the cited export is
+    catalog.csv's and the tables hash is the current decode tables' (else STALE); a group's `verified` is a machine line
+    whose 12 digits are the group hash, or a legacy human stamp for that group. Evidence mode (the cited export is
     in docs/datasheets/ or docs/vendor/): the export check is run again and the export hash and every group hash must
     match the record."""
     folder = Path(folder)
@@ -517,10 +519,39 @@ def check_export_record(folder):
     elif rec.get("catalog", {}).get("sha256") != catalog.sha256_file(cat):
         out.append(("ERROR", f"review/export_check.toml is STALE: {cat.name} changed since the export check ({rerun})"))
     groups = rec.get("group", {})
+    machine = False
+    if cat.is_file():
+        counts = {}
+        try:
+            for r in catalog.committed_rows(cat):
+                counts[r["dielectric"]] = counts.get(r["dielectric"], 0) + 1
+        except ValueError as e:
+            out.append(("ERROR", f"review/export_check.toml: {e}"))
+            counts = None
+        groups_to_count = {} if counts is None else groups
+        for d, g in groups_to_count.items():
+            if d not in counts:
+                out.append(("ERROR", f"review/export_check.toml group {d}: no row of {cat.name} has dielectric {d}"))
+            elif g.get("rows") != counts[d]:
+                out.append(("ERROR", f"review/export_check.toml group {d}: rows = {g.get('rows')} but {cat.name} has "
+                                     f"{counts[d]} {d} rows ({rerun})"))
     for d, g in groups.items():
         v = g.get("verified")
-        if v is not None and not (isinstance(v, str) and (m := EXPORT_STAMP.fullmatch(v)) and m[1] == d):
-            out.append(("ERROR", f"review/export_check.toml group {d}: verified is not a human stamp for group {d}"))
+        if v is None:
+            continue
+        stamp = EXPORT_STAMP(v)
+        if stamp is None or (stamp["kind"] == "human" and stamp["group"] != d):
+            out.append(("ERROR", f"review/export_check.toml group {d}: verified is not a human or machine export-check line "
+                                 f"for group {d} (machine export-check <date> <group_sha256[:12]>; {rerun})"))
+        elif stamp["kind"] == "machine":
+            machine = True
+            if stamp["sha12"] != str(g.get("group_sha256", ""))[:12]:
+                out.append(("ERROR", f"review/export_check.toml group {d}: machine line {stamp['sha12']} is not the group's "
+                                     f"group_sha256 {str(g.get('group_sha256', ''))[:12]} ({rerun})"))
+    if machine:  # human lines stay valid whatever the tables hash (as lib.capacitor.current_groups)
+        if rec.get("tables_sha256") != catalog.tables_sha256():
+            out.append(("ERROR", f"review/export_check.toml is STALE: the decode tables of lib/catalog.py changed since the "
+                                 f"export check (re-check them against the datasheet, then {rerun})"))
     name = rec.get("export", {}).get("file", "")
     root = folder.resolve().parents[2]
     found = [p for p in (root / "docs" / "datasheets" / name, root / "docs" / "vendor" / name) if name and p.is_file()]
@@ -559,11 +590,16 @@ def check_ledger(folder):
     out = stray_review_files(folder)
     rows, inp = ledger.get("row", {}), ledger.get("inputs", {})
     main = Path(inp.get("datasheet_file", "")).name
-    for key, table in params.items():
+    # a variants.toml override: a row that matters is a full row (hash of base row + override fields, stamp = its own
+    # `verified`), any other is REFERENCE (docs/spec/review.md "Variant overrides")
+    over = {k: v for k, v in override_rows(folder, params).items()} if (folder / "variants.toml").is_file() else {}
+    mat = review_status.matters(folder) if over else {}
+    full = {**{k: (t, t) for k, t in params.items()}, **{k: v for k, v in over.items() if k in mat}}
+    for key, (table, own) in full.items():
         r = rows.get(key)
         if not isinstance(r, dict) or r.get("hash") != row_hash(table):
             out.append(("ERROR", f"review/review.toml row {key} is missing or older than component.toml: {rerun}"))
-        elif (r.get("stamp") or "") != (table.get("verified") or ""):
+        elif (r.get("stamp") or "") != (own.get("verified") or ""):
             out.append(("ERROR", f"review/review.toml row {key}: stamp differs from its verified line: {rerun}"))
         else:  # the state follows from the stamp, the row hash and the ledger's pins; never trust the written word
             P = (inp.get("sheets") or {}).get(r.get("sheet") or main, "")
@@ -586,8 +622,16 @@ def check_ledger(folder):
                                      f"{want!r}: {rerun}"))
     elif pr is not None:
         out.append(("ERROR", f"review/review.toml has a pinout record but component.toml has no [[pin]]: {rerun}"))
+    for key, (_m, own) in over.items():
+        if key not in mat and own.get("verified"):
+            out.append(("ERROR", f"{key}: a reference override (the row does not matter) carries a `verified` line; remove it: "
+                                 f"nothing to stamp"))
+    for key in over:
+        if key not in mat and (not isinstance(rows.get(key), dict) or rows[key].get("state") != "REFERENCE"):
+            out.append(("ERROR", f"review/review.toml row {key}: an override of a row that does not matter must have state "
+                                 f"'REFERENCE': {rerun}"))
     for key, r in rows.items():
-        if key not in params and (not isinstance(r, dict) or r.get("state") != "NOT_COVERED"):
+        if key not in params and key not in over and (not isinstance(r, dict) or r.get("state") != "NOT_COVERED"):
             out.append(("ERROR", f"review/review.toml row {key}: not a Param, so its state must be 'NOT_COVERED': {rerun}"))
     root = _repo_root(folder) or ROOT
     cache = root / ".review-cache" / folder.resolve().relative_to(root / "components") if _repo_root(folder) else None

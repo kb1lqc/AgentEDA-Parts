@@ -1,0 +1,20 @@
+# Export check record (docs/spec/capacitor.md). Written by python3 -m lib.catalog export-check.
+
+tables_sha256 = "9caa9d9ec20a64da018fb96d1ea80fa71f1bab5ba46c72315fc7c435cc0f7d98"
+
+[export]
+file = "series-product-list.csv"
+sha256 = "b2dc91f66c11511c748b32c5bae5f5544a5329ffbf9e6886537577886f8f1ef4"
+
+[catalog]
+sha256 = "d84631f24cf960dba780826faa02c7fdb0dafe74b627d2b41f3c8e1af3006570"
+
+[group.X7R]
+rows = 7
+group_sha256 = "928ec2fbfb71d6e8a4ec115efbeba114db780d3e0efc7168fc8efe57f457787f"
+verified = "machine export-check 2026-11-27 928ec2fbfb71"
+
+[group.C0G]
+rows = 156
+group_sha256 = "271d9f6f8c3f9188f176e6267babb4b7a9240481408c6a13d7eb194da3479368"
+verified = "machine export-check 2026-11-27 271d9f6f8c3f"

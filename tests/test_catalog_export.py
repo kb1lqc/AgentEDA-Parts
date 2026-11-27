@@ -5,6 +5,7 @@ import csv
 import os
 import shutil
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -138,6 +139,31 @@ class ExportCheckTests(unittest.TestCase):
         self.assertEqual(C.main(["export-check", str(self.export), str(self.folder)]), 1)
 
 
+# Printed forms of the export's "Tolerance of capacitance" column for each letter of C.TOLERANCE (a small inline fixture).
+PRINTED_TOLERANCE = {"W": ["±0.05pF", "+/-0.05pF", "± 0.05 pF"], "B": ["±0.1pF"], "C": ["±0.25pF"], "D": ["±0.5pF"],
+                     "F": ["±1%"], "G": ["±2%", "+/-2 %"], "J": ["±5%"], "K": ["±10%"], "M": ["±20%"], "R": ["±2.5%"]}
+
+
+class ToleranceLetterTests(unittest.TestCase):
+    def test_fixture_covers_every_letter_in_the_table(self):
+        self.assertEqual(set(PRINTED_TOLERANCE), set(C.TOLERANCE), "add the printed forms of a new letter here")
+
+    def test_every_letter_decodes_every_printed_form(self):
+        for letter, forms in PRINTED_TOLERANCE.items():
+            for printed in forms:
+                row = {"Part Number": f"GCM21B5C1H183{letter}A16#", "Temperature characteristics": "C0G",
+                       "Capacitance": "18,000pF", "Tolerance of capacitance": printed, "Rated Voltage DC": "50Vdc",
+                       "Thickness": "1.25mm ±0.15mm"}
+                self.assertEqual(C.decode(row, offline=True), [], f"{letter} {printed}")
+
+    def test_wrong_and_one_sided_printed_forms_are_reported(self):
+        base = {"Part Number": "GCM21B5C1H183KA16#", "Temperature characteristics": "C0G", "Capacitance": "18,000pF",
+                "Tolerance of capacitance": "±5%", "Rated Voltage DC": "50Vdc", "Thickness": "1.25mm ±0.15mm"}
+        self.assertTrue(C.decode(base, offline=True))  # K is +/-10 %, the export says +/-5 %
+        one_sided = dict(base, **{"Part Number": "GCM21B5C1H183ZA16#", "Tolerance of capacitance": "+80%/-20%"})
+        self.assertTrue(C.decode(one_sided, offline=True))  # a one-sided letter not in the table is never silently accepted
+
+
 class RecordTests(unittest.TestCase):
     """review/export_check.toml, its human stamps, and the lib.check rules (docs/spec/capacitor.md "Export check")."""
 
@@ -161,11 +187,17 @@ class RecordTests(unittest.TestCase):
     def run_cmd(self, *args):
         return C.main(["export-check", *args, str(self.export), str(self.folder)])
 
-    def test_match_writes_record_without_stamps(self):
+    def test_match_writes_machine_record_without_login(self):
         self.assertEqual(self.run_cmd(), 0)
         text = self.record.read_text()
         self.assertIn('[group.C0G]', text)
-        self.assertNotIn("verified", text)
+        rec = tomllib.loads(text)
+        self.assertEqual(rec["tables_sha256"], C.tables_sha256())
+        for d, g in rec["group"].items():
+            self.assertRegex(g["verified"], rf"^machine export-check \d{{4}}-\d{{2}}-\d{{2}} {g['group_sha256'][:12]}$")
+            self.assertNotIn("spot_check", g)
+        self.assertNotIn("human:", text)
+        self.assertEqual(K.check_export_record(self.folder), [])
 
     def test_stamp_writes_human_line_per_group(self):
         self.assertEqual(self.run_cmd("--stamp", "reviewer-1"), 0)
@@ -208,7 +240,9 @@ class RecordTests(unittest.TestCase):
         self.assertEqual(self.run_cmd(), 0)  # a new, matching catalog and export: new hashes
         text = self.record.read_text()
         self.assertIn("GCM21B5C1H223FA16", self.folder.joinpath("catalog.csv").read_text())
-        self.assertNotIn("verified", text)  # the old stamps were for other hashes
+        rec = tomllib.loads(text)
+        self.assertTrue(rec["group"]["C0G"]["verified"].startswith("machine export-check "))  # changed group: no human line
+        self.assertTrue(rec["group"]["X7R"]["verified"].startswith("human:reviewer-1 "))  # unchanged group keeps its line
 
     def test_groups_must_exist(self):
         self.assertEqual(self.run_cmd("--stamp", "reviewer-1", "--groups", "NP0"), 2)
@@ -219,7 +253,7 @@ class RecordTests(unittest.TestCase):
         catalog_path = self.folder / "catalog.csv"
         self.assertIsNone(export_stamp_date(self.folder, catalog_path, "C0G"))  # no record
         self.run_cmd()
-        self.assertIsNone(export_stamp_date(self.folder, catalog_path, "C0G"))  # record, no stamp
+        self.assertRegex(export_stamp_date(self.folder, catalog_path, "C0G"), r"^\d{4}-\d{2}-\d{2}$")  # machine line
         self.run_cmd("--stamp", "reviewer-1")
         day = export_stamp_date(self.folder, catalog_path, "C0G")
         self.assertRegex(day, r"^\d{4}-\d{2}-\d{2}$")
@@ -246,7 +280,87 @@ class RecordTests(unittest.TestCase):
         text = self.record.read_text().replace("export-check group C0G", "export-check group X7R", 1)
         self.record.write_text(text)
         out = K.check_export_record(self.folder)
-        self.assertTrue(any("verified is not a human stamp" in m for _, m in out), out)
+        self.assertTrue(any("verified is not a human or machine export-check line" in m for _, m in out), out)
+
+    def machine_lines(self):
+        return {d: g["verified"] for d, g in tomllib.loads(self.record.read_text())["group"].items()}
+
+    def test_tampered_group_hash_is_flagged(self):
+        self.run_cmd()
+        rec = tomllib.loads(self.record.read_text())
+        old = rec["group"]["C0G"]["group_sha256"]
+        self.record.write_text(self.record.read_text().replace(old, "0" * 64))
+        out = K.check_export_record(self.folder)
+        self.assertTrue(any("is not the group's group_sha256" in m for _, m in out), out)
+
+    def test_malformed_machine_line_is_flagged(self):
+        self.run_cmd()
+        text = self.record.read_text().replace("machine export-check", "machine export-chek", 1)
+        self.record.write_text(text)
+        out = K.check_export_record(self.folder)
+        self.assertTrue(any("verified is not a human or machine" in m for _, m in out), out)
+
+    def test_stale_catalog_hash_flagged_for_machine_record(self):
+        self.run_cmd()
+        rows = list(CATALOG)
+        rows[0] = ("GCM21B5C1H183FA16", "C0G", "18,000pF", "±2%", "50Vdc", "1.25mm ±0.15mm")
+        write_catalog(self.folder / "catalog.csv", rows)
+        out = K.check_export_record(self.folder)
+        self.assertTrue(any("STALE" in m and "catalog.csv changed" in m for _, m in out), out)
+        from lib.capacitor import current_groups
+        self.assertEqual(current_groups(self.folder, self.folder / "catalog.csv"), {})
+
+    def test_stale_tables_hash_is_flagged_and_not_current(self):
+        from lib.capacitor import current_groups
+        self.run_cmd()
+        self.assertEqual(set(current_groups(self.folder, self.folder / "catalog.csv")), {"C0G", "X7R"})
+        with mock.patch.dict(C.TOLERANCE, {"Z": "+/-99%"}):  # a table edit changes the tables hash
+            out = K.check_export_record(self.folder)
+            self.assertTrue(any("STALE" in m and "decode tables" in m for _, m in out), out)
+            self.assertEqual(current_groups(self.folder, self.folder / "catalog.csv"), {})
+            self.assertEqual(self.run_cmd(), 0)  # a rerun records the new tables hash
+            self.assertEqual(K.check_export_record(self.folder), [])
+
+    def test_mixed_record_works(self):
+        from lib.capacitor import current_groups
+        self.run_cmd("--stamp", "reviewer-1", "--groups", "C0G")
+        lines = self.machine_lines()
+        self.assertTrue(lines["C0G"].startswith("human:reviewer-1 "))
+        self.assertTrue(lines["X7R"].startswith("machine export-check "))
+        self.assertEqual(K.check_export_record(self.folder), [])
+        got = current_groups(self.folder, self.folder / "catalog.csv")
+        self.assertEqual((got["C0G"]["kind"], got["X7R"]["kind"]), ("human", "machine"))
+
+    def test_human_line_kept_when_group_unchanged_dropped_when_changed(self):
+        self.run_cmd("--stamp", "reviewer-1")
+        write_export(self.export, EXPORT_ROWS + [("GCM21B5C1H223FA16#", "In Production", "C0G", "22,000pF", "±1%", "50Vdc")])
+        write_catalog(self.folder / "catalog.csv", CATALOG + [
+            ("GCM21B5C1H223FA16", "C0G", "22,000pF", "±1%", "50Vdc", "1.25mm ±0.15mm")])
+        self.run_cmd()
+        lines = self.machine_lines()
+        self.assertTrue(lines["X7R"].startswith("human:reviewer-1 "))  # still valid: kept, not turned into a machine line
+        self.assertTrue(lines["C0G"].startswith("machine export-check "))
+        self.assertFalse(any(v.startswith("human:") for d, v in lines.items() if d == "C0G"))
+
+    def test_human_only_record_passes_with_changed_tables_hash(self):
+        self.run_cmd("--stamp", "reviewer-1")
+        text = self.record.read_text()
+        text = "\n".join(l for l in text.splitlines() if not l.startswith("tables_sha256")) + "\n"
+        self.record.write_text(text.replace("[export]", 'tables_sha256 = "' + "0" * 64 + '"\n\n[export]', 1))
+        self.assertEqual(K.check_export_record(self.folder), [])  # human lines ignore the tables hash
+
+    def test_group_rows_must_equal_catalog_count(self):
+        self.run_cmd()
+        text = self.record.read_text().replace("rows = 3", "rows = 4", 1)
+        self.record.write_text(text)
+        out = K.check_export_record(self.folder)
+        self.assertTrue(any("rows = 4 but catalog.csv has 3 C0G rows" in m for _, m in out), out)
+
+    def test_group_must_be_a_catalog_dielectric(self):
+        self.run_cmd()
+        self.record.write_text(self.record.read_text() + '\n[group.NP0]\nrows = 1\ngroup_sha256 = "' + "0" * 64 + '"\n')
+        out = K.check_export_record(self.folder)
+        self.assertTrue(any("group NP0: no row of catalog.csv has dielectric NP0" in m for _, m in out), out)
 
     def test_stray_review_file_is_flagged_but_record_is_not(self):
         self.run_cmd()

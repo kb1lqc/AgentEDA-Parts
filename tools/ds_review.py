@@ -33,8 +33,9 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import ds_index as D  # noqa: E402
+from lib.review_status import matters  # noqa: E402
 import table_xcheck as T  # noqa: E402
-from lib.component import LEDGER_STATES as STATES, ledger_state_of, pinout_hash  # noqa: E402  (one state rule, shared with lib.check)
+from lib.component import LEDGER_STATES as STATES, ledger_state_of, override_rows, pinout_hash  # noqa: E402  (one state rule, shared with lib.check)
 
 TOOL_VERSION = "11"
 DEFAULT_DPI, SMALL_DPI, SMALL_PT = 150, 200, 7.0
@@ -113,6 +114,24 @@ def param_spans(text):
         while end > i and (not lines[end].strip() or lines[end].lstrip().startswith("#")):
             end -= 1
         spans[m.group(1)] = (i + 1, end + 1)
+    return spans
+
+
+OVERRIDE_HDR = re.compile(r'^\[variant\.(?:"([^"]+)"|([A-Za-z0-9_\-]+))\.param\.([A-Za-z0-9_\-]+)\]\s*(?:#.*)?$')
+
+
+def override_spans(text):
+    """{"variant.<V>.<key>": (first line, last line)} of each [variant."V".param.K] table in variants.toml source."""
+    lines = text.split("\n")
+    heads = [(i, OVERRIDE_HDR.match(ln)) for i, ln in enumerate(lines) if TABLE_HDR.match(ln)]
+    spans = {}
+    for n, (i, m) in enumerate(heads):
+        if not m:
+            continue
+        end = heads[n + 1][0] - 1 if n + 1 < len(heads) else len(lines) - 1
+        while end > i and (not lines[end].strip() or lines[end].lstrip().startswith("#")):
+            end -= 1
+        spans["variant.%s.%s" % (m.group(1) or m.group(2), m.group(3))] = (i + 1, end + 1)
     return spans
 
 
@@ -1047,15 +1066,6 @@ def unmapped_md(ctx, doc, params, not_covered):
 
 def not_covered_rows(comp, data):
     out = []
-    vt = comp / "variants.toml"
-    if vt.is_file():
-        try:
-            v = tomllib.loads(vt.read_text())
-        except tomllib.TOMLDecodeError as e:
-            raise InputError("%s: variants.toml unreadable (%s); fix the TOML" % (comp, e))
-        for name, tbl in v.get("variant", {}).items():
-            for k in tbl.get("param", {}):
-                out.append(("variant.%s.%s" % (name, k), "variants.toml row: family variants are not reviewed by ds_review"))
     if (comp / "catalog.csv").is_file():
         n = max(0, len((comp / "catalog.csv").read_text().strip().split("\n")) - 1)
         out.append(("catalog", "catalog.csv (%d rows): catalog values are not reviewed by ds_review" % n))
@@ -1135,6 +1145,28 @@ def review_component(root, comp, dpi, poppler):
     missing_span = [k for k in params if k not in spans]
     if missing_span:
         raise InputError("%s: [param.%s] is not a plain table header line; write it as [param.<key>]" % (rel, missing_span[0]))
+    # variants.toml overrides (docs/spec/review.md): one that matters is a full row `variant.<V>.<key>`
+    # (examined from its own cite, hashed as base row + override fields), one that does not is a REFERENCE row
+    vtext, over, reference = "", {}, {}
+    if (comp / "variants.toml").is_file():
+        vtext = (comp / "variants.toml").read_bytes().decode("utf-8")
+        try:
+            tomllib.loads(vtext)
+            found = override_rows(comp, params)
+        except tomllib.TOMLDecodeError as e:
+            raise InputError("%s: variants.toml unreadable (%s); fix the TOML" % (rel, e))
+        vspans = override_spans(vtext)
+        bad = [k for k in found if k not in vspans]
+        if bad:
+            raise InputError('%s: %s is not a plain table header line; write it as [variant."<V>".param.<key>]' % (rel, bad[0]))
+        mat = matters(comp, root)
+        for rk, (merged, own) in found.items():
+            if rk in mat:
+                over[rk] = (merged, own)
+                spans[rk] = vspans[rk]
+                params = {**params, rk: own}
+            else:
+                reference[rk] = "variants.toml override of a row that does not matter: not a stamp"
     rdir = comp / "review"
     cache = root / CACHE / comp.relative_to(root / "components")  # git-ignored: images and params/<key>.md
     prev, prev_rows, prev_inp = {}, {}, {}
@@ -1194,8 +1226,8 @@ def review_component(root, comp, dpi, poppler):
 
     for key, t in params.items():
         sp = spans[key]
-        src[key] = snippet(text, sp)
-        h = row_hash(t)
+        src[key] = snippet(vtext if key in over else text, sp)
+        h = row_hash(over[key][0] if key in over else t)
         pr = prev_rows.get(key)
         stamp = t.get("verified", "")
         ex = examine(key, t, ctx)
@@ -1206,6 +1238,8 @@ def review_component(root, comp, dpi, poppler):
         def backfill(key=key, sp=sp, h=h):
             if not first:
                 return h, src[key], False
+            if key in over:  # an override has no git-blame baseline here: its stamp is pinned as the baseline
+                return h, src[key], True
             line = next((n for n in range(sp[0], sp[1] + 1) if text.split("\n")[n - 1].lstrip().startswith("verified")), None)
             c = blame.get(line) if blame and line else None
             if not c or set(c) == {"0"}:
@@ -1286,6 +1320,8 @@ def review_component(root, comp, dpi, poppler):
     stale += ["pinout"] if pinout and "pinout" in pending else []
     render_state = "NOT_RENDERED" if missing_any and (pending or first or stale) else "complete"
 
+    for key, why in reference.items():
+        rows[key] = {"state": "REFERENCE", "status": "UNSURE", "reason": why}
     for key, why in not_covered_rows(comp, data):
         rows[key] = {"state": "NOT_COVERED", "status": "UNSURE", "reason": why}
 

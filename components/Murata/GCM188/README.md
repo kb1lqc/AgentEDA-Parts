@@ -2,7 +2,7 @@
 
 # GCM188
 
-Checked by a person: 0 of 20 rows that matter (80 rows in all). Review: python3 tools/review.py GCM188; 3 used values not covered (catalog.csv, series)
+Checked by a person: 0 of 18 rows that matter (80 rows in all). Review: python3 tools/review.py GCM188; 633 catalog rows derived, checked (export-check record)
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

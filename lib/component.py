@@ -77,7 +77,7 @@ def row_hash(table):
     return hashlib.sha256(json.dumps(t, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
 
 
-LEDGER_STATES = ("HUMAN_VERIFIED", "MACHINE_CHECKED", "STALE", "PDF_CHANGED", "NEW", "UNVERIFIED", "NOT_COVERED")
+LEDGER_STATES = ("HUMAN_VERIFIED", "MACHINE_CHECKED", "STALE", "PDF_CHANGED", "NEW", "UNVERIFIED", "NOT_COVERED", "REFERENCE")
 
 
 def ledger_state_of(h, stamp, stamp_hash, pin, P, pinout=False):
@@ -96,6 +96,21 @@ def ledger_state_of(h, stamp, stamp_hash, pin, P, pinout=False):
     if P and pin and pin != P:
         return "PDF_CHANGED"
     return "UNVERIFIED" if stamp_hash else "NEW"
+
+
+def override_rows(path, params=None):
+    """{"variant.<V>.<key>": (merged, own)} for every [variant."V".param.K] of a family directory (docs/spec/review.md
+    "Variant overrides"). own = the override table; merged = base [param.K] plus the override's fields (no `verified`, no
+    `variants`): its row_hash is the override's ledger hash, so a base edit stales the override stamp. params: the base
+    [param] tables (read from component.toml when None)."""
+    if params is None:
+        params = (_read_toml(Path(path) / "component.toml") or {}).get("param") or {}
+    out = {}
+    for name, v in variants_of(path).items():
+        for key, own in (v.get("param") or {}).items():
+            base = {k: x for k, x in (params.get(key) or {}).items() if k not in ("verified", "variants")}
+            out[f"variant.{name}.{key}"] = ({**base, **{k: x for k, x in own.items() if k != "verified"}}, own)
+    return out
 
 
 def _repo_root(path):
@@ -129,7 +144,11 @@ def _review(path, review_key, stamp, local_pdf=True, ledger=None, params=None):
     else:
         if params is None:
             params = (_read_toml(path / "component.toml") or {}).get("param") or {}
-        table = params.get(review_key)
+        if review_key.startswith("variant."):  # an override: the hash of base row + override fields
+            found = override_rows(path, params).get(review_key)
+            table = found[0] if found else None
+        else:
+            table = params.get(review_key)
         cur = row_hash(table) if table is not None else None
     if cur is None or cur[:12] != m["row"]:
         return state, "human stamp: row changed"
@@ -154,13 +173,21 @@ def _review(path, review_key, stamp, local_pdf=True, ledger=None, params=None):
     return state, None
 
 
-def _note(label, key, path, review_key, param):
-    """Record where a read row lives, for human_review_needed. A row once needing review stays that way (sticky)."""
+DERIVED = "machine export-check"  # reason of a catalog row with a current export-check record: checked, not listed
+
+
+def _note(label, key, path, review_key, param, derived=False):
+    """Record where a read row lives, for human_review_needed. A row once needing review stays that way (sticky).
+    derived: a capacitor-series catalog row (Part.select); with a current export-check record (param.verified set) it is
+    checked by the record, reason DERIVED, and human_review_needed leaves it out (docs/spec/capacitor.md)."""
     k = f"{label}:{key}"
-    state, reason = _review(path, review_key, param.verified)
+    if derived and param.verified:
+        state, reason = None, DERIVED
+    else:
+        state, reason = _review(path, review_key, param.verified)
     e = {"dir": str(path), "review_key": review_key, "stamp": param.verified, "state": state, "cite": param.cite,
          "reason": reason}
-    if k not in _ROWS or not _ROWS[k]["reason"]:
+    if k not in _ROWS or not _ROWS[k]["reason"] or _ROWS[k]["reason"] == DERIVED:
         _ROWS[k] = e
     return reason
 
@@ -169,15 +196,16 @@ def human_review_needed():
     """Rows read so far without a current human stamp, sorted by input: dicts with input ("<label>:<key>"), value
     (label), key, dir (component directory), review_key (review.toml row; None for catalog.csv rows), ref
     ("<dir name>:<review_key>" for tools/stamp.py; None for catalog and variants.toml rows), stamp, state (ledger), cite and
-    reason ("STALE", "PDF_CHANGED", "no stamp", "machine stamp", "human stamp: malformed", "no review record",
+    reason (a catalog row with a current export-check record, "machine export-check", is checked and not listed; others:
+    "STALE", "PDF_CHANGED", "no stamp", "machine stamp", "human stamp: malformed", "no review record",
     "human stamp: row changed", "human stamp: PDF changed"). A human stamp is current only when it matches HUMAN_RE,
     its row hash is the row's recomputed hash, its PDF SHA is the ledger's and the local PDF's, and a ledger row exists."""
     out = []
     for k, e in sorted(_ROWS.items()):
-        if e["reason"]:
+        if e["reason"] and e["reason"] != DERIVED:
             label, _, key = k.rpartition(":")
             rk = e["review_key"]
-            ref = f"{Path(e['dir']).name}:{rk}" if rk and not rk.startswith("variant.") else None
+            ref = f"{Path(e['dir']).name}:{rk}" if rk and e["state"] not in ("REFERENCE", "NOT_COVERED") else None
             out.append({"input": k, "value": label, "key": key, "ref": ref, **e})
     return out
 
@@ -225,9 +253,11 @@ class Part:
     def _used(self, key):
         p = self.params[key]
         k = self.aliases.get(key, key)
-        reason = _note(self._label(), k, self.path, self._review_key(k), p)
+        rk = self._review_key(k)
+        derived = bool(self.selection) and rk is None and k in ("capacitance", "tolerance", "rated_v")  # from catalog.csv
+        reason = _note(self._label(), k, self.path, rk, p, derived=derived)
         broken = reason and str(p.verified or "").startswith(HUMAN)  # a human stamp failing its binding: unverified
-        _record(self._label(), k, None if broken or k in _ledger_unverified(self.path) else p.verified)
+        _record(self._label(), k, None if broken or (rk or k) in _ledger_unverified(self.path) else p.verified)
         return p
 
     def _review_key(self, key):
@@ -379,8 +409,8 @@ class Part:
         bad = _ledger_unverified(self.path)
         _record(label, "capacitance", None if "capacitance" in bad else cap.verified)  # handed out as sel.capacitance / sel.rated_voltage
         _record(label, "rated_v", None if "rated_v" in bad else rated.verified)
-        _note(label, "capacitance", self.path, None, cap)  # catalog.csv rows: no review row
-        _note(label, "rated_v", self.path, None, rated)
+        _note(label, "capacitance", self.path, None, cap, derived=True)  # catalog.csv rows: no review row
+        _note(label, "rated_v", self.path, None, rated, derived=True)
         letter, alts = self.info["package_default"], self.info["package_alternates"]
         return Selection(row=row, value=row.value, mpn=row.value + letter, alternates=[row.value + a for a in alts],
                          dielectric=dielectric, tolerance=row.tolerance, thickness=row.thickness, capacitance=cap,

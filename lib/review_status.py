@@ -10,7 +10,8 @@ import csv
 import re
 from pathlib import Path
 
-from .component import _read_toml, _review, variants_of
+from . import capacitor as _cap
+from .component import _read_toml, _review, override_rows, variants_of
 
 CHECKED, NEEDS, REFERENCE = "checked", "needs check", "reference"
 WHO_DATE = re.compile(r"^human:(\S+) (\d{4}-\d{2}-\d{2}) ")
@@ -30,6 +31,12 @@ def checked_rows(path, local_pdf=True):
         if reason is None and state == "HUMAN_VERIFIED":
             m = WHO_DATE.match(stamp)
             out[key] = (m[1], m[2])
+    for rk, (_merged, own) in override_rows(path, params).items():  # variant.<V>.<key>, stamped in variants.toml
+        stamp = own.get("verified")
+        state, reason = _review(path, rk, stamp, local_pdf=local_pdf, ledger=ledger, params=params)
+        if reason is None and state == "HUMAN_VERIFIED":
+            m = WHO_DATE.match(stamp)
+            out[rk] = (m[1], m[2])
     stamp = (data.get("pinout") or {}).get("verified")
     if stamp and data.get("pin"):  # the pinout stamp, like a row's
         state, reason = _review(path, "pinout", stamp, local_pdf=local_pdf, ledger=ledger)
@@ -56,6 +63,21 @@ def calc_inputs(path):
     except (SyntaxError, ValueError):
         pass
     return {}
+
+
+def used_keys(path):
+    """The param rows calc.py INPUTS reads: each value with its suffix dropped, and the capacitor selection alias `tc`
+    resolved to every row `[part] tc_param` names (Part.select picks the dielectric's row; docs/spec/capacitor.md)."""
+    keys = {row_key(v) for m in calc_inputs(path).values() for v in m.values()}
+    if "tc" in keys:
+        part = (_read_toml(Path(path) / "component.toml") or {}).get("part") or {}
+        keys |= set((part.get("tc_param") or {}).values())
+    return keys
+
+
+# Rule 1: a mechanical row that is no package dimension or land row (assembly and test acceptance criteria, mass) is
+# a row that matters only through rule 3. Matched by key prefix (the suffix is a dielectric or value variant).
+NOT_DIMENSION = ("beam_load", "solderability", "mass", "weight")
 
 
 def row_key(value):
@@ -85,12 +107,12 @@ def matters(path, root=None):
     path = Path(path)
     data = _read_toml(path / "component.toml") or {}
     params = data.get("param") or {}
-    used = {row_key(v) for m in calc_inputs(path).values() for v in m.values()}
+    used = used_keys(path)
     examples = example_files(_root(path, root))
     out = {}
     for key, t in params.items():
         why = []
-        if t.get("kind") in ("abs_max", "mechanical"):
+        if t.get("kind") == "abs_max" or (t.get("kind") == "mechanical" and not key.startswith(NOT_DIMENSION)):
             why.append(t["kind"])
         if _thermal_matters(t):
             why.append("thermal")
@@ -102,6 +124,11 @@ def matters(path, root=None):
             why.append("zener check")
         if why:
             out[key] = why
+    for rk, (_merged, own) in override_rows(path, params).items():  # an override: its base row matters, or its key is used
+        key = rk.rsplit(".", 1)[-1]  # keys hold no dot, a variant name may
+        why = list(out.get(key, [])) if key in params else (["calc.py INPUTS"] if key in used else [])
+        if why:
+            out[rk] = why
     if data.get("pin"):
         out["pinout"] = ["pinout"]
     return out
@@ -117,32 +144,43 @@ def catalog_columns(path):
         return set()
 
 
+DERIVED_COLUMNS = ("capacitance", "tolerance", "rated_voltage")  # catalog columns a current export-check group covers
+
+
+def derived_rows(path):
+    """Catalog rows of a capacitor series covered by a current export-check record, machine or legacy human (docs/spec/
+    capacitor.md "Export check"): derived, checked. 0 without a catalog or a current record. Not part of k or n."""
+    path = Path(path)
+    part = (_read_toml(path / "component.toml") or {}).get("part") or {}
+    if part.get("series") != "capacitor" or not part.get("catalog"):
+        return 0
+    return sum(g["rows"] for g in _cap.current_groups(path, path / part["catalog"]).values())
+
+
 def not_covered(path, mat=None):
     """{file: [keys]} the ledger cannot stamp, by where they live: used values (calc.py INPUTS) that are no [param] row
-    of component.toml (catalog.csv only for a real catalog column; else series, else "unknown"), and every variants.toml
-    override of a row that matters (`variant.<V>.<key>`). mat: the rows that matter (default: computed)."""
+    of component.toml (catalog.csv only for a real catalog column; else series, else "unknown"). A used key that is a
+    variants.toml override is a ledger row (`variant.<V>.<key>`), not listed. mat: unused, kept for callers."""
     path = Path(path)
     data = _read_toml(path / "component.toml") or {}
     params = data.get("param") or {}
     variants = variants_of(path)
     own = {k for v in variants.values() for k in v.get("param", {})}
-    mat = matters(path) if mat is None else mat
     cols = catalog_columns(path)
     out = {}
-    for key in sorted({row_key(v) for m in calc_inputs(path).values() for v in m.values()} - set(params)):
+    resolved = used_keys(path)  # `tc` stands for the tc_param rows: not a missing row when they exist
+    for key in sorted(resolved - set(params) - ({"tc"} if resolved & set(params) else set())):
         if key in own:
-            where = "variants.toml"
+            continue  # an override row of the ledger (counted in k and n when it matters)
         elif key in cols:
+            if key in DERIVED_COLUMNS and derived_rows(path):  # covered by a current group: derived, checked
+                continue
             where = "catalog.csv"
         elif (data.get("part") or {}).get("series"):
             where = "series"
         else:
             where = "unknown"
         out.setdefault(where, []).append(key)
-    for name, v in sorted(variants.items()):
-        for key in v.get("param", {}):
-            if key in mat and key in params:
-                out.setdefault("variants.toml", []).append(f"variant.{name}.{key}")
     return out
 
 
@@ -167,15 +205,17 @@ def review(path, root=None, local_pdf=True):
     # A value with a citation (a features bullet, design or application text) but no table or figure location is
     # reference, not a check. A row with no min, typ or max, or with no citation, is a defect to fix in the TOML, so it
     # stays checkable (the page shows it as "fix first").
+    over = {rk: own for rk, (_m, own) in override_rows(path, params).items()}
+    tables = {**params, **over}  # an override shows its own cite and values
     unlocated = sorted(k for k in mat if k != "pinout" and k not in done and not located(rows.get(k))
-                       and values_text(params.get(k, {})) and params.get(k, {}).get("cite"))
+                       and values_text(tables.get(k, {})) and tables.get(k, {}).get("cite"))
     checkable = [k for k in mat if k not in unlocated]
-    status = {k: CHECKED if k in done else NEEDS if k in checkable else REFERENCE for k in params}
+    status = {k: CHECKED if k in done else NEEDS if k in checkable else REFERENCE for k in tables}
     if "pinout" in mat:
         status["pinout"] = CHECKED if "pinout" in done else NEEDS
     k = sum(status[r] == CHECKED for r in checkable)
     return {"status": status, "matters": mat, "unlocated": unlocated, "k": k, "n": len(checkable), "M": len(status),
-            "released": k == len(checkable) > 0, "not_covered": not_covered(path, mat)}
+            "released": k == len(checkable) > 0, "not_covered": not_covered(path, mat), "derived": derived_rows(path)}
 
 
 def statuses(path, local_pdf=True, root=None):
@@ -188,7 +228,12 @@ def summary(value, r):
     text = f"{value}: {r['k']} of {r['n']} rows that matter checked"
     if r.get("unlocated"):
         text += f" ({len(r['unlocated'])} reference: no table or figure location)"
-    return text, r["released"]
+    return text + derived_text(r), r["released"]
+
+
+def derived_text(r):
+    """"; N catalog rows derived, checked (machine export-check)" when a current export-check record covers catalog rows."""
+    return f"; {r['derived']} catalog rows derived, checked (export-check record)" if r.get("derived") else ""
 
 
 def not_covered_text(r):
@@ -198,18 +243,31 @@ def not_covered_text(r):
 
 def readme_line(value, r):
     """Line 5 of a part README (docs/spec/review.md "Human view")."""
-    extra = not_covered_text(r)
+    extra = derived_text(r) + not_covered_text(r)
     if r["released"]:
         return f"Released: all {r['n']} rows that matter checked ({r['M']} rows in all){extra}" + "."
     return (f"Checked by a person: {r['k']} of {r['n']} rows that matter ({r['M']} rows in all). "
             f"Review: python3 tools/review.py {value}{extra}")
 
 
-def used_by(path, key, root=None):
-    """The places the library uses a row: calc.py function(argument), Zener check, examples file."""
+def row_table(path, key):
+    """The table of a row: [param.<key>], or for `variant.<V>.<key>` the override's own table (its own cite and values)."""
     path = Path(path)
+    params = (_read_toml(path / "component.toml") or {}).get("param") or {}
+    if key.startswith("variant."):
+        return override_rows(path, params)[key][1]
+    return params[key]
+
+
+def used_by(path, key, root=None):
+    """The places the library uses a row: calc.py function(argument), Zener check, examples file. An override is used
+    wherever its base key is."""
+    path = Path(path)
+    key = key.rsplit(".", 1)[-1] if key.startswith("variant.") else key
     t = ((_read_toml(path / "component.toml") or {}).get("param") or {}).get(key, {})
-    out = [f"{fn}({arg})" for fn, m in calc_inputs(path).items() for arg, v in m.items() if row_key(v) == key]
+    tc_rows = set(((_read_toml(path / "component.toml") or {}).get("part") or {}).get("tc_param", {}).values())
+    out = [f"{fn}({arg})" for fn, m in calc_inputs(path).items() for arg, v in m.items()
+           if row_key(v) == key or (row_key(v) == "tc" and key in tc_rows)]
     if t.get("check_pins"):
         out.append("Zener check on pins " + ", ".join(t["check_pins"]))
     if t.get("check_ambient"):
@@ -233,7 +291,7 @@ def statement(path, key, root=None):
         pins = "; ".join(f"{p.get('number', '')} {p.get('name', '')} ({p.get('type', '')}): {p.get('function', '')}"
                          for p in data.get("pin", []))
         return f"Pinout of {path.name}: {pins}"
-    t = (data.get("param") or {})[key]
+    t = row_table(path, key)
     vals = values_text(t)
     if not vals:
         return "Fix first: the row has no min, typ or max"
@@ -302,7 +360,7 @@ def statement_card(path, key, root=None):
         return {"title": f"Pinout of {path.name}", "lines": [], "note": "", "note_open": False, "fix": "",
                 "pins": [(str(p.get("number", "")), p.get("name", ""), p.get("type", ""), p.get("function", ""))
                          for p in data.get("pin", [])]}
-    t = (data.get("param") or {})[key]
+    t = row_table(path, key)
     title = pretty(f"{t['symbol']} \u2014 {t.get('name', '')}" if t.get("symbol") else t.get("name", ""))
     card = {"title": title, "lines": [], "note": "", "note_open": False, "fix": ""}
     from .readme import shown

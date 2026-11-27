@@ -166,28 +166,65 @@ def choose(rows, capacitance, rated_voltage, dielectric, tolerance=None):
     return found[0]
 
 
-def export_stamp_date(folder, catalog_path, dielectric):
-    """Date of the human export-check stamp of one dielectric group (review/export_check.toml, docs/spec/capacitor.md
-    "Export check"), or None: no record, no stamp for the group, or a record made from another catalog.csv (stale)."""
+HUMAN_GROUP_RE = re.compile(r"human:([A-Za-z0-9][A-Za-z0-9-]{0,38}) (\d{4}-\d{2}-\d{2}) export-check group (\S+)")
+MACHINE_GROUP_RE = re.compile(r"machine export-check (\d{4}-\d{2}-\d{2}) ([0-9a-f]{12})")
+
+
+def parse_group_stamp(verified):
+    """The `verified` line of a group in review/export_check.toml (docs/spec/capacitor.md "Export check"): the machine form
+    `machine export-check <date> <group_sha256[:12]>` gives {"kind": "machine", "date", "sha12"}; the legacy human form
+    `human:<login> <date> export-check group <dielectric>` gives {"kind": "human", "date", "who", "group"}. None when it is
+    neither (malformed). Shared by lib.check and the readers below."""
+    if not isinstance(verified, str):
+        return None
+    if m := MACHINE_GROUP_RE.fullmatch(verified):
+        return {"kind": "machine", "date": m[1], "sha12": m[2]}
+    if m := HUMAN_GROUP_RE.fullmatch(verified):
+        return {"kind": "human", "date": m[2], "who": m[1], "group": m[3]}
+    return None
+
+
+def current_groups(folder, catalog_path):
+    """{dielectric: {"kind", "date", "rows"}} of the groups of review/export_check.toml whose record is current, read
+    offline: the record's catalog hash is the committed catalog.csv's; a machine line also has its 12 hex digits equal to
+    the record's group_sha256 and the record's tables_sha256 equal to the current decode tables; a human line names its own
+    group. Empty when there is no record or it is stale."""
+    from . import catalog as _catalog  # catalog imports this module: import it late
     try:
         with open(Path(folder) / "review" / "export_check.toml", "rb") as fh:
             record = tomllib.load(fh)
         catalog_sha = hashlib.sha256(Path(catalog_path).read_bytes()).hexdigest()
     except (OSError, tomllib.TOMLDecodeError):
-        return None
+        return {}
     if record.get("catalog", {}).get("sha256") != catalog_sha:
-        return None
-    verified = record.get("group", {}).get(dielectric, {}).get("verified") or ""
-    m = re.fullmatch(r"human:\S+ (\d{4}-\d{2}-\d{2}) export-check group \S+", verified)
-    return m[1] if m else None
+        return {}
+    out = {}
+    for d, g in (record.get("group") or {}).items():
+        stamp = parse_group_stamp(g.get("verified"))
+        if stamp is None:
+            continue
+        if stamp["kind"] == "human" and stamp["group"] != d:
+            continue
+        if stamp["kind"] == "machine" and (stamp["sha12"] != str(g.get("group_sha256", ""))[:12]
+                                           or record.get("tables_sha256") != _catalog.tables_sha256()):
+            continue
+        out[d] = {"kind": stamp["kind"], "date": stamp["date"], "rows": g.get("rows", 0)}
+    return out
+
+
+def export_stamp_date(folder, catalog_path, dielectric):
+    """Date of the current export-check line (machine or legacy human) of one dielectric group, or None: no record, no
+    line for the group, a malformed or stale line (docs/spec/capacitor.md "Export check")."""
+    g = current_groups(folder, catalog_path).get(dielectric)
+    return g["date"] if g else None
 
 
 def selection_params(row, stamp_date=None):
     """(capacitance, tolerance, rated_v) Params for one catalog row, SI. The row's `source` is their cite. stamp_date: the
-    date of the group's human export-check stamp (export_stamp_date); None means the values are unverified."""
+    date of the group's current export-check line (export_stamp_date); None means the values are unverified."""
     delta = row.c * row.tolerance_fraction()
     # Machine-readable manufacturer export, parsed by tested code: no person or model transcribed these numbers. The
-    # `verified` stamp says so (method) and is dated by the human stamp of the group; no stamp -> unverified (fail safe).
+    # `verified` stamp says so (method) and is dated by the group's export-check line; no current line -> unverified (fail safe).
     verified = (f"manufacturer-export {stamp_date} machine-readable product list parsed by lib.catalog, no transcription"
                 if stamp_date else None)
     note = "From the manufacturer catalog (catalog.csv), not a datasheet table. " \

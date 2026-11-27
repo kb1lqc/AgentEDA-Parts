@@ -2,7 +2,7 @@
 
 # GCM21A
 
-Checked by a person: 0 of 16 rows that matter (45 rows in all). Review: python3 tools/review.py GCM21A; 3 used values not covered (catalog.csv, series)
+Checked by a person: 0 of 16 rows that matter (45 rows in all). Review: python3 tools/review.py GCM21A; 163 catalog rows derived, checked (export-check record)
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

@@ -2,7 +2,7 @@
 
 # INA241DGK
 
-Checked by a person: 0 of 21 rows that matter (57 rows in all). Review: python3 tools/review.py INA241DGK; 21 used values not covered (variants.toml)
+Checked by a person: 0 of 51 rows that matter (87 rows in all). Review: python3 tools/review.py INA241DGK
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

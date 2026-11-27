@@ -81,9 +81,33 @@ class GroupsTests(unittest.TestCase):
         gs = {g["dielectric"]: g for g in self.groups()}
         self.assertIsNotNone(gs["C0G"]["stamp"])
         self.assertFalse(gs["C0G"]["tickable"])
-        self.assertTrue(gs["X7R"]["tickable"])
+        self.assertFalse(gs["X7R"]["tickable"])  # a machine line was written for the group not stamped
         self.assertNotIn('value="GCM21B:group:C0G"', R.group_html(gs["C0G"]))
-        self.assertIn("Ticked by reviewer", R.group_html(gs["C0G"]))
+        self.assertIn("Ticked by reviewer", R.group_html(gs["C0G"]))  # legacy human line still shown
+
+    def test_machine_group_is_derived_checked_and_not_tickable(self):
+        CAT.main(["export-check", str(self.export), str(self.folder)])
+        self.assertEqual(len(self.groups()), 2)
+        gs = {g["dielectric"]: g for g in self.groups()}
+        for g in gs.values():
+            self.assertFalse(g["tickable"])
+            text = R.group_html(g)
+            self.assertIn("derived, checked", text)
+            self.assertNotIn('class="ok"', text)
+            self.assertNotIn("Ticked by", text)
+
+    def test_machine_group_with_other_tables_is_tickable_again(self):
+        CAT.main(["export-check", str(self.export), str(self.folder)])
+        with mock.patch.dict(CAT.TOLERANCE, {"Z": "+/-99%"}):
+            self.assertEqual(len(self.groups()), 2)
+            self.assertTrue(all(g["tickable"] for g in self.groups()))
+
+    def test_human_line_naming_another_group_is_not_current(self):
+        CAT.main(["export-check", str(self.export), str(self.folder), "--stamp", "reviewer"])
+        rec = self.folder / "review" / "export_check.toml"
+        rec.write_text(rec.read_text().replace("export-check group C0G", "export-check group X7R"))
+        gs = {g["dielectric"]: g for g in self.groups()}
+        self.assertTrue(gs["C0G"]["tickable"])
 
     def test_missing_export_is_a_visible_group_not_a_tick(self):
         self.export.unlink()

@@ -32,7 +32,7 @@ package_alternates = ["W", "J", "V"]     # other letters: the same part in other
   the `#` package placeholder). It is not a datasheet table and says so in every Param `note`; per-dielectric and
   per-size rows still cite the reference sheet (`DS p.`).
   The catalog Params (capacitance, tolerance, rated_v) carry `verified = "manufacturer-export <stamp date> ..."`, where
-  the date is the date of the group's human export-check stamp (no stamp: unverified, the same rule as every other
+  the date is the date of the group's current export-check record (machine or legacy human; no current record: unverified, the same rule as every other
   part's `verified` date; the export file name in the cite does not set it):
   machine-readable data parsed by tested code, not transcribed; a source without a date leaves them unverified.
 - **Generating the catalog.** `python3 -m lib.catalog murata-gcm <vendor csv> <component dir> [--dielectrics X7R,C0G]`
@@ -90,10 +90,9 @@ package_alternates = ["W", "J", "V"]     # other letters: the same part in other
 
 ## Export check (review of catalog.csv)
 
-Status: the comparison, group hashes, the `export-check` command, the record `review/export_check.toml`, the human
-group stamp (`export-check <export> <dir> --stamp <login>`, refused for agents) and the `lib.check` rules are
-implemented (`lib/catalog.py`, `lib/check.py`, tests in `tests/test_catalog_export.py`). Not yet: the review page
-showing groups. A capacitor series' catalog rows are reviewed through the export they cite, not
+Status: the comparison, group hashes, the `export-check` command, the record `review/export_check.toml` and the `lib.check`
+rules are implemented (`lib/catalog.py`, `lib/check.py`, tests in `tests/test_catalog_export.py`). The legacy human group
+stamp (`export-check <export> <dir> --stamp <login>`, refused for agents) is still accepted. A capacitor series' catalog rows are reviewed through the export they cite, not
 through a datasheet table (there is none per part). Export: the manufacturer product-list CSV named in the `source`
 cite, which must be a file under `docs/datasheets/` or `docs/vendor/`; the cite's file name must match it exactly.
 The export is used **in addition to** the datasheet PDFs, not instead of them: the PDFs (the reference sheet of each
@@ -113,17 +112,33 @@ values (capacitance, tolerance, rated voltage, thickness) that the PDFs do not p
   the export file name, the row count, each dielectric group's row count and hash, and the first differences. On MATCH
   it writes `review/export_check.toml`: the export file name and SHA-256, the catalog SHA-256, and per group `rows` and
   `group_sha256`. On MISMATCH it writes nothing. `lib.check` allows this file under `review/` (`docs/spec/review.md`).
-- **Human check.** One person tick per group: a group is the catalog rows of one size directory with one dielectric
-  (for example, GCM21B C0G, GCM21B X7R), and only after `MATCH` for those rows. The tick is recorded as a stamp that
-  names the export SHA-256, the catalog SHA-256, the group (dielectric), the row count, and a hash of the group's
-  sorted export and catalog rows (format to be set in `docs/spec/review.md`). A tick is current only while all of
-  those still match; any changed, added or removed row makes it stale.
-- **Review page.** The group shows one line per distinct capacitance, tolerance and rated-voltage combination in it,
-  each with its export row (the printed columns), not one line per catalog row. The status line reads, for example,
-  "GCM21B C0G: 42 rows, MATCH, ticked by <login> <date>".
+- **Machine record (derived rows).** A group is the catalog rows of one size directory with one dielectric (for example,
+  GCM21B C0G, GCM21B X7R). Its per-part values need no human tick. `python3 -m lib.catalog export-check` writes
+  `review/export_check.toml` on MATCH, with per group `verified = "machine export-check <YYYY-MM-DD> <group_sha256[:12]>"`
+  and `rows`, and the top-level `tables_sha256`. Each record group must be a dielectric in the catalog, and its `rows`
+  must equal that dielectric's catalog row count. `tables_sha256` is the SHA-256 of the five decode dictionaries (SIZE,
+  THICKNESS, DIELECTRIC, VOLTAGE, TOLERANCE) in `lib/catalog.py`, a stable sorted JSON dump; it is not a hash of the
+  decode logic. It binds MACHINE lines only. A changed catalog, group or tables hash makes a machine record STALE: the
+  machine group is not current. A legacy human line (`human:<login> <date> export-check group <dielectric>`) stays valid
+  while its group hash is unchanged, even when the tables hash changes; a changed group is rewritten without a human line.
+- **Decode tables check (not per row).** Derived rows need no per-row agent spot-check. The Sonnet adversarial reviewer
+  checks the decode tables against the datasheet part-numbering page once per Murata family, limited to the codes those
+  sheets print. A reference sheet prints only its own part's codes; the other codes are export-confirmed, not
+  datasheet-confirmed. A changed tables hash forces a re-check.
+- **Verdict.** A current machine or legacy human group record counts its catalog rows as checked. Derived rows are not
+  in `lib.human_review_needed()`; `lib/review_status.py` shows them "derived, checked", never "needs check".
+- **Trust (level SHADOW, `tools/TRUST.md`).** The export (`docs/vendor`, git-ignored) is not available in CI. CI runs the
+  offline decode of each committed row, the catalog hash, the tables hash binding and the record form. The full
+  comparison (evidence mode) runs locally. Not closed in CI: a fabricated but self-consistent part number not on the
+  manufacturer list. A machine record is an agreement record, not proof; export vs factory is not proven; DC bias and
+  aging are unchanged.
+- **Review page.** Each group shows one line per distinct capacitance, tolerance and rated-voltage combination, with its
+  export row (the printed columns), not one line per catalog row. The status line reads, for example,
+  "GCM21B C0G: 42 rows, MATCH, derived, checked". The group tick box and the `--stamp` publish call for groups are
+  legacy-only: no new ticks.
 - **Not covered.** The comparison proves the catalog agrees with the export, not that the export agrees with the
   factory. Values the export does not print (DC bias, aging) stay as they are.
 
-Open items for the reviewer: (1) the group unit (size and dielectric) is the default; confirm it; (2) whether the Murata export
-must be the one dated in the cite (2026-11-14) or any export that passes the check; (3) the cite file name in every
+Open items for the reviewer: (1) whether the Murata export
+must be the one dated in the cite (2026-11-14) or any export that passes the check; (2) the cite file name in every
 catalog.csv (currently `gcm-series-product-list-2026-11-14.csv`, the file on disk is `series-product-list.csv`).

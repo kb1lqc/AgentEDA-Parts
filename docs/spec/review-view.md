@@ -7,27 +7,32 @@ A tick means "this statement of the row matches the datasheet": values, column, 
 and how the library uses the row, not only the digits.
 
 **Rows that matter** (computed from this repo only, so READMEs are the same in every checkout):
-1. `kind = "abs_max"` or `kind = "mechanical"`;
+1. `kind = "abs_max"`, or `kind = "mechanical"` unless the key starts with `beam_load`, `solderability`, `mass` or
+   `weight` (assembly and test acceptance criteria and mass are no package dimension or land row; they matter only
+   through rule 3). The suffix after the prefix (`_c0g`, `_682_c0g`) is a variant of the row;
 2. `kind = "thermal"` whose `symbol` contains `JC` (any case): RthJC, ZthJC, theta_JC; or whose `symbol`, upper case
    with non-alphanumerics removed, is `TJMAX` (maximum junction temperature). Other thermal and `rec_op`
    rows matter only through rule 3;
-3. used: the key is a value in this part's `calc.py` INPUTS (a `.min`/`.typ`/`.max` suffix is dropped), a quoted
+3. used: the key is a value in this part's `calc.py` INPUTS (a `.min`/`.typ`/`.max` suffix is dropped; the capacitor
+   selection alias `tc` stands for every row `[part] tc_param` names, so `tc_x7r` and `tc_c0g` are used, see
+   `docs/spec/capacitor.md`), a quoted
    string in `examples/*.py` (risk_rank's text match; over-marking is the safe direction), or the row has
    `check_pins` or `check_ambient`;
 4. the pinout: one row named `pinout` for every part with `[[pin]]` entries (see "Pinout stamp").
+An override (`[variant."X".param.K]` in variants.toml) is a row that matters when its base row matters or its key is in calc INPUTS (rule 3); it is listed as `variant.<V>.<key>`.
 `--block` only narrows the page to the rows that block uses; it never changes a part's status.
-A used value the ledger does not cover cannot be stamped: a used key in `variants.toml`, `catalog.csv` or resistor
-series values, and every `variants.toml` override of a row that matters. It is listed as `not covered` (by file) and is
-not counted in k or n. The name `pinout` is reserved: `[param.pinout]` is a lib.check error.
+A used value the ledger does not cover cannot be stamped: a used key in `variants.toml` that is not an
+override, or resistor series values. It is listed as `not covered` (by file) and is not counted in k or n. Overrides are
+never listed here: an override that matters is a row that matters (counted in k and n); one that does not is `REFERENCE`. Capacitor-series catalog values are covered by the export record (`docs/spec/capacitor.md`), not by rows here, and are not listed. The name `pinout` is reserved: `[param.pinout]` is a lib.check error.
 
 **Status per row:** `checked` (ledger `HUMAN_VERIFIED` and a current human stamp, the rule of
 `lib.human_review_needed()`; READMEs read the ledger only) · `needs check` (a row that matters, not checked) ·
 `reference` (every other row). **Per part (one directory, family or not):** k = checked rows that matter, n = rows
-that matter, M = all rows; released when k == n > 0. A row whose hash changes after its stamp is `needs check` again.
+that matter (each override that matters counts, no dedupe), M = all rows; released when k == n > 0. A row whose hash changes after its stamp is `needs check` again.
 
 **Part README** line 5: `Released: all <n> rows that matter checked (<M> rows in all).` or
 `Checked by a person: <k> of <n> rows that matter (<M> rows in all). Review: python3 tools/review.py <Value>`,
-plus `; <c> used values not covered (<files>)` when c > 0. The `Checked` column stays.
+plus `; <c> used values not covered (<files>)` when c > 0. `released` is unchanged (human rows only). The `Checked` column stays.
 **Top README:** a generated table between `<!-- review-status:start -->` and `<!-- review-status:end -->`: Part,
 Status (`released` or `k of n`), Review command; one line per component directory, sorted by path.
 

@@ -12,7 +12,7 @@ pdf_sha256 = "7276cd9d7e5409cb34fae381aa71b729ef43910e8a1fdfa8b0d8d8924c873744"
 pages = 33
 text_layer = true
 component_sha256 = "518b9e54222212f490e3f987182b1b725f71e7eda5be72f828db2ed67d855714"
-render = "NOT_RENDERED"
+render = "complete"
 backfill = "git blame"
 sheets = { "GCM32E5C2J223FX03-00B-EN.pdf" = "6c5a5dc0d71b17c9ea61674bc6a68b08a2a84140dd7be5316eab2c81098d2991", "GCM32ER71C226ME19-01A-EN.pdf" = "7276cd9d7e5409cb34fae381aa71b729ef43910e8a1fdfa8b0d8d8924c873744" }
 
@@ -1321,7 +1321,7 @@ text_snippet = "(no text-layer line located)"
 [row.tc_c0g]
 state = "NEW"
 status = "UNSURE"
-reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/GCM32E5C2J223FX03-00B-EN.pdf); not rendered"
+reason = "fallback (full page): symbol 'TC' not found as a table row; text check: UNSURE partial-scope row"
 hash = "9aa91f34ca32797877d2aa5733182bdcba079d53af396f6b98ff5e36ccae83db"
 pdf_sha256 = "6c5a5dc0d71b17c9ea61674bc6a68b08a2a84140dd7be5316eab2c81098d2991"
 sheet = "GCM32E5C2J223FX03-00B-EN.pdf"

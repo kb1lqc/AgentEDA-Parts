@@ -2,7 +2,7 @@
 
 # ERJ-3EKF
 
-Released: all 14 rows that matter checked (25 rows in all).
+Released: all 13 rows that matter checked (25 rows in all).
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 
