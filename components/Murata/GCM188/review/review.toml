@@ -11,14 +11,16 @@ datasheet_rev = "01A"
 pdf_sha256 = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a"
 pages = 32
 text_layer = true
-component_sha256 = "5989b29598ea00d62e910424e8546d25b99a10e9181e09f5f0ae55a218014d86"
+component_sha256 = "b364847d6e3641db92ca3594b2007586641ab5c04eacab51a5c669f33cb2dba4"
 render = "complete"
 backfill = "git blame"
 sheets = { "GCM1885C1H101GA16-01A-EN.pdf" = "0f6e6a1b2bd8caa59b44ecbe0fe2fa027c5825c5211762b5905be76f3049b250", "GCM188R71H104KA57-01A-EN.pdf" = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a" }
 
 [pinout]
-state = "NEW"
+state = "HUMAN_VERIFIED"
 hash = "b78130ca19ed0eade2fb8cbf7eb362327e8855e063f1ae174954c0bdb57b1a3b"
+stamp = "human:kb1lqc 2026-11-27 page-image pinout 5a29828795fe pins b78130ca19ed"
+stamp_hash = "b78130ca19ed0eade2fb8cbf7eb362327e8855e063f1ae174954c0bdb57b1a3b"
 pdf_sha256 = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a"
 
 [[pinout.page]]
@@ -30,14 +32,13 @@ dpi = 150
 render_key = "9a39b49c40185e13"
 
 [row.land_a]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'a' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "08ed5016bb77c0e233a964163e02baff7c7916a2bea5f2d58b2d9865abc24e4e"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row 08ed5016bb77"
 stamp_hash = "08ed5016bb77c0e233a964163e02baff7c7916a2bea5f2d58b2d9865abc24e4e"
 pdf_sha256 = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a"
-baseline = true
 printed_page = 27
 pdf_page = 27
 toml_lines = "75-86"
@@ -49,17 +50,16 @@ crop_box = "full_page"
 dpi = 150
 render_key = "22dc482d50b75cc9"
 text_snippet = "                               Series                                                Chip(L\u00d7W)                             a              b              c\n                         Flow soldering can only be used for products with a chip size of 1.6x0.8mm to 3.2x1.6mm.                                                  (in mm)\n                               Series                                                                                       a             b              c"
-stamped_toml = "[param.land_a]\nname       = \"Land pattern dimension a (reflow)\"\nsymbol     = \"a\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.6\nmax        = 0.8\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 1.6x0.8 (+/-0.10), chip code 18\"\ncite       = \"DS p.27, 2. Land Dimensions, Table 2 Reflow Soldering Method, 1.6x0.8 (+/-0.10), a\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed).\""
+stamped_toml = "[param.land_a]\nname       = \"Land pattern dimension a (reflow)\"\nsymbol     = \"a\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.6\nmax        = 0.8\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 1.6x0.8 (+/-0.10), chip code 18\"\ncite       = \"DS p.27, 2. Land Dimensions, Table 2 Reflow Soldering Method, 1.6x0.8 (+/-0.10), a\"\nverified   = \"human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row 08ed5016bb77\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: gap between lands (not printed).\""
 
 [row.land_b]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'b' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "1d043cb5c6f1d642654a97b62499999618ae9b34803be6eaed520fc468d5f95c"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row 1d043cb5c6f1"
 stamp_hash = "1d043cb5c6f1d642654a97b62499999618ae9b34803be6eaed520fc468d5f95c"
 pdf_sha256 = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a"
-baseline = true
 printed_page = 27
 pdf_page = 27
 toml_lines = "88-99"
@@ -71,17 +71,16 @@ crop_box = "full_page"
 dpi = 150
 render_key = "22dc482d50b75cc9"
 text_snippet = "                               Series                                                Chip(L\u00d7W)                             a              b              c\n                               Series                                                                                       a             b              c"
-stamped_toml = "[param.land_b]\nname       = \"Land pattern dimension b (reflow)\"\nsymbol     = \"b\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.6\nmax        = 0.7\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 1.6x0.8 (+/-0.10), chip code 18\"\ncite       = \"DS p.27, 2. Land Dimensions, Table 2 Reflow Soldering Method, 1.6x0.8 (+/-0.10), b\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed).\""
+stamped_toml = "[param.land_b]\nname       = \"Land pattern dimension b (reflow)\"\nsymbol     = \"b\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.6\nmax        = 0.7\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 1.6x0.8 (+/-0.10), chip code 18\"\ncite       = \"DS p.27, 2. Land Dimensions, Table 2 Reflow Soldering Method, 1.6x0.8 (+/-0.10), b\"\nverified   = \"human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row 1d043cb5c6f1\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: land length, outer side (not printed).\""
 
 [row.land_c]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'c' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "10619f411f80653e574c5bcd818cd7348820f7b2e388636f7f317dcb8d1044ec"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row 10619f411f80"
 stamp_hash = "10619f411f80653e574c5bcd818cd7348820f7b2e388636f7f317dcb8d1044ec"
 pdf_sha256 = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a"
-baseline = true
 printed_page = 27
 pdf_page = 27
 toml_lines = "101-112"
@@ -93,7 +92,7 @@ crop_box = "full_page"
 dpi = 150
 render_key = "22dc482d50b75cc9"
 text_snippet = "                               Series                                                Chip(L\u00d7W)                             a              b              c\n                               Series                                                                                       a             b              c"
-stamped_toml = "[param.land_c]\nname       = \"Land pattern dimension c (reflow)\"\nsymbol     = \"c\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.6\nmax        = 0.8\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 1.6x0.8 (+/-0.10), chip code 18\"\ncite       = \"DS p.27, 2. Land Dimensions, Table 2 Reflow Soldering Method, 1.6x0.8 (+/-0.10), c\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed).\""
+stamped_toml = "[param.land_c]\nname       = \"Land pattern dimension c (reflow)\"\nsymbol     = \"c\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.6\nmax        = 0.8\nunit       = \"mm\"\nconditions = \"Reflow soldering, chip 1.6x0.8 (+/-0.10), chip code 18\"\ncite       = \"DS p.27, 2. Land Dimensions, Table 2 Reflow Soldering Method, 1.6x0.8 (+/-0.10), c\"\nverified   = \"human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row 10619f411f80\"\nnote       = \"Letter label only in the DS figure; neutral name. Inferred meaning: land width across the chip (not printed).\""
 
 [row.capacitance_ds]
 state = "NEW"
@@ -150,14 +149,13 @@ render_key = "9a39b49c40185e13"
 text_snippet = "(no text-layer line located)"
 
 [row.thickness_t]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): committed min, typ, max not printed in the matched row group (wrong row?); text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "de1dfd0932c5cab51c4a57353e09626905c45107241e06a752293e77f77742f7"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row de1dfd0932c5"
 stamp_hash = "de1dfd0932c5cab51c4a57353e09626905c45107241e06a752293e77f77742f7"
 pdf_sha256 = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a"
-baseline = true
 printed_page = 2
 pdf_page = 2
 toml_lines = "158-171"
@@ -169,17 +167,16 @@ crop_box = "full_page"
 dpi = 150
 render_key = "9a39b49c40185e13"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.thickness_t]\nparts = [\"GCM188R71H104KA57\"]\nname       = \"Thickness (T)\"\nsymbol     = \"T\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.7\ntyp        = 0.8\nmax        = 0.9\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, T (0.8+/-0.1)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"min and max are the printed nominal 0.8 -/+ 0.1 (arithmetic).\""
+stamped_toml = "[param.thickness_t]\nparts = [\"GCM188R71H104KA57\"]\nname       = \"Thickness (T)\"\nsymbol     = \"T\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.7\ntyp        = 0.8\nmax        = 0.9\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, T (0.8+/-0.1)\"\nverified   = \"human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row de1dfd0932c5\"\nnote       = \"min and max are the printed nominal 0.8 -/+ 0.1 (arithmetic).\""
 
 [row.dim_e]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "vendor 'Murata' not in the text-check tested set; row found by symbol, row group of 2 lines; no footnote marker on the row or header"
 hash = "900ea78e6833ce5a5bea98c67e0763b8870812052e4c4e2f0d737ab2963de820"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row 900ea78e6833"
 stamp_hash = "900ea78e6833ce5a5bea98c67e0763b8870812052e4c4e2f0d737ab2963de820"
 pdf_sha256 = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a"
-baseline = true
 printed_page = 2
 pdf_page = 2
 toml_lines = "173-184"
@@ -195,17 +192,16 @@ header_sha256 = "091be2f679fb5f39f1604c4ab02036503abf448501fd21399b18965153fb4e5
 header_box = [35.2, 57.8, 663.5, 135.4]
 header_key = "e6d0343c3e857319"
 text_snippet = "        Please refer to the product information page for more information on ceramic capacitors.   \u2192 Ceramic capacitor product information\n        Various data can be obtained directly from the product search. \u2192 Product search (SMD)\u200b\n    \u25a0 MURATA Part No. System\n                                           (L\u00d7W)                   (T)                     Characteristics       Voltage                                  Tolerance      Specification\n         1.6+/-0.1      0.8+/-0.1                     0.8+/-0.1              0.2 to 0.5             0.5 min."
-stamped_toml = "[param.dim_e]\nparts = [\"GCM188R71H104KA57\"]\nname       = \"Terminal width (e)\"\nsymbol     = \"e\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.2\nmax        = 0.5\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, e (0.2 to 0.5)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\""
+stamped_toml = "[param.dim_e]\nparts = [\"GCM188R71H104KA57\"]\nname       = \"Terminal width (e)\"\nsymbol     = \"e\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.2\nmax        = 0.5\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, e (0.2 to 0.5)\"\nverified   = \"human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row 900ea78e6833\""
 
 [row.dim_g]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "vendor 'Murata' not in the text-check tested set; row found by symbol, row group of 2 lines; no footnote marker on the row or header"
 hash = "7fa845debff5829c34ab5ab4f2e7a21b893a4c388c505c9c8a32adf151dbdedf"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row 7fa845debff5"
 stamp_hash = "7fa845debff5829c34ab5ab4f2e7a21b893a4c388c505c9c8a32adf151dbdedf"
 pdf_sha256 = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a"
-baseline = true
 printed_page = 2
 pdf_page = 2
 toml_lines = "186-197"
@@ -221,7 +217,7 @@ header_sha256 = "091be2f679fb5f39f1604c4ab02036503abf448501fd21399b18965153fb4e5
 header_box = [35.2, 57.8, 663.5, 135.4]
 header_key = "e6d0343c3e857319"
 text_snippet = "        Please refer to the product information page for more information on ceramic capacitors.   \u2192 Ceramic capacitor product information\n        Various data can be obtained directly from the product search. \u2192 Product search (SMD)\u200b\n    \u25a0 MURATA Part No. System\n                                           (L\u00d7W)                   (T)                     Characteristics       Voltage                                  Tolerance      Specification\n         1.6+/-0.1      0.8+/-0.1                     0.8+/-0.1              0.2 to 0.5             0.5 min."
-stamped_toml = "[param.dim_g]\nparts = [\"GCM188R71H104KA57\"]\nname       = \"Gap between terminals (g)\"\nsymbol     = \"g\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.5\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, g (0.5 min.)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed as a minimum only; no max stored.\""
+stamped_toml = "[param.dim_g]\nparts = [\"GCM188R71H104KA57\"]\nname       = \"Gap between terminals (g)\"\nsymbol     = \"g\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.5\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, g (0.5 min.)\"\nverified   = \"human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row 7fa845debff5\"\nnote       = \"Printed as a minimum only; no max stored.\""
 
 [row.df_25c]
 state = "NEW"
@@ -714,14 +710,13 @@ render_key = "37a46402e21be909"
 text_snippet = "(no text-layer line located)"
 
 [row.length]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): committed min, typ, max not printed in the matched row group (wrong row?); text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "c10e84e2463332c53f25b58ef3436a782aa2540669fab69d3d6b5545c6375655"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row c10e84e24633"
 stamp_hash = "c10e84e2463332c53f25b58ef3436a782aa2540669fab69d3d6b5545c6375655"
 pdf_sha256 = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a"
-baseline = true
 printed_page = 2
 pdf_page = 2
 toml_lines = "510-523"
@@ -733,17 +728,16 @@ crop_box = "full_page"
 dpi = 150
 render_key = "9a39b49c40185e13"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.length]\nparts = [\"GCM188R71H104KA57\"]\nname       = \"Length (L)\"\nsymbol     = \"L\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.5\ntyp        = 1.6\nmax        = 1.7\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, L (1.6+/-0.1)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"min and max are the printed nominal 1.6 -/+ 0.1 (arithmetic); the DS prints 1.6+/-0.1.\""
+stamped_toml = "[param.length]\nparts = [\"GCM188R71H104KA57\"]\nname       = \"Length (L)\"\nsymbol     = \"L\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.5\ntyp        = 1.6\nmax        = 1.7\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, L (1.6+/-0.1)\"\nverified   = \"human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row c10e84e24633\"\nnote       = \"min and max are the printed nominal 1.6 -/+ 0.1 (arithmetic); the DS prints 1.6+/-0.1.\""
 
 [row.width]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'W' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "8a6beb1b4d064b43649050f7fdb05623613fefaac80549f03c43592835f1e86c"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row 8a6beb1b4d06"
 stamp_hash = "8a6beb1b4d064b43649050f7fdb05623613fefaac80549f03c43592835f1e86c"
 pdf_sha256 = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a"
-baseline = true
 printed_page = 2
 pdf_page = 2
 toml_lines = "525-538"
@@ -755,17 +749,16 @@ crop_box = "full_page"
 dpi = 150
 render_key = "9a39b49c40185e13"
 text_snippet = "       W                     \u03c6180mm Reel PAPER Tape W8P2                                         8000 pcs./Reel"
-stamped_toml = "[param.width]\nparts = [\"GCM188R71H104KA57\"]\nname       = \"Width (W)\"\nsymbol     = \"W\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.7\ntyp        = 0.8\nmax        = 0.9\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, W (0.8+/-0.1)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"min and max are the printed nominal 0.8 -/+ 0.1 (arithmetic); the DS prints 0.8+/-0.1.\""
+stamped_toml = "[param.width]\nparts = [\"GCM188R71H104KA57\"]\nname       = \"Width (W)\"\nsymbol     = \"W\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.7\ntyp        = 0.8\nmax        = 0.9\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2, Type & Dimension, W (0.8+/-0.1)\"\nverified   = \"human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row 8a6beb1b4d06\"\nnote       = \"min and max are the printed nominal 0.8 -/+ 0.1 (arithmetic); the DS prints 0.8+/-0.1.\""
 
 [row.tc_x7r]
-state = "STALE"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'TC' not found as a table row; text check: UNSURE unit '%' not comparable"
 hash = "807e0dd8405d8ac46a38a867085998fd6837c135d1f817f918b490bb9a12b93a"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
-stamp_hash = "e338cb2235b40e104f9a44958e166a2f80cb7abdd18a9e04206c58a77f257388"
+stamp = "human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row 807e0dd8405d"
+stamp_hash = "807e0dd8405d8ac46a38a867085998fd6837c135d1f817f918b490bb9a12b93a"
 pdf_sha256 = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a"
-baseline = true
 printed_page = 2
 pdf_page = 2
 toml_lines = "540-552"
@@ -777,17 +770,16 @@ crop_box = "full_page"
 dpi = 150
 render_key = "9a39b49c40185e13"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.tc_x7r]\ndielectric = \"X7R\"\nname       = \"Temperature characteristic, R7 (X7R)\"\nsymbol     = \"TC\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = -15\nmax        = 15\nunit       = \"%\"\nconditions = \"Ref. temp 25 degC; temp range -55 to 125 degC; capacitance change over temperature\"\ncite       = \"DS p.2, Rated Value, Temp. coeff. or Cap. Change (-15 to 15 %)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Public STD code X7R (EIA). Capacitance change over temperature, not a DC-bias or aging limit (see the open items above). Read from the reference sheet of the one part this directory has; used for every X7R catalog row because -15 to 15 % over -55 to 125 degC is the X7R class limit the sheet prints for code R7 (open item: confirm for each other X7R part).\""
+stamped_toml = "[param.tc_x7r]\ndielectric = \"X7R\"\nname       = \"Temperature characteristic, R7 (X7R)\"\nsymbol     = \"TC\"\nkind       = \"electrical\"\nscope      = \"full\"\nmin        = -15\nmax        = 15\nunit       = \"%\"\nconditions = \"Ref. temp 25 degC; temp range -55 to 125 degC; capacitance change over temperature\"\ncite       = \"DS p.2, Rated Value, Temp. coeff. or Cap. Change (-15 to 15 %)\"\nverified   = \"human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row 807e0dd8405d\"\nnote       = \"X7R (EIA) temperature coefficient: capacitance change over temperature, not a DC-bias or aging limit. Read from the reference sheet of the one part in this directory; used for every X7R catalog row because -15 to 15 % over -55 to 125 degC is the X7R class limit printed for code R7 (open item: confirm for each other X7R part).\""
 
 [row.op_temp_x7r]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "91fe476c726445c93a5848b90b6569217daf91d3e259fdb11d1eb1384fd7eea9"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row 91fe476c7264"
 stamp_hash = "91fe476c726445c93a5848b90b6569217daf91d3e259fdb11d1eb1384fd7eea9"
 pdf_sha256 = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a"
-baseline = true
 printed_page = 2
 pdf_page = 2
 toml_lines = "554-566"
@@ -799,7 +791,7 @@ crop_box = "full_page"
 dpi = 150
 render_key = "9a39b49c40185e13"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.op_temp_x7r]\ndielectric = \"X7R\"\nname       = \"Operating temperature range\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = -55\nmax        = 125\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.2, Rated Value, Operating Temp. Range (-55 to 125 degC)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\ncheck_ambient = true\nnote       = \"Read from the reference sheet of the one part this directory has. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every X7R catalog row uses it.\""
+stamped_toml = "[param.op_temp_x7r]\ndielectric = \"X7R\"\nname       = \"Operating temperature range\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = -55\nmax        = 125\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.2, Rated Value, Operating Temp. Range (-55 to 125 degC)\"\nverified   = \"human:kb1lqc 2026-11-27 page-image ds_review 5a29828795fe row 91fe476c7264\"\ncheck_ambient = true\nnote       = \"Read from the reference sheet of the one part this directory has. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every X7R catalog row uses it.\""
 
 [row.self_heating]
 state = "NEW"
@@ -878,14 +870,13 @@ text_snippet = "(no text-layer line located)"
 stamped_toml = "[param.solderability]\nparts = [\"GCM188R71H104KA57\"]\nname       = \"Solderability: terminations soldered evenly and continuously\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 95\nunit       = \"%\"\nconditions = \"Specifications and Test Methods No.16 (a) test conditions\"\ncite       = \"DS p.5, Specifications and Test Methods, No.16 Solderability (a)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Assembly acceptance criterion, not a circuit limit.\""
 
 [row.tc_c0g]
-state = "STALE"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'TC' not found as a table row; text check: UNSURE partial-scope row"
 hash = "9a26912dda242362f95efc05875305a70d4da76d767e4b8bca61dd47238bb0a4"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
-stamp_hash = "59415bf843c598799d22008980bc37a2e8a4f3e371461ee7f257e557d1552bda"
+stamp = "human:kb1lqc 2026-11-27 page-image ds_review 0f6e6a1b2bd8 row 9a26912dda24"
+stamp_hash = "9a26912dda242362f95efc05875305a70d4da76d767e4b8bca61dd47238bb0a4"
 pdf_sha256 = "0f6e6a1b2bd8caa59b44ecbe0fe2fa027c5825c5211762b5905be76f3049b250"
-baseline = true
 sheet = "GCM1885C1H101GA16-01A-EN.pdf"
 printed_page = 2
 pdf_page = 2
@@ -898,17 +889,16 @@ crop_box = "full_page"
 dpi = 150
 render_key = "8f4e6efa9ed6e602"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.tc_c0g]\ndielectric = \"C0G\"\nname       = \"Temperature characteristic, C0G (EIA)\"\nsymbol     = \"TC\"\nkind       = \"electrical\"\nscope      = \"partial\"\nmin        = -30\nmax        = 30\nunit       = \"ppm/degC\"\nconditions = \"Ref. temp 25 degC; temp range printed as 25 to 125 degC; coefficient 0 +/-30 ppm/degC\"\ncite       = \"DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Rated Value, Temp. coeff. or Cap. Change (0+/-30 ppm/degC), Temp. Range (25 to 125 degC)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Public STD code C0G (EIA). A temperature coefficient, not a percent-change class. The DS prints the range 25 to 125 degC only: no coefficient is printed below 25 degC. The -55 to -10 degC capacitance drift is in the Table A rows (capdrift_*_c0g); the -10 to 25 degC segment has no printed number (open item). capacitance_worst_ppm requires dt and refuses values outside 0 to 100 degC (docs/SPEC.md, Capacitor series).\""
+stamped_toml = "[param.tc_c0g]\ndielectric = \"C0G\"\nname       = \"Temperature characteristic, C0G (EIA)\"\nsymbol     = \"TC\"\nkind       = \"electrical\"\nscope      = \"partial\"\nmin        = -30\nmax        = 30\nunit       = \"ppm/degC\"\nconditions = \"Ref. temp 25 degC; temp range printed as 25 to 125 degC; coefficient 0 +/-30 ppm/degC\"\ncite       = \"DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Rated Value, Temp. coeff. or Cap. Change (0+/-30 ppm/degC), Temp. Range (25 to 125 degC)\"\nverified   = \"human:kb1lqc 2026-11-27 page-image ds_review 0f6e6a1b2bd8 row 9a26912dda24\"\nnote       = \"C0G (EIA) temperature coefficient, not a percent-change class. Printed for 25 to 125 degC only. -55 to -10 degC drift is in the Table A rows (capdrift_*_c0g); -10 to 25 degC has no printed number (open item). capacitance_worst_ppm refuses dt outside 0 to 100 degC (docs/SPEC.md, Capacitor series).\""
 
 [row.op_temp_c0g]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): row has no symbol; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "4aac1fb7ef2bbf010b8c2326b74142a204f9a3a6d015fe1ac6bf9c69e1b761d3"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-27 page-image ds_review 0f6e6a1b2bd8 row 4aac1fb7ef2b"
 stamp_hash = "4aac1fb7ef2bbf010b8c2326b74142a204f9a3a6d015fe1ac6bf9c69e1b761d3"
 pdf_sha256 = "0f6e6a1b2bd8caa59b44ecbe0fe2fa027c5825c5211762b5905be76f3049b250"
-baseline = true
 sheet = "GCM1885C1H101GA16-01A-EN.pdf"
 printed_page = 2
 pdf_page = 2
@@ -921,7 +911,7 @@ crop_box = "full_page"
 dpi = 150
 render_key = "8f4e6efa9ed6e602"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.op_temp_c0g]\ndielectric = \"C0G\"\nname       = \"Operating temperature range\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = -55\nmax        = 125\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Rated Value, Operating Temp. Range (-55 to 125 degC)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\ncheck_ambient = true\nnote       = \"Read from the C0G reference sheet of GCM1885C1H101GA16. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every C0G catalog row uses it.\""
+stamped_toml = "[param.op_temp_c0g]\ndielectric = \"C0G\"\nname       = \"Operating temperature range\"\nkind       = \"rec_op\"\nscope      = \"na\"\nmin        = -55\nmax        = 125\nunit       = \"degC\"\nconditions = \"\"\ncite       = \"DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Rated Value, Operating Temp. Range (-55 to 125 degC)\"\nverified   = \"human:kb1lqc 2026-11-27 page-image ds_review 0f6e6a1b2bd8 row 4aac1fb7ef2b\"\ncheck_ambient = true\nnote       = \"Read from the C0G reference sheet of GCM1885C1H101GA16. lib.catalog refuses an export row whose Operating Temperature is not -55 to 125 degC, so every C0G catalog row uses it.\""
 
 [row.capdrift_m55_c0g]
 state = "NEW"
@@ -1061,14 +1051,13 @@ render_key = "8f4e6efa9ed6e602"
 text_snippet = "(no text-layer line located)"
 
 [row.length_c0g]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): committed min, typ, max not printed in the matched row group (wrong row?); text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "80b0c0bf9e63495f2bf2c84f32c7617aa1401597f2c5d09c6ba5690810226b27"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-27 page-image ds_review 0f6e6a1b2bd8 row 80b0c0bf9e63"
 stamp_hash = "80b0c0bf9e63495f2bf2c84f32c7617aa1401597f2c5d09c6ba5690810226b27"
 pdf_sha256 = "0f6e6a1b2bd8caa59b44ecbe0fe2fa027c5825c5211762b5905be76f3049b250"
-baseline = true
 sheet = "GCM1885C1H101GA16-01A-EN.pdf"
 printed_page = 2
 pdf_page = 2
@@ -1081,17 +1070,16 @@ crop_box = "full_page"
 dpi = 150
 render_key = "8f4e6efa9ed6e602"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.length_c0g]\nparts = [\"GCM1885C1H101GA16\"]\nname       = \"Length (L)\"\nsymbol     = \"L\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.5\ntyp        = 1.6\nmax        = 1.7\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, L (1.6+/-0.1)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"min and max are the printed nominal 1.6 -/+ 0.1 (arithmetic).\""
+stamped_toml = "[param.length_c0g]\nparts = [\"GCM1885C1H101GA16\"]\nname       = \"Length (L)\"\nsymbol     = \"L\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 1.5\ntyp        = 1.6\nmax        = 1.7\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, L (1.6+/-0.1)\"\nverified   = \"human:kb1lqc 2026-11-27 page-image ds_review 0f6e6a1b2bd8 row 80b0c0bf9e63\"\nnote       = \"min and max are the printed nominal 1.6 -/+ 0.1 (arithmetic).\""
 
 [row.width_c0g]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): symbol 'W' on 2 lines and the cite's row label does not pick one; text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "74fed7819193a6c7df190a7af004cb9eb6ec5caf12d1682296521791f49b2130"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-27 page-image ds_review 0f6e6a1b2bd8 row 74fed7819193"
 stamp_hash = "74fed7819193a6c7df190a7af004cb9eb6ec5caf12d1682296521791f49b2130"
 pdf_sha256 = "0f6e6a1b2bd8caa59b44ecbe0fe2fa027c5825c5211762b5905be76f3049b250"
-baseline = true
 sheet = "GCM1885C1H101GA16-01A-EN.pdf"
 printed_page = 2
 pdf_page = 2
@@ -1104,17 +1092,16 @@ crop_box = "full_page"
 dpi = 150
 render_key = "8f4e6efa9ed6e602"
 text_snippet = "       W                    \u03c6180mm Reel PAPER Tape W8P2                                          8000 pcs./Reel"
-stamped_toml = "[param.width_c0g]\nparts = [\"GCM1885C1H101GA16\"]\nname       = \"Width (W)\"\nsymbol     = \"W\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.7\ntyp        = 0.8\nmax        = 0.9\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, W (0.8+/-0.1)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"min and max are the printed nominal 0.8 -/+ 0.1 (arithmetic).\""
+stamped_toml = "[param.width_c0g]\nparts = [\"GCM1885C1H101GA16\"]\nname       = \"Width (W)\"\nsymbol     = \"W\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.7\ntyp        = 0.8\nmax        = 0.9\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, W (0.8+/-0.1)\"\nverified   = \"human:kb1lqc 2026-11-27 page-image ds_review 0f6e6a1b2bd8 row 74fed7819193\"\nnote       = \"min and max are the printed nominal 0.8 -/+ 0.1 (arithmetic).\""
 
 [row.thickness_t_c0g]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "fallback (full page): committed min, typ, max not printed in the matched row group (wrong row?); text check: UNSURE vendor 'Murata' not in the text-check tested set"
 hash = "e98a5bde574995a2a3bbe40ce07222776a6390dfb38ce4c5ba5ae6faafec17cc"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-27 page-image ds_review 0f6e6a1b2bd8 row e98a5bde5749"
 stamp_hash = "e98a5bde574995a2a3bbe40ce07222776a6390dfb38ce4c5ba5ae6faafec17cc"
 pdf_sha256 = "0f6e6a1b2bd8caa59b44ecbe0fe2fa027c5825c5211762b5905be76f3049b250"
-baseline = true
 sheet = "GCM1885C1H101GA16-01A-EN.pdf"
 printed_page = 2
 pdf_page = 2
@@ -1127,17 +1114,16 @@ crop_box = "full_page"
 dpi = 150
 render_key = "8f4e6efa9ed6e602"
 text_snippet = "(no text-layer line located)"
-stamped_toml = "[param.thickness_t_c0g]\nparts = [\"GCM1885C1H101GA16\"]\nname       = \"Thickness (T)\"\nsymbol     = \"T\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.7\ntyp        = 0.8\nmax        = 0.9\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, T (0.8+/-0.1)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"min and max are the printed nominal 0.8 -/+ 0.1 (arithmetic).\""
+stamped_toml = "[param.thickness_t_c0g]\nparts = [\"GCM1885C1H101GA16\"]\nname       = \"Thickness (T)\"\nsymbol     = \"T\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.7\ntyp        = 0.8\nmax        = 0.9\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, T (0.8+/-0.1)\"\nverified   = \"human:kb1lqc 2026-11-27 page-image ds_review 0f6e6a1b2bd8 row e98a5bde5749\"\nnote       = \"min and max are the printed nominal 0.8 -/+ 0.1 (arithmetic).\""
 
 [row.dim_e_c0g]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "vendor 'Murata' not in the text-check tested set; row found by symbol, row group of 2 lines; no footnote marker on the row or header"
 hash = "aac6576f897e524dfb883ccb4296f955467f3c4c8c830cf965cc09b44b68546b"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-27 page-image ds_review 0f6e6a1b2bd8 row aac6576f897e"
 stamp_hash = "aac6576f897e524dfb883ccb4296f955467f3c4c8c830cf965cc09b44b68546b"
 pdf_sha256 = "0f6e6a1b2bd8caa59b44ecbe0fe2fa027c5825c5211762b5905be76f3049b250"
-baseline = true
 sheet = "GCM1885C1H101GA16-01A-EN.pdf"
 printed_page = 2
 pdf_page = 2
@@ -1154,17 +1140,16 @@ header_sha256 = "55a51164a421a14ad89fb1fa6146e39f3b8147b296c1073de6c43c8a15831e8
 header_box = [35.2, 57.8, 663.5, 135.4]
 header_key = "28692b260e80a670"
 text_snippet = "        Please refer to the product information page for more information on ceramic capacitors.   \u2192 Ceramic capacitor product information\n        Various data can be obtained directly from the product search. \u2192 Product search (SMD)\u200b\n    \u25a0 MURATA Part No. System\n                                           (L\u00d7W)                   (T)                     Characteristics     Voltage                                    Tolerance      Specification\n         1.6+/-0.1      0.8+/-0.1                     0.8+/-0.1              0.2 to 0.5             0.5 min."
-stamped_toml = "[param.dim_e_c0g]\nparts = [\"GCM1885C1H101GA16\"]\nname       = \"Terminal width (e)\"\nsymbol     = \"e\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.2\nmax        = 0.5\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, e (0.2 to 0.5)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\""
+stamped_toml = "[param.dim_e_c0g]\nparts = [\"GCM1885C1H101GA16\"]\nname       = \"Terminal width (e)\"\nsymbol     = \"e\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.2\nmax        = 0.5\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, e (0.2 to 0.5)\"\nverified   = \"human:kb1lqc 2026-11-27 page-image ds_review 0f6e6a1b2bd8 row aac6576f897e\""
 
 [row.dim_g_c0g]
-state = "MACHINE_CHECKED"
+state = "HUMAN_VERIFIED"
 status = "UNSURE"
 reason = "vendor 'Murata' not in the text-check tested set; row found by symbol, row group of 2 lines; no footnote marker on the row or header"
 hash = "2c816ce82fb310ecfeb790fedd86de5796d7f25372707e4e2168d49736c1d86d"
-stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
+stamp = "human:kb1lqc 2026-11-27 page-image ds_review 0f6e6a1b2bd8 row 2c816ce82fb3"
 stamp_hash = "2c816ce82fb310ecfeb790fedd86de5796d7f25372707e4e2168d49736c1d86d"
 pdf_sha256 = "0f6e6a1b2bd8caa59b44ecbe0fe2fa027c5825c5211762b5905be76f3049b250"
-baseline = true
 sheet = "GCM1885C1H101GA16-01A-EN.pdf"
 printed_page = 2
 pdf_page = 2
@@ -1181,7 +1166,7 @@ header_sha256 = "55a51164a421a14ad89fb1fa6146e39f3b8147b296c1073de6c43c8a15831e8
 header_box = [35.2, 57.8, 663.5, 135.4]
 header_key = "28692b260e80a670"
 text_snippet = "        Please refer to the product information page for more information on ceramic capacitors.   \u2192 Ceramic capacitor product information\n        Various data can be obtained directly from the product search. \u2192 Product search (SMD)\u200b\n    \u25a0 MURATA Part No. System\n                                           (L\u00d7W)                   (T)                     Characteristics     Voltage                                    Tolerance      Specification\n         1.6+/-0.1      0.8+/-0.1                     0.8+/-0.1              0.2 to 0.5             0.5 min."
-stamped_toml = "[param.dim_g_c0g]\nparts = [\"GCM1885C1H101GA16\"]\nname       = \"Gap between terminals (g)\"\nsymbol     = \"g\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.5\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, g (0.5 min.)\"\nverified   = \"sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)\"\nnote       = \"Printed as a minimum only; no max stored.\""
+stamped_toml = "[param.dim_g_c0g]\nparts = [\"GCM1885C1H101GA16\"]\nname       = \"Gap between terminals (g)\"\nsymbol     = \"g\"\nkind       = \"mechanical\"\nscope      = \"na\"\nmin        = 0.5\nunit       = \"mm\"\nconditions = \"\"\ncite       = \"DS p.2 (GCM1885C1H101GA16-01A-EN.pdf), Type & Dimension, g (0.5 min.)\"\nverified   = \"human:kb1lqc 2026-11-27 page-image ds_review 0f6e6a1b2bd8 row 2c816ce82fb3\"\nnote       = \"Printed as a minimum only; no max stored.\""
 
 [row.q_25c_c0g]
 state = "NEW"
