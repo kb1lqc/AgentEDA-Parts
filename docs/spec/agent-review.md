@@ -1,0 +1,15 @@
+# Agent review record and variant overrides
+
+## Agent review record (`review/agent_review.toml`)
+Written only by `python3 tools/agent_review.py record <Value> --role verifier|adversarial --model <id> --findings N --applied N --logged N --report <path>` (`--clean` with zero findings), logic in `lib/agent_review.py`. The orchestrator runs it, never the reviewer. Roles: `verifier` (`docs/briefs/verifier.md`) and `adversarial` (`docs/briefs/adversarial-reviewer.md`); both are needed for "agent reviewed". Each role entry stores date, model, counts, the report's SHA-256 and line count, `inputs_sha256`, `datasheet_pdf_sha256` (as `[inputs]` pdf_sha256), the rows-that-matter keys, the scope, the calc.py AST hash and the public function names (display only).
+- `inputs_sha256`: SHA-256 of sorted-key JSON of `component.toml` (every `verified` key removed), plus the hashes of `calc.py` (AST hash below), `variants.toml` (verified keys removed), `catalog.csv` and every `examples/*.py` of the part. Not in it: README.md, `*.zen`, `pcb.toml`, `review/*`, KiCad files.
+- calc.py AST hash: SHA-256 of `ast.dump(ast.parse(src), annotate_fields=True, include_attributes=False)`. Docstrings count: a docstring edit stales the record.
+- Scope: the reference rows (every `[param]` key that does not matter), the non-matter variant overrides and the calc functions. Scope is what was offered to the reviewer, not what it read.
+- Currency per role: CURRENT when `inputs_sha256` equals the part's now and the rows-that-matter keys are unchanged; STALE otherwise; MISSING when there is no record. A human stamp never stales it.
+- lib.check: ERROR on a STALE or malformed record, or one naming a scope key or function that does not exist. WARN (counted, never fails verify) on MISSING, until the backfill (not in this change).
+- Limit: an accountability record, not proof. An agent can write a false record, as a human stamp can. `released` is unchanged: it counts human rows only. The record hashes the inputs when `record` runs, not when the reviewer started: edits applied between the review and `record` read as reviewed (accepted gap). A changed datasheet PDF hash makes the record STALE. The verifier entry stores `rows_checked` of `rows_total` reference rows (a sample unless equal); the adversarial entry covers `calc.py` and the INPUTS bindings. `record` rejects `--clean` with an empty report and a report identical to the other role's.
+
+## Variant overrides
+- An override `[variant."X".param.K]` in variants.toml of a row that matters is a ledger row `variant.<V>.<key>` with its own cite and page image. Its row hash is that of `merge(base [param.K], override fields)`, so a base edit stales the override stamp.
+- Stamp: `tools/stamp.py <Value>:variant.<V>.<key>` writes `verified` under the quoted `[variant."X".param.K]` header; the evidence image uses the override's own cite and sheet. `tools/check_stamps.py` checks it.
+- An override of a row that does not matter is `REFERENCE`: covered by the agent-review scope only.

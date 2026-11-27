@@ -5,7 +5,9 @@ never run it on real data (docs/spec/review.md "Runs").
 Usage (repo root):
   python3 tools/stamp.py [--who <github-login>] <Value>:<key> [...] [--from FILE] [--root R]
 --who defaults to your GitHub login (`gh api user --jq .login`); library CI requires it to equal the PR author.
-<Value> is the component directory name (components/<Mfr>/<Value>/), <key> the [param.<key>] row; FILE holds one
+<Value> is the component directory name (components/<Mfr>/<Value>/), <key> the [param.<key>] row, or `variant.<V>.<key>`
+for a variants.toml override (stamped under its quoted [variant."<V>".param.<key>] header, hash of base row + override
+fields: docs/spec/agent-review.md); FILE holds one
 <Value>:<key> per line (blank lines and # comments ignored). <Value>:pinout stamps the pin table: [pinout] verified =
 "human:<github-login> <YYYY-MM-DD> page-image pinout <pdf-sha256[:12]> pins <pins-hash[:12]>" (docs/spec/review-view.md),
 refused like a row (no [[pin]], record older than the pins, image or PDF missing or changed).
@@ -31,7 +33,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ds_review import row_hash, sha256_file  # noqa: E402  (the ledger's own hash, so the comparison is exact)
-from lib.component import GITHUB_LOGIN, pinout_hash  # noqa: E402  (the stamp's name part, as lib checks it)
+from lib.component import GITHUB_LOGIN, override_rows, pinout_hash  # noqa: E402  (the stamp's name part, as lib checks it)
 
 WHO_RE = re.compile(f"^{GITHUB_LOGIN}\\Z")
 AGENT = "refused: running inside Claude Code (CLAUDECODE is set); a person must run stamp.py in their own shell"
@@ -71,8 +73,16 @@ def check_row(root, value, key):
         data = tomllib.loads((d / "component.toml").read_bytes().decode())
     except (UnicodeDecodeError, tomllib.TOMLDecodeError) as e:
         return None, None, f"{d.name}/component.toml is not valid TOML ({e})"
-    table = data.get("pin") if pin else data.get("param", {}).get(key)
+    if key.startswith("variant."):
+        try:
+            table = (override_rows(d, data.get("param", {})).get(key) or (None,))[0]  # base row + override fields
+        except tomllib.TOMLDecodeError as e:
+            return None, None, f"{d.name}/variants.toml is not valid TOML ({e})"
+    else:
+        table = data.get("pin") if pin else data.get("param", {}).get(key)
     if not table:
+        if key.startswith("variant."):
+            return None, None, f"no override {key} in {d.name}/variants.toml"
         return None, None, f"no [[pin]] in {d.name}/component.toml" if pin else f"no [param.{key}] in {d.name}/component.toml"
     try:
         with open(d / "review" / "review.toml", "rb") as f:
@@ -80,6 +90,8 @@ def check_row(root, value, key):
     except (OSError, tomllib.TOMLDecodeError):
         return None, None, "no readable review/review.toml (no review record)"
     row = ledger.get("pinout") if pin else ledger.get("row", {}).get(key)
+    if isinstance(row, dict) and row.get("state") == "REFERENCE":
+        return None, None, "reference row, agent-reviewed, nothing to stamp"
     if not isinstance(row, dict) or not row.get("hash"):
         return None, None, "no review record for this row"
     h = pinout_hash(table) if pin else row_hash(table)
@@ -116,25 +128,38 @@ def check_row(root, value, key):
     return d, f"{want[:12]} {'pins' if pin else 'row'} {h[:12]}", None
 
 
+def override_ref(key):
+    """("<V>", "<key>") of a `variant.<V>.<key>` row key (a variant name may hold dots, a key does not)."""
+    name, _, k = key[len("variant."):].rpartition(".")
+    return name, k
+
+
 def set_stamp(text, key, stamp):
-    """component.toml text with `verified = "<stamp>"` in [param.<key>] (replaced keeping any trailing comment and the
-    line ending, else inserted after `cite`). ValueError when the edit is not exactly that."""
+    """component.toml text (variants.toml for a `variant.<V>.<key>` row) with `verified = "<stamp>"` in [param.<key>] or
+    [variant."<V>".param.<key>] (replaced keeping any trailing comment and the line ending, else inserted after `cite`).
+    ValueError when the edit is not exactly that."""
     lines = text.split("\n")  # a "\r" stays at the end of its line
-    start = next((i for i, ln in enumerate(lines) if ln.strip() == f"[param.{key}]"), None)
+    if key.startswith("variant."):
+        name, k = override_ref(key)
+        heads = (f'[variant."{name}".param.{k}]', f"[variant.{name}.param.{k}]")
+        label = heads[0]
+    else:
+        heads, label = (f"[param.{key}]",), f"[param.{key}]"
+    start = next((i for i, ln in enumerate(lines) if ln.strip() in heads), None)
     if start is None:
-        raise ValueError(f"[param.{key}] header not found")
+        raise ValueError(f"{label} header not found")
     end = next((i for i in range(start + 1, len(lines)) if lines[i].lstrip().startswith("[")), len(lines))
     span = range(start + 1, end)
     old = next((i for i in span if re.match(r"\s*verified\s*=", lines[i])), None)
     if old is not None:
         m = VERIFIED_LINE.match(lines[old])
         if not m:
-            raise ValueError(f"[param.{key}]: verified line is not a one-line string")
+            raise ValueError(f"{label}: verified line is not a one-line string")
         lines[old] = f'{m.group(1)}"{stamp}"{m.group(3)}'
     else:
         cite = next((i for i in span if re.match(r"\s*cite\s*=", lines[i])), None)
         if cite is None:
-            raise ValueError(f"[param.{key}] has no cite line")
+            raise ValueError(f"{label} has no cite line")
         eq = lines[cite].index("=")
         cr = "\r" if lines[cite].endswith("\r") else ""
         lines.insert(cite + 1, ("verified".ljust(eq) if eq > len("verified") else "verified ") + f'= "{stamp}"{cr}')
@@ -143,9 +168,12 @@ def set_stamp(text, key, stamp):
         before, after = tomllib.loads(text), tomllib.loads(out)
     except tomllib.TOMLDecodeError as e:
         raise ValueError(f"not valid TOML ({e})")
-    before["param"][key]["verified"] = stamp
+    if key.startswith("variant."):
+        before["variant"][name]["param"][k]["verified"] = stamp
+    else:
+        before["param"][key]["verified"] = stamp
     if before != after:
-        raise ValueError(f"[param.{key}]: edit would change more than the stamp")
+        raise ValueError(f"{label}: edit would change more than the stamp")
     return out
 
 
@@ -215,24 +243,36 @@ def stamp(root, who, refs, today=None):
     for d, rows in plan.items():
         text = (d / "component.toml").read_bytes().decode()
         old = tomllib.loads(text)
+        vfile = d / "variants.toml"
+        vtext = vfile.read_bytes().decode() if vfile.is_file() else ""
+        vold, vorig = (tomllib.loads(vtext) if vtext else {}), vtext
         for key, s in rows:
             try:
-                text = set_pinout_stamp(text, s) if key == "pinout" else set_stamp(text, key, s)
+                if key.startswith("variant."):
+                    vtext = set_stamp(vtext, key, s)
+                else:
+                    text = set_pinout_stamp(text, s) if key == "pinout" else set_stamp(text, key, s)
             except ValueError as e:
                 return 1, [f"refused {d.name}:{key}: {e}", "nothing written"]
-            was = (old.get("pinout") if key == "pinout" else old["param"][key]) or {}
+            if key.startswith("variant."):
+                nm, k = override_ref(key)
+                was = vold["variant"][nm]["param"][k]
+            else:
+                was = (old.get("pinout") if key == "pinout" else old["param"][key]) or {}
             out.append(f"{d.name}:{key}: {was.get('verified') or '(no stamp)'} -> {s}")
-        new[d] = text
+        new[d / "component.toml"] = text
+        if vtext != vorig:
+            new[vfile] = vtext
     temps = {}
     try:
-        for d, text in new.items():
-            fd, tmp = tempfile.mkstemp(dir=d, prefix=".component.toml.")
+        for file, text in new.items():
+            fd, tmp = tempfile.mkstemp(dir=file.parent, prefix=f".{file.name}.")
             with os.fdopen(fd, "wb") as f:
                 f.write(text.encode())
-            temps[d] = tmp
-            os.chmod(tmp, (d / "component.toml").stat().st_mode & 0o7777)
-        for d, tmp in temps.items():
-            os.replace(tmp, d / "component.toml")
+            temps[file] = tmp
+            os.chmod(tmp, file.stat().st_mode & 0o7777)
+        for file, tmp in temps.items():
+            os.replace(tmp, file)
     finally:
         for tmp in temps.values():
             if os.path.exists(tmp):

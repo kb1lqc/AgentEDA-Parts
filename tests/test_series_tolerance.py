@@ -42,7 +42,7 @@ def messages(folder):
 
 def not_kicad(folder):
     """Check messages other than the missing KiCad/STEP files (the series directories get those later)."""
-    return [m for m in messages(folder) if "file not found" not in m]
+    return [m for m in messages(folder) if "file not found" not in m and "agent review MISSING" not in m]
 
 
 class TestDecade(unittest.TestCase):

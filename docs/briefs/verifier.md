@@ -18,6 +18,7 @@ Procedure:
 4. Check each pin name, type and function against the DS pin table, and each `EXAMPLES` row against the DS number
    it cites.
 5. Check the defaults table was applied (signs, `sym`, `typ_pm`, `tol_pct`, `scope`, `curve`, `text`, NC pins).
+6. Final step: do not run `tools/agent_review.py`. The orchestrator records this review from your report file: `python3 tools/agent_review.py record <Value> --role verifier --model <id> --findings N --applied N --logged N --report <report file>` (`--clean` when zero findings).
 
 Use the local `.review-cache/<Mfr>/<Value>/params/<key>.md` crops as a start, never as the check; see `docs/briefs/ds-review.md`.
 

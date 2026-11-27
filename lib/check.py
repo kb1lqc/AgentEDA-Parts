@@ -8,9 +8,10 @@ import sys
 import tomllib
 from pathlib import Path
 
-from . import capacitor, catalog, kicad, rules, series
-from .component import (ROOT, _repo_root, ledger_state_of, load_calc, merge_variant, pinout_hash, row_hash, run_example,
-                        variants_of)
+from . import agent_review, capacitor, catalog, kicad, rules, series
+from . import review_status
+from .component import (ROOT, _repo_root, ledger_state_of, load_calc, merge_variant, override_rows, pinout_hash, row_hash,
+                        run_example, variants_of)
 from .units import to_si
 
 PART_FIELDS = ["value", "mpn", "manufacturer", "description", "category", "package", "datasheet_url",
@@ -477,25 +478,27 @@ def _ledger_rows(f):
         return tomllib.load(fh).get("row", {})
 
 
+AGENT_PENDING = "agent review MISSING"  # the one WARN that is counted, never failing (until the backfill)
 REVIEW_MODES = {}  # component dir -> (mode, images matched); check_ledger fills it, main prints one mode line
 
 
-REVIEW_FILES = ("review.toml", catalog.EXPORT_RECORD)  # the only committed files under review/
-EXPORT_STAMP = re.compile(r"human:[A-Za-z0-9](?:[A-Za-z0-9-]{0,38}) \d{4}-\d{2}-\d{2} export-check group (\S+)")
+REVIEW_FILES = ("review.toml", catalog.EXPORT_RECORD, agent_review.FILE)  # the only committed files under review/
+EXPORT_STAMP = capacitor.parse_group_stamp  # one parser for the machine and the legacy human `verified` line
 
 
 def stray_review_files(folder):
     """ERROR per file under review/ that is not a committed review record (docs/spec/review.md)."""
     folder = Path(folder)
     return [("ERROR", f"review/{p.relative_to(folder / 'review')}: only review/review.toml and review/export_check.toml are "
-                     f"committed (page images and generated pages live in the git-ignored .review-cache/); delete it")
+                     f"committed (and review/agent_review.toml, written by tools/agent_review.py; page images and generated pages live in the git-ignored .review-cache/); delete it")
             for p in sorted((folder / "review").rglob("*")) if p.is_file() and p.name not in REVIEW_FILES
             and not p.name.startswith(".")]
 
 
 def check_export_record(folder):
     """review/export_check.toml (docs/spec/capacitor.md "Export check"). Always: valid TOML; the catalog hash is the committed
-    catalog.csv's (else STALE); a group's `verified` is a human stamp for that group. Evidence mode (the cited export is
+    catalog.csv's and the tables hash is the current decode tables' (else STALE); a group's `verified` is a machine line
+    whose 12 digits are the group hash, or a legacy human stamp for that group. Evidence mode (the cited export is
     in docs/datasheets/ or docs/vendor/): the export check is run again and the export hash and every group hash must
     match the record."""
     folder = Path(folder)
@@ -517,10 +520,39 @@ def check_export_record(folder):
     elif rec.get("catalog", {}).get("sha256") != catalog.sha256_file(cat):
         out.append(("ERROR", f"review/export_check.toml is STALE: {cat.name} changed since the export check ({rerun})"))
     groups = rec.get("group", {})
+    machine = False
+    if cat.is_file():
+        counts = {}
+        try:
+            for r in catalog.committed_rows(cat):
+                counts[r["dielectric"]] = counts.get(r["dielectric"], 0) + 1
+        except ValueError as e:
+            out.append(("ERROR", f"review/export_check.toml: {e}"))
+            counts = None
+        groups_to_count = {} if counts is None else groups
+        for d, g in groups_to_count.items():
+            if d not in counts:
+                out.append(("ERROR", f"review/export_check.toml group {d}: no row of {cat.name} has dielectric {d}"))
+            elif g.get("rows") != counts[d]:
+                out.append(("ERROR", f"review/export_check.toml group {d}: rows = {g.get('rows')} but {cat.name} has "
+                                     f"{counts[d]} {d} rows ({rerun})"))
     for d, g in groups.items():
         v = g.get("verified")
-        if v is not None and not (isinstance(v, str) and (m := EXPORT_STAMP.fullmatch(v)) and m[1] == d):
-            out.append(("ERROR", f"review/export_check.toml group {d}: verified is not a human stamp for group {d}"))
+        if v is None:
+            continue
+        stamp = EXPORT_STAMP(v)
+        if stamp is None or (stamp["kind"] == "human" and stamp["group"] != d):
+            out.append(("ERROR", f"review/export_check.toml group {d}: verified is not a human or machine export-check line "
+                                 f"for group {d} (machine export-check <date> <group_sha256[:12]>; {rerun})"))
+        elif stamp["kind"] == "machine":
+            machine = True
+            if stamp["sha12"] != str(g.get("group_sha256", ""))[:12]:
+                out.append(("ERROR", f"review/export_check.toml group {d}: machine line {stamp['sha12']} is not the group's "
+                                     f"group_sha256 {str(g.get('group_sha256', ''))[:12]} ({rerun})"))
+    if machine:  # human lines stay valid whatever the tables hash (as lib.capacitor.current_groups)
+        if rec.get("tables_sha256") != catalog.tables_sha256():
+            out.append(("ERROR", f"review/export_check.toml is STALE: the decode tables of lib/catalog.py changed since the "
+                                 f"export check (re-check them against the datasheet, then {rerun})"))
     name = rec.get("export", {}).get("file", "")
     root = folder.resolve().parents[2]
     found = [p for p in (root / "docs" / "datasheets" / name, root / "docs" / "vendor" / name) if name and p.is_file()]
@@ -536,6 +568,22 @@ def check_export_record(folder):
         for d, g in res["groups"].items():
             if groups.get(d, {}).get("group_sha256") != g["sha256"]:
                 out.append(("ERROR", f"group {d} changed since its export check ({rerun})"))
+    return out
+
+
+def check_agent_review(folder):
+    """review/agent_review.toml (docs/spec/review.md "Agent review record"): ERROR for a malformed or STALE role entry, WARN
+    (counted, not failing) when a role has no entry."""
+    folder = Path(folder)
+    st = agent_review.status(folder)
+    out = [("ERROR", f"review/{agent_review.FILE}: {role + ': ' if role else ''}{why}") for role, why in st["problems"]]
+    for role in agent_review.ROLES:
+        if st["state"][role] == agent_review.STALE:
+            out.append(("ERROR", f"review/{agent_review.FILE}: the {role} record is STALE (the part's inputs changed since "
+                                 f"the review): review again, then python3 tools/agent_review.py record {folder.name} --role {role} ..."))
+    missing = [r for r in agent_review.ROLES if st["state"][r] == agent_review.MISSING]
+    if missing and (folder / "review" / "review.toml").is_file():  # only a part that is under review at all
+        out.append(("WARN", f"{AGENT_PENDING}: {', '.join(missing)} (python3 tools/agent_review.py record {folder.name} ...)"))
     return out
 
 
@@ -559,11 +607,16 @@ def check_ledger(folder):
     out = stray_review_files(folder)
     rows, inp = ledger.get("row", {}), ledger.get("inputs", {})
     main = Path(inp.get("datasheet_file", "")).name
-    for key, table in params.items():
+    # a variants.toml override: a row that matters is a full row (hash of base row + override fields, stamp = its own
+    # `verified`), any other is REFERENCE (docs/spec/review.md "Variant overrides")
+    over = {k: v for k, v in override_rows(folder, params).items()} if (folder / "variants.toml").is_file() else {}
+    mat = review_status.matters(folder) if over else {}
+    full = {**{k: (t, t) for k, t in params.items()}, **{k: v for k, v in over.items() if k in mat}}
+    for key, (table, own) in full.items():
         r = rows.get(key)
         if not isinstance(r, dict) or r.get("hash") != row_hash(table):
             out.append(("ERROR", f"review/review.toml row {key} is missing or older than component.toml: {rerun}"))
-        elif (r.get("stamp") or "") != (table.get("verified") or ""):
+        elif (r.get("stamp") or "") != (own.get("verified") or ""):
             out.append(("ERROR", f"review/review.toml row {key}: stamp differs from its verified line: {rerun}"))
         else:  # the state follows from the stamp, the row hash and the ledger's pins; never trust the written word
             P = (inp.get("sheets") or {}).get(r.get("sheet") or main, "")
@@ -586,8 +639,16 @@ def check_ledger(folder):
                                      f"{want!r}: {rerun}"))
     elif pr is not None:
         out.append(("ERROR", f"review/review.toml has a pinout record but component.toml has no [[pin]]: {rerun}"))
+    for key, (_m, own) in over.items():
+        if key not in mat and own.get("verified"):
+            out.append(("ERROR", f"{key}: a reference override (the row does not matter) carries a `verified` line; remove it: "
+                                 f"it is agent-reviewed, nothing to stamp"))
+    for key in over:
+        if key not in mat and (not isinstance(rows.get(key), dict) or rows[key].get("state") != "REFERENCE"):
+            out.append(("ERROR", f"review/review.toml row {key}: an override of a row that does not matter must have state "
+                                 f"'REFERENCE': {rerun}"))
     for key, r in rows.items():
-        if key not in params and (not isinstance(r, dict) or r.get("state") != "NOT_COVERED"):
+        if key not in params and key not in over and (not isinstance(r, dict) or r.get("state") != "NOT_COVERED"):
             out.append(("ERROR", f"review/review.toml row {key}: not a Param, so its state must be 'NOT_COVERED': {rerun}"))
     root = _repo_root(folder) or ROOT
     cache = root / ".review-cache" / folder.resolve().relative_to(root / "components") if _repo_root(folder) else None
@@ -679,7 +740,7 @@ def _check_component(folder):
     except tomllib.TOMLDecodeError as e:
         return [("ERROR", f"component.toml or variants.toml is not valid TOML: {e}")]
     part, pins = data.get("part", {}), data.get("pin", [])
-    out = check_part(part, folder, family=bool(variants)) + check_pins(pins) + check_ledger(folder) + check_export_record(folder)
+    out = check_part(part, folder, family=bool(variants)) + check_pins(pins) + check_ledger(folder) + check_export_record(folder) + check_agent_review(folder)
     out += finding_messages(rules.cite_findings(data, variants))
     out += finding_messages(rules.cite_sheet_findings(data, variants))
     out += finding_messages(rules.cite_unbracketed_findings(data, sheet_names(folder, ROOT), variants))
@@ -736,7 +797,7 @@ def find_components(args):
 
 
 TOLERATED = "datasheet_file not found"  # PDFs are git-ignored
-TOLERATED_ALL = (TOLERATED, "datasheet_url empty")  # the only WARNs that do not fail the exit code
+TOLERATED_ALL = (TOLERATED, "datasheet_url empty", AGENT_PENDING)  # the only WARNs that do not fail the exit code
 
 
 def collect(folders, root, full):
@@ -766,11 +827,14 @@ def main(argv=None):
     args = sys.argv[1:] if argv is None else argv
     folders = find_components(args)
     findings, others, notes, reviews = collect(folders, ROOT, full=not args)
-    errors = warns = tolerated = 0
+    errors = warns = tolerated = pending = 0
     if not folders:
         print("ERROR: no components found (components/*/*/component.toml); nothing was checked")
         errors += 1
     for part, level, msg in others:
+        if level == "WARN" and AGENT_PENDING in msg:
+            pending += 1
+            continue
         if level == "WARN" and any(t in msg for t in TOLERATED_ALL):
             tolerated += 1
             continue
@@ -792,7 +856,8 @@ def main(argv=None):
             print(f"lib/known_findings.toml: ERROR: stale entry (matches nothing): {e['rule']} {e['part']} {e['location']}")
         errors += len(stale)
     print(f"{len(folders)} components, {errors} errors, {warns} warnings, {tolerated} tolerated (datasheets absent), "
-          f"{len(allowed)} allowlisted findings, {abstained} abstained")
+          f"{len(allowed)} allowlisted findings, {abstained} abstained, "
+          f"{pending} agent review pending")
     return 1 if errors or warns else 0
 
 

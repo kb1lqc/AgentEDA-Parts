@@ -204,6 +204,9 @@ class HumanReview(unittest.TestCase):
         patcher = mock.patch.object(comp, "_review", unstamped)
         patcher.start()
         self.addCleanup(patcher.stop)
+        no_record = mock.patch.object(comp._cap, "export_stamp_date", lambda *a: None)  # the repo's record state varies
+        no_record.start()
+        self.addCleanup(no_record.stop)
         f = lib.load("AnalogDevices/LTC4364MS", variant="LTC4364CMS-1")
         f.param("dvsns_0c125c")  # variants.toml override: its own review row, not the shared one
         f.param("abs_vcc")
@@ -218,11 +221,66 @@ class HumanReview(unittest.TestCase):
         self.assertEqual((ov["review_key"], ov["ref"]), ("variant.LTC4364CMS-1.dvsns_0c125c", None))
         self.assertEqual(rows["LTC4364CMS-1:abs_vcc"]["ref"], "LTC4364MS:abs_vcc")
         cap = rows[f"GCM188[{x7r.value}]:capacitance"]
-        self.assertEqual((cap["review_key"], cap["ref"], cap["reason"]), (None, None, "no stamp"))  # no export-check stamp yet
+        self.assertEqual((cap["review_key"], cap["ref"], cap["reason"]), (None, None, "no stamp"))  # export_stamp_date mocked None
         self.assertEqual(rows[f"GCM188[{x7r.value}]:tc_x7r"]["ref"], "GCM188:tc_x7r")
         self.assertEqual(rows[f"GCM188[{x7r.value}]:tolerance"]["review_key"], None)  # catalog row, not a TOML row
         self.assertEqual(rows["WSK2512:tcr_5m_200m"]["ref"], "WSK2512:tcr_5m_200m")
         self.assertEqual(set(rows) - set(lib.used_inputs()), set())
+
+    def _gcm188_x7r(self):
+        c = lib.load("Murata/GCM188")
+        x7r = next(r for r in c.catalog() if r.dielectric == "X7R")
+        return c.select(x7r.capacitance, x7r.rated_voltage, "X7R", x7r.tolerance)
+
+    def _unstamp_human(self):
+        from unittest import mock
+        import lib.component as comp
+        real = comp._review
+        p = mock.patch.object(comp, "_review", lambda path, rk, stamp, *a, **k:
+                              real(path, rk, None if str(stamp).startswith("human:") else stamp, *a, **k))
+        p.start()
+        self.addCleanup(p.stop)
+
+    def test_derived_catalog_rows_are_checked_not_listed(self):
+        from unittest import mock
+        import lib.component as comp
+        with mock.patch.object(comp._cap, "export_stamp_date", lambda *a: "2026-11-27"):  # a current record, either form
+            sel = self._gcm188_x7r()
+            for k in ("capacitance", "tolerance", "rated_v"):
+                sel.part.param(k)
+        label = f"GCM188[{sel.value}]"
+        for k in ("capacitance", "tolerance", "rated_v"):
+            self.assertEqual(comp._ROWS[f"{label}:{k}"]["reason"], comp.DERIVED, k)
+        self.assertEqual([r for r in lib.human_review_needed() if r["value"] == label], [])
+
+    def test_catalog_rows_without_a_record_need_check(self):
+        from unittest import mock
+        import lib.component as comp
+        with mock.patch.object(comp._cap, "export_stamp_date", lambda *a: None):
+            sel = self._gcm188_x7r()
+            sel.part.param("tolerance")
+        self.assertEqual({r["key"]: r["reason"] for r in lib.human_review_needed()}["tolerance"], "no stamp")
+
+    def test_pdf_rows_of_a_series_still_need_the_human_stamp(self):
+        """Every tc_* row and every `parts =` / `dielectric =` row of GCM188 is read from a PDF: a current export-check
+        record never covers it; stripped of its human stamp it is listed."""
+        from unittest import mock
+        import lib.component as comp
+        self._unstamp_human()
+        for diel in ("X7R", "C0G"):
+            c = lib.load("Murata/GCM188")
+            r = next(r for r in c.catalog() if r.dielectric == diel)
+            with mock.patch.object(comp._cap, "export_stamp_date", lambda *a: "2026-11-27"):
+                sel = c.select(r.capacitance, r.rated_voltage, diel, r.tolerance)
+            pdf_rows = [k for k, t in sel.part.raw["param"].items() if k in sel.part.params and
+                        (k.startswith("tc_") or "parts" in t or "dielectric" in t)]
+            self.assertTrue(any(k.startswith("tc_") for k in pdf_rows), diel)
+            for k in pdf_rows:
+                sel.part.param(k)
+            listed = {e["key"]: e["reason"] for e in lib.human_review_needed() if e["value"] == f"GCM188[{sel.value}]"}
+            for k in pdf_rows:
+                self.assertIn(k, listed, f"{diel} {k} must need a human stamp")
+                self.assertNotEqual(listed[k], comp.DERIVED)
 
 
 if __name__ == "__main__":
