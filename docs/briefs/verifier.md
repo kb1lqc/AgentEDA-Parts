@@ -18,6 +18,7 @@ Procedure:
 4. Check each pin name, type and function against the DS pin table, and each `EXAMPLES` row against the DS number
    it cites.
 5. Check the defaults table was applied (signs, `sym`, `typ_pm`, `tol_pct`, `scope`, `curve`, `text`, NC pins).
+6. Final step: report findings to the orchestrator as `severity | file:line | problem | evidence | fix`; the orchestrator applies those that cite the DS or spec and lists the rest in the PR description as open items; nothing is committed.
 
 Use the local `.review-cache/<Mfr>/<Value>/params/<key>.md` crops as a start, never as the check; see `docs/briefs/ds-review.md`.
 

@@ -146,5 +146,23 @@ class Repo(unittest.TestCase):
                                                ("y",): "human:q"})
 
 
+class VariantsMoves(Repo):
+    V = "components/Acme/X/variants.toml"
+
+    def block(self, name, key, stamp=""):
+        return f'[variant."{name}".param.{key}]\ncite = "DS p.1"\n' + (f'verified = "{stamp}"\n' if stamp else "")
+
+    def test_a_moved_stamp_is_new_at_its_new_key_path(self):
+        self.flagged({self.V: self.block("V1", "a", BOB) + self.block("V1", "b")},
+                     {self.V: self.block("V1", "a") + self.block("V1", "b", BOB)})  # bob's stamp moved to b: alice is the author
+
+    def test_a_deleted_stamp_is_ignored(self):
+        rc, out = self.run_c({self.V: self.block("V1", "a", BOB)}, {self.V: self.block("V1", "a")})
+        self.assertEqual(rc, 0, out)
+
+    def test_a_renamed_variant_is_a_new_stamp(self):
+        self.flagged({self.V: self.block("V1", "a", BOB)}, {self.V: self.block("V2", "a", BOB)})
+
+
 if __name__ == "__main__":
     unittest.main()

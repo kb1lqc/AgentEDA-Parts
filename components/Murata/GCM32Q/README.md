@@ -2,7 +2,7 @@
 
 # GCM32Q
 
-Released: all 5 rows that matter checked (6 rows in all); 3 used values not covered (catalog.csv, series).
+Checked by a person: 5 of 6 rows that matter (6 rows in all). Review: python3 tools/review.py GCM32Q; 4 catalog rows derived, checked (export-check record)
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

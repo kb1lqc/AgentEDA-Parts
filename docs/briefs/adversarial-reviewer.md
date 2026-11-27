@@ -17,6 +17,7 @@ Hunt, with evidence from the page images (`pdftoppm -r 150 -png -f N -l N <pdf> 
    pin, a derate applied on the wrong side.
 4. Spot-check 10 or more high-impact numbers (supply limits, input ranges, thermal, accuracy rows) against the images.
 5. Run `python3 -m lib.check` and `python3 -m unittest discover -s tests` and report failures.
+6. Final step: report findings to the orchestrator as `severity | file:line | problem | evidence | fix`; the orchestrator applies those that cite the DS or spec and lists the rest in the PR description as open items; nothing is committed. Item 1 covers every calc.py function.
 
 Report, one finding per line, sorted by severity:
 `severity | file:line | problem | evidence | exact fix`. A finding without page or code evidence is not a finding.

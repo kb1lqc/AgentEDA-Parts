@@ -1158,154 +1158,584 @@ text_snippet = "at TA = 25 \u00b0C, VS = 5V, VSENSE = VIN+ \u2013 VIN\u2013, VCM
 text_cells = { max = "125", min = "\u201340", typ = "", unit = "\u00b0C" }
 
 [row."variant.INA241A1IDGK.gain"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "unit '' not comparable; row found by symbol (table_xcheck match), row group of 5 lines; no footnote marker on the row or header"
+hash = "ea689f34176f79e747a6dc957b0c3b82fdc95fe1dcdc569d6143082d89bf80c0"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "14-23"
+image = "evidence/variant.INA241A1IDGK.gain_p5.png"
+image_sha256 = "5fec2e3843c6e614645640e864a0a0a98ce69f1f9d6332c1ca92ba0d56597ba5"
+image_bytes = 4398
+crop = "auto"
+crop_box = [50.7, 530.4, 552.6, 602.2]
+dpi = 200
+render_key = "d4e13252e29189ff"
+header_image = "evidence/head_p5_y69-127_x50-552.png"
+header_sha256 = "4d401ec00f6a452f6a8998609fa0d7c6bd9b328ca142e172287643ba0abde999"
+header_box = [50.7, 69.1, 552.6, 127.6]
+header_key = "f808c8d5ff216a47"
+text_snippet = "at TA = 25 \u00b0C, VS = 5V, VSENSE = VIN+ \u2013 VIN\u2013, VCM = VIN\u2013 = 48V, and VREF1 = VREF2 = VS / 2 (unless otherwise noted)\n                      PARAMETER                                     TEST CONDITIONS                   MIN      TYP       MAX     UNIT\n INPUT\n                                                        A1, B1 Devices                                           10              V/V\n                                                        A2, B2 Devices                                           20              V/V\n G           Gain                                       A3, B3 Devices                                           50              V/V\n                                                        A4, B4 Devices                                          100              V/V\n                                                        A5, B5 Devices                                          200              V/V"
 
 [row."variant.INA241A1IDGK.gain_err_25c"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (full page): row group longer than 16 lines; text check: UNSURE row uses convention 'typ_pm'"
+hash = "e547de91c3fe30130d2efeb9a1d008dbd6d21696f3652736f8e931c894808b82"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 6
+pdf_page = 6
+toml_lines = "25-37"
+image = "evidence/page_p6.png"
+image_sha256 = "4b38a5cdeb31e98b069370a2471da66c51f167c23c6ad55385658f0f95fdeeb9"
+image_bytes = 101955
+crop = "fallback"
+crop_box = "full_page"
+dpi = 200
+render_key = "ede596d3fd4fdd16"
+text_snippet = "    GERR"
 
 [row."variant.INA241A1IDGK.gain_drift_full"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (full page): symbol 'GERR drift' not found as a table row; text check: UNSURE row uses convention 'typ_pm'"
+hash = "65d81801f7ba4c87a7ca7475cfa1bfd9d670c84496e1c066704a2bda47545cfe"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 6
+pdf_page = 6
+toml_lines = "39-51"
+image = "evidence/page_p6.png"
+image_sha256 = "4b38a5cdeb31e98b069370a2471da66c51f167c23c6ad55385658f0f95fdeeb9"
+image_bytes = 101955
+crop = "fallback"
+crop_box = "full_page"
+dpi = 200
+render_key = "ede596d3fd4fdd16"
+text_snippet = "(no text-layer line located)"
 
 [row."variant.INA241A1IDGK.vos_25c"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (table '6.5 Electrical Characteristics'): symbol 'VOS' not found as a table row; text check: UNSURE row uses convention 'typ_pm'"
+hash = "26a941bc34990d69d6d733f55e3d7979dc0eb7f9802552913025177efd751255"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "53-65"
+image = "evidence/table_p5_y72.png"
+image_sha256 = "ce8957486a957ccf41bd4d165b78e48f12bb6dd038c4a9b0b5cdc62efcd5de50"
+image_bytes = 5249
+crop = "fallback"
+crop_box = [54.0, 72.8, 558.0, 102.2]
+dpi = 150
+render_key = "cd5841717ae41a2c"
+text_snippet = "(no text-layer line located)"
 
 [row."variant.INA241A1IDGK.vos_drift_full"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (table '6.5 Electrical Characteristics'): symbol 'dVOS/dT' not found as a table row; text check: UNSURE row uses convention 'typ_pm'"
+hash = "b2f83e857cfb56b7990d641c1db6785b8028ff7ece9d372d176206bc813046a2"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "67-79"
+image = "evidence/table_p5_y72.png"
+image_sha256 = "ce8957486a957ccf41bd4d165b78e48f12bb6dd038c4a9b0b5cdc62efcd5de50"
+image_bytes = 5249
+crop = "fallback"
+crop_box = [54.0, 72.8, 558.0, 102.2]
+dpi = 150
+render_key = "cd5841717ae41a2c"
+text_snippet = "(no text-layer line located)"
 
 [row."variant.INA241A2IDGK.gain"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "unit '' not comparable; row found by symbol (table_xcheck match), row group of 5 lines; no footnote marker on the row or header"
+hash = "780e88a87f794cbd70791d7d4c6d9a953b1cbeb8fe34ad73107806aff7ac9461"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "87-96"
+image = "evidence/variant.INA241A2IDGK.gain_p5.png"
+image_sha256 = "5fec2e3843c6e614645640e864a0a0a98ce69f1f9d6332c1ca92ba0d56597ba5"
+image_bytes = 4398
+crop = "auto"
+crop_box = [50.7, 530.4, 552.6, 602.2]
+dpi = 200
+render_key = "89bf8736815f3e84"
+header_image = "evidence/head_p5_y69-127_x50-552.png"
+header_sha256 = "4d401ec00f6a452f6a8998609fa0d7c6bd9b328ca142e172287643ba0abde999"
+header_box = [50.7, 69.1, 552.6, 127.6]
+header_key = "f808c8d5ff216a47"
+text_snippet = "at TA = 25 \u00b0C, VS = 5V, VSENSE = VIN+ \u2013 VIN\u2013, VCM = VIN\u2013 = 48V, and VREF1 = VREF2 = VS / 2 (unless otherwise noted)\n                      PARAMETER                                     TEST CONDITIONS                   MIN      TYP       MAX     UNIT\n INPUT\n                                                        A1, B1 Devices                                           10              V/V\n                                                        A2, B2 Devices                                           20              V/V\n G           Gain                                       A3, B3 Devices                                           50              V/V\n                                                        A4, B4 Devices                                          100              V/V\n                                                        A5, B5 Devices                                          200              V/V"
 
 [row."variant.INA241A2IDGK.gain_err_25c"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (full page): row group longer than 16 lines; text check: UNSURE row uses convention 'typ_pm'"
+hash = "e547de91c3fe30130d2efeb9a1d008dbd6d21696f3652736f8e931c894808b82"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 6
+pdf_page = 6
+toml_lines = "98-110"
+image = "evidence/page_p6.png"
+image_sha256 = "4b38a5cdeb31e98b069370a2471da66c51f167c23c6ad55385658f0f95fdeeb9"
+image_bytes = 101955
+crop = "fallback"
+crop_box = "full_page"
+dpi = 200
+render_key = "ede596d3fd4fdd16"
+text_snippet = "    GERR"
 
 [row."variant.INA241A2IDGK.gain_drift_full"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (full page): symbol 'GERR drift' not found as a table row; text check: UNSURE row uses convention 'typ_pm'"
+hash = "65d81801f7ba4c87a7ca7475cfa1bfd9d670c84496e1c066704a2bda47545cfe"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 6
+pdf_page = 6
+toml_lines = "112-124"
+image = "evidence/page_p6.png"
+image_sha256 = "4b38a5cdeb31e98b069370a2471da66c51f167c23c6ad55385658f0f95fdeeb9"
+image_bytes = 101955
+crop = "fallback"
+crop_box = "full_page"
+dpi = 200
+render_key = "ede596d3fd4fdd16"
+text_snippet = "(no text-layer line located)"
 
 [row."variant.INA241A2IDGK.vos_25c"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (table '6.5 Electrical Characteristics'): symbol 'VOS' not found as a table row; text check: UNSURE row uses convention 'typ_pm'"
+hash = "1de0315636dfefc123e64e6e5679d209adcf864fe5b7e3e39b596da7df02ea6a"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "126-138"
+image = "evidence/table_p5_y72.png"
+image_sha256 = "ce8957486a957ccf41bd4d165b78e48f12bb6dd038c4a9b0b5cdc62efcd5de50"
+image_bytes = 5249
+crop = "fallback"
+crop_box = [54.0, 72.8, 558.0, 102.2]
+dpi = 150
+render_key = "cd5841717ae41a2c"
+text_snippet = "(no text-layer line located)"
 
 [row."variant.INA241A2IDGK.vos_drift_full"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (table '6.5 Electrical Characteristics'): symbol 'dVOS/dT' not found as a table row; text check: UNSURE row uses convention 'typ_pm'"
+hash = "3c7ac03c64296df0b0364cdef0de169370c94d96873af7f2acb09d1f8d8cca78"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "140-152"
+image = "evidence/table_p5_y72.png"
+image_sha256 = "ce8957486a957ccf41bd4d165b78e48f12bb6dd038c4a9b0b5cdc62efcd5de50"
+image_bytes = 5249
+crop = "fallback"
+crop_box = [54.0, 72.8, 558.0, 102.2]
+dpi = 150
+render_key = "cd5841717ae41a2c"
+text_snippet = "(no text-layer line located)"
 
 [row."variant.INA241A3IDGK.gain"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "unit '' not comparable; row found by symbol (table_xcheck match), row group of 5 lines; no footnote marker on the row or header"
+hash = "b7b2623ed014d93f2fa3494fba0bdf6cb73e636a79cc041ea2ea2cf662cf2c53"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "160-169"
+image = "evidence/variant.INA241A3IDGK.gain_p5.png"
+image_sha256 = "5fec2e3843c6e614645640e864a0a0a98ce69f1f9d6332c1ca92ba0d56597ba5"
+image_bytes = 4398
+crop = "auto"
+crop_box = [50.7, 530.4, 552.6, 602.2]
+dpi = 200
+render_key = "a2f38a251b8290c6"
+header_image = "evidence/head_p5_y69-127_x50-552.png"
+header_sha256 = "4d401ec00f6a452f6a8998609fa0d7c6bd9b328ca142e172287643ba0abde999"
+header_box = [50.7, 69.1, 552.6, 127.6]
+header_key = "f808c8d5ff216a47"
+text_snippet = "at TA = 25 \u00b0C, VS = 5V, VSENSE = VIN+ \u2013 VIN\u2013, VCM = VIN\u2013 = 48V, and VREF1 = VREF2 = VS / 2 (unless otherwise noted)\n                      PARAMETER                                     TEST CONDITIONS                   MIN      TYP       MAX     UNIT\n INPUT\n                                                        A1, B1 Devices                                           10              V/V\n                                                        A2, B2 Devices                                           20              V/V\n G           Gain                                       A3, B3 Devices                                           50              V/V\n                                                        A4, B4 Devices                                          100              V/V\n                                                        A5, B5 Devices                                          200              V/V"
 
 [row."variant.INA241A3IDGK.gain_err_25c"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (full page): row group longer than 16 lines; text check: UNSURE row uses convention 'typ_pm'"
+hash = "e547de91c3fe30130d2efeb9a1d008dbd6d21696f3652736f8e931c894808b82"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 6
+pdf_page = 6
+toml_lines = "171-183"
+image = "evidence/page_p6.png"
+image_sha256 = "4b38a5cdeb31e98b069370a2471da66c51f167c23c6ad55385658f0f95fdeeb9"
+image_bytes = 101955
+crop = "fallback"
+crop_box = "full_page"
+dpi = 200
+render_key = "ede596d3fd4fdd16"
+text_snippet = "    GERR"
 
 [row."variant.INA241A3IDGK.gain_drift_full"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (full page): symbol 'GERR drift' not found as a table row; text check: UNSURE row uses convention 'typ_pm'"
+hash = "65d81801f7ba4c87a7ca7475cfa1bfd9d670c84496e1c066704a2bda47545cfe"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 6
+pdf_page = 6
+toml_lines = "185-197"
+image = "evidence/page_p6.png"
+image_sha256 = "4b38a5cdeb31e98b069370a2471da66c51f167c23c6ad55385658f0f95fdeeb9"
+image_bytes = 101955
+crop = "fallback"
+crop_box = "full_page"
+dpi = 200
+render_key = "ede596d3fd4fdd16"
+text_snippet = "(no text-layer line located)"
 
 [row."variant.INA241A3IDGK.vos_25c"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (table '6.5 Electrical Characteristics'): symbol 'VOS' not found as a table row; text check: UNSURE row uses convention 'typ_pm'"
+hash = "64b35a2c680a167dd6dbd023a527613f65ccb4eecddc68912c569d7beffbfd4c"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "199-211"
+image = "evidence/table_p5_y72.png"
+image_sha256 = "ce8957486a957ccf41bd4d165b78e48f12bb6dd038c4a9b0b5cdc62efcd5de50"
+image_bytes = 5249
+crop = "fallback"
+crop_box = [54.0, 72.8, 558.0, 102.2]
+dpi = 150
+render_key = "cd5841717ae41a2c"
+text_snippet = "(no text-layer line located)"
 
 [row."variant.INA241A3IDGK.vos_drift_full"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (table '6.5 Electrical Characteristics'): symbol 'dVOS/dT' not found as a table row; text check: UNSURE row uses convention 'typ_pm'"
+hash = "9957cc10485ede0b367b6702faeca58943213a1a9d0fdc9ec090088caa911caf"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "213-225"
+image = "evidence/table_p5_y72.png"
+image_sha256 = "ce8957486a957ccf41bd4d165b78e48f12bb6dd038c4a9b0b5cdc62efcd5de50"
+image_bytes = 5249
+crop = "fallback"
+crop_box = [54.0, 72.8, 558.0, 102.2]
+dpi = 150
+render_key = "cd5841717ae41a2c"
+text_snippet = "(no text-layer line located)"
 
 [row."variant.INA241A4IDGK.gain"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "unit '' not comparable; row found by symbol (table_xcheck match), row group of 5 lines; no footnote marker on the row or header"
+hash = "0be76966bfc24042f337e5ef004267bd872e9682b1d8834d6a773c5afe7941b9"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "233-242"
+image = "evidence/variant.INA241A4IDGK.gain_p5.png"
+image_sha256 = "5fec2e3843c6e614645640e864a0a0a98ce69f1f9d6332c1ca92ba0d56597ba5"
+image_bytes = 4398
+crop = "auto"
+crop_box = [50.7, 530.4, 552.6, 602.2]
+dpi = 200
+render_key = "86820421b665c117"
+header_image = "evidence/head_p5_y69-127_x50-552.png"
+header_sha256 = "4d401ec00f6a452f6a8998609fa0d7c6bd9b328ca142e172287643ba0abde999"
+header_box = [50.7, 69.1, 552.6, 127.6]
+header_key = "f808c8d5ff216a47"
+text_snippet = "at TA = 25 \u00b0C, VS = 5V, VSENSE = VIN+ \u2013 VIN\u2013, VCM = VIN\u2013 = 48V, and VREF1 = VREF2 = VS / 2 (unless otherwise noted)\n                      PARAMETER                                     TEST CONDITIONS                   MIN      TYP       MAX     UNIT\n INPUT\n                                                        A1, B1 Devices                                           10              V/V\n                                                        A2, B2 Devices                                           20              V/V\n G           Gain                                       A3, B3 Devices                                           50              V/V\n                                                        A4, B4 Devices                                          100              V/V\n                                                        A5, B5 Devices                                          200              V/V"
 
 [row."variant.INA241A4IDGK.gain_err_25c"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (full page): row group longer than 16 lines; text check: UNSURE row uses convention 'typ_pm'"
+hash = "1c74758ea7181c555e1f39293d06aaf49b2e3b4a8ece5a270d4c6f033eb933a1"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 6
+pdf_page = 6
+toml_lines = "244-256"
+image = "evidence/page_p6.png"
+image_sha256 = "4b38a5cdeb31e98b069370a2471da66c51f167c23c6ad55385658f0f95fdeeb9"
+image_bytes = 101955
+crop = "fallback"
+crop_box = "full_page"
+dpi = 200
+render_key = "ede596d3fd4fdd16"
+text_snippet = "    GERR"
 
 [row."variant.INA241A4IDGK.gain_drift_full"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (full page): symbol 'GERR drift' not found as a table row; text check: UNSURE row uses convention 'typ_pm'"
+hash = "7dd6e40a80f9ca10110c95e3d45e5c663ccf23489a5982a4b3e3bfa6a2d3303c"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 6
+pdf_page = 6
+toml_lines = "258-270"
+image = "evidence/page_p6.png"
+image_sha256 = "4b38a5cdeb31e98b069370a2471da66c51f167c23c6ad55385658f0f95fdeeb9"
+image_bytes = 101955
+crop = "fallback"
+crop_box = "full_page"
+dpi = 200
+render_key = "ede596d3fd4fdd16"
+text_snippet = "(no text-layer line located)"
 
 [row."variant.INA241A4IDGK.vos_25c"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (table '6.5 Electrical Characteristics'): symbol 'VOS' not found as a table row; text check: UNSURE row uses convention 'typ_pm'"
+hash = "64b35a2c680a167dd6dbd023a527613f65ccb4eecddc68912c569d7beffbfd4c"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "272-284"
+image = "evidence/table_p5_y72.png"
+image_sha256 = "ce8957486a957ccf41bd4d165b78e48f12bb6dd038c4a9b0b5cdc62efcd5de50"
+image_bytes = 5249
+crop = "fallback"
+crop_box = [54.0, 72.8, 558.0, 102.2]
+dpi = 150
+render_key = "cd5841717ae41a2c"
+text_snippet = "(no text-layer line located)"
 
 [row."variant.INA241A4IDGK.vos_drift_full"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (table '6.5 Electrical Characteristics'): symbol 'dVOS/dT' not found as a table row; text check: UNSURE row uses convention 'typ_pm'"
+hash = "9957cc10485ede0b367b6702faeca58943213a1a9d0fdc9ec090088caa911caf"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "286-298"
+image = "evidence/table_p5_y72.png"
+image_sha256 = "ce8957486a957ccf41bd4d165b78e48f12bb6dd038c4a9b0b5cdc62efcd5de50"
+image_bytes = 5249
+crop = "fallback"
+crop_box = [54.0, 72.8, 558.0, 102.2]
+dpi = 150
+render_key = "cd5841717ae41a2c"
+text_snippet = "(no text-layer line located)"
 
 [row."variant.INA241A5IDGK.gain"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "unit '' not comparable; row found by symbol (table_xcheck match), row group of 5 lines; no footnote marker on the row or header"
+hash = "dee7dc1cffe0073495d7ffb44ec49293eb31a916cac404de9cc37240d3ac5745"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "306-315"
+image = "evidence/variant.INA241A5IDGK.gain_p5.png"
+image_sha256 = "5fec2e3843c6e614645640e864a0a0a98ce69f1f9d6332c1ca92ba0d56597ba5"
+image_bytes = 4398
+crop = "auto"
+crop_box = [50.7, 530.4, 552.6, 602.2]
+dpi = 200
+render_key = "c756fef94fbbdb66"
+header_image = "evidence/head_p5_y69-127_x50-552.png"
+header_sha256 = "4d401ec00f6a452f6a8998609fa0d7c6bd9b328ca142e172287643ba0abde999"
+header_box = [50.7, 69.1, 552.6, 127.6]
+header_key = "f808c8d5ff216a47"
+text_snippet = "at TA = 25 \u00b0C, VS = 5V, VSENSE = VIN+ \u2013 VIN\u2013, VCM = VIN\u2013 = 48V, and VREF1 = VREF2 = VS / 2 (unless otherwise noted)\n                      PARAMETER                                     TEST CONDITIONS                   MIN      TYP       MAX     UNIT\n INPUT\n                                                        A1, B1 Devices                                           10              V/V\n                                                        A2, B2 Devices                                           20              V/V\n G           Gain                                       A3, B3 Devices                                           50              V/V\n                                                        A4, B4 Devices                                          100              V/V\n                                                        A5, B5 Devices                                          200              V/V"
 
 [row."variant.INA241A5IDGK.gain_err_25c"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (full page): row group longer than 16 lines; text check: UNSURE row uses convention 'typ_pm'"
+hash = "1c74758ea7181c555e1f39293d06aaf49b2e3b4a8ece5a270d4c6f033eb933a1"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 6
+pdf_page = 6
+toml_lines = "317-329"
+image = "evidence/page_p6.png"
+image_sha256 = "4b38a5cdeb31e98b069370a2471da66c51f167c23c6ad55385658f0f95fdeeb9"
+image_bytes = 101955
+crop = "fallback"
+crop_box = "full_page"
+dpi = 200
+render_key = "ede596d3fd4fdd16"
+text_snippet = "    GERR"
 
 [row."variant.INA241A5IDGK.gain_drift_full"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (full page): symbol 'GERR drift' not found as a table row; text check: UNSURE row uses convention 'typ_pm'"
+hash = "7dd6e40a80f9ca10110c95e3d45e5c663ccf23489a5982a4b3e3bfa6a2d3303c"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 6
+pdf_page = 6
+toml_lines = "331-343"
+image = "evidence/page_p6.png"
+image_sha256 = "4b38a5cdeb31e98b069370a2471da66c51f167c23c6ad55385658f0f95fdeeb9"
+image_bytes = 101955
+crop = "fallback"
+crop_box = "full_page"
+dpi = 200
+render_key = "ede596d3fd4fdd16"
+text_snippet = "(no text-layer line located)"
 
 [row."variant.INA241A5IDGK.vos_25c"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (table '6.5 Electrical Characteristics'): symbol 'VOS' not found as a table row; text check: UNSURE row uses convention 'typ_pm'"
+hash = "c674629d245ec2297fa00bfbe0b6195463b2918fdc90b0c67fc830604d6f8a72"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "345-357"
+image = "evidence/table_p5_y72.png"
+image_sha256 = "ce8957486a957ccf41bd4d165b78e48f12bb6dd038c4a9b0b5cdc62efcd5de50"
+image_bytes = 5249
+crop = "fallback"
+crop_box = [54.0, 72.8, 558.0, 102.2]
+dpi = 150
+render_key = "cd5841717ae41a2c"
+text_snippet = "(no text-layer line located)"
 
 [row."variant.INA241A5IDGK.vos_drift_full"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "fallback (table '6.5 Electrical Characteristics'): symbol 'dVOS/dT' not found as a table row; text check: UNSURE row uses convention 'typ_pm'"
+hash = "9957cc10485ede0b367b6702faeca58943213a1a9d0fdc9ec090088caa911caf"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "359-371"
+image = "evidence/table_p5_y72.png"
+image_sha256 = "ce8957486a957ccf41bd4d165b78e48f12bb6dd038c4a9b0b5cdc62efcd5de50"
+image_bytes = 5249
+crop = "fallback"
+crop_box = [54.0, 72.8, 558.0, 102.2]
+dpi = 150
+render_key = "cd5841717ae41a2c"
+text_snippet = "(no text-layer line located)"
 
 [row."variant.INA241B1IDGK.gain"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "unit '' not comparable; row found by symbol (table_xcheck match), row group of 5 lines; no footnote marker on the row or header"
+hash = "ea689f34176f79e747a6dc957b0c3b82fdc95fe1dcdc569d6143082d89bf80c0"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "380-389"
+image = "evidence/variant.INA241B1IDGK.gain_p5.png"
+image_sha256 = "5fec2e3843c6e614645640e864a0a0a98ce69f1f9d6332c1ca92ba0d56597ba5"
+image_bytes = 4398
+crop = "auto"
+crop_box = [50.7, 530.4, 552.6, 602.2]
+dpi = 200
+render_key = "d4e13252e29189ff"
+header_image = "evidence/head_p5_y69-127_x50-552.png"
+header_sha256 = "4d401ec00f6a452f6a8998609fa0d7c6bd9b328ca142e172287643ba0abde999"
+header_box = [50.7, 69.1, 552.6, 127.6]
+header_key = "f808c8d5ff216a47"
+text_snippet = "at TA = 25 \u00b0C, VS = 5V, VSENSE = VIN+ \u2013 VIN\u2013, VCM = VIN\u2013 = 48V, and VREF1 = VREF2 = VS / 2 (unless otherwise noted)\n                      PARAMETER                                     TEST CONDITIONS                   MIN      TYP       MAX     UNIT\n INPUT\n                                                        A1, B1 Devices                                           10              V/V\n                                                        A2, B2 Devices                                           20              V/V\n G           Gain                                       A3, B3 Devices                                           50              V/V\n                                                        A4, B4 Devices                                          100              V/V\n                                                        A5, B5 Devices                                          200              V/V"
 
 [row."variant.INA241B2IDGK.gain"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "unit '' not comparable; row found by symbol (table_xcheck match), row group of 5 lines; no footnote marker on the row or header"
+hash = "780e88a87f794cbd70791d7d4c6d9a953b1cbeb8fe34ad73107806aff7ac9461"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "397-406"
+image = "evidence/variant.INA241B2IDGK.gain_p5.png"
+image_sha256 = "5fec2e3843c6e614645640e864a0a0a98ce69f1f9d6332c1ca92ba0d56597ba5"
+image_bytes = 4398
+crop = "auto"
+crop_box = [50.7, 530.4, 552.6, 602.2]
+dpi = 200
+render_key = "89bf8736815f3e84"
+header_image = "evidence/head_p5_y69-127_x50-552.png"
+header_sha256 = "4d401ec00f6a452f6a8998609fa0d7c6bd9b328ca142e172287643ba0abde999"
+header_box = [50.7, 69.1, 552.6, 127.6]
+header_key = "f808c8d5ff216a47"
+text_snippet = "at TA = 25 \u00b0C, VS = 5V, VSENSE = VIN+ \u2013 VIN\u2013, VCM = VIN\u2013 = 48V, and VREF1 = VREF2 = VS / 2 (unless otherwise noted)\n                      PARAMETER                                     TEST CONDITIONS                   MIN      TYP       MAX     UNIT\n INPUT\n                                                        A1, B1 Devices                                           10              V/V\n                                                        A2, B2 Devices                                           20              V/V\n G           Gain                                       A3, B3 Devices                                           50              V/V\n                                                        A4, B4 Devices                                          100              V/V\n                                                        A5, B5 Devices                                          200              V/V"
 
 [row."variant.INA241B3IDGK.gain"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "unit '' not comparable; row found by symbol (table_xcheck match), row group of 5 lines; no footnote marker on the row or header"
+hash = "b7b2623ed014d93f2fa3494fba0bdf6cb73e636a79cc041ea2ea2cf662cf2c53"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "414-423"
+image = "evidence/variant.INA241B3IDGK.gain_p5.png"
+image_sha256 = "5fec2e3843c6e614645640e864a0a0a98ce69f1f9d6332c1ca92ba0d56597ba5"
+image_bytes = 4398
+crop = "auto"
+crop_box = [50.7, 530.4, 552.6, 602.2]
+dpi = 200
+render_key = "a2f38a251b8290c6"
+header_image = "evidence/head_p5_y69-127_x50-552.png"
+header_sha256 = "4d401ec00f6a452f6a8998609fa0d7c6bd9b328ca142e172287643ba0abde999"
+header_box = [50.7, 69.1, 552.6, 127.6]
+header_key = "f808c8d5ff216a47"
+text_snippet = "at TA = 25 \u00b0C, VS = 5V, VSENSE = VIN+ \u2013 VIN\u2013, VCM = VIN\u2013 = 48V, and VREF1 = VREF2 = VS / 2 (unless otherwise noted)\n                      PARAMETER                                     TEST CONDITIONS                   MIN      TYP       MAX     UNIT\n INPUT\n                                                        A1, B1 Devices                                           10              V/V\n                                                        A2, B2 Devices                                           20              V/V\n G           Gain                                       A3, B3 Devices                                           50              V/V\n                                                        A4, B4 Devices                                          100              V/V\n                                                        A5, B5 Devices                                          200              V/V"
 
 [row."variant.INA241B4IDGK.gain"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "unit '' not comparable; row found by symbol (table_xcheck match), row group of 5 lines; no footnote marker on the row or header"
+hash = "0be76966bfc24042f337e5ef004267bd872e9682b1d8834d6a773c5afe7941b9"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "431-440"
+image = "evidence/variant.INA241B4IDGK.gain_p5.png"
+image_sha256 = "5fec2e3843c6e614645640e864a0a0a98ce69f1f9d6332c1ca92ba0d56597ba5"
+image_bytes = 4398
+crop = "auto"
+crop_box = [50.7, 530.4, 552.6, 602.2]
+dpi = 200
+render_key = "86820421b665c117"
+header_image = "evidence/head_p5_y69-127_x50-552.png"
+header_sha256 = "4d401ec00f6a452f6a8998609fa0d7c6bd9b328ca142e172287643ba0abde999"
+header_box = [50.7, 69.1, 552.6, 127.6]
+header_key = "f808c8d5ff216a47"
+text_snippet = "at TA = 25 \u00b0C, VS = 5V, VSENSE = VIN+ \u2013 VIN\u2013, VCM = VIN\u2013 = 48V, and VREF1 = VREF2 = VS / 2 (unless otherwise noted)\n                      PARAMETER                                     TEST CONDITIONS                   MIN      TYP       MAX     UNIT\n INPUT\n                                                        A1, B1 Devices                                           10              V/V\n                                                        A2, B2 Devices                                           20              V/V\n G           Gain                                       A3, B3 Devices                                           50              V/V\n                                                        A4, B4 Devices                                          100              V/V\n                                                        A5, B5 Devices                                          200              V/V"
 
 [row."variant.INA241B5IDGK.gain"]
-state = "NOT_COVERED"
+state = "NEW"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "unit '' not comparable; row found by symbol (table_xcheck match), row group of 5 lines; no footnote marker on the row or header"
+hash = "dee7dc1cffe0073495d7ffb44ec49293eb31a916cac404de9cc37240d3ac5745"
+pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
+printed_page = 5
+pdf_page = 5
+toml_lines = "448-457"
+image = "evidence/variant.INA241B5IDGK.gain_p5.png"
+image_sha256 = "5fec2e3843c6e614645640e864a0a0a98ce69f1f9d6332c1ca92ba0d56597ba5"
+image_bytes = 4398
+crop = "auto"
+crop_box = [50.7, 530.4, 552.6, 602.2]
+dpi = 200
+render_key = "c756fef94fbbdb66"
+header_image = "evidence/head_p5_y69-127_x50-552.png"
+header_sha256 = "4d401ec00f6a452f6a8998609fa0d7c6bd9b328ca142e172287643ba0abde999"
+header_box = [50.7, 69.1, 552.6, 127.6]
+header_key = "f808c8d5ff216a47"
+text_snippet = "at TA = 25 \u00b0C, VS = 5V, VSENSE = VIN+ \u2013 VIN\u2013, VCM = VIN\u2013 = 48V, and VREF1 = VREF2 = VS / 2 (unless otherwise noted)\n                      PARAMETER                                     TEST CONDITIONS                   MIN      TYP       MAX     UNIT\n INPUT\n                                                        A1, B1 Devices                                           10              V/V\n                                                        A2, B2 Devices                                           20              V/V\n G           Gain                                       A3, B3 Devices                                           50              V/V\n                                                        A4, B4 Devices                                          100              V/V\n                                                        A5, B5 Devices                                          200              V/V"
 
 [row.calc]
 state = "NOT_COVERED"

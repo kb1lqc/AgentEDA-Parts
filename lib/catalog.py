@@ -24,7 +24,7 @@ from datetime import date
 from decimal import Decimal
 from pathlib import Path
 
-from .capacitor import CATALOG_COLUMNS, parse_capacitance, parse_tolerance, parse_voltage, tol_key
+from .capacitor import CATALOG_COLUMNS, parse_capacitance, parse_group_stamp, parse_tolerance, parse_voltage, tol_key
 
 # Part number: GCM <size 2> <thickness 1> <dielectric 2> <voltage 2> <capacitance 3> <tolerance 1> <individual 3> <#>
 # "#" is the placeholder for the package letter (the export lists the part without it).
@@ -292,45 +292,59 @@ EXPORT_RECORD = "export_check.toml"  # under review/ (docs/spec/capacitor.md "Ex
 WHO_RE = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})")  # a GitHub login
 
 
+def tables_sha256():
+    """SHA-256 of the decode tables above (a stable, sorted JSON dump). The record stores it, so an edit to a table makes a
+    machine record STALE and forces the table re-check (docs/spec/capacitor.md "Export check")."""
+    tables = {"SIZE": SIZE, "THICKNESS": THICKNESS, "DIELECTRIC": DIELECTRIC, "VOLTAGE": VOLTAGE, "TOLERANCE": TOLERANCE}
+    return hashlib.sha256(json.dumps(tables, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
+
+
 def record_text(result, who=None, day=None, groups=None, keep=None):
-    """review/export_check.toml for a MATCH result: the file and catalog hashes, and per dielectric group its row count and
-    group hash. With who (a GitHub login), each group in `groups` (default: all) gets
-    `verified = "human:<who> <day> export-check group <d>"`. A group not stamped now keeps its line from `keep`
-    ({group: verified line}, see existing_stamps)."""
+    """review/export_check.toml for a MATCH result: the tables hash, the file and catalog hashes, and per dielectric group
+    its row count, group hash and `verified`. verified: a group stamped now (who, a GitHub login, legacy)
+    gets `human:<who> <day> export-check group <d>`; else a line in `keep` ({group: verified line}, see existing_record) is
+    kept; else `machine export-check <day> <group_sha256[:12]>`."""
+    day = day or date.today().isoformat()
     lines = ["# Export check record (docs/spec/capacitor.md). Written by python3 -m lib.catalog export-check.", "",
+             f'tables_sha256 = "{tables_sha256()}"', "",
              "[export]", f'file = "{result["export_file"]}"', f'sha256 = "{result["export_sha256"]}"', "",
              "[catalog]", f'sha256 = "{result["catalog_sha256"]}"']
     for d, g in result["groups"].items():
         lines += ["", f"[group.{d}]", f"rows = {g['rows']}", f'group_sha256 = "{g["sha256"]}"']
         if who and (groups is None or d in groups):
-            lines.append(f'verified = "human:{who} {day} export-check group {d}"')
-        elif keep and d in keep:
-            lines.append(f'verified = "{keep[d]}"')
+            line = f"human:{who} {day} export-check group {d}"
+        else:
+            line = (keep or {}).get(d) or f"machine export-check {day} {g['sha256'][:12]}"
+        lines.append(f'verified = "{line}"')
     return "\n".join(lines) + "\n"
 
 
-def existing_stamps(record, result):
-    """{group: verified line} from a record already on disk, for the groups whose group hash is unchanged and whose file
-    hashes are the result's (a stamp for a row set that changed is not kept)."""
+def existing_record(record, result):
+    """{group: verified line} from a record already on disk, for a group whose group hash is
+    unchanged: a legacy human line always, a machine line only while the tables hash is also unchanged (else it is
+    rewritten with today's date). A human line of a changed group is dropped, never turned into a machine line while valid."""
     try:
         with open(record, "rb") as fh:
             old = tomllib.load(fh)
     except (OSError, tomllib.TOMLDecodeError):
         return {}
-    if old.get("catalog", {}).get("sha256") != result["catalog_sha256"] or old.get("export", {}).get("sha256") != result["export_sha256"]:
-        return {}
     keep = {}
     for d, g in result["groups"].items():
         prior = old.get("group", {}).get(d, {})
-        if prior.get("group_sha256") == g["sha256"] and prior.get("verified"):
+        if prior.get("group_sha256") != g["sha256"]:
+            continue
+        stamp = parse_group_stamp(prior.get("verified"))
+        if stamp and (stamp["kind"] == "human" and stamp["group"] == d
+                      or stamp["kind"] == "machine" and old.get("tables_sha256") == tables_sha256()
+                      and stamp["sha12"] == g["sha256"][:12]):
             keep[d] = prior["verified"]
     return keep
 
 
 def export_check_command(args):
     """export-check <vendor csv> <component dir> [--stamp <login>]: print the result; on MATCH write review/export_check.toml
-    (refused with MISMATCH); --stamp adds each group's human stamp. Stamps are refused when CLAUDECODE is set (agents
-    don't stamp, as tools/stamp.py)."""
+    with a machine line per group (refused with MISMATCH; no login needed); --stamp (legacy) writes a human line instead.
+    Stamps are refused when CLAUDECODE is set (agents don't stamp, as tools/stamp.py)."""
     who, groups = None, None
     for flag in ("--stamp", "--groups"):
         if flag in args:
@@ -368,9 +382,9 @@ def export_check_command(args):
     if groups is not None and not groups <= set(result["groups"]):
         print(f"ERROR: --groups {sorted(groups - set(result['groups']))} not in this catalog")
         return 2
-    record.write_text(record_text(result, who, date.today().isoformat(), groups, existing_stamps(record, result)),
+    record.write_text(record_text(result, who, date.today().isoformat(), groups, existing_record(record, result)),
                       encoding="utf-8")
-    print(f"wrote {record}" + (f" with stamps for {who}" if who else " (no stamps: run with --stamp <login>)"))
+    print(f"wrote {record}" + (f" with legacy human stamps for {who}" if who else " (machine export-check lines)"))
     return 0
 
 

@@ -298,6 +298,10 @@ def build_groups(root, dirs):
         for diel, g in res["groups"].items():
             prior = record.get("group", {}).get(diel, {})
             stamp = prior.get("verified") if current and prior.get("group_sha256") == g["sha256"] else None
+            parsed = CAT.parse_group_stamp(stamp)
+            if parsed is None or (parsed["kind"] == "human" and parsed["group"] != diel) or (
+                    parsed["kind"] == "machine" and record.get("tables_sha256") != CAT.tables_sha256()):
+                stamp = None  # malformed, or a machine line made with other decode tables: not current
             out.append({"part": d.name, "dielectric": diel, "dir": d, "export": export, "rows": g["rows"],
                         "result": res["result"], "differences": res["differences"],
                         "rows_expected": sorted((r for r in expected if r["dielectric"] == diel), key=lambda r: r["value"]),
@@ -337,8 +341,11 @@ def group_html(g):
     if g["result"] != "MATCH":
         parts.append('<p class="warn">MISMATCH: ' + esc("; ".join(g["differences"][:3])) + "</p>")
     if g["stamp"]:
-        m = re.match(r"human:(\S+) (\S+) ", g["stamp"])
-        parts.append(f'<p class="small">Ticked by {esc(m[1] if m else "?")} on {esc(m[2] if m else "?")}</p>')
+        st = CAT.parse_group_stamp(g["stamp"])
+        if st["kind"] == "machine":  # derived rows: no tick needed (docs/spec/capacitor.md "Export check")
+            parts.append(f'<p class="small">derived, checked: machine export-check on {esc(st["date"])}</p>')
+        else:  # legacy human line
+            parts.append(f'<p class="small">Ticked by {esc(st["who"])} on {esc(st["date"])}</p>')
     rows = g["rows_expected"]
     parts.append(legend_html(rows))
     cells = []

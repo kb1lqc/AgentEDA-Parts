@@ -28,6 +28,8 @@ import phase3b_pdf as fx  # noqa: E402
 from test_stamp import DAY, no_agent  # noqa: E402
 
 
+
+
 class Stamped(Base):
     """A real ds_review record with X:iq human-stamped by alice and re-pinned (HUMAN_VERIFIED)."""
 
@@ -76,8 +78,8 @@ class Status(Stamped):
         (self.d / "variants.toml").write_text('[variant.V1]\nmpn = "a"\n[variant.V1.param.gain]\ntyp = 10\n')
         (self.d / "catalog.csv").write_text("value,capacitance\n1,2\n")
         r = RS.review(self.d, self.root)
-        self.assertEqual(r["not_covered"], {"catalog.csv": ["capacitance"], "variants.toml": ["gain"]})
-        self.assertEqual((r["k"], r["n"]), (1, 1))
+        self.assertEqual(r["not_covered"], {"catalog.csv": ["capacitance"]})  # an own-only override that is used is a row now
+        self.assertEqual((r["k"], r["n"]), (1, 2))  # iq checked; variant.V1.gain needs a check
 
     def test_catalog_label_only_for_catalog_columns(self):
         self.calc('INPUTS = {"f": {"a": "iq.typ", "g": "gain.typ", "c": "capacitance"}}\n')
@@ -87,19 +89,21 @@ class Status(Stamped):
         self.assertEqual(RS.review(self.d, self.root)["not_covered"], {"catalog.csv": ["gain"], "unknown": ["capacitance"]})
         self.assertIn("(catalog.csv, unknown)", RS.readme_line("X", RS.review(self.d, self.root)))
 
-    def test_variant_override_of_a_row_that_matters_is_listed_not_counted(self):
+    def test_variant_override_of_a_row_that_matters_is_counted_not_listed(self):
         self.calc('INPUTS = {"f": {"a": "iq.typ"}}\n')  # iq matters (used); aol is only a reference row
         (self.d / "variants.toml").write_text('[variant.V1]\nmpn = "a"\n[variant.V1.param.iq]\ntyp = 9\n'
                                               '[variant.V1.param.aol]\ntyp = 9\n')
         r = RS.review(self.d, self.root)
-        self.assertEqual(r["not_covered"], {"variants.toml": ["variant.V1.iq"]})
-        self.assertEqual((r["k"], r["n"]), (1, 1))
-        self.assertIn("; 1 used values not covered (variants.toml)", RS.readme_line("X", r))
+        self.assertEqual(r["not_covered"], {})
+        self.assertEqual((r["k"], r["n"]), (1, 2))  # iq checked, variant.V1.iq not; aol's override is a reference row
+        self.assertEqual(r["status"]["variant.V1.iq"], "needs check")
+        self.assertEqual(r["status"]["variant.V1.aol"], "reference")
+        self.assertNotIn("not covered", RS.readme_line("X", r))
 
     def test_readme_line_wording(self):
         self.calc()
         r = RS.review(self.d, self.root)
-        self.assertEqual(RS.readme_line("X", r), "Released: all 1 rows that matter checked (7 rows in all).")
+        self.assertEqual(RS.readme_line("X", r), "Released: all 1 rows that matter checked (7 rows in all)" + ".")
         self.calc('INPUTS = {"f": {"a": "iq.typ", "b": "vos"}}\n')
         r = RS.review(self.d, self.root)
         self.assertEqual(RS.readme_line("X", r), "Checked by a person: 1 of 2 rows that matter (7 rows in all). "
@@ -159,7 +163,7 @@ class PinoutStatus(PinStamped):
             self.assertEqual((r["status"]["pinout"], r["k"], r["n"], r["released"]), (RS.CHECKED, 2, 2, True))
         self.assertEqual(RS.checked_rows(self.d)["pinout"], ("alice", "2026-11-20"))
         self.assertEqual(RS.readme_line("X", RS.review(self.d, self.root)),
-                         "Released: all 2 rows that matter checked (8 rows in all).")
+                         "Released: all 2 rows that matter checked (8 rows in all)" + ".")
 
     def test_stale_or_changed_pdf_needs_check_again(self):
         self.stamp_pinout()
@@ -329,7 +333,7 @@ class Readme(Stamped):
         self.assertEqual(text.splitlines()[4], "Checked by a person: 0 of 0 rows that matter (7 rows in all). "
                                                "Review: python3 tools/review.py X")
         (self.d / "calc.py").write_text('INPUTS = {"f": {"a": "iq.typ"}}\n')
-        self.assertEqual(readme.build(self.d).splitlines()[4], "Released: all 1 rows that matter checked (7 rows in all).")
+        self.assertEqual(readme.build(self.d).splitlines()[4], "Released: all 1 rows that matter checked (7 rows in all)" + ".")
         text = readme.build(self.d)
         self.assertIn("| Cite | Checked |", text)
         iq = next(ln for ln in text.splitlines() if ln.startswith("| n iq |"))

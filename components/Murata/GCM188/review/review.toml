@@ -12,7 +12,7 @@ pdf_sha256 = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a"
 pages = 32
 text_layer = true
 component_sha256 = "5989b29598ea00d62e910424e8546d25b99a10e9181e09f5f0ae55a218014d86"
-render = "NOT_RENDERED"
+render = "complete"
 backfill = "git blame"
 sheets = { "GCM1885C1H101GA16-01A-EN.pdf" = "0f6e6a1b2bd8caa59b44ecbe0fe2fa027c5825c5211762b5905be76f3049b250", "GCM188R71H104KA57-01A-EN.pdf" = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a" }
 
@@ -760,7 +760,7 @@ stamped_toml = "[param.width]\nparts = [\"GCM188R71H104KA57\"]\nname       = \"W
 [row.tc_x7r]
 state = "STALE"
 status = "UNSURE"
-reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/GCM188R71H104KA57-01A-EN.pdf); not rendered"
+reason = "fallback (full page): symbol 'TC' not found as a table row; text check: UNSURE unit '%' not comparable"
 hash = "807e0dd8405d8ac46a38a867085998fd6837c135d1f817f918b490bb9a12b93a"
 stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 stamp_hash = "e338cb2235b40e104f9a44958e166a2f80cb7abdd18a9e04206c58a77f257388"
@@ -822,7 +822,7 @@ text_snippet = "(no text-layer line located)"
 [row.dc_bias]
 state = "NEW"
 status = "UNSURE"
-reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/GCM188R71H104KA57-01A-EN.pdf); not rendered"
+reason = "fallback (full page): row has no symbol; text check: UNSURE row has no min/typ/max number"
 hash = "530f673e8324df3c02632d68a7d091f92e0278dd32a8304a1c0da039756f6f9c"
 pdf_sha256 = "5a29828795fe4b9b8282c7c7fc77e7859fd5e25a64e208257ed25be08ef2402a"
 printed_page = 13
@@ -880,7 +880,7 @@ stamped_toml = "[param.solderability]\nparts = [\"GCM188R71H104KA57\"]\nname    
 [row.tc_c0g]
 state = "STALE"
 status = "UNSURE"
-reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/GCM1885C1H101GA16-01A-EN.pdf); not rendered"
+reason = "fallback (full page): symbol 'TC' not found as a table row; text check: UNSURE partial-scope row"
 hash = "9a26912dda242362f95efc05875305a70d4da76d767e4b8bca61dd47238bb0a4"
 stamp = "sonnet-audit 2026-11-18 blind page-image reading, cross-model (diet-work/audit/AUDIT.md)"
 stamp_hash = "59415bf843c598799d22008980bc37a2e8a4f3e371461ee7f257e557d1552bda"

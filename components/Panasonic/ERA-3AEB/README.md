@@ -2,7 +2,7 @@
 
 # ERA-3AEB
 
-Checked by a person: 0 of 17 rows that matter (28 rows in all). Review: python3 tools/review.py ERA-3AEB
+Checked by a person: 0 of 16 rows that matter (28 rows in all). Review: python3 tools/review.py ERA-3AEB
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 
