@@ -18,6 +18,8 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "tools"))
 sys.path.insert(0, str(ROOT / "tests" / "fixtures"))
 import ds_review as R  # noqa: E402
+sys.path.insert(0, str(ROOT))
+from lib.component import evidence_merge  # noqa: E402
 import phase3b_pdf as fx  # noqa: E402
 import table_xcheck as T  # noqa: E402
 
@@ -93,8 +95,11 @@ class Base(unittest.TestCase):
     def csnap(self):
         return {str(p.relative_to(self.cdir)): p.read_bytes() for p in sorted(self.cdir.rglob("*")) if p.is_file()}
 
-    def ledger(self):
+    def committed(self):
         return tomllib.loads((self.rdir / "review.toml").read_text())
+
+    def ledger(self):  # the committed record with the cache's evidence.toml laid under it
+        return evidence_merge(self.committed(), self.cdir)
 
     def rows(self):
         return self.ledger()["row"]
@@ -606,7 +611,7 @@ class TestIncremental(Base):
         self.assertEqual(rows_b["vos"]["state"], "STALE")
         self.assertEqual({k for k in rows_b if rows_b[k] != rows_a.get(k)}, {"vos"})
         changed = {k for k in set(a) | set(self.snap()) if a.get(k) != self.snap().get(k)}
-        allowed = {"review.toml", "DELTA.md", "README.md", "github-issue.md", "params/vos.md", "evidence/vos_p2.png"}
+        allowed = {"review.toml", "evidence.toml", "DELTA.md", "README.md", "github-issue.md", "params/vos.md", "evidence/vos_p2.png"}
         self.assertTrue(changed <= allowed, changed - allowed)
         # a machine-stamped row is not a delta (DELTA lists human-stamped rows only); the README index lists it
         self.assertEqual((self.cdir / "DELTA.md").read_text(), "no human-stamped row changed since its stamp\n")
@@ -698,6 +703,18 @@ class TestIncremental(Base):
         msgs = [m for lvl, m in check.check_component(self.root / COMP) if lvl == "ERROR"]
         self.assertTrue(any("missing" in m and "vos" in m for m in msgs), msgs)
 
+    def test_lib_check_wants_evidence_describing_the_ledger_rows(self):
+        from lib import check
+        self.run_r()
+        errs = lambda: [m for lvl, m in check.check_ledger(self.root / COMP) if lvl == "ERROR"]  # noqa: E731
+        self.assertEqual(errs(), [])
+        ev = self.cdir / "evidence.toml"
+        text = ev.read_text()
+        ev.write_text(text.replace(self.rows()["vos"]["hash"], "0" * 64))
+        self.assertTrue(any("no evidence of vos for its current hash" in m for m in errs()), errs())
+        ev.unlink()  # PDF here, cache gone: rerun ds_review
+        self.assertTrue(any("evidence of vos" in m for m in errs()), errs())
+
     def test_tampered_image_is_not_relaundered(self):
         self.run_r()
         img = self.cdir / self.rows()["vos"]["image"]
@@ -771,12 +788,19 @@ class TestCache(Base):
             self.run_r()
             before = committed()
             self.assertEqual(sorted(before), ["review.toml"])
-            self.assertIn("image_bytes", before["review.toml"].decode())  # the size lives in the ledger, not the cache
+            led = before["review.toml"].decode()
+            for field in ("image", "image_sha256", "image_bytes", "render_key", "status", "reason", "crop_box", "text_snippet",
+                          "tool", "poppler", "python", "dpi", "pages", "text_layer", "render", "toml_lines"):
+                self.assertNotRegex(led, r"(?m)^%s = " % field, field)  # all of it is local evidence
+            self.assertIn("image_bytes", (self.cdir / "evidence.toml").read_text())
             shutil.rmtree(self.cdir)  # CI: no cache ...
             (self.root / "docs/datasheets/x.pdf").unlink()  # ... and no PDF
             rc, out = self.run_r()
-        self.assertIn("ledger-only mode", out)
-        self.assertEqual(committed(), before)
+            self.assertIn("ledger-only mode", out)
+            self.assertEqual(committed(), before)
+            self.make(body=(self.root / COMP / "component.toml").read_text()[len(HEAD):])  # the PDF is back
+            self.run_r()
+        self.assertEqual(committed(), before)  # with or without the PDF: the same committed bytes
 
     def test_mode_lines_and_rerender_compared(self):
         rc, out = self.run_r()
@@ -984,12 +1008,18 @@ class TestPinout(PinBase):
         self.assertEqual(a, self.snap())  # a second run without the PDF changes nothing
         self.make()  # PDF back
         self.run_r()
-        shutil.rmtree(self.cdir)
+        with_pdf = self.ledger()["pinout"]
+        self.assertEqual(with_pdf["page"][0]["image"], "evidence/pinout_p4.png")  # the image is local evidence ...
+        self.assertEqual(self.committed()["pinout"]["page"], [{"pdf_page": 4}])  # ... the committed record has the cited page
+        before = self.committed()["pinout"]
+        a = self.snap()
         (self.root / "docs/datasheets/x.pdf").unlink()
-        before = self.ledger()["pinout"]
         self.run_r()
-        self.assertEqual(self.ledger()["pinout"], before)  # image fields kept from the run with the PDF
-        self.assertEqual(before["page"][0]["image"], "evidence/pinout_p4.png")
+        self.assertEqual(self.ledger()["pinout"], with_pdf)  # image fields kept from the evidence of the run with the PDF
+        self.assertEqual(a, self.snap())
+        shutil.rmtree(self.cdir)  # CI: no cache, no PDF: the committed record does not change
+        self.run_r()
+        self.assertEqual(self.committed()["pinout"], before)
 
     def test_unresolvable_cite_has_no_image(self):
         self.edit('cite = "DS p.4, Pin Functions"', 'cite = "see datasheet"')

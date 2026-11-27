@@ -65,8 +65,8 @@ a click shows the whole page.
 `[pinout]` in component.toml holds `verified = "human:<github-login> <YYYY-MM-DD> page-image pinout <pdf-sha256[:12]>
 pins <pins-hash[:12]>"`. Pins hash: SHA-256 of `json.dumps([[pin]] list, sort_keys=True, separators=(",", ":"))`.
 review.toml `[pinout]`: hash, stamp, stamp_hash, pdf_sha256, state; then one `[[pinout.page]]` per distinct page any
-pin cites, in page order: sheet (only when not the main file), pdf_page, image (`evidence/pinout_p<n>.png`, full page
-render), image_sha256, image_bytes, dpi, render_key. Same states and checks as a row (`HUMAN_VERIFIED`, `STALE` when
+pin cites, in page order: sheet (only when not the main file), pdf_page. The local evidence.toml adds the page's image
+(`evidence/pinout_p<n>.png`, full page render), image_sha256, image_bytes, dpi, render_key (docs/spec/review.md). Same states and checks as a row (`HUMAN_VERIFIED`, `STALE` when
 any pin changes, `PDF_CHANGED`, `NEW`); a STALE or PDF_CHANGED human pinout is listed in DELTA.md and github-issue.md
 like a row. `tools/stamp.py <Value>:pinout` writes it; `tools/check_stamps.py` checks it like a row stamp.
 

@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 """Datasheet review record per part: TOML lines | page crop | text-layer line, per Param. A CHECK, never a source.
 
-Contract: docs/spec/review.md. Writes components/<Mfr>/<Value>/review/review.toml (the only committed file) and the
-git-ignored local cache .review-cache/<Mfr>/<Value>/ (README.md index, DELTA.md, github-issue.md, unmapped.md,
-params/<key>.md, evidence/*.png); never component data or `verified`. [[pin]] parts also get review.toml `[pinout]` (pins hash,
-stamp, state) and a `[[pinout.page]]` per page the pins cite (evidence/pinout_p<n>.png) per docs/spec/review-view.md.
+Contract: docs/spec/review.md. Writes components/<Mfr>/<Value>/review/review.toml (the only committed file; the same
+bytes with and without the PDF) and the git-ignored local cache .review-cache/<Mfr>/<Value>/ (evidence.toml: what the PDF
+and the render decided; README.md index, DELTA.md, github-issue.md, unmapped.md, params/<key>.md, evidence/*.png);
+never component data or `verified`. [[pin]] parts also get review.toml `[pinout]` (pins hash,
+stamp, state) and a `[[pinout.page]]` per page the pins cite (image evidence/pinout_p<n>.png, in evidence.toml) per docs/spec/review-view.md.
 usage: python3 tools/ds_review.py [--all | DIR ...] [--dpi N] [--root R]
   no DIR and no --all: the component dirs changed in `git status` plus every part with no review/ (backfill).
 Per Param: check status AGREE_TEXT_CHECK | DISAGREE | UNSURE | NOT_FOUND (text layer only) and ledger state
 HUMAN_VERIFIED | MACHINE_CHECKED | STALE | PDF_CHANGED | NEW | UNVERIFIED | NOT_COVERED (stamp and review.toml pins).
 Renders (pdftoppm -gray, 4-bit PNG) a cache image whose render key changed or that is missing; a re-render with an
-unchanged key is compared with the ledger SHA. Prints one mode line: evidence mode (PDF present) or ledger-only mode (no
-local PDF: hashes and states only; render = "NOT_RENDERED" when a render is pending). Same inputs, same bytes.
+unchanged key is compared with the evidence record's SHA. Prints one mode line: evidence mode (PDF present) or ledger-only mode (no
+local PDF: hashes and states only; `| NOT_RENDERED` when the cache holds no evidence of a row). Same inputs, same bytes.
 Exit 0: records written (findings live in them). 1: bad input or missing tool; one FAIL line names the fix.
 """
 import argparse
@@ -184,30 +185,45 @@ def tk(k):
     return k if re.fullmatch(r"[A-Za-z0-9_-]+", k) else json.dumps(k, ensure_ascii=True)
 
 
-ROW_FIELDS = ("state", "status", "reason", "hash", "stamp", "stamp_hash", "pdf_sha256", "baseline", "sheet",
-              "printed_page", "pdf_page", "toml_lines", "image", "image_sha256", "image_bytes", "crop", "crop_box", "dpi",
-              "render_key", "header_image", "header_sha256", "header_box", "header_key", "foot_image", "foot_sha256", "foot_box",
-              "foot_key", "text_snippet", "text_cells", "stamped_toml")
-KEPT = ("status", "reason", "sheet", "printed_page", "pdf_page", "crop", "crop_box", "dpi", "text_snippet",
-        "text_cells", "image", "image_sha256", "image_bytes", "render_key", "header_image", "header_sha256", "header_box",
-        "foot_image", "foot_sha256", "foot_box", "header_key", "foot_key")  # what a run without the PDF keeps from the last one
+# Committed review.toml: only what the committed files and the PDF's SHA-256 decide (docs/spec/review.md). Everything that
+# varies with the local PDF and the render lives in the git-ignored <cache>/evidence.toml, so the committed bytes are the
+# same with and without the PDF.
+ROW_FIELDS = ("state", "hash", "stamp", "stamp_hash", "pdf_sha256", "baseline", "sheet", "printed_page", "pdf_page",
+              "stamped_toml")
+EVID_ROW_FIELDS = ("hash", "status", "reason", "toml_lines", "crop", "crop_box", "dpi", "text_snippet", "text_cells",
+                   "image", "image_sha256", "image_bytes", "render_key", "header_image", "header_sha256", "header_box",
+                   "header_key", "foot_image", "foot_sha256", "foot_box", "foot_key")
+KEPT = ("status", "reason", "crop", "crop_box", "dpi", "text_snippet", "text_cells", "image", "image_sha256",
+        "image_bytes", "render_key", "header_image", "header_sha256", "header_box", "foot_image", "foot_sha256", "foot_box",
+        "header_key", "foot_key")  # what a run without the PDF keeps from the last evidence
+KEPT_LOC = ("printed_page", "pdf_page")  # committed cite location a run without the PDF keeps from the ledger
 PIN_FIELDS = ("state", "hash", "stamp", "stamp_hash", "pdf_sha256")  # [pinout] (docs/spec/review-view.md "Pinout stamp")
-PAGE_FIELDS = ("sheet", "pdf_page", "image", "image_sha256", "image_bytes", "dpi", "render_key")  # one [[pinout.page]]
-INPUT_FIELDS = ("tool", "poppler", "python", "dpi", "datasheet_url", "datasheet_file", "datasheet_rev", "pdf_sha256",
-                "pages", "text_layer", "component_sha256", "render", "backfill", "sheets")
+PAGE_FIELDS = ("sheet", "pdf_page")  # one committed [[pinout.page]]: the cited page
+EVID_PAGE_FIELDS = ("sheet", "pdf_page", "image", "image_sha256", "image_bytes", "dpi", "render_key")  # its evidence
+INPUT_FIELDS = ("datasheet_url", "datasheet_file", "datasheet_rev", "pdf_sha256", "component_sha256", "backfill", "sheets")
+EVID_INPUT_FIELDS = ("tool", "poppler", "python", "dpi", "pages", "text_layer", "render")
+EVIDENCE = "evidence.toml"  # <CACHE>/<Mfr>/<Value>/evidence.toml
 
 
-def ledger_text(inputs, rows, pinout=None):
-    out = ["# GENERATED by tools/ds_review.py (docs/spec/review.md). Do not edit; stamps live in component.toml.", "",
+def ledger_text(inputs, rows, pinout=None, evidence=False):
+    """review.toml (committed fields) or, evidence=True, the cache's evidence.toml (everything the local PDF decides)."""
+    inf, rowf, pinf, pagef = ((EVID_INPUT_FIELDS, EVID_ROW_FIELDS, ("hash",), EVID_PAGE_FIELDS) if evidence else
+                              (INPUT_FIELDS, ROW_FIELDS, PIN_FIELDS, PAGE_FIELDS))
+    out = ["# GENERATED by tools/ds_review.py (docs/spec/review.md). Do not edit; stamps live in component.toml." if not evidence
+           else "# GENERATED by tools/ds_review.py (docs/spec/review.md). Local evidence: git-ignored, never committed.", "",
            "[inputs]"]
-    out += ["%s = %s" % (k, tq(inputs[k])) for k in INPUT_FIELDS if k in inputs]
+    out += ["%s = %s" % (k, tq(inputs[k])) for k in inf if k in inputs]
     if pinout:
-        out += ["", "[pinout]"] + ["%s = %s" % (f, tq(pinout[f])) for f in PIN_FIELDS if pinout.get(f) not in (None, "")]
+        out += ["", "[pinout]"] + ["%s = %s" % (f, tq(pinout[f])) for f in pinf if pinout.get(f) not in (None, "")]
         for pg in pinout.get("page", []):
-            out += ["", "[[pinout.page]]"] + ["%s = %s" % (f, tq(pg[f])) for f in PAGE_FIELDS if pg.get(f) not in (None, "")]
+            out += ["", "[[pinout.page]]"] + ["%s = %s" % (f, tq(pg[f])) for f in pagef if pg.get(f) not in (None, "")]
     for key in rows:
+        r = rows[key]
         out += ["", "[row.%s]" % tk(key)]
-        out += ["%s = %s" % (f, tq(rows[key][f])) for f in ROW_FIELDS if rows[key].get(f) not in (None, "")]
+        if evidence and r.get("state") in ("REFERENCE", "NOT_COVERED"):  # static text: no committed copy
+            out += ["%s = %s" % (f, tq(r[f])) for f in ("status", "reason") if r.get(f) not in (None, "")]
+        else:
+            out += ["%s = %s" % (f, tq(r[f])) for f in rowf if r.get(f) not in (None, "")]
     return "\n".join(out) + "\n"
 
 
@@ -1111,6 +1127,8 @@ def pinout_record(data, ctx, pr, prev_inp, prev_imgs, cache, sched, pending, fir
     if any(d.missing for _, _, d in cited):  # a PDF is absent: keep what was found with it
         if pr.get("hash") == h and pr.get("page"):
             rec["page"] = [dict(pg) for pg in pr["page"]]
+            if not all(pg.get("image") for pg in rec["page"]):  # the cache has no evidence of these pages
+                pending.append("pinout")
         else:
             pending.append("pinout")
         return rec
@@ -1177,6 +1195,11 @@ def review_component(root, comp, dpi, poppler):
             raise InputError("%s/review/review.toml: unreadable (%s); delete it to rebuild the ledger" % (rel, e))
         prev_rows, prev_inp = prev.get("row", {}), prev.get("inputs", {})
     first = not prev
+    try:  # the local evidence record (git-ignored): what the PDF and the render decided on the last run with them
+        prev_ev = tomllib.loads((cache / EVIDENCE).read_text())
+    except (OSError, tomllib.TOMLDecodeError):
+        prev_ev = {}
+    ev_rows, ev_inp = prev_ev.get("row", {}), prev_ev.get("inputs", {})
     dsf = part.get("datasheet_file", "")
     if not dsf:
         raise InputError("%s: [part] datasheet_file is empty; set it (docs/spec/extract.md)" % rel)
@@ -1205,7 +1228,7 @@ def review_component(root, comp, dpi, poppler):
     except (OSError, ValueError, AttributeError):
         prev_locate = {}
     prev_loc = {e.get("image"): e.get("render_key", "") for e in prev_locate.values() if isinstance(e, dict)}
-    for r in prev_rows.values():
+    for r in ev_rows.values():
         for f, kf, sf in (("image", "render_key", "image_sha256"), ("header_image", "header_key", "header_sha256"),
                           ("foot_image", "foot_key", "foot_sha256")):
             if r.get(f):
@@ -1229,6 +1252,7 @@ def review_component(root, comp, dpi, poppler):
         src[key] = snippet(vtext if key in over else text, sp)
         h = row_hash(over[key][0] if key in over else t)
         pr = prev_rows.get(key)
+        ev = ev_rows.get(key) if (ev_rows.get(key) or {}).get("hash") == h else None  # evidence of this very row
         stamp = t.get("verified", "")
         ex = examine(key, t, ctx)
         doc = ex["doc"]
@@ -1247,22 +1271,25 @@ def review_component(root, comp, dpi, poppler):
             hc, snip = table_at(root, c, str(rel / "component.toml"), key)
             return (h, src[key], True) if hc in (None, h) else (hc, snip, False)
         st = ledger_state(h, stamp, P, pr, backfill)
-        row = dict(st, hash=h, toml_lines="%d-%d" % sp)
+        row = dict(st, hash=h, toml_lines="%d-%d" % sp, sheet=ex["sheet"])
         have_pdf = doc is not None and not doc.missing
         if have_pdf:
-            row.update(status=ex["status"], reason=ex["reason"], sheet=ex["sheet"], printed_page=ex["printed_page"],
+            row.update(status=ex["status"], reason=ex["reason"], printed_page=ex["printed_page"],
                        pdf_page=ex["pdf_page"], crop=ex["crop"], crop_box=ex["crop_box"], dpi=ex["dpi"],
                        text_snippet=ex["text_snippet"], text_cells=ex["cells"], header_box=ex["header_box"],
                        foot_box=ex["foot_box"])
         elif not doc:  # cite unparseable: no PDF needed to say so
             row.update(status=ex["status"], reason=ex["reason"])
-        elif pr and pr.get("hash") == h:  # PDF absent: keep what was found with the PDF
-            row.update({f: pr[f] for f in KEPT if f in pr})
-        else:  # PDF absent and the row is new or changed: say so; keep the old image (never blank it)
-            row.update({f: pr[f] for f in KEPT if pr and f in pr})
-            row.update(status="NOT_FOUND" if not pr else "UNSURE", sheet=ex["sheet"],
-                       reason=ex["reason"] if not pr else "row changed; not re-checked: " + ex["reason"])
-            pending.append(key)
+        else:  # PDF absent: keep what was found with it (the ledger's cite location, the cache's evidence)
+            row.update({f: pr[f] for f in KEPT_LOC if pr and f in pr})
+            if ev:
+                row.update({f: ev[f] for f in KEPT if f in ev})
+            else:  # no evidence of this row: say so; keep the last evidence's image (never blank it)
+                old = ev_rows.get(key) or {}
+                row.update({f: old[f] for f in KEPT if f in old})
+                row.update(status="NOT_FOUND" if not old else "UNSURE",
+                           reason=ex["reason"] if not old else "row changed; not re-checked: " + ex["reason"])
+                pending.append(key)
         if have_pdf and ex["pdf_page"]:
             pn, box = ex["pdf_page"], ex["crop_box"]
             if ex["crop"] == "auto":  # one image per Param
@@ -1287,7 +1314,7 @@ def review_component(root, comp, dpi, poppler):
                     pre = safe(Path(ex["sheet"]).stem) + "_" if ex["sheet"] else ""
                     row[kind + "_image"] = "evidence/%s%s_p%d_y%d-%d_x%d-%d.png" % (pre, word, pn, int(b[1]), int(b[3]),
                                                                                     int(b[0]), int(b[2]))
-                    prev_imgs.setdefault(row[kind + "_image"], ((pr or {}).get(kind + "_key", ""), ""))
+                    prev_imgs.setdefault(row[kind + "_image"], ((ev_rows.get(key) or {}).get(kind + "_key", ""), ""))
                     row[kind + "_key"] = schedule(row[kind + "_image"], b)
             if ex["crop"] != "auto":  # display only: the full page of the cited sheet, boxes drawn by the viewer
                 pre = safe(Path(ex["sheet"]).stem) + "_" if ex["sheet"] else ""
@@ -1297,12 +1324,18 @@ def review_component(root, comp, dpi, poppler):
                 locate[key] = {"image": limg, "render_key": row["render_key"] if limg == img else
                                sched(limg, doc, pn, "full_page", ctx["dpi"], meta),
                                "pdf_page": pn, "sheet": ex["sheet"], "how": how, "boxes": found}
-        elif not have_pdf and pr and pr.get("hash") == h and key in prev_locate:  # no PDF here: keep what it showed
+        elif not have_pdf and ev and key in prev_locate:  # no PDF here: keep what it showed
             locate[key] = prev_locate[key]
         row["sha_for_stamp"] = (P or "")[:12]
         rows[key] = row
 
-    pinout = pinout_record(data, ctx, prev.get("pinout"), prev_inp, prev_imgs, cache, sched, pending, first)
+    prev_pin = dict(prev.get("pinout") or {})  # committed pins and cited pages + the evidence of those pages
+    evp = prev_ev.get("pinout") or {}
+    if prev_pin.get("page"):
+        by_page = {(g.get("sheet", ""), g.get("pdf_page")): g for g in evp.get("page", []) if isinstance(g, dict)} \
+            if evp.get("hash") == prev_pin.get("hash") else {}
+        prev_pin["page"] = [{**by_page.get((g.get("sheet", ""), g.get("pdf_page")), {}), **g} for g in prev_pin["page"]]
+    pinout = pinout_record(data, ctx, prev_pin or None, prev_inp, prev_imgs, cache, sched, pending, first)
     if jobs:
         with concurrent.futures.ThreadPoolExecutor(max_workers=min(8, os.cpu_count() or 2)) as pool:
             for (img, _job), res in zip(jobs, pool.map(render, [j for _, j in jobs])):
@@ -1327,14 +1360,17 @@ def review_component(root, comp, dpi, poppler):
 
     # inputs
     inputs = {k: prev_inp[k] for k in INPUT_FIELDS if k in prev_inp}
+    einp = {k: ev_inp[k] for k in EVID_INPUT_FIELDS if k in ev_inp}
     if jobs:
-        inputs.update(tool=TOOL_VERSION, poppler=poppler, python="%d.%d.%d" % sys.version_info[:3], dpi=dpi)
-    inputs.setdefault("tool", TOOL_VERSION)
-    inputs.setdefault("dpi", dpi)
+        einp.update(tool=TOOL_VERSION, poppler=poppler, python="%d.%d.%d" % sys.version_info[:3], dpi=dpi)
+    einp.setdefault("tool", TOOL_VERSION)
+    einp.setdefault("dpi", dpi)
+    einp["render"] = render_state
     inputs.update(datasheet_url=ctx["url"], datasheet_file=dsf, datasheet_rev=ctx["rev"],
-                  component_sha256=sha256_bytes(ctoml.read_bytes()), render=render_state)
+                  component_sha256=sha256_bytes(ctoml.read_bytes()))
     if not main.missing:
-        inputs.update(pdf_sha256=main.sha, pages=main.count, text_layer=main.text_layer)
+        inputs.update(pdf_sha256=main.sha)
+        einp.update(pages=main.count, text_layer=main.text_layer)
     sheets = dict(sheets_prev)
     sheets.update({d.name: d.sha for d in docs.values() if not d.missing})
     inputs["sheets"] = sheets
@@ -1368,6 +1404,7 @@ def review_component(root, comp, dpi, poppler):
             (rdir / legacy).unlink()
             changed.append(str(rel / "review" / legacy))
     local = {"params/%s.md" % safe(k): param_md(k, t, rows[k], ctx, src[k]) for k, t in params.items()}
+    local[EVIDENCE] = ledger_text(einp, rows, pinout, evidence=True)
     local.update({"README.md": readme_md(ctx, rows, params, over, pinout), "DELTA.md": delta_md(ctx, rows, params, src, pinout)})
     if locate or (cache / "locate.json").is_file():  # never committed: the viewer's boxes (docs/spec/review-view.md "Page")
         local["locate.json"] = json.dumps({"rows": locate}, sort_keys=True, indent=1) + "\n"

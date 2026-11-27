@@ -592,7 +592,8 @@ class Page(Stamped):
         (part,) = self.model(used={"hot", "absr", "vos"})
         hot = next(i for i in part["items"] if i["key"] == "hot")
         import tomllib
-        ev = tomllib.loads((self.d / "review" / "review.toml").read_text())["row"]["hot"]["image"]  # what stamp hashes
+        ev = tomllib.loads((self.cdir / "evidence.toml").read_text())["row"]["hot"]["image"]  # what stamp hashes (local evidence)
+        self.assertNotIn("image", tomllib.loads((self.d / "review" / "review.toml").read_text())["row"]["hot"])
         self.assertNotEqual(ev, "evidence/locate_p2.png")
         self.assertEqual((hot["tier"], hot["images"], hot["locate"]["image"]),
                          ("tier 3", [(ev, "evidence the stamp records")], "evidence/locate_p2.png"))
