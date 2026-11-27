@@ -166,6 +166,14 @@ class TestRepoRules(unittest.TestCase):
             f = rules.repo_findings(root)
             self.assertEqual([(x.rule, x.part) for x in f], [("nested-workspace", ".hidden/sub/pcb.toml")])
 
+    def test_agent_worktrees_are_skipped(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = mini_repo(d)
+            write(root / ".claude/worktrees/agent-1/pcb.toml", '[workspace]\npcb-version = "0.4"\n')
+            self.assertEqual(rules.repo_findings(root), [])
+            write(root / ".claude/other/pcb.toml", "[workspace]\n")  # only worktrees are exempt
+            self.assertEqual([x.rule for x in rules.repo_findings(root)], ["nested-workspace"])
+
     def test_tool_cache_and_git_are_skipped(self):
         with tempfile.TemporaryDirectory() as d:
             root = mini_repo(d)

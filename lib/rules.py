@@ -100,7 +100,9 @@ def repo_findings(root):
             out.append(Finding("pcb-version", "pcb.toml", "pcb-version",
                                f"pcb-version = {version!r} must be major.minor only (\"0.4\"); \"0.4.95\" breaks every build"))
     for dirpath, dirs, files in os.walk(root):
-        dirs[:] = [d for d in dirs if d != ".git" and not (Path(dirpath) == root and d == ".pcb")]
+        # .claude/worktrees holds whole checkouts of this repo, each with its own root pcb.toml: not part of this tree
+        dirs[:] = [d for d in dirs if d != ".git" and not (Path(dirpath) == root and d == ".pcb")
+                   and not (Path(dirpath) == root / ".claude" and d == "worktrees")]
         if "pcb.toml" in files and Path(dirpath) != root:
             path = Path(dirpath) / "pcb.toml"
             rel = path.relative_to(root).as_posix()
