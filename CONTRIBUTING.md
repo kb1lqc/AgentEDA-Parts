@@ -93,7 +93,8 @@ Read `docs/spec/extract.md` for the defaults used for every judgement call. The 
    `review/review.toml` is stale.
    For a catalog series (MLCC), also run the export check with the manufacturer export in `docs/datasheets/`:
    `python3 -m lib.catalog export-check <export.csv> components/<Mfr>/<Value>`. On MATCH it writes
-   `review/export_check.toml`; commit it. Derived rows then need no tick.
+   `review/export_check.toml`; commit it. Derived rows then need no tick. When the export is refreshed, regenerate the
+   committed subset (`python3 -m lib.catalog export-subset <export.csv>`, writes `docs/exports/`) and every record.
 9. **Open a pull request** with `gh pr create`. This PR holds the part, its generated files and the export record, with
    no human stamps. The human check comes next, in its own PR (below). CI runs `tools/verify.py --all`. Rows still awaiting a human check do
    not fail CI. A bot comment on the PR shows `<k> of <n> rows that matter checked` for each part the PR changes.

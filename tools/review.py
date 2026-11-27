@@ -270,10 +270,8 @@ def cited_export(root, catalog_path):
     except OSError:
         return None
     m = re.search(r"export (\S+), row", (first or {}).get("source", ""))
-    for sub in ("docs/datasheets", "docs/vendor"):
-        if m and (Path(root) / sub / m[1]).is_file():
-            return Path(root) / sub / m[1]
-    return None
+    found = CAT.find_exports(root, m[1]) if m else []
+    return found[0] if found else None
 
 
 def build_groups(root, dirs):
