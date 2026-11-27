@@ -29,7 +29,7 @@ def mini_repo(tmp):
     write(root / "components/Acme/X/pcb.toml")
     write(root / "tests/zen/X_harness.zen", 'U = Module("./X.zen")\n')
     write(root / "tests/test_zen.py", 'CASES = [\n    ("Acme/X", "nominal", [], "pass", ""),\n]\n')
-    write(root / "README.md", "| Acme X | thing | [README](components/Acme/X/README.md) |\n")
+    write(root / "docs/PARTS.md", "| [X](../components/Acme/X/README.md) | thing | released |\n")
     return root
 
 
@@ -203,8 +203,8 @@ class TestWiring(unittest.TestCase):
         self.assertEqual(rules_of(self.run_rule(lambda r: (r / "tests/test_zen.py").unlink())), ["cases-row"])
 
     def test_missing_readme_row(self):
-        self.assertEqual(rules_of(self.run_rule(lambda r: write(r / "README.md", "| other |\n"))), ["readme-row"])
-        self.assertEqual(rules_of(self.run_rule(lambda r: (r / "README.md").unlink())), ["readme-row"])
+        self.assertEqual(rules_of(self.run_rule(lambda r: write(r / "docs/PARTS.md", "| other |\n"))), ["readme-row"])
+        self.assertEqual(rules_of(self.run_rule(lambda r: (r / "docs/PARTS.md").unlink())), ["readme-row"])
 
 
 class TestCite(unittest.TestCase):
@@ -439,8 +439,9 @@ class TestGeneratedCurrency(unittest.TestCase):
             self.assertNotEqual(readme.build(copy), (copy / "README.md").read_text(encoding="utf-8"))
 
     def test_root_readme_is_hand_written(self):
-        """lib.readme writes only component READMEs; the root README parts table is checked by the readme-row rule."""
-        self.assertTrue((ROOT / "README.md").exists())
+        """lib.readme writes the component READMEs, the root README summary and docs/PARTS.md (the parts index, checked by
+        the readme-row rule)."""
+        self.assertTrue((ROOT / "docs" / "PARTS.md").exists())
 
 
 if __name__ == "__main__":

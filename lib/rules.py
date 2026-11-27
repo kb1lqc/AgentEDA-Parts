@@ -132,7 +132,7 @@ def cases_components(root):
 
 
 def wiring_findings(folder, root):
-    """Harness file, a CASES row and a root README parts-table row exist for this component directory."""
+    """Harness file, a CASES row and a docs/PARTS.md index row exist for this component directory."""
     root, folder = Path(root), Path(folder)
     part = f"{folder.parent.name}/{folder.name}"
     out = []
@@ -143,10 +143,10 @@ def wiring_findings(folder, root):
         out.append(Finding("cases-row", part, "tests/test_zen.py", "CASES not found in tests/test_zen.py"))
     elif part not in cases:
         out.append(Finding("cases-row", part, "tests/test_zen.py", f"no CASES row for '{part}' in tests/test_zen.py"))
-    readme = root / "README.md"
+    index = root / "docs" / "PARTS.md"
     link = f"components/{part}/README.md"
-    if not readme.exists() or link not in readme.read_text(encoding="utf-8"):
-        out.append(Finding("readme-row", part, "README.md", f"root README.md parts table has no row linking {link}"))
+    if not index.exists() or link not in index.read_text(encoding="utf-8"):
+        out.append(Finding("readme-row", part, "docs/PARTS.md", f"docs/PARTS.md (the parts index) has no row linking {link}"))
     return out
 
 

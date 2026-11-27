@@ -9,12 +9,9 @@
 ## Why a person checks the numbers
 
 Worst-case analysis uses these numbers as limits, so a typo or misread table can pass a bad design. The review has one
-goal: a person verifies where a machine cannot.
+goal: a person verifies where a machine cannot. The three classes (derived, human, reference) are defined once, in the
+table at the top of the [README](README.md). Derived rows need no tick, no stamp and no agent record.
 
-- **Derived:** a script proves it again on every `verify` (for a catalog series, each `catalog.csv` row decoded from its
-  part number and compared with the manufacturer export). No tick, no stamp, no agent record.
-- **Human:** a number read from a PDF table, figure or equation. Ticked by a person, once, against the page image.
-- **Reference:** not used by any analysis; shown only.
 - Agents (verifier, adversarial reviewer) find defects before the PR. Their findings are applied or listed in the PR
   description as open items; nothing from them is committed and none of it counts as a check.
 
@@ -126,7 +123,7 @@ python3 tools/review.py INA229AIDGS --dry-run           # try the page; shows th
 
 ### Circuit blocks
 
-`--list-blocks` and `--block` read the AgentEDA-Blocks repo, not this one. Point them at your checkout with
+`--list-blocks` and `--block` read a blocks repo (for example AgentEDA-Blocks, or your own), not this one. Point them at your checkout with
 `--blocks-repo <path>` or the `CIRCUIT_BLOCKS` environment variable (the same variable `tools/risk_rank.py` reads).
 There is no default folder: without either, the tool refuses and says so.
 
