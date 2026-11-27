@@ -132,10 +132,10 @@ values (capacitance, tolerance, rated voltage, thickness) that the PDFs do not p
   comparison (evidence mode) runs locally. Not closed in CI: a fabricated but self-consistent part number not on the
   manufacturer list. A machine record is an agreement record, not proof; export vs factory is not proven; DC bias and
   aging are unchanged.
-- **Review page.** Each group shows one line per distinct capacitance, tolerance and rated-voltage combination, with its
-  export row (the printed columns), not one line per catalog row. The status line reads, for example,
-  "GCM21B C0G: 42 rows, MATCH, derived, checked". The group tick box and the `--stamp` publish call for groups are
-  legacy-only: no new ticks.
+- **Review page.** Derived rows are not review items. The page shows one muted line per group (for example "GCM21B C0G:
+  42 catalog rows derived, checked against <export>. No tick needed."), no legend, table or tick box, and a warning
+  only on a MISMATCH. Without the export file locally the line says the committed record is the check. The legacy
+  group tick box and `--stamp` publish call are not offered; existing legacy human lines stay valid.
 - **Not covered.** The comparison proves the catalog agrees with the export, not that the export agrees with the
   factory. Values the export does not print (DC bias, aging) stay as they are.
 
