@@ -2,7 +2,7 @@
 
 # GCM32Q
 
-Released: all 5 rows that matter checked (6 rows in all); 3 used values not covered (catalog.csv, series).
+Released: all 5 rows that matter checked (6 rows in all); 3 used values not covered (catalog.csv, series); agent review: pending (adversarial).
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

@@ -2,7 +2,7 @@
 
 # INA821IDGK
 
-Checked by a person: 0 of 25 rows that matter (82 rows in all). Review: python3 tools/review.py INA821IDGK
+Checked by a person: 0 of 25 rows that matter (82 rows in all). Review: python3 tools/review.py INA821IDGK; agent review: verifier+adversarial current 2026-11-27
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

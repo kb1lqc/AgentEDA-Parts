@@ -2,7 +2,7 @@
 
 # GCM31M
 
-Checked by a person: 0 of 16 rows that matter (45 rows in all). Review: python3 tools/review.py GCM31M; 3 used values not covered (catalog.csv, series)
+Checked by a person: 0 of 16 rows that matter (45 rows in all). Review: python3 tools/review.py GCM31M; 3 used values not covered (catalog.csv, series); agent review: pending (adversarial)
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

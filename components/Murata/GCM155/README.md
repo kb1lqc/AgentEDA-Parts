@@ -2,7 +2,7 @@
 
 # GCM155
 
-Checked by a person: 0 of 20 rows that matter (71 rows in all). Review: python3 tools/review.py GCM155; 3 used values not covered (catalog.csv, series)
+Checked by a person: 0 of 20 rows that matter (71 rows in all). Review: python3 tools/review.py GCM155; 3 used values not covered (catalog.csv, series); agent review: verifier+adversarial current 2026-11-27
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

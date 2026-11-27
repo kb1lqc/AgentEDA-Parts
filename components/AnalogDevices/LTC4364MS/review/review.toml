@@ -12,7 +12,7 @@ pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 pages = 29
 text_layer = true
 component_sha256 = "d8838205d479599432628355fa64181b9cd97bbb27fa62650b3f28bacd5405ed"
-render = "NOT_RENDERED"
+render = "complete"
 backfill = "git blame"
 sheets = { "ltc4364.pdf" = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940" }
 
@@ -1062,8 +1062,8 @@ stamped_toml = "[param.vtmr_g]\nname       = \"TMR gate-off threshold (HGATE fal
 
 [row.vtmr_r]
 state = "NEW"
-status = "UNSURE"
-reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/ltc4364.pdf); not rendered"
+status = "AGREE_TEXT_CHECK"
+reason = "one clean line; min/typ/max and unit equal; row found by symbol (table_xcheck match); no footnote marker on the row or header"
 hash = "10f040c39d3de78ed9b7a2ea681dfdd61ce7a4fc83d37a162a8c2a6f46f5837f"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
@@ -1075,7 +1075,7 @@ image_bytes = 5275
 crop = "auto"
 crop_box = [39.0, 279.1, 573.6, 294.8]
 dpi = 200
-render_key = "ad7dcac33eba4325"
+render_key = "5fc6924269e75ee1"
 header_image = "evidence/head_p4_y73-129_x39-573.png"
 header_sha256 = "0ef828a5ae4bf8e26aa8f79c26b4136416fc59e6ca3e8ffddbaf91295dc4ae53"
 header_box = [39.0, 73.9, 573.6, 129.4]
@@ -1513,7 +1513,7 @@ text_snippet = "temperature range, otherwise specifications are at TA = 25\u00b0
 [row.ishdn_leak]
 state = "NEW"
 status = "UNSURE"
-reason = "row changed; not re-checked: PDF not on this machine (docs/datasheets/ltc4364.pdf); not rendered"
+reason = "adjacent line without its own symbol (multi-line name/conditions or sub-row); row found by symbol (table_xcheck match), row group of 3 lines; no footnote marker on the row or header"
 hash = "467660c8dd2a6702a6451c7b8a99b08faa4d87d8c3ba77494bd71f8cf261ccec"
 pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 printed_page = 4
@@ -1525,7 +1525,7 @@ image_bytes = 6257
 crop = "auto"
 crop_box = [39.0, 536.1, 573.6, 566.9]
 dpi = 200
-render_key = "2f5bb9cc88691efc"
+render_key = "546f6dd38e2452aa"
 header_image = "evidence/head_p4_y73-129_x39-573.png"
 header_sha256 = "0ef828a5ae4bf8e26aa8f79c26b4136416fc59e6ca3e8ffddbaf91295dc4ae53"
 header_box = [39.0, 73.9, 573.6, 129.4]
@@ -1819,14 +1819,14 @@ text_snippet = "temperature range, otherwise specifications are at TA = 25\u00b0
 text_cells = { max = "1.5", min = "", typ = "0.35", unit = "\u03bcs" }
 
 [row."variant.LTC4364CMS-1.dvsns_0c125c"]
-state = "NOT_COVERED"
+state = "REFERENCE"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "variants.toml override of a row that does not matter: covered by the agent-review scope, not a stamp"
 
 [row."variant.LTC4364CMS-2.dvsns_0c125c"]
-state = "NOT_COVERED"
+state = "REFERENCE"
 status = "UNSURE"
-reason = "variants.toml row: family variants are not reviewed by ds_review"
+reason = "variants.toml override of a row that does not matter: covered by the agent-review scope, not a stamp"
 
 [row.calc]
 state = "NOT_COVERED"

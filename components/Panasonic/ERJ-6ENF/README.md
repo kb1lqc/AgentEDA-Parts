@@ -2,7 +2,7 @@
 
 # ERJ-6ENF
 
-Checked by a person: 0 of 17 rows that matter (28 rows in all). Review: python3 tools/review.py ERJ-6ENF
+Checked by a person: 0 of 17 rows that matter (28 rows in all). Review: python3 tools/review.py ERJ-6ENF; agent review: verifier+adversarial current 2026-11-27
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

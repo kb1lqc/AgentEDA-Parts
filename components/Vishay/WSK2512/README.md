@@ -2,7 +2,7 @@
 
 # WSK2512
 
-Released: all 21 rows that matter checked (39 rows in all).
+Released: all 21 rows that matter checked (39 rows in all); agent review: verifier+adversarial current 2026-11-27.
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

@@ -2,7 +2,7 @@
 
 # LTC4364MS
 
-Released: all 33 rows that matter checked (82 rows in all).
+Released: all 33 rows that matter checked (84 rows in all); agent review: verifier+adversarial current 2026-11-27.
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

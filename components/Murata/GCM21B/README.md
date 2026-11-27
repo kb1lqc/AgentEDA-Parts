@@ -2,7 +2,7 @@
 
 # GCM21B
 
-Released: all 16 rows that matter checked (54 rows in all); 3 used values not covered (catalog.csv, series).
+Released: all 16 rows that matter checked (54 rows in all); 137 catalog rows derived, checked (export-check record); 1 used values not covered (series); agent review: verifier+adversarial current 2026-11-27.
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

@@ -2,7 +2,7 @@
 
 # ERJ-3EKF
 
-Released: all 14 rows that matter checked (25 rows in all).
+Released: all 14 rows that matter checked (25 rows in all); agent review: verifier+adversarial current 2026-11-27.
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

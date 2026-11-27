@@ -2,7 +2,7 @@
 
 # ERA-2AEB
 
-Checked by a person: 0 of 17 rows that matter (28 rows in all). Review: python3 tools/review.py ERA-2AEB
+Checked by a person: 0 of 17 rows that matter (28 rows in all). Review: python3 tools/review.py ERA-2AEB; agent review: verifier+adversarial current 2026-11-27
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

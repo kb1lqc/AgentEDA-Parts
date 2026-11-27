@@ -2,7 +2,7 @@
 
 # ISC035N10NM5LF2
 
-Released: all 22 rows that matter checked (147 rows in all).
+Released: all 22 rows that matter checked (147 rows in all); agent review: verifier+adversarial current 2026-11-27.
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

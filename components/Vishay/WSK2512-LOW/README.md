@@ -2,7 +2,7 @@
 
 # WSK2512-LOW
 
-Checked by a person: 4 of 21 rows that matter (42 rows in all). Review: python3 tools/review.py WSK2512-LOW
+Checked by a person: 4 of 21 rows that matter (42 rows in all). Review: python3 tools/review.py WSK2512-LOW; agent review: verifier+adversarial current 2026-11-27
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

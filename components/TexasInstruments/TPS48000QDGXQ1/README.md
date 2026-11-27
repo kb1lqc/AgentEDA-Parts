@@ -2,7 +2,7 @@
 
 # TPS48000QDGXQ1
 
-Released: all 29 rows that matter checked (94 rows in all).
+Released: all 29 rows that matter checked (94 rows in all); agent review: verifier+adversarial current 2026-11-27.
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

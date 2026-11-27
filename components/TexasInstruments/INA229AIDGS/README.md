@@ -2,7 +2,7 @@
 
 # INA229AIDGS
 
-Released: all 23 rows that matter checked (76 rows in all).
+Released: all 23 rows that matter checked (76 rows in all); agent review: verifier+adversarial current 2026-11-27.
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 

@@ -2,7 +2,7 @@
 
 # ISC750P10LM
 
-Checked by a person: 0 of 17 rows that matter (45 rows in all). Review: python3 tools/review.py ISC750P10LM
+Checked by a person: 0 of 17 rows that matter (45 rows in all). Review: python3 tools/review.py ISC750P10LM; agent review: verifier+adversarial current 2026-11-27
 
 Terms: [glossary](../../../CONTRIBUTING.md#glossary).
 
