@@ -42,8 +42,9 @@ print(table([("Gain", g, ""), ("Offset (RTI)", vos, "full temperature")]))
 `typ` is the function at every typ input. `min` and `max` are the lowest and highest results over all 2^n
 combinations of input min and max. A missing bound is an error, never a guess.
 
-Each part's README is its reference: every value with its cite, conditions and notes. A worked circuit analysis is in
-`examples/current_sense.py`. Use only values from `component.toml` (through `part.param(key)` or `part.inputs(fn)`);
+Is a part safe to use? `python3 tools/status.py <Value>` (add `--json` for a script): released, or the rows still
+needing a check. Using a part needs no PDFs and no manufacturer export; those are for people who check numbers.
+Each part's README is its reference: every value with its cite, conditions and notes. Worked designs live in a blocks repo ([docs/spec/blocks.md](docs/spec/blocks.md)). Use only values from `component.toml` (through `part.param(key)` or `part.inputs(fn)`);
 if a number you need is missing, say so rather than estimating it.
 
 ## Check a part (human)
@@ -60,50 +61,16 @@ python3 tools/review.py --block INA229HighSideMonitor    # only the rows that bl
 
 - Run it in your own terminal. The page lists each row with its datasheet crop and one tick box.
 - Tick a row only when it matches the page. Wrong: fix the TOML, run `python3 tools/verify.py --regen`. Unclear: leave it unticked and open an issue.
-- `--block` and `--list-blocks` read the AgentEDA-Blocks repo: pass `--blocks-repo <path>` or set `CIRCUIT_BLOCKS`.
+- `--block` and `--list-blocks` read a blocks repo (AgentEDA-Blocks, or your own): pass `--blocks-repo <path>` or set `CIRCUIT_BLOCKS`. The one file read from it is described in [docs/spec/blocks.md](docs/spec/blocks.md).
 
 ## Parts
 
-Generated from each part's TOML by `python3 -m lib.readme`. "Status" counts the rows that matter that a person has
-checked (see the [glossary](CONTRIBUTING.md#glossary)).
+Generated from each part's TOML by `python3 -m lib.readme`. The list is not here because it grows with the library:
+it is [docs/PARTS.md](docs/PARTS.md), one section per manufacturer. "Status" counts the rows that matter that a person
+has checked (see the [glossary](CONTRIBUTING.md#glossary)).
 
 <!-- review-status:start -->
-| Part | What | Status | Review command |
-|---|---|---|---|
-| [AnalogDevices/LTC4364MS](components/AnalogDevices/LTC4364MS/README.md) | Surge stopper with ideal diode, 4-80 V, MSOP-16 (MS); -1 latch-off or -2 auto-retry, C/I/H grade | released | `python3 tools/review.py LTC4364MS` |
-| [Infineon/BSC040N10NS5](components/Infineon/BSC040N10NS5/README.md) | 100 V N-channel OptiMOS 5 power MOSFET, 136 A, 4.0 mohm max at VGS=10 V, PG-TDSON-8 (SuperSO8) | 0 of 17 | `python3 tools/review.py BSC040N10NS5` |
-| [Infineon/ISC035N10NM5LF2](components/Infineon/ISC035N10NM5LF2/README.md) | 100 V N-channel OptiMOS 5 Linear FET 2 (hot swap / e-fuse), 164 A, 3.5 mohm max, PG-TDSON-8-59 | released | `python3 tools/review.py ISC035N10NM5LF2` |
-| [Infineon/ISC750P10LM](components/Infineon/ISC750P10LM/README.md) | -100 V P-channel OptiMOS Power-Transistor, logic level, -32 A, 75 mohm max at VGS = -10 V, PG-TDSON-8 (SuperSO8) | 0 of 17 | `python3 tools/review.py ISC750P10LM` |
-| [Murata/GCM155](components/Murata/GCM155/README.md) | Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 1005M (0402), AEC-Q200 (GCM series) | 0 of 18 | `python3 tools/review.py GCM155` |
-| [Murata/GCM188](components/Murata/GCM188/README.md) | Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 1608M (0603), AEC-Q200 (GCM series) | released | `python3 tools/review.py GCM188` |
-| [Murata/GCM216](components/Murata/GCM216/README.md) | Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 2012M (0805), thickness 0.6 mm (code 6), AEC-Q200 (GCM series) | 0 of 16 | `python3 tools/review.py GCM216` |
-| [Murata/GCM219](components/Murata/GCM219/README.md) | Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 2012M (0805), thickness 0.85 mm (code 9), AEC-Q200 (GCM series) | 0 of 16 | `python3 tools/review.py GCM219` |
-| [Murata/GCM21A](components/Murata/GCM21A/README.md) | Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 2012M (0805), thickness 1.0 mm (code A), AEC-Q200 (GCM series) | 0 of 16 | `python3 tools/review.py GCM21A` |
-| [Murata/GCM21B](components/Murata/GCM21B/README.md) | Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 2012M (0805), thickness 1.25 mm (code B), AEC-Q200 (GCM series) | 14 of 16 | `python3 tools/review.py GCM21B` |
-| [Murata/GCM319](components/Murata/GCM319/README.md) | Chip multilayer ceramic capacitors, C0G (5C), 3216M (1206), thickness 0.85 mm (code 9), AEC-Q200 (GCM series) | 0 of 14 | `python3 tools/review.py GCM319` |
-| [Murata/GCM31A](components/Murata/GCM31A/README.md) | Chip multilayer ceramic capacitors, C0G (5C), 3216M (1206), thickness 1.0 mm (code A), AEC-Q200 (GCM series) | 0 of 14 | `python3 tools/review.py GCM31A` |
-| [Murata/GCM31B](components/Murata/GCM31B/README.md) | Chip multilayer ceramic capacitors, C0G (5C) and X7R (R7), 3216M (1206), thickness 1.25 mm (code B), AEC-Q200 (GCM series) | 0 of 16 | `python3 tools/review.py GCM31B` |
-| [Murata/GCM31C](components/Murata/GCM31C/README.md) | Chip multilayer ceramic capacitors, C0G (5C) and X7R (R7), 3216M (1206), thickness 1.6 mm (code C), AEC-Q200 (GCM series) | 0 of 21 | `python3 tools/review.py GCM31C` |
-| [Murata/GCM31M](components/Murata/GCM31M/README.md) | Chip multilayer ceramic capacitors, C0G (5C) and X7R (R7), 3216M (1206), thickness 1.15 mm (code M), AEC-Q200 (GCM series) | 0 of 16 | `python3 tools/review.py GCM31M` |
-| [Murata/GCM32D](components/Murata/GCM32D/README.md) | Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 3225M (1210), thickness 2.0 mm (code D), AEC-Q200 (GCM series) | 0 of 18 | `python3 tools/review.py GCM32D` |
-| [Murata/GCM32E](components/Murata/GCM32E/README.md) | Chip multilayer ceramic capacitors, X7R (R7) and C0G (5C), 3225M (1210), thickness 2.5 mm (code E), AEC-Q200 (GCM series) | 0 of 18 | `python3 tools/review.py GCM32E` |
-| [Murata/GCM32Q](components/Murata/GCM32Q/README.md) | Chip multilayer ceramic capacitors, X7R (R7), 3225M (1210), thickness 1.5 mm (code Q), AEC-Q200 (GCM series) | 5 of 6 | `python3 tools/review.py GCM32Q` |
-| [Panasonic/ERA-2AEB](components/Panasonic/ERA-2AEB/README.md) | 0402 (1005 metric) 0.063 W +/-0.1 % +/-25 ppm/degC thin film chip resistor, ERA-2AEB (47 to 100 k ohm, E24/E96) | 0 of 16 | `python3 tools/review.py ERA-2AEB` |
-| [Panasonic/ERA-3AEB](components/Panasonic/ERA-3AEB/README.md) | 0603 (1608 metric) 0.1 W +/-0.1 % +/-25 ppm/degC thin film chip resistor, ERA-3AEB (47 to 330 k ohm, E24/E96) | 0 of 16 | `python3 tools/review.py ERA-3AEB` |
-| [Panasonic/ERA-6AEB](components/Panasonic/ERA-6AEB/README.md) | 0805 (2012 metric) 0.125 W +/-0.1 % +/-25 ppm/degC thin film chip resistor, ERA-6AEB (47 to 1 M ohm, E24/E96) | 0 of 16 | `python3 tools/review.py ERA-6AEB` |
-| [Panasonic/ERJ-2RKF](components/Panasonic/ERJ-2RKF/README.md) | 0402 (1005 metric) 0.1 W +/-1 % thick film chip resistor, ERJ-2RKF series (10 ohm to 1 Mohm, E24/E96) | 0 of 13 | `python3 tools/review.py ERJ-2RKF` |
-| [Panasonic/ERJ-3EKF](components/Panasonic/ERJ-3EKF/README.md) | 0603 (1608 metric) 0.1 W +/-1 % thick film chip resistor, ERJ-3EKF series (10 ohm to 1 Mohm, E24/E96) | released | `python3 tools/review.py ERJ-3EKF` |
-| [Panasonic/ERJ-6ENF](components/Panasonic/ERJ-6ENF/README.md) | 0805 (2012 metric) 0.125 W +/-1 % thick film chip resistor, ERJ-6ENF series (10 ohm to 2.2 Mohm, E24/E96) | 0 of 16 | `python3 tools/review.py ERJ-6ENF` |
-| [Panasonic/ERJ-8ENF](components/Panasonic/ERJ-8ENF/README.md) | 1206 (3216 metric) 0.25 W +/-1 % thick film chip resistor, ERJ-8ENF series (10 ohm to 2.2 Mohm, E24/E96); NRFND | 0 of 16 | `python3 tools/review.py ERJ-8ENF` |
-| [STMicroelectronics/STM32H723ZET6](components/STMicroelectronics/STM32H723ZET6/README.md) | Arm Cortex-M7 MCU, 550 MHz, 512 KB flash, LQFP144 (20 x 20 mm), -40 to 85 degC | 0 of 40 | `python3 tools/review.py STM32H723ZET6` |
-| [STMicroelectronics/VNF1248F](components/STMicroelectronics/VNF1248F/README.md) | High-side switch controller with intelligent fuse protection, 6-60 V (70 V transient), AEC-Q100, QFN32L 5x5 mm | 0 of 35 | `python3 tools/review.py VNF1248F` |
-| [TexasInstruments/INA229AIDGS](components/TexasInstruments/INA229AIDGS/README.md) | 85 V, 20-bit power/energy/charge monitor with SPI interface | released | `python3 tools/review.py INA229AIDGS` |
-| [TexasInstruments/INA241DGK](components/TexasInstruments/INA241DGK/README.md) | Bidirectional current-sense amplifier, -5 V to 110 V common mode, 2.7 V to 20 V supply, VSSOP-8 (DGK) | 0 of 51 | `python3 tools/review.py INA241DGK` |
-| [TexasInstruments/INA821IDGK](components/TexasInstruments/INA821IDGK/README.md) | Precision instrumentation amplifier, 4.5-36 V | 0 of 25 | `python3 tools/review.py INA821IDGK` |
-| [TexasInstruments/TPS48000QDGXQ1](components/TexasInstruments/TPS48000QDGXQ1/README.md) | 100 V automotive low-IQ high-side driver with reverse polarity, short-circuit protection and diagnostics, VSSOP-19 (DGX), TPS4800-Q1 data sheet | released | `python3 tools/review.py TPS48000QDGXQ1` |
-| [Vishay/WSK2512](components/Vishay/WSK2512/README.md) | 0.005 to 0.2 ohm (decade values) +/-0.1 % / +/-0.5 % / +/-1.0 % 1 W 4-terminal (Kelvin) Power Metal Strip current-sense resistor series, 2512 | released | `python3 tools/review.py WSK2512` |
-| [Vishay/WSK2512-LOW](components/Vishay/WSK2512-LOW/README.md) | 0.0005 to 0.0049 ohm (decade values) +/-0.5 % / +/-1.0 % 1 W 4-terminal (Kelvin) Power Metal Strip current-sense resistor series, 2512 | 4 of 20 | `python3 tools/review.py WSK2512-LOW` |
-| [Vishay/WSK2512R0250D](components/Vishay/WSK2512R0250D/README.md) | 0.025 ohm +/-0.5 % 1 W 4-terminal (Kelvin) Power Metal Strip current-sense resistor, 2512 | 0 of 22 | `python3 tools/review.py WSK2512R0250D` |
+34 parts from 7 manufacturers, 7 released (every row that matters checked by a person). One line per part, by manufacturer: [docs/PARTS.md](docs/PARTS.md). Is a part safe to use: `python3 tools/status.py <Value>`.
 <!-- review-status:end -->
 
 ## Use in a Zener module

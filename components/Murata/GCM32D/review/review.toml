@@ -5,7 +5,7 @@ datasheet_url = ""
 datasheet_file = "docs/datasheets/GCM32D5C3A682GX01-00B-EN.pdf"
 datasheet_rev = "00B"
 pdf_sha256 = "96eeeaf7cb22a912c339f32263341f004d87f89efc93a32c2e496ddfef4107f6"
-component_sha256 = "80eae47eac3df8d8a542272fd1d411168f9ef238fa918eb2445e8614f8146393"
+component_sha256 = "a148a238fc7cb8cd256d8edafb33d7b7949b1aac76e2b2d839b550e899d4a420"
 backfill = "git blame"
 sheets = { "GCM32D5C2J123FX01-00B-EN.pdf" = "ca5ccfb67ea709911dfaa4069f5ba71b371281d166134183a83e05d4c53dae4c", "GCM32D5C3A682GX01-00B-EN.pdf" = "96eeeaf7cb22a912c339f32263341f004d87f89efc93a32c2e496ddfef4107f6", "GCM32ER71C226ME19-01A-EN.pdf" = "7276cd9d7e5409cb34fae381aa71b729ef43910e8a1fdfa8b0d8d8924c873744" }
 

@@ -5,7 +5,7 @@ datasheet_url = ""
 datasheet_file = "docs/datasheets/GCM155R71H104KE02-01A-EN.pdf"
 datasheet_rev = "01A"
 pdf_sha256 = "1fde962935f54c93a56b74977f2399894b3df77cab2dff5e1c35bfae9d130282"
-component_sha256 = "c22ec5226cb3029b1f808d062b3c7f4086ea971ab34446e5d69f525c20555ace"
+component_sha256 = "2da59de82dd0bf2ce9e2fcfac6ff0446a4a0c6c5cb9180945bbd7a42f546c5e4"
 backfill = "git blame"
 sheets = { "GCM1555C1H101FA16-01A-EN.pdf" = "cd97b208daae0aea15da8da90690e3e12f9a5bd7875dc0f67513f9ab967f413a", "GCM155R71H104KE02-01A-EN.pdf" = "1fde962935f54c93a56b74977f2399894b3df77cab2dff5e1c35bfae9d130282" }
 

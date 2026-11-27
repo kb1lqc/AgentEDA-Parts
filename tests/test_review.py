@@ -341,27 +341,31 @@ class Readme(Stamped):
         vos = next(ln for ln in text.splitlines() if ln.startswith("| n vos |"))
         self.assertTrue(vos.endswith("|  |"), vos)  # machine stamp: blank
 
-    def test_top_table_and_markers(self):
+    def test_top_summary_index_and_markers(self):
         (self.d / "calc.py").write_text('INPUTS = {"f": {"a": "iq.typ"}}\n')
-        self.assertEqual(readme.top_table(self.root),
-                         "| Part | What | Status | Review command |\n|---|---|---|---|\n"
-                         "| [Acme/X](components/Acme/X/README.md) |  | released | `python3 tools/review.py X` |\n")
+        self.assertIn("1 parts from 1 manufacturers, 1 released", readme.top_table(self.root))
+        self.assertNotIn("Acme/X", readme.top_table(self.root))  # no per-part line in the README
+        idx = readme.parts_index(self.root)
+        self.assertIn("## Acme\n\n| Part | What | Status |", idx)
+        self.assertIn("| [X](../components/Acme/X/README.md) |  | released |", idx)
         (self.d / "calc.py").write_text('INPUTS = {"f": {"a": "iq.typ", "b": "vos"}}\n')
-        self.assertIn("| [Acme/X](components/Acme/X/README.md) |  | 1 of 2 |", readme.top_table(self.root))
+        self.assertIn("| [X](../components/Acme/X/README.md) |  | 1 of 2 |", readme.parts_index(self.root))
         top = self.root / "README.md"
         self.assertFalse(readme.update_top(self.root))  # no file or no markers: nothing written
         top.write_text("hand\n<!-- review-status:start -->\nold\n<!-- review-status:end -->\ntail\n")
         self.assertTrue(readme.update_top(self.root))
         first = top.read_text()
-        self.assertTrue(first.startswith("hand\n<!-- review-status:start -->\n| Part |"))
+        self.assertTrue(first.startswith("hand\n<!-- review-status:start -->\n1 parts"))
         self.assertTrue(first.endswith("<!-- review-status:end -->\ntail\n"))
         self.assertNotIn("old", first)
+        self.assertTrue((self.root / "docs" / "PARTS.md").is_file())
         readme.update_top(self.root)
         self.assertEqual(top.read_text(), first)
 
-    def test_repo_readme_table_is_current(self):
+    def test_repo_readme_and_index_are_current(self):
         text = (ROOT / "README.md").read_text()
         self.assertIn("<!-- review-status:start -->\n" + readme.top_table(ROOT) + "<!-- review-status:end -->", text)
+        self.assertEqual((ROOT / "docs" / "PARTS.md").read_text(), readme.parts_index(ROOT))
 
     def test_same_without_pdf_and_cache(self):
         before = readme.build(self.d)

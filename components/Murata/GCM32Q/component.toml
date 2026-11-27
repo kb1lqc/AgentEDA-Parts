@@ -1,7 +1,7 @@
 # Murata GCM32Q series: 3225M (1210) thickness code Q (T 1.5 mm) X7R (R7) MLCCs, a capacitor series
 # (docs/SPEC.md, "Capacitor series"). One directory per Murata size+thickness code (the symbol, footprint and STEP are per
 # directory). Every orderable value is a row of catalog.csv, generated from Murata's product-list export by
-#   python3 -m lib.catalog murata-gcm docs/vendor/Murata_GCM/gcm-series-product-list-2026-11-14.csv components/Murata/GCM32Q --dielectrics X7R,C0G
+#   python3 -m lib.catalog murata-gcm docs/vendor/Murata_GCM/series-product-list.csv components/Murata/GCM32Q --dielectrics X7R,C0G
 # and cited per row to that export (a manufacturer export, not a datasheet). The export lists X7R values only for this
 # thickness code (4 rows); each listed dielectric has its temperature-characteristic row (tc_x7r) and operating-temperature row
 # (op_temp_x7r). Row scopes: rows without a restriction apply to every part; rows with dielectric = "X7R" to every part of that dielectric.

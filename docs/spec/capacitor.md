@@ -90,7 +90,7 @@ package_alternates = ["W", "J", "V"]     # other letters: the same part in other
 
 ## Export check (review of catalog.csv)
 
-Status: the comparison, group hashes, the `export-check` command, the record `review/export_check.toml` and the `lib.check`
+The comparison, group hashes, the `export-check` command, the record `review/export_check.toml` and the `lib.check`
 rules are implemented (`lib/catalog.py`, `lib/check.py`, tests in `tests/test_catalog_export.py`). The legacy human group
 stamp (`export-check <export> <dir> --stamp <login>`, refused for agents) is still accepted. A capacitor series' catalog rows are reviewed through the export they cite, not
 through a datasheet table (there is none per part). Export: the manufacturer product-list CSV named in the `source`
@@ -151,6 +151,6 @@ values (capacitance, tolerance, rated voltage, thickness) that the PDFs do not p
 - **Not covered.** The comparison proves the catalog agrees with the export, not that the export agrees with the
   factory. Values the export does not print (DC bias, aging) stay as they are.
 
-Open items for the reviewer: (1) whether the Murata export
-must be the one dated in the cite (2026-11-14) or any export that passes the check; (2) the cite file name in every
-catalog.csv (currently `gcm-series-product-list-2026-11-14.csv`, the file on disk is `series-product-list.csv`).
+The export is identified by the file name and SHA-256 in `review/export_check.toml` (`series-product-list.csv`, the name
+every `catalog.csv` cite uses); a date in a file name is not part of the identity. The export is not needed to use the
+library, and CI needs no local copy: the check runs against the committed trimmed export in `docs/exports/`.

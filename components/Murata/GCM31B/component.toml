@@ -1,7 +1,7 @@
 # Murata GCM31B series: 3216M (1206) C0G (5C) and X7R (R7), thickness 1.25 mm (code B) capacitance series (docs/SPEC.md, "Capacitor series"). One directory per Murata
 # size+thickness code (the symbol, footprint and STEP are per directory). Every orderable value is a row of catalog.csv,
 # generated from Murata's product-list export by
-#   python3 -B -m lib.catalog murata-gcm docs/vendor/Murata_GCM/gcm-series-product-list-2026-11-14.csv components/Murata/GCM31B --dielectrics X7R,C0G
+#   python3 -B -m lib.catalog murata-gcm docs/vendor/Murata_GCM/series-product-list.csv components/Murata/GCM31B --dielectrics X7R,C0G
 # and cited per row to that export (a manufacturer export, not a datasheet). Lifecycle, revision currency, errata and PCN:
 # not checked (no web access). Row scopes: rows without a restriction apply to every part; rows with dielectric = "X7R" /
 # "C0G" to every part of that dielectric; rows with parts = [...] only to the catalog values named there.

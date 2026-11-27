@@ -15,7 +15,7 @@ Before 2: python3 tools/ds_review.py (docs/spec/review.md) on the dirs given, ev
 plus parts with no review/; non-zero exit = FAIL; a committed review.toml it changes is a FAIL unless --regen (then
 listed), so a stale record never passes CI by being regenerated in the runner; its mode
 line and lib.check's (evidence mode with the PDF, ledger-only mode without) are printed in the PASS line.
-lib.zen and lib.readme must leave components/** and README.md byte-identical (content hashes before and after). A
+lib.zen and lib.readme must leave components/**, README.md and docs/PARTS.md byte-identical (content hashes before and after). A
 difference is a FAIL unless --regen is given; then the changed files are listed and the run still passes.
 A PDF tracked by git or under components/ is a FAIL (datasheets live in git-ignored docs/datasheets/).
 Output: one PASS line with counts, or the first 5 failures as `file:line message` (`step: line` when the tool prints no
@@ -64,12 +64,13 @@ def failure_lines(step, out, limit=MAX_FAILURES):
 
 
 def tree_hashes(root):
-    """sha256 of every file under components/ and of README.md, keyed by relative path (no .pcb, no __pycache__)."""
+    """sha256 of every file under components/, README.md and docs/PARTS.md, keyed by relative path (no .pcb, no __pycache__)."""
     out = {}
     root = Path(root)
-    readme = root / "README.md"
-    if readme.is_file():
-        out["README.md"] = hashlib.sha256(readme.read_bytes()).hexdigest()
+    for name in ("README.md", "docs/PARTS.md"):
+        f = root / name
+        if f.is_file():
+            out[name] = hashlib.sha256(f.read_bytes()).hexdigest()
     for base, dirs, files in os.walk(root / "components"):
         dirs[:] = sorted(d for d in dirs if d not in SKIP_DIRS)
         for f in sorted(files):
