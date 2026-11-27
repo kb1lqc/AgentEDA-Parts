@@ -46,6 +46,28 @@ def _ledger_unverified(path):
     return {k for k, r in rows.items() if isinstance(r, dict) and r.get("state") in _LEDGER_BAD}
 
 
+EVIDENCE = "evidence.toml"  # <root>/.review-cache/<Mfr>/<Value>/evidence.toml: git-ignored, what the local PDF decided
+
+
+def evidence_merge(ledger, cache):
+    """The committed ledger (review.toml, parsed) with the cache's evidence.toml laid under it: every row, the pinout and its
+    pages and the inputs gain the evidence fields (status, reason, image, image_sha256, ...); a committed field wins.
+    The evidence record's own row hash is kept as `ev_hash` (None without evidence). cache: the part's cache dir."""
+    ev = _read_toml(Path(cache) / EVIDENCE) or {}
+    out = {**ledger, "inputs": {**(ev.get("inputs") or {}), **(ledger.get("inputs") or {})}}
+    erows = ev.get("row") or {}
+    out["row"] = {k: ({**(erows.get(k) or {}), **r, "ev_hash": (erows.get(k) or {}).get("hash")} if isinstance(r, dict) else r)
+                  for k, r in (ledger.get("row") or {}).items()}
+    pin, epin = ledger.get("pinout"), ev.get("pinout") or {}
+    if isinstance(pin, dict):
+        by_page = {(g.get("sheet", ""), g.get("pdf_page")): g for g in epin.get("page") or [] if isinstance(g, dict)}
+        out["pinout"] = {**pin, "ev_hash": epin.get("hash")}
+        if pin.get("page"):
+            out["pinout"]["page"] = [{**by_page.get((g.get("sheet", ""), g.get("pdf_page")), {}), **g}
+                                     for g in pin["page"] if isinstance(g, dict)]
+    return out
+
+
 def _record(label, key, verified):
     """Record one row read. Unverified is sticky: a later verified read of the same key never clears it."""
     k = f"{label}:{key}"

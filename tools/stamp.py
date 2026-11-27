@@ -14,9 +14,9 @@ refused like a row (no [[pin]], record older than the pins, image or PDF missing
 
 Each row gets `verified = "human:<github-login> <YYYY-MM-DD> page-image ds_review <pdf-sha256[:12]> row <row-hash[:12]>"`
 (replacing any stamp; row hash as review.toml's). All or nothing; refused: unknown component or key, unreadable TOML,
-no review/review.toml row, ledger `hash` != the row's hash (re-run tools/verify.py), status DISAGREE or NOT_FOUND, a
-missing or changed local cache image (.review-cache/, image_sha256), a local PDF missing or not the ledger's `sheets`
-SHA-256, or CLAUDECODE set (an agent's shell). Line endings and a comment on a replaced verified line are kept.
+no review/review.toml row, ledger `hash` != the row's hash (re-run tools/verify.py), no local evidence record
+(.review-cache/<Mfr>/<Value>/evidence.toml) of that very hash, its status DISAGREE or NOT_FOUND, a missing or changed
+local cache image (the record's image_sha256), a local PDF missing or not the ledger's `sheets` SHA-256, or CLAUDECODE set (an agent's shell). Line endings and a comment on a replaced verified line are kept.
 Exit 0 = written, 1 = refused. Then run tools/verify.py --regen on the part (it re-pins the stamp in review.toml).
 """
 
@@ -33,7 +33,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from ds_review import row_hash, sha256_file  # noqa: E402  (the ledger's own hash, so the comparison is exact)
-from lib.component import GITHUB_LOGIN, override_rows, pinout_hash  # noqa: E402  (the stamp's name part, as lib checks it)
+from lib.component import GITHUB_LOGIN, evidence_merge, override_rows, pinout_hash  # noqa: E402  (the stamp's name part, as lib checks it)
 
 WHO_RE = re.compile(f"^{GITHUB_LOGIN}\\Z")
 AGENT = "refused: running inside Claude Code (CLAUDECODE is set); a person must run stamp.py in their own shell"
@@ -89,6 +89,8 @@ def check_row(root, value, key):
             ledger = tomllib.load(f)
     except (OSError, tomllib.TOMLDecodeError):
         return None, None, "no readable review/review.toml (no review record)"
+    cache = Path(root) / ".review-cache" / d.relative_to(Path(root) / "components")
+    ledger = evidence_merge(ledger, cache)  # the committed record + the cache's evidence (status, images, SHA-256)
     row = ledger.get("pinout") if pin else ledger.get("row", {}).get(key)
     if isinstance(row, dict) and row.get("state") == "REFERENCE":
         return None, None, "reference row, nothing to stamp"
@@ -98,9 +100,11 @@ def check_row(root, value, key):
     if row["hash"] != h:
         return None, None, ("review record is older than the committed " + ("pins" if pin else "row")
                             + ": run tools/verify.py and check again")
+    if row.get("ev_hash") != h:
+        return None, None, (f"no local evidence of the current {'pins' if pin else 'row'}: "
+                            f"run python3 tools/ds_review.py {d.relative_to(root)}")
     if row.get("status") in REFUSE_STATUS:
         return None, None, f"status {row['status']}: fix the row before stamping"
-    cache = Path(root) / ".review-cache" / d.relative_to(Path(root) / "components")
     inp = ledger.get("inputs", {})
     dsf = inp.get("datasheet_file", "")
     main = Path(dsf).name
@@ -112,7 +116,7 @@ def check_row(root, value, key):
         if img is None or not img.is_file():
             return None, None, f"no local evidence image for this row: run python3 tools/ds_review.py {d.relative_to(root)}"
         if sha256_file(img) != rec.get("image_sha256"):
-            return None, None, "evidence image differs from the ledger's image_sha256: run tools/verify.py"
+            return None, None, "evidence image differs from the cache record's image_sha256: run tools/verify.py"
         sheet = rec.get("sheet") or main
         want = inp.get("sheets", {}).get(sheet)
         pdf = Path(root) / (dsf if dsf and sheet == main else f"docs/datasheets/{sheet}")

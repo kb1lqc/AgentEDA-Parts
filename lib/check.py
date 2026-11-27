@@ -10,7 +10,7 @@ from pathlib import Path
 
 from . import capacitor, catalog, kicad, rules, series
 from . import review_status
-from .component import (ROOT, _repo_root, ledger_state_of, load_calc, merge_variant, override_rows, pinout_hash, row_hash,
+from .component import (EVIDENCE, ROOT, _read_toml, _repo_root, ledger_state_of, load_calc, merge_variant, override_rows, pinout_hash, row_hash,
                         run_example, variants_of)
 from .units import to_si
 
@@ -635,31 +635,41 @@ def check_ledger(folder):
             out.append(("ERROR", f"review/review.toml row {key}: not a Param, so its state must be 'NOT_COVERED': {rerun}"))
     root = _repo_root(folder) or ROOT
     cache = root / ".review-cache" / folder.resolve().relative_to(root / "components") if _repo_root(folder) else None
+    ev = (_read_toml(cache / EVIDENCE) or {}) if cache else {}  # the local evidence record: what the PDF and the render decided
 
     def pdf(sheet):  # the main datasheet at its datasheet_file path, other sheets in docs/datasheets/
         return root / inp["datasheet_file"] if sheet == main and inp.get("datasheet_file") else root / "docs" / "datasheets" / sheet
     present, absent, matched = set(), set(), set()
     pages = [pg for pg in pr.get("page", []) if isinstance(pg, dict)] if isinstance(pr, dict) else []  # every cited page
+    erow, epin = ev.get("row") or {}, ev.get("pinout") or {}
+    epage = {(g.get("sheet", ""), g.get("pdf_page")): g for g in epin.get("page") or [] if isinstance(g, dict)}
     for key, r in list(rows.items()) + [("pinout", pg) for pg in pages]:
-        if not isinstance(r, dict) or not r.get("image"):
+        # a ledger row (or pinout page) the cite placed on a PDF page has evidence images, once the PDF is local
+        if not isinstance(r, dict) or not r.get("pdf_page") or r.get("state") in ("REFERENCE", "NOT_COVERED"):
             continue
         sheet = r.get("sheet") or main
         if not pdf(sheet).is_file() or cache is None:
             absent.add(sheet)
             continue
         present.add(sheet)
+        pin = key == "pinout"
+        e = epage.get((r.get("sheet", ""), r.get("pdf_page")), {}) if pin else erow.get(key) or {}
+        if (epin.get("hash") != pr.get("hash")) if pin else (e.get("hash") != r.get("hash")):
+            out.append(("ERROR", f"{cache.relative_to(root)}/{EVIDENCE} has no evidence of {key} for its current hash (PDF present): "
+                                 f"{rerun}"))
+            continue
         for field, sha_field in (("image", "image_sha256"), ("header_image", "header_sha256"), ("foot_image", "foot_sha256")):
-            image = r.get(field, "")
+            image = e.get(field, "")
             if not image:
                 continue
             img = cache / image
             if not img.is_file():
                 out.append(("ERROR", f"{img.relative_to(root)} missing ({key}; PDF present): {rerun} to render it"))
-            elif hashlib.sha256(img.read_bytes()).hexdigest() != r.get(sha_field, ""):
-                out.append(("ERROR", f"{img.relative_to(root)} sha256 differs from review.toml ({key}): delete it and {rerun}"))
+            elif hashlib.sha256(img.read_bytes()).hexdigest() != e.get(sha_field, ""):
+                out.append(("ERROR", f"{img.relative_to(root)} sha256 differs from {EVIDENCE} ({key}): delete it and {rerun}"))
             else:
                 matched.add(image)
-    if not present and not absent:  # no row has an image: the main PDF decides
+    if not present and not absent:  # no row is placed on a page: the main PDF decides
         (present if main and pdf(main).is_file() else absent).add(main)
     REVIEW_MODES[str(folder)] = ("evidence" if present and not absent else "partial" if present else "ledger-only", len(matched))
     return out

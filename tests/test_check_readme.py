@@ -290,8 +290,13 @@ class TestLedger(unittest.TestCase):
         table = {k: {"state": "NEW", "hash": row_hash(t)} for k, t in params.items()}
         for k, stamp in (stamps or {}).items():
             table[k].update(state="MACHINE_CHECKED", stamp=stamp, stamp_hash=table[k]["hash"])
+        ledger_fields = ("state", "hash", "stamp", "stamp_hash", "pdf_sha256", "sheet", "pdf_page", "printed_page")
+        evidence = {}  # what the local PDF decided goes to the cache's evidence.toml (docs/spec/review.md)
         for k, extra in (rows or {}).items():
-            table.setdefault(k, {}).update(extra)
+            table.setdefault(k, {}).update({f: v for f, v in extra.items() if f in ledger_fields})
+            if any(f not in ledger_fields for f in extra):
+                evidence[k] = {"hash": table[k]["hash"], **{f: v for f, v in extra.items() if f not in ledger_fields}}
+                table[k].setdefault("pdf_page", 1)  # the cite placed the row on a page: it has evidence once the PDF is here
         text = raw if raw is not None else '[inputs]\ndatasheet_file = "docs/datasheets/ldo1.pdf"\n' + raw_inputs + "".join(
             f"[row.{k}]\n" + "".join(f"{f} = {json.dumps(v)}\n" for f, v in r.items()) for k, r in table.items())
         pins = tomllib.loads(ct.read_text()).get("pin")
@@ -299,6 +304,11 @@ class TestLedger(unittest.TestCase):
             text += f'[pinout]\nstate = "NEW"\nhash = "{pinout_hash(pins)}"\n'
         (copy / "review").mkdir()
         (copy / "review" / "review.toml").write_text(text)
+        if evidence:
+            ef = root / ".review-cache" / "Acme" / "LDO1" / "evidence.toml"
+            ef.parent.mkdir(parents=True, exist_ok=True)
+            ef.write_text("".join(f"[row.{k}]\n" + "".join(f"{f} = {json.dumps(v)}\n" for f, v in r.items())
+                                  for k, r in evidence.items()))
         for name, data in (files or {}).items():
             f = root / ".review-cache" / "Acme" / "LDO1" / name
             f.parent.mkdir(parents=True, exist_ok=True)
@@ -341,7 +351,7 @@ class TestLedger(unittest.TestCase):
         self.assertIn(".review-cache/Acme/LDO1/evidence/a.png missing (vref; PDF present): rerun python3 tools/ds_review.py", text)
         with tempfile.TemporaryDirectory() as d:
             text = self.errors(self.ledger(d, row, {"evidence/a.png": b"other", "evidence/h.png": b"png"}))
-        self.assertIn("evidence/a.png sha256 differs from review.toml (vref): delete it and rerun", text)
+        self.assertIn("evidence/a.png sha256 differs from evidence.toml (vref): delete it and rerun", text)
         self.assertNotIn("h.png", text)
         with tempfile.TemporaryDirectory() as d:
             self.assertEqual(self.errors(self.ledger(d, row, {"evidence/a.png": b"png", "evidence/h.png": b"png"})), "")
