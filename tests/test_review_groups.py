@@ -45,10 +45,10 @@ class GroupsTests(unittest.TestCase):
     def groups(self):
         return R.build_groups(self.root, self.dirs)
 
-    def test_one_entry_per_dielectric_all_tickable_before_stamping(self):
+    def test_one_entry_per_dielectric_none_tickable(self):
         gs = {g["dielectric"]: g for g in self.groups()}
         self.assertEqual(set(gs), {"C0G", "X7R"})
-        self.assertTrue(all(g["tickable"] for g in gs.values()))
+        self.assertFalse(any(g["tickable"] for g in gs.values()))  # derived rows need no tick
         self.assertEqual(gs["C0G"]["ref"], "GCM21B:group:C0G")
         self.assertEqual(gs["C0G"]["rows"], 3)
         self.assertEqual([r["value"] for r in gs["C0G"]["rows_expected"]],
@@ -70,11 +70,11 @@ class GroupsTests(unittest.TestCase):
         self.assertNotIn("R7 = X7R", legend)
         self.assertIn("183 = 18 nF", legend)  # 18 x 10^3 pF
 
-    def test_group_html_has_one_tick_box_with_the_group_ref(self):
+    def test_group_html_is_one_line_with_no_tick_box(self):
         g = next(g for g in self.groups() if g["dielectric"] == "X7R")
         html_text = R.group_html(g)
-        self.assertIn('value="GCM21B:group:X7R"', html_text)
-        self.assertIn("GCM21BR71H104KA37", html_text)  # the example part of the group
+        self.assertIn("No tick needed", html_text)
+        self.assertNotIn("<input", html_text)
 
     def test_stamped_group_is_not_tickable(self):
         CAT.main(["export-check", str(self.export), str(self.folder), "--stamp", "reviewer", "--groups", "C0G"])
@@ -83,7 +83,6 @@ class GroupsTests(unittest.TestCase):
         self.assertFalse(gs["C0G"]["tickable"])
         self.assertFalse(gs["X7R"]["tickable"])  # a machine line was written for the group not stamped
         self.assertNotIn('value="GCM21B:group:C0G"', R.group_html(gs["C0G"]))
-        self.assertIn("Ticked by reviewer", R.group_html(gs["C0G"]))  # legacy human line still shown
 
     def test_machine_group_is_derived_checked_and_not_tickable(self):
         CAT.main(["export-check", str(self.export), str(self.folder)])
@@ -96,25 +95,12 @@ class GroupsTests(unittest.TestCase):
             self.assertNotIn('class="ok"', text)
             self.assertNotIn("Ticked by", text)
 
-    def test_machine_group_with_other_tables_is_tickable_again(self):
-        CAT.main(["export-check", str(self.export), str(self.folder)])
-        with mock.patch.dict(CAT.TOLERANCE, {"Z": "+/-99%"}):
-            self.assertEqual(len(self.groups()), 2)
-            self.assertTrue(all(g["tickable"] for g in self.groups()))
-
-    def test_human_line_naming_another_group_is_not_current(self):
-        CAT.main(["export-check", str(self.export), str(self.folder), "--stamp", "reviewer"])
-        rec = self.folder / "review" / "export_check.toml"
-        rec.write_text(rec.read_text().replace("export-check group C0G", "export-check group X7R"))
-        gs = {g["dielectric"]: g for g in self.groups()}
-        self.assertTrue(gs["C0G"]["tickable"])
-
     def test_missing_export_is_a_visible_group_not_a_tick(self):
         self.export.unlink()
         gs = self.groups()
         self.assertEqual(gs[0]["result"], "NO EXPORT")
         self.assertFalse(gs[0]["tickable"])
-        self.assertIn("no export file", R.group_html(gs[0]))
+        self.assertIn("export-check record", R.group_html(gs[0]))
 
     def test_publish_stamps_only_the_ticked_group(self):
         commands = []

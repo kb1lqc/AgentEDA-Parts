@@ -305,7 +305,7 @@ def build_groups(root, dirs):
             out.append({"part": d.name, "dielectric": diel, "dir": d, "export": export, "rows": g["rows"],
                         "result": res["result"], "differences": res["differences"],
                         "rows_expected": sorted((r for r in expected if r["dielectric"] == diel), key=lambda r: r["value"]),
-                        "stamp": stamp, "ref": f"{d.name}:group:{diel}", "tickable": res["result"] == "MATCH" and stamp is None,
+                        "stamp": stamp, "ref": f"{d.name}:group:{diel}", "tickable": False,
                         "group_sha256": g["sha256"]})
     return out
 
@@ -330,37 +330,17 @@ def legend_html(rows):
 
 
 def group_html(g):
-    """One capacitor-series group on the page: heading, status, the distinct combinations with an export row each, and one
-    tick box when the group can be stamped (the box's value is the group ref; publish stamps it with lib.catalog)."""
+    """One capacitor-series group on the page, one line and no tick: catalog rows are DERIVED (a script proves them,
+    docs/spec/capacitor.md "Export check"), so a person has nothing to check here. Only a MISMATCH is shown as a warning."""
     esc = html.escape
-    head = f"<h2>{esc(g['part'])} {esc(g['dielectric'])}: {g['rows']} rows</h2>"
+    name = f"{esc(g['part'])} {esc(g['dielectric'])}"
     if g["export"] is None:
-        return (f'<div class="item">{head}<p class="warn">no export file: the catalog cites a file that is not in '
-                "docs/datasheets/ or docs/vendor/</p></div>")
-    parts = [head, f'<p class="mute small">Export: {esc(g["export"].name)}; group sha256 {esc(g["group_sha256"][:12])}</p>']
+        return (f'<p class="mute small">{esc(g["part"])}: catalog rows are derived from the manufacturer export; the committed '
+                "export-check record is the check. To re-run the comparison here, put the export named in catalog.csv's "
+                "source cite in docs/datasheets/.</p>")
     if g["result"] != "MATCH":
-        parts.append('<p class="warn">MISMATCH: ' + esc("; ".join(g["differences"][:3])) + "</p>")
-    if g["stamp"]:
-        st = CAT.parse_group_stamp(g["stamp"])
-        if st["kind"] == "machine":  # derived rows: no tick needed (docs/spec/capacitor.md "Export check")
-            parts.append(f'<p class="small">derived, checked: machine export-check on {esc(st["date"])}</p>')
-        else:  # legacy human line
-            parts.append(f'<p class="small">Ticked by {esc(st["who"])} on {esc(st["date"])}</p>')
-    rows = g["rows_expected"]
-    parts.append(legend_html(rows))
-    cells = []
-    for r in rows:
-        fields = CAT.fields_of(r["value"]) or []
-        decoded = "".join(f"<td>{esc(code)} = {esc(meaning)}</td>" for _, code, meaning in fields)
-        cells.append(f"<tr><td>{esc(r['value'])}</td>{decoded}"
-                     f"<td>{esc(r['capacitance'])}, {esc(r['tolerance'])}, {esc(r['rated_voltage'])}, {esc(r['thickness'])}</td></tr>")
-    head_cells = "".join(f"<th>{esc(f)}</th>" for f in ("Part", *CAT.FIELDS, "Export prints"))
-    parts.append(f'<details><summary>All {len(rows)} parts, decoded</summary>'
-                 f'<table class="stmt"><tr>{head_cells}</tr>{"".join(cells)}</table></details>')
-    if g["tickable"]:
-        parts.append(f'<label class="pick"><input type="checkbox" class="ok" value="{esc(g["ref"])}">'
-                     "matches the export: every combination above is the export's row</label>")
-    return f'<div class="item" id="group-{esc(g["ref"])}">' + "".join(parts) + "</div>"
+        return f'<p class="warn">{name}: MISMATCH with the export: {esc("; ".join(g["differences"][:3]))}</p>'
+    return f'<p class="mute small">{name}: {g["rows"]} catalog rows derived, checked against {esc(g["export"].name)}. No tick needed.</p>'
 
 
 def ensure_cache(root, dirs, run=subprocess.run, dry_run=False):
@@ -520,7 +500,7 @@ def render(title, parts, token, root, notes=(), block=None, images=None, groups=
             "at the bottom.</p>"]
     body += [f'<p class="mute small">{esc(x)}</p>' for x in notes]
     if groups:  # capacitor-series catalogs: one group per dielectric, stamped as a group (docs/spec/capacitor.md)
-        body.append("<h2>Catalog groups (capacitor series)</h2>")
+        body.append("<h2>Derived catalog rows (no tick)</h2>")
         body += [group_html(g) for g in groups]
     shown_parts = sorted((p for p in parts if p["items"] and not p["released"]), key=lambda p: (p["n"] - p["k"], p["value"]))  # the whole part's needs-check count
     folded = [p for p in parts if p not in shown_parts]
