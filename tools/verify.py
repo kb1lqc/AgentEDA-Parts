@@ -15,6 +15,8 @@ Before 2: python3 tools/ds_review.py (docs/spec/review.md) on the dirs given, ev
 plus parts with no review/; non-zero exit = FAIL; a committed review.toml it changes is a FAIL unless --regen (then
 listed), so a stale record never passes CI by being regenerated in the runner; its mode
 line and lib.check's (evidence mode with the PDF, ledger-only mode without) are printed in the PASS line.
+If lib.check names parts whose local evidence cache is missing ("rerun python3 tools/ds_review.py <dir>"), verify rebuilds exactly
+those caches (local, git-ignored) and checks again; a committed record that rebuild changes is a FAIL unless --regen.
 lib.zen and lib.readme must leave components/**, README.md and docs/PARTS.md byte-identical (content hashes before and after). A
 difference is a FAIL unless --regen is given; then the changed files are listed and the run still passes.
 A PDF tracked by git or under components/ is a FAIL (datasheets live in git-ignored docs/datasheets/).
@@ -187,7 +189,20 @@ def verify(root, dirs=None, all_dirs=False, regen=False, log_dir=None, runner=ru
             notes.append("review: NOT_RENDERED (PDF absent) in " + ", ".join(
                 re.findall(r"^(\S+): .*\| NOT_RENDERED", out, re.M)[:10]))
 
-    # 2. lib.check
+    # 2. lib.check. A part you did not touch can lack the local evidence cache (new checkout, or a pull that changed the
+    # cache format): rebuild exactly the caches lib.check names (local, git-ignored), then check, once. A committed
+    # review record changed by that rebuild is a FAIL unless --regen, as in 1c.
+    rc0, out0 = runner([sys.executable, "-m", "lib.check"], root)
+    stale = sorted(set(re.findall(r"rerun python3 tools/ds_review\.py (\S+)", out0)))
+    if rc0 and stale:
+        before_c = {k: h for k, h in tree_hashes(root).items() if "/review/" in k}
+        step("ds_review-cache", [sys.executable, "tools/ds_review.py"] + stale)
+        rchanged = diff_hashes(before_c, {k: h for k, h in tree_hashes(root).items() if "/review/" in k})
+        if rchanged and not regen:
+            fails.extend(f"{c}:1 changed by ds_review (committed review record is stale; rerun with --regen and commit it)"
+                         for c in rchanged)
+        notes.append(f"review: rebuilt the local evidence cache of {len(stale)} part(s): "
+                     + ", ".join(Path(s).name for s in stale[:10]))
     rc, out = step("lib.check", [sys.executable, "-m", "lib.check"])
     notes += [f"lib.check {ln}" for ln in re.findall(r"^(review: .*)$", out, re.M)]
     m = re.search(r"^(\d+) components, (\d+) errors, (\d+) warnings", out, re.M)

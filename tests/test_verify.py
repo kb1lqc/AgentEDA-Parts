@@ -118,6 +118,28 @@ class TestVerify(unittest.TestCase):
         self.assertIn("lib.check: A/B: ERROR: problem 0", lines[1])
         self.assertNotIn("problem 5", "\n".join(lines))
 
+    def test_missing_evidence_cache_is_rebuilt_then_checked_again(self):
+        ok = "1 components, 0 errors, 0 warnings, 0 tolerated (datasheets absent), 0 allowlisted findings, 0 abstained\n"
+        bad = ("A/B: ERROR: .review-cache/A/B/evidence.toml has no evidence of x (PDF present): "
+               "rerun python3 tools/ds_review.py components/A/B\n1 components, 1 errors, 0 warnings\n")
+
+        class Healing(Fake):
+            n = 0
+
+            def __call__(self, cmd, cwd, env=None):
+                if "-m lib.check" in " ".join(cmd):
+                    Healing.n += 1
+                    self.calls.append(" ".join(cmd))
+                    return (1, bad) if Healing.n == 1 else (0, ok)
+                return super().__call__(cmd, cwd, env)
+
+        fake = Healing(self.root)
+        rc, lines = self.run_v(fake)
+        self.assertEqual(rc, 0, lines)
+        self.assertEqual(sum("-m lib.check" in c for c in fake.calls), 2)
+        self.assertTrue(any(c.endswith("tools/ds_review.py components/A/B") for c in fake.calls))
+        self.assertIn("rebuilt the local evidence cache of 1 part(s): B", "\n".join(lines))
+
     def test_failure_line_gets_file_and_line(self):
         out = "components/A/B/B.zen:12:4 error: bad net\n"
         rc, lines = self.run_v(Fake(self.root, **{"pcb build": (1, out)}))
