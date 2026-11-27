@@ -10,18 +10,19 @@ logged = 1
 clean = false
 report_sha256 = "20737f873f670a725b1d61d3e10d523a71dfceacf975b79e609057f8a4e2f289"
 report_lines = 5
-inputs_sha256 = "b0cab2c52194668f212c474cbec0960f16d849a6aa1658cf5b225845db1599de"
-calc_ast_sha256 = "d0e79373e9d4ea5458387ed9bb96993910d497485bad94bfeefccf4afdd6a964"
+inputs_sha256 = "bb2ec3841b7f88e98e35ecce56e2751558b5ca8afb01f557205b58a36db658d9"
+calc_ast_sha256 = "565a9fcc6fc96ffe85610ad6530d72147b77c7dac83b41bc9a426e9d7d4e1dc3"
 matters = ["land_a", "land_b", "land_c", "op_temp_x7r", "pinout"]
 functions = ["capacitance_worst_pct"]
 reference_rows = ["tc_x7r"]
 reference_overrides = []
+hash_version = 1
 datasheet_pdf_sha256 = "d1a871dac5c7bad631c82801e50cabdb4f8f1124b362823f31b3eca1eff4b2fc"
 rows_checked = 1
 rows_total = 1
 
 [verifier.input_sha256]
-"calc.py" = "d0e79373e9d4ea5458387ed9bb96993910d497485bad94bfeefccf4afdd6a964"
+"calc.py" = "565a9fcc6fc96ffe85610ad6530d72147b77c7dac83b41bc9a426e9d7d4e1dc3"
 "catalog.csv" = "3efb49e37916aad889d3f1c6d151ac1b0e90f82b43f7525ce705b50834025528"
 "catalog_tables" = "9caa9d9ec20a64da018fb96d1ea80fa71f1bab5ba46c72315fc7c435cc0f7d98"
 "component.toml" = "d70f657785226e7ced7da384945a7f3592543b0eafd2ab49b71a628e04e6195f"

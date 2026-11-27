@@ -10,18 +10,19 @@ logged = 0
 clean = true
 report_sha256 = "8c78427e4f4eebaed6f09c05f6c875f4559469f129595694b853808b0dd60673"
 report_lines = 5
-inputs_sha256 = "17491661cfac86eec3b27eb069d3ac9060433c39a8a7dcc96fce4a71484fed50"
-calc_ast_sha256 = "798d65c7a530dacde6c9a1ad64578db61be35e8e63d79b2bdf8936d0adba4236"
+inputs_sha256 = "37afb68c81be6682a7461d7d27fecddd3469dbddee8aff97ebb1ad44854cc307"
+calc_ast_sha256 = "bb78b598f579ae9c9e179a1c8894cfbc0cf2d168fb1c079d9ca79a9ad39dc99e"
 matters = ["beam_load", "beam_load_c0g", "dim_e", "dim_e_c0g", "dim_g", "dim_g_c0g", "land_a_020", "land_a_030", "land_b_020", "land_b_030", "land_c_020", "land_c_030", "length", "length_c0g", "op_temp_c0g", "op_temp_x7r", "pinout", "solderability", "solderability_c0g", "thickness_t", "thickness_t_c0g", "width", "width_c0g"]
 functions = ["capacitance_worst_pct", "capacitance_worst_ppm"]
 reference_rows = ["capacitance_ds_c0g", "rated_v_ds_c0g", "tolerance_ds_c0g", "q_25c_c0g", "ir_25c_c0g", "ir_125c_c0g", "hte_cap_c0g", "hte_q_c0g", "hte_ir_c0g", "cycle_cap_c0g", "cycle_q_c0g", "cycle_ir_c0g", "solder_cap_c0g", "moist_cap_c0g", "moist_q_c0g", "moist_ir_c0g", "hb_cap_c0g", "hb_q_c0g", "hb_ir_c0g", "htol_cap_c0g", "htol_q_c0g", "htol_ir_c0g", "board_flex_cap_c0g", "capacitance_ds", "rated_v_ds", "tolerance_ds", "df_25c", "ir_25c", "ir_125c", "hte_cap", "hte_df", "hte_ir", "tc_cap", "tc_df", "tc_ir", "moist_cap", "moist_df", "moist_ir", "hb_cap", "hb_df", "hb_ir", "htol_cap", "htol_df", "htol_ir", "solvents_ir", "shock_ir", "vibration_ir", "solder_ir", "esd_ir", "board_flex_cap", "board_flex_ir", "terminal_ir", "self_heating", "dc_bias", "ac_peak", "tc_c0g", "capdrift_m55_c0g", "capdrift_m30_c0g", "capdrift_m10_c0g", "capdrift_limit_c0g", "tc_x7r"]
 reference_overrides = []
+hash_version = 1
 datasheet_pdf_sha256 = "87ece5c944c1c8178de10ba9fd8104632693922446e6828f68a54aa5844e87aa"
 rows_checked = 25
 rows_total = 61
 
 [verifier.input_sha256]
-"calc.py" = "798d65c7a530dacde6c9a1ad64578db61be35e8e63d79b2bdf8936d0adba4236"
+"calc.py" = "bb78b598f579ae9c9e179a1c8894cfbc0cf2d168fb1c079d9ca79a9ad39dc99e"
 "catalog.csv" = "b3f7e5fa9fea12f4bf5c798f6e7cf27df87480b45c52b9aab598de2067530726"
 "catalog_tables" = "9caa9d9ec20a64da018fb96d1ea80fa71f1bab5ba46c72315fc7c435cc0f7d98"
 "component.toml" = "6547ab20189c125ed00488e6191969d93f0c917e91dacdb815c9cb3b5080fc79"
@@ -35,16 +36,17 @@ logged = 1
 clean = false
 report_sha256 = "ae9731f5ac5c8f4a50fca780d2033b1fa01f36d9c50d97165f5b8b37d32b3af0"
 report_lines = 4
-inputs_sha256 = "17491661cfac86eec3b27eb069d3ac9060433c39a8a7dcc96fce4a71484fed50"
-calc_ast_sha256 = "798d65c7a530dacde6c9a1ad64578db61be35e8e63d79b2bdf8936d0adba4236"
+inputs_sha256 = "37afb68c81be6682a7461d7d27fecddd3469dbddee8aff97ebb1ad44854cc307"
+calc_ast_sha256 = "bb78b598f579ae9c9e179a1c8894cfbc0cf2d168fb1c079d9ca79a9ad39dc99e"
 matters = ["beam_load", "beam_load_c0g", "dim_e", "dim_e_c0g", "dim_g", "dim_g_c0g", "land_a_020", "land_a_030", "land_b_020", "land_b_030", "land_c_020", "land_c_030", "length", "length_c0g", "op_temp_c0g", "op_temp_x7r", "pinout", "solderability", "solderability_c0g", "thickness_t", "thickness_t_c0g", "width", "width_c0g"]
 functions = ["capacitance_worst_pct", "capacitance_worst_ppm"]
 reference_rows = ["capacitance_ds_c0g", "rated_v_ds_c0g", "tolerance_ds_c0g", "q_25c_c0g", "ir_25c_c0g", "ir_125c_c0g", "hte_cap_c0g", "hte_q_c0g", "hte_ir_c0g", "cycle_cap_c0g", "cycle_q_c0g", "cycle_ir_c0g", "solder_cap_c0g", "moist_cap_c0g", "moist_q_c0g", "moist_ir_c0g", "hb_cap_c0g", "hb_q_c0g", "hb_ir_c0g", "htol_cap_c0g", "htol_q_c0g", "htol_ir_c0g", "board_flex_cap_c0g", "capacitance_ds", "rated_v_ds", "tolerance_ds", "df_25c", "ir_25c", "ir_125c", "hte_cap", "hte_df", "hte_ir", "tc_cap", "tc_df", "tc_ir", "moist_cap", "moist_df", "moist_ir", "hb_cap", "hb_df", "hb_ir", "htol_cap", "htol_df", "htol_ir", "solvents_ir", "shock_ir", "vibration_ir", "solder_ir", "esd_ir", "board_flex_cap", "board_flex_ir", "terminal_ir", "self_heating", "dc_bias", "ac_peak", "tc_c0g", "capdrift_m55_c0g", "capdrift_m30_c0g", "capdrift_m10_c0g", "capdrift_limit_c0g", "tc_x7r"]
 reference_overrides = []
+hash_version = 1
 datasheet_pdf_sha256 = "87ece5c944c1c8178de10ba9fd8104632693922446e6828f68a54aa5844e87aa"
 
 [adversarial.input_sha256]
-"calc.py" = "798d65c7a530dacde6c9a1ad64578db61be35e8e63d79b2bdf8936d0adba4236"
+"calc.py" = "bb78b598f579ae9c9e179a1c8894cfbc0cf2d168fb1c079d9ca79a9ad39dc99e"
 "catalog.csv" = "b3f7e5fa9fea12f4bf5c798f6e7cf27df87480b45c52b9aab598de2067530726"
 "catalog_tables" = "9caa9d9ec20a64da018fb96d1ea80fa71f1bab5ba46c72315fc7c435cc0f7d98"
 "component.toml" = "6547ab20189c125ed00488e6191969d93f0c917e91dacdb815c9cb3b5080fc79"

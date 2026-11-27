@@ -10,18 +10,19 @@ logged = 0
 clean = true
 report_sha256 = "450cc05903507e1ea03d96059e67df9537b96e030c9b627bcee708283feb63ee"
 report_lines = 5
-inputs_sha256 = "dc607abba21dead26e6371ddab435db2e14a71956f518c43c5c653fd59f592aa"
-calc_ast_sha256 = "76966a7176857d9d05a6d6a8787a94a637375e28155061b310accb2e7f6b1b14"
+inputs_sha256 = "7a1ff5e1beea68310929c4a7e3dced48d5d2393d4f25eafb7fe4d28bb6605670"
+calc_ast_sha256 = "511dbcd39de96180a25a22f428e4717448ebc6fb33a1fd46770f1c5d12fc42de"
 matters = ["category_temp", "derate_knee", "derate_zero", "dim_a", "dim_b", "dim_l", "dim_t", "dim_w", "land_a", "land_b", "land_c", "mass", "p70", "pinout", "tcr_10r_2m2", "tol", "v_limit"]
 functions = ["rated_voltage", "rated_power", "resistance_worst", "mpn"]
 reference_rows = ["v_overload", "rcwv_rule", "res_range", "perf_overload", "perf_soldering_heat", "perf_rapid_change", "perf_high_temp_exposure", "perf_damp_heat", "perf_load_life_humidity", "perf_endurance_70c", "aec_grade"]
 reference_overrides = []
+hash_version = 1
 datasheet_pdf_sha256 = "dc67f1fde8789360afa44dae3cd47e22d30b6e938987dbcf28d49085484a1b9d"
 rows_checked = 11
 rows_total = 11
 
 [verifier.input_sha256]
-"calc.py" = "76966a7176857d9d05a6d6a8787a94a637375e28155061b310accb2e7f6b1b14"
+"calc.py" = "511dbcd39de96180a25a22f428e4717448ebc6fb33a1fd46770f1c5d12fc42de"
 "component.toml" = "d75eb23423454e5e6ef059e06e211b573b8a7387523642985b341514da30dd8b"
 
 [adversarial]
@@ -33,14 +34,15 @@ logged = 1
 clean = false
 report_sha256 = "8012b69e1a803d4daea8a16ebae988aaa02122eef86b27bfb5d4e2e45717a0ab"
 report_lines = 4
-inputs_sha256 = "dc607abba21dead26e6371ddab435db2e14a71956f518c43c5c653fd59f592aa"
-calc_ast_sha256 = "76966a7176857d9d05a6d6a8787a94a637375e28155061b310accb2e7f6b1b14"
+inputs_sha256 = "7a1ff5e1beea68310929c4a7e3dced48d5d2393d4f25eafb7fe4d28bb6605670"
+calc_ast_sha256 = "511dbcd39de96180a25a22f428e4717448ebc6fb33a1fd46770f1c5d12fc42de"
 matters = ["category_temp", "derate_knee", "derate_zero", "dim_a", "dim_b", "dim_l", "dim_t", "dim_w", "land_a", "land_b", "land_c", "mass", "p70", "pinout", "tcr_10r_2m2", "tol", "v_limit"]
 functions = ["rated_voltage", "rated_power", "resistance_worst", "mpn"]
 reference_rows = ["v_overload", "rcwv_rule", "res_range", "perf_overload", "perf_soldering_heat", "perf_rapid_change", "perf_high_temp_exposure", "perf_damp_heat", "perf_load_life_humidity", "perf_endurance_70c", "aec_grade"]
 reference_overrides = []
+hash_version = 1
 datasheet_pdf_sha256 = "dc67f1fde8789360afa44dae3cd47e22d30b6e938987dbcf28d49085484a1b9d"
 
 [adversarial.input_sha256]
-"calc.py" = "76966a7176857d9d05a6d6a8787a94a637375e28155061b310accb2e7f6b1b14"
+"calc.py" = "511dbcd39de96180a25a22f428e4717448ebc6fb33a1fd46770f1c5d12fc42de"
 "component.toml" = "d75eb23423454e5e6ef059e06e211b573b8a7387523642985b341514da30dd8b"

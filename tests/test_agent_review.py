@@ -180,6 +180,60 @@ class SeveralOverrides(Family):
         self.assertEqual((r["k"], r["n"]), (0, 3))
 
 
+class CalcHash(unittest.TestCase):
+    def h(self, src):
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "calc.py"
+            f.write_text(src)
+            return AR.calc_ast_hash(f)
+
+    def test_layout_and_comments_keep_the_hash_docstring_and_operator_change_it(self):
+        base = '"""Doc."""\n\n\ndef f(a, b):\n    """Sum."""\n    return a + b\n'
+        self.assertEqual(self.h(base), self.h(base.replace("a + b", "a  +  b  # why").replace("\n\n\n", "\n\n\n\n\n")))
+        self.assertNotEqual(self.h(base), self.h(base.replace("Sum.", "Total.")))
+        self.assertNotEqual(self.h(base), self.h(base.replace("a + b", "a - b")))
+
+    def test_old_record_without_hash_version_is_stale_with_a_reason(self):
+        import shutil
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp)
+        shutil.copytree(ROOT / "components" / "AnalogDevices" / "LTC4364MS", tmp / "components" / "AnalogDevices" / "LTC4364MS")
+        d = tmp / "components" / "AnalogDevices" / "LTC4364MS"
+        (d / "review").mkdir(exist_ok=True)
+        (d / "review" / "agent_review.toml").unlink(missing_ok=True)
+        src = tmp / "r.txt"
+        src.write_text("low | a | b | c | d\n")
+        AR.record(tmp, "LTC4364MS", "adversarial", "m", 1, 0, 1, src)
+        self.assertEqual(AR.status(d, tmp)["state"]["adversarial"], "CURRENT")
+        f = d / "review" / "agent_review.toml"
+        f.write_text("\n".join(l for l in f.read_text().splitlines() if not l.startswith("hash_version")) + "\n")
+        st = AR.status(d, tmp)
+        self.assertEqual(st["state"]["adversarial"], "STALE")
+        self.assertIn("re-record: the hash algorithm changed", st["reason"]["adversarial"])
+
+    def test_hash_is_the_same_under_python_3_9(self):
+        import shutil
+        import subprocess
+        py = "/opt/homebrew/bin/python3.9"
+        if not shutil.which(py):
+            self.skipTest("python3.9 absent")
+        code = ("import ast, hashlib, re, sys\n"
+                "src = open(sys.argv[1]).read()\n"
+                "m = src[src.index('_SKIP = '):src.index('def public_functions')]\n"
+                "from pathlib import Path\n"
+                "def _sha(x):\n    return hashlib.sha256(x.encode()).hexdigest()\n"
+                "exec(m)\n"
+                "for f in sys.argv[2:]:\n    print(f, calc_ast_hash(f))\n")
+        files = sorted((ROOT / "components").glob("*/*/calc.py"))
+        r = subprocess.run([py, "-c", code, str(ROOT / "lib" / "agent_review.py")] + [str(f) for f in files],
+                           capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr[-400:])
+        other = dict(line.rsplit(" ", 1) for line in r.stdout.splitlines())
+        self.assertEqual(len(other), len(files))
+        for f in files:
+            self.assertEqual(other[str(f)], AR.calc_ast_hash(f), str(f))
+
+
 class Record(Family):
     def setUp(self):
         super().setUp()

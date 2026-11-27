@@ -10,18 +10,19 @@ logged = 0
 clean = true
 report_sha256 = "e788aa5159dea75dea9c83a13ad021c759026761e54bb4605d957d6a647357ee"
 report_lines = 4
-inputs_sha256 = "16c9315d0ac6b0ebff89f4d9c2797e547336e70cfc086875eddf4b0127108a3e"
-calc_ast_sha256 = "d83057099150180b40f9a9b92d92963bf3e716b24f7cb785496f05a2aae18ef6"
+inputs_sha256 = "876839add32350428f49b86a5d8ec1fdc91c0d741ccd5b2c0665d4baea9783d7"
+calc_ast_sha256 = "2e64f0712a3fe8edeb794c0850d9ccbd144ae40fcafb8cb41fb2a8928375fff9"
 matters = ["eas", "id_pcb", "id_pulse", "id_tc100", "id_tc25", "norm_rds_150c", "pinout", "ptot_pcb", "ptot_tc25", "qg", "rds_on_10v", "rth_ja", "rth_jc_bottom", "rth_jc_top", "tj_tstg", "vds_rating", "vgs", "zthjc_single_100ms", "zthjc_single_100us", "zthjc_single_10ms", "zthjc_single_10us", "zthjc_single_1ms"]
 functions = ["conduction_loss", "rds_on_at_tj_typ", "tj_from_case", "tj_from_ambient", "gate_drive_time"]
 reference_rows = ["id_lin_50v_10ms", "soa_tc25_1us_12v", "soa_tc25_1us_20v", "soa_tc25_1us_40v", "soa_tc25_1us_50v", "soa_tc25_1us_80v", "soa_tc25_10us_50v", "soa_tc25_10us_80v", "soa_tc25_100us_20v", "soa_tc25_100us_40v", "soa_tc25_100us_50v", "soa_tc25_100us_80v", "soa_tc25_1ms_20v", "soa_tc25_1ms_40v", "soa_tc25_1ms_50v", "soa_tc25_1ms_80v", "soa_tc25_10ms_20v", "soa_tc25_10ms_40v", "soa_tc25_10ms_50v", "soa_tc25_10ms_80v", "soa_tc125_1us_12v", "soa_tc125_1us_20v", "soa_tc125_1us_40v", "soa_tc125_1us_50v", "soa_tc125_1us_80v", "soa_tc125_10us_20v", "soa_tc125_10us_40v", "soa_tc125_10us_80v", "soa_tc125_100us_12v", "soa_tc125_100us_40v", "soa_tc125_100us_50v", "soa_tc125_100us_80v", "soa_tc125_1ms_12v", "soa_tc125_1ms_40v", "soa_tc125_1ms_50v", "soa_tc125_1ms_80v", "soa_tc125_10ms_12v", "soa_tc125_10ms_20v", "soa_tc125_10ms_40v", "soa_tc125_10ms_50v", "soa_tc125_10ms_80v", "soa_tc125_100ms_12v", "soa_tc125_100ms_20v", "soa_tc125_100ms_40v", "soa_tc125_100ms_50v", "soa_tc125_100ms_80v", "soa_tc125_dc_12v", "soa_tc125_dc_20v", "soa_tc125_dc_40v", "soa_tc125_dc_50v", "soa_tc125_dc_80v", "ioutput_tj25_vgs15v_vds0p5v", "ioutput_tj25_vgs15v_vds1v", "ioutput_tj25_vgs15v_vds2v", "ioutput_tj25_vgs12v_vds0p5v", "ioutput_tj25_vgs12v_vds1v", "ioutput_tj25_vgs12v_vds2v", "ioutput_tj25_vgs10v_vds0p5v", "ioutput_tj25_vgs10v_vds1v", "ioutput_tj25_vgs10v_vds2v", "ioutput_tj25_vgs10v_vds3v", "ioutput_tj25_vgs10v_vds5v", "ioutput_tj25_vgs9v_vds0p5v", "ioutput_tj25_vgs9v_vds1v", "ioutput_tj25_vgs9v_vds2v", "ioutput_tj25_vgs9v_vds3v", "ioutput_tj25_vgs9v_vds5v", "ioutput_tj25_vgs8v_vds0p5v", "ioutput_tj25_vgs8v_vds1v", "ioutput_tj25_vgs8v_vds2v", "ioutput_tj25_vgs8v_vds3v", "ioutput_tj25_vgs8v_vds5v", "rds_tj25_vgs8v_id50a", "rds_tj25_vgs9v_id50a", "rds_tj25_vgs10v_id50a", "rds_tj25_vgs12v_id50a", "rds_tj25_vgs15v_id50a", "rds_tj25_vgs8p24v_id50a", "rds_tj175_vgs8p24v_id50a", "rds_tj175_vgs10v_id50a", "rds_tj175_vgs12v_id50a", "rds_tj175_vgs15v_id50a", "iav_tjstart25_1us", "iav_tjstart25_10us", "iav_tjstart25_100us", "iav_tjstart25_1000us", "iav_tjstart100_1us", "iav_tjstart100_10us", "iav_tjstart100_100us", "iav_tjstart100_1000us", "iav_tjstart150_1us", "iav_tjstart150_10us", "iav_tjstart150_100us", "iav_tjstart150_1000us", "vbr_dss", "vgs_th", "idss_25c", "idss_125c", "igss", "norm_rds_100c", "norm_rds_m50c", "norm_rds_25c", "norm_rds_75c", "norm_rds_125c", "norm_rds_175c", "rg", "gfs", "ciss", "coss", "crss", "td_on", "tr", "td_off", "tf", "vplateau", "is_cont", "is_pulse", "vsd", "trr", "qgs", "qg_th", "qgd", "qsw", "qoss", "qrr"]
 reference_overrides = []
+hash_version = 1
 datasheet_pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
 rows_checked = 25
 rows_total = 125
 
 [verifier.input_sha256]
-"calc.py" = "d83057099150180b40f9a9b92d92963bf3e716b24f7cb785496f05a2aae18ef6"
+"calc.py" = "2e64f0712a3fe8edeb794c0850d9ccbd144ae40fcafb8cb41fb2a8928375fff9"
 "component.toml" = "78dd78f3a4aa74c2d4cc7455cada2edd7a888097025d14bba4eda64719f30b2d"
 
 [adversarial]
@@ -33,14 +34,15 @@ logged = 1
 clean = false
 report_sha256 = "34e7be7df6d9d723f6921ca792c08c1cf0228cd903caff6d8ae633f62dd76a12"
 report_lines = 4
-inputs_sha256 = "16c9315d0ac6b0ebff89f4d9c2797e547336e70cfc086875eddf4b0127108a3e"
-calc_ast_sha256 = "d83057099150180b40f9a9b92d92963bf3e716b24f7cb785496f05a2aae18ef6"
+inputs_sha256 = "876839add32350428f49b86a5d8ec1fdc91c0d741ccd5b2c0665d4baea9783d7"
+calc_ast_sha256 = "2e64f0712a3fe8edeb794c0850d9ccbd144ae40fcafb8cb41fb2a8928375fff9"
 matters = ["eas", "id_pcb", "id_pulse", "id_tc100", "id_tc25", "norm_rds_150c", "pinout", "ptot_pcb", "ptot_tc25", "qg", "rds_on_10v", "rth_ja", "rth_jc_bottom", "rth_jc_top", "tj_tstg", "vds_rating", "vgs", "zthjc_single_100ms", "zthjc_single_100us", "zthjc_single_10ms", "zthjc_single_10us", "zthjc_single_1ms"]
 functions = ["conduction_loss", "rds_on_at_tj_typ", "tj_from_case", "tj_from_ambient", "gate_drive_time"]
 reference_rows = ["id_lin_50v_10ms", "soa_tc25_1us_12v", "soa_tc25_1us_20v", "soa_tc25_1us_40v", "soa_tc25_1us_50v", "soa_tc25_1us_80v", "soa_tc25_10us_50v", "soa_tc25_10us_80v", "soa_tc25_100us_20v", "soa_tc25_100us_40v", "soa_tc25_100us_50v", "soa_tc25_100us_80v", "soa_tc25_1ms_20v", "soa_tc25_1ms_40v", "soa_tc25_1ms_50v", "soa_tc25_1ms_80v", "soa_tc25_10ms_20v", "soa_tc25_10ms_40v", "soa_tc25_10ms_50v", "soa_tc25_10ms_80v", "soa_tc125_1us_12v", "soa_tc125_1us_20v", "soa_tc125_1us_40v", "soa_tc125_1us_50v", "soa_tc125_1us_80v", "soa_tc125_10us_20v", "soa_tc125_10us_40v", "soa_tc125_10us_80v", "soa_tc125_100us_12v", "soa_tc125_100us_40v", "soa_tc125_100us_50v", "soa_tc125_100us_80v", "soa_tc125_1ms_12v", "soa_tc125_1ms_40v", "soa_tc125_1ms_50v", "soa_tc125_1ms_80v", "soa_tc125_10ms_12v", "soa_tc125_10ms_20v", "soa_tc125_10ms_40v", "soa_tc125_10ms_50v", "soa_tc125_10ms_80v", "soa_tc125_100ms_12v", "soa_tc125_100ms_20v", "soa_tc125_100ms_40v", "soa_tc125_100ms_50v", "soa_tc125_100ms_80v", "soa_tc125_dc_12v", "soa_tc125_dc_20v", "soa_tc125_dc_40v", "soa_tc125_dc_50v", "soa_tc125_dc_80v", "ioutput_tj25_vgs15v_vds0p5v", "ioutput_tj25_vgs15v_vds1v", "ioutput_tj25_vgs15v_vds2v", "ioutput_tj25_vgs12v_vds0p5v", "ioutput_tj25_vgs12v_vds1v", "ioutput_tj25_vgs12v_vds2v", "ioutput_tj25_vgs10v_vds0p5v", "ioutput_tj25_vgs10v_vds1v", "ioutput_tj25_vgs10v_vds2v", "ioutput_tj25_vgs10v_vds3v", "ioutput_tj25_vgs10v_vds5v", "ioutput_tj25_vgs9v_vds0p5v", "ioutput_tj25_vgs9v_vds1v", "ioutput_tj25_vgs9v_vds2v", "ioutput_tj25_vgs9v_vds3v", "ioutput_tj25_vgs9v_vds5v", "ioutput_tj25_vgs8v_vds0p5v", "ioutput_tj25_vgs8v_vds1v", "ioutput_tj25_vgs8v_vds2v", "ioutput_tj25_vgs8v_vds3v", "ioutput_tj25_vgs8v_vds5v", "rds_tj25_vgs8v_id50a", "rds_tj25_vgs9v_id50a", "rds_tj25_vgs10v_id50a", "rds_tj25_vgs12v_id50a", "rds_tj25_vgs15v_id50a", "rds_tj25_vgs8p24v_id50a", "rds_tj175_vgs8p24v_id50a", "rds_tj175_vgs10v_id50a", "rds_tj175_vgs12v_id50a", "rds_tj175_vgs15v_id50a", "iav_tjstart25_1us", "iav_tjstart25_10us", "iav_tjstart25_100us", "iav_tjstart25_1000us", "iav_tjstart100_1us", "iav_tjstart100_10us", "iav_tjstart100_100us", "iav_tjstart100_1000us", "iav_tjstart150_1us", "iav_tjstart150_10us", "iav_tjstart150_100us", "iav_tjstart150_1000us", "vbr_dss", "vgs_th", "idss_25c", "idss_125c", "igss", "norm_rds_100c", "norm_rds_m50c", "norm_rds_25c", "norm_rds_75c", "norm_rds_125c", "norm_rds_175c", "rg", "gfs", "ciss", "coss", "crss", "td_on", "tr", "td_off", "tf", "vplateau", "is_cont", "is_pulse", "vsd", "trr", "qgs", "qg_th", "qgd", "qsw", "qoss", "qrr"]
 reference_overrides = []
+hash_version = 1
 datasheet_pdf_sha256 = "7e144939b785d0362f72cd43a63fd69a275491061d38107a8f149e7f37009e94"
 
 [adversarial.input_sha256]
-"calc.py" = "d83057099150180b40f9a9b92d92963bf3e716b24f7cb785496f05a2aae18ef6"
+"calc.py" = "2e64f0712a3fe8edeb794c0850d9ccbd144ae40fcafb8cb41fb2a8928375fff9"
 "component.toml" = "78dd78f3a4aa74c2d4cc7455cada2edd7a888097025d14bba4eda64719f30b2d"

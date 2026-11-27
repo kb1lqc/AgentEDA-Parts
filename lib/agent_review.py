@@ -23,7 +23,7 @@ FIELDS = {"date": str, "model": str, "findings": int, "applied": int, "logged": 
           "report_sha256": str, "report_lines": int, "inputs_sha256": str, "calc_ast_sha256": str,
           "matters": list, "functions": list, "reference_rows": list,
           "reference_overrides": list, "input_sha256": dict}
-OPTIONAL = {"datasheet_pdf_sha256": str, "rows_checked": int, "rows_total": int}  # absent in older records
+OPTIONAL = {"hash_version": int, "datasheet_pdf_sha256": str, "rows_checked": int, "rows_total": int}  # absent in older records
 ALL_FIELDS = {**FIELDS, **OPTIONAL}
 
 
@@ -45,10 +45,30 @@ def _toml_hash(f):
     return _sha(json.dumps(_strip_verified(data), sort_keys=True, separators=(",", ":"), ensure_ascii=False))
 
 
+HASH_VERSION = 1  # the canonical calc.py hash below; bump when it changes
+_SKIP = {"ctx", "kind", "type_params"}  # fields that differ between Python versions (or only carry layout)
+
+
+def _canon(node):
+    """Version-independent text of an AST node: class name, then its fields in order (nodes and lists recursed, literals by
+    repr); fields that are None or an empty list, and _SKIP, are left out (ast.dump differs between Python versions)."""
+    if isinstance(node, ast.AST):
+        parts = []
+        for name in node._fields:
+            v = getattr(node, name, None)
+            if name in _SKIP or v is None or v == []:
+                continue
+            parts.append(f"{name}={_canon(v)}")
+        return f"{type(node).__name__}({','.join(parts)})"
+    if isinstance(node, list):
+        return "[" + ",".join(_canon(x) for x in node) + "]"
+    return repr(node)
+
+
 def calc_ast_hash(f):
-    """SHA-256 of ast.dump of calc.py (docstrings kept: a docstring edit stales the record; comments and layout do not)."""
-    src = Path(f).read_text()
-    return _sha(ast.dump(ast.parse(src), annotate_fields=True, include_attributes=False))
+    """SHA-256 of the canonical AST text of calc.py (HASH_VERSION 1). Docstrings count: a docstring edit stales the record;
+    comments, blank lines and layout do not. The same on every Python version."""
+    return _sha(_canon(ast.parse(Path(f).read_text())))
 
 
 def public_functions(f):
@@ -161,7 +181,7 @@ def record(root, value, role, model, findings, applied, logged, report, clean=Fa
         if other != role and (prior.get(other) or {}).get("report_sha256") == _sha(body):
             raise ValueError(f"this report is the {other} record's report: each role needs its own reviewer's report")
     now = current(path, root)
-    e = {"date": (today or date.today()).isoformat(), "model": str(model), "findings": findings, "applied": applied,
+    e = {"date": (today or date.today()).isoformat(), "hash_version": HASH_VERSION, "model": str(model), "findings": findings, "applied": applied,
          "logged": logged, "clean": bool(clean), "report_sha256": _sha(body), "report_lines": len(body.splitlines()),
          **{k: now[k] for k in ("inputs_sha256", "calc_ast_sha256", "matters", "functions", "reference_rows",
                                 "reference_overrides", "input_sha256")}}
@@ -201,7 +221,7 @@ def status(path, root=None):
     rows-that-matter keys are the same (a human stamp changes neither)."""
     path = Path(path)
     f = path / "review" / FILE
-    out = {"state": {}, "date": {}, "problems": [], "functions": []}
+    out = {"state": {}, "date": {}, "problems": [], "functions": [], "reason": {}}
     try:
         recs = tomllib.loads(f.read_text()) if f.is_file() else {}
     except (OSError, tomllib.TOMLDecodeError) as e:
@@ -226,6 +246,10 @@ def status(path, root=None):
             out["state"][role] = STALE
         else:
             out["date"][role] = e["date"]
+            if e.get("hash_version") != HASH_VERSION:
+                out["state"][role] = STALE
+                out["reason"][role] = "re-record: the hash algorithm changed"
+                continue
             ok = e["inputs_sha256"] == now["inputs_sha256"] and sorted(e["matters"]) == now["matters"]
             pdf = now["datasheet_pdf_sha256"]  # a changed datasheet stales the review (main PDF only)
             ok = ok and not (pdf and e.get("datasheet_pdf_sha256") and e["datasheet_pdf_sha256"] != pdf)

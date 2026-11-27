@@ -10,18 +10,19 @@ logged = 0
 clean = true
 report_sha256 = "41e6f82f6465ef08561607535b9c984a5f87352951b214ae54f177be633a4e84"
 report_lines = 6
-inputs_sha256 = "d2e99e98ac0451da35febcdb298f7110048244184415e6def9cfd9f545673f07"
-calc_ast_sha256 = "c8da312f66ac81dc60dd55ab0873e1752de684559b3bc22baa45c49655f615d0"
+inputs_sha256 = "ca35b9c93e3d9796477077059526195f2e380ffd628a3d86a16e918b71f53518"
+calc_ast_sha256 = "6ba2dcde6ea8897dd5ac7df2a23505cc71b220a9738511a9a59a7b8d81fdcfcc"
 matters = ["esd_cdm", "esd_hbm", "gain_drift_full", "gain_err_25c", "pinout", "rtheta_jc_top", "slew_rate_25c", "ta_abs", "ta_rec", "tj_abs", "tstg_abs", "variant.INA241A1IDGK.gain", "variant.INA241A1IDGK.gain_drift_full", "variant.INA241A1IDGK.gain_err_25c", "variant.INA241A1IDGK.vos_25c", "variant.INA241A1IDGK.vos_drift_full", "variant.INA241A2IDGK.gain", "variant.INA241A2IDGK.gain_drift_full", "variant.INA241A2IDGK.gain_err_25c", "variant.INA241A2IDGK.vos_25c", "variant.INA241A2IDGK.vos_drift_full", "variant.INA241A3IDGK.gain", "variant.INA241A3IDGK.gain_drift_full", "variant.INA241A3IDGK.gain_err_25c", "variant.INA241A3IDGK.vos_25c", "variant.INA241A3IDGK.vos_drift_full", "variant.INA241A4IDGK.gain", "variant.INA241A4IDGK.gain_drift_full", "variant.INA241A4IDGK.gain_err_25c", "variant.INA241A4IDGK.vos_25c", "variant.INA241A4IDGK.vos_drift_full", "variant.INA241A5IDGK.gain", "variant.INA241A5IDGK.gain_drift_full", "variant.INA241A5IDGK.gain_err_25c", "variant.INA241A5IDGK.vos_25c", "variant.INA241A5IDGK.vos_drift_full", "variant.INA241B1IDGK.gain", "variant.INA241B2IDGK.gain", "variant.INA241B3IDGK.gain", "variant.INA241B4IDGK.gain", "variant.INA241B5IDGK.gain", "vcm_abs", "vcm_rec", "vdiff_abs", "vos_25c", "vos_drift_full", "vout_abs", "vref_abs", "vref_range_25c", "vs_abs", "vs_rec"]
 functions = ["vout", "vsense_ideal", "rsense_ideal", "psense", "rsense_max_power", "vout_at_imax", "tresponse", "current_error"]
 reference_rows = ["rtheta_ja", "rtheta_jb", "psi_jt", "psi_jb", "vcm_full", "cmrr_a_full", "cmrr_b_full", "cmrr_50khz_25c", "ib_25c", "psrr_a1_full", "psrr_a2_full", "psrr_a345_full", "psrr_b_full", "rvrr_a1_full", "rvrr_a2to5_full", "rvrr_b_full", "refdiv_a12_full", "refdiv_a345_full", "refdiv_b_full", "nonlin_25c", "cload_25c", "swing_vs_full", "swing_gnd_full", "bw_25c", "settle_0p5pct_25c", "settle_1pct_25c", "settle_5pct_25c", "en_g10_25c", "en_g20_25c", "en_g50_25c", "en_g100_25c", "en_g200_25c", "vs_elec_25c", "iq_25c", "iq_full", "ta_spec"]
 reference_overrides = []
+hash_version = 1
 datasheet_pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
 rows_checked = 25
 rows_total = 36
 
 [verifier.input_sha256]
-"calc.py" = "c8da312f66ac81dc60dd55ab0873e1752de684559b3bc22baa45c49655f615d0"
+"calc.py" = "6ba2dcde6ea8897dd5ac7df2a23505cc71b220a9738511a9a59a7b8d81fdcfcc"
 "component.toml" = "eef0802945cafa2b7bdc75d01c5d0b274618195ef52e5389561392ae792d0935"
 "variants.toml" = "94c4926733e2c1ed7f65cb89b749d36645f5add573fb9de202023e7c7feb17cc"
 
@@ -34,15 +35,16 @@ logged = 0
 clean = true
 report_sha256 = "60ca295c7e08db74a4c809c5181a5fb09cff59bc95a2fe5fb037a16126d2f8a1"
 report_lines = 4
-inputs_sha256 = "d2e99e98ac0451da35febcdb298f7110048244184415e6def9cfd9f545673f07"
-calc_ast_sha256 = "c8da312f66ac81dc60dd55ab0873e1752de684559b3bc22baa45c49655f615d0"
+inputs_sha256 = "ca35b9c93e3d9796477077059526195f2e380ffd628a3d86a16e918b71f53518"
+calc_ast_sha256 = "6ba2dcde6ea8897dd5ac7df2a23505cc71b220a9738511a9a59a7b8d81fdcfcc"
 matters = ["esd_cdm", "esd_hbm", "gain_drift_full", "gain_err_25c", "pinout", "rtheta_jc_top", "slew_rate_25c", "ta_abs", "ta_rec", "tj_abs", "tstg_abs", "variant.INA241A1IDGK.gain", "variant.INA241A1IDGK.gain_drift_full", "variant.INA241A1IDGK.gain_err_25c", "variant.INA241A1IDGK.vos_25c", "variant.INA241A1IDGK.vos_drift_full", "variant.INA241A2IDGK.gain", "variant.INA241A2IDGK.gain_drift_full", "variant.INA241A2IDGK.gain_err_25c", "variant.INA241A2IDGK.vos_25c", "variant.INA241A2IDGK.vos_drift_full", "variant.INA241A3IDGK.gain", "variant.INA241A3IDGK.gain_drift_full", "variant.INA241A3IDGK.gain_err_25c", "variant.INA241A3IDGK.vos_25c", "variant.INA241A3IDGK.vos_drift_full", "variant.INA241A4IDGK.gain", "variant.INA241A4IDGK.gain_drift_full", "variant.INA241A4IDGK.gain_err_25c", "variant.INA241A4IDGK.vos_25c", "variant.INA241A4IDGK.vos_drift_full", "variant.INA241A5IDGK.gain", "variant.INA241A5IDGK.gain_drift_full", "variant.INA241A5IDGK.gain_err_25c", "variant.INA241A5IDGK.vos_25c", "variant.INA241A5IDGK.vos_drift_full", "variant.INA241B1IDGK.gain", "variant.INA241B2IDGK.gain", "variant.INA241B3IDGK.gain", "variant.INA241B4IDGK.gain", "variant.INA241B5IDGK.gain", "vcm_abs", "vcm_rec", "vdiff_abs", "vos_25c", "vos_drift_full", "vout_abs", "vref_abs", "vref_range_25c", "vs_abs", "vs_rec"]
 functions = ["vout", "vsense_ideal", "rsense_ideal", "psense", "rsense_max_power", "vout_at_imax", "tresponse", "current_error"]
 reference_rows = ["rtheta_ja", "rtheta_jb", "psi_jt", "psi_jb", "vcm_full", "cmrr_a_full", "cmrr_b_full", "cmrr_50khz_25c", "ib_25c", "psrr_a1_full", "psrr_a2_full", "psrr_a345_full", "psrr_b_full", "rvrr_a1_full", "rvrr_a2to5_full", "rvrr_b_full", "refdiv_a12_full", "refdiv_a345_full", "refdiv_b_full", "nonlin_25c", "cload_25c", "swing_vs_full", "swing_gnd_full", "bw_25c", "settle_0p5pct_25c", "settle_1pct_25c", "settle_5pct_25c", "en_g10_25c", "en_g20_25c", "en_g50_25c", "en_g100_25c", "en_g200_25c", "vs_elec_25c", "iq_25c", "iq_full", "ta_spec"]
 reference_overrides = []
+hash_version = 1
 datasheet_pdf_sha256 = "d0f0d3a73c1bc2b4fe42d9cd6a4270c316d1164f8f86dc027f802428950029e8"
 
 [adversarial.input_sha256]
-"calc.py" = "c8da312f66ac81dc60dd55ab0873e1752de684559b3bc22baa45c49655f615d0"
+"calc.py" = "6ba2dcde6ea8897dd5ac7df2a23505cc71b220a9738511a9a59a7b8d81fdcfcc"
 "component.toml" = "eef0802945cafa2b7bdc75d01c5d0b274618195ef52e5389561392ae792d0935"
 "variants.toml" = "94c4926733e2c1ed7f65cb89b749d36645f5add573fb9de202023e7c7feb17cc"

@@ -10,18 +10,19 @@ logged = 1
 clean = false
 report_sha256 = "886c9105b57788632b7dbb74f537da8c742234863b0f5b3654f8271193188959"
 report_lines = 5
-inputs_sha256 = "9ac7ca9db37d3685952337664b86de8864811529c7a64b5aa41f206f5bc61672"
-calc_ast_sha256 = "64d30d9070efa8f87eac43752bf0bc8c4c0b7d00e841752bc039cddb11b36e6f"
+inputs_sha256 = "524c9d9e6ea0664035c8903042509f1abb665ec1929e57d7ac768e5592cfd4b5"
+calc_ast_sha256 = "41678473915063b5d0f4d3b00d09111ed0c05f7a44de0d34de5c20c7c46e9a3a"
 matters = ["eas", "id_pcb", "id_pulse", "id_tc100", "id_tc25", "iec_climatic", "norm_rds_150c", "pinout", "ptot_pcb", "ptot_ta25", "qg_10v", "rds_on_10v", "rth_ja", "rth_jc", "tj_tstg", "vds_rating", "vgs"]
 functions = ["conduction_loss", "rds_on_at_tj_typ", "tj_from_case", "tj_from_ambient", "gate_drive_time"]
 reference_rows = ["vbr_dss", "vgs_th", "idss_25c", "idss_125c", "igss", "rds_on_4v5", "norm_rds_100c", "rg", "gfs", "ciss", "coss", "crss", "td_on", "tr", "td_off", "tf", "vplateau", "is_cont", "is_pulse", "vsd", "trr", "qgs", "qg_th", "qgd", "qsw", "qg_4v5", "qoss", "qrr"]
 reference_overrides = []
+hash_version = 1
 datasheet_pdf_sha256 = "5de61e12ecca6fb69fe00d517f7530d1e3b7bbee65c29902de80244f957ddbb8"
 rows_checked = 25
 rows_total = 28
 
 [verifier.input_sha256]
-"calc.py" = "64d30d9070efa8f87eac43752bf0bc8c4c0b7d00e841752bc039cddb11b36e6f"
+"calc.py" = "41678473915063b5d0f4d3b00d09111ed0c05f7a44de0d34de5c20c7c46e9a3a"
 "component.toml" = "c3ef2eb9754169c0ee96fda06bd13542c5f69c0146a4dba5a7c93d02972b0661"
 
 [adversarial]
@@ -33,14 +34,15 @@ logged = 4
 clean = false
 report_sha256 = "aa596e8f8b4ba4c4732d696a2c5a1ad86109fd4c786c94f91c7d3bc857c6bf15"
 report_lines = 8
-inputs_sha256 = "9ac7ca9db37d3685952337664b86de8864811529c7a64b5aa41f206f5bc61672"
-calc_ast_sha256 = "64d30d9070efa8f87eac43752bf0bc8c4c0b7d00e841752bc039cddb11b36e6f"
+inputs_sha256 = "524c9d9e6ea0664035c8903042509f1abb665ec1929e57d7ac768e5592cfd4b5"
+calc_ast_sha256 = "41678473915063b5d0f4d3b00d09111ed0c05f7a44de0d34de5c20c7c46e9a3a"
 matters = ["eas", "id_pcb", "id_pulse", "id_tc100", "id_tc25", "iec_climatic", "norm_rds_150c", "pinout", "ptot_pcb", "ptot_ta25", "qg_10v", "rds_on_10v", "rth_ja", "rth_jc", "tj_tstg", "vds_rating", "vgs"]
 functions = ["conduction_loss", "rds_on_at_tj_typ", "tj_from_case", "tj_from_ambient", "gate_drive_time"]
 reference_rows = ["vbr_dss", "vgs_th", "idss_25c", "idss_125c", "igss", "rds_on_4v5", "norm_rds_100c", "rg", "gfs", "ciss", "coss", "crss", "td_on", "tr", "td_off", "tf", "vplateau", "is_cont", "is_pulse", "vsd", "trr", "qgs", "qg_th", "qgd", "qsw", "qg_4v5", "qoss", "qrr"]
 reference_overrides = []
+hash_version = 1
 datasheet_pdf_sha256 = "5de61e12ecca6fb69fe00d517f7530d1e3b7bbee65c29902de80244f957ddbb8"
 
 [adversarial.input_sha256]
-"calc.py" = "64d30d9070efa8f87eac43752bf0bc8c4c0b7d00e841752bc039cddb11b36e6f"
+"calc.py" = "41678473915063b5d0f4d3b00d09111ed0c05f7a44de0d34de5c20c7c46e9a3a"
 "component.toml" = "c3ef2eb9754169c0ee96fda06bd13542c5f69c0146a4dba5a7c93d02972b0661"

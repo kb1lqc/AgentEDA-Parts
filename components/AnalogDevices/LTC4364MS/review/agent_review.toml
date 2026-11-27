@@ -10,18 +10,19 @@ logged = 0
 clean = true
 report_sha256 = "75834182639c73247a21203eaf8363e8d31ac9463d63e54de7c702833dba561c"
 report_lines = 5
-inputs_sha256 = "6e25e15373dcec4a0dae6c9f4032bd4ee79ebbf02d8e682722b07d21942a416e"
-calc_ast_sha256 = "5e9a87afe5e5b2b94857e0d260c3b966694dfe8e79124d63f49e7d784ba36afe"
+inputs_sha256 = "1e107e6f5a67de0af9b2b0fead56be2bbab013cc47710252d193885fd98473b4"
+calc_ast_sha256 = "fcd3421db6bffa076d9afcf25e28821e523ec9f594d36122c2606676a415f517"
 matters = ["abs_dgate_hgate", "abs_enout_flt", "abs_fb_tmr", "abs_out_sense", "abs_out_vcc", "abs_sense_out", "abs_sense_source", "abs_source_ov_uv_shdn", "abs_vcc", "dvsns_full", "dvtmr", "icc", "ifb", "ihgate_up", "iin_uvov_pos", "itmr_dn_retry", "itmr_up_oc_hi", "itmr_up_ov_hi", "itmr_up_retry", "itmr_up_warn", "pinout", "t_lead", "ta_c", "ta_h", "ta_i", "tj_max", "tstg", "vcc_op", "vfb", "vov", "vtmr_f", "vtmr_g", "vuv"]
 functions = ["rsns", "vreg", "r7_for_vreg", "vin_uv", "vin_ov", "uv_ov_r2", "uv_r1", "c_tmr_for_warning", "t_warning", "itmr_up_ov_typ", "itmr_up_oc_typ", "t_flt", "t_ov", "t_oc", "t_cool", "c_hgate_for_inrush", "r4_max", "i_d1_peak", "p_m1_oc", "rdson_m2_max", "p2t_simple", "p2t_transient", "p2t_short", "tau_parallel_rc"]
 reference_rows = ["theta_ja_ms", "icc_shdn", "icc_rev", "dvhgate_4v", "dvhgate_8v", "ihgate_dn_ov", "ihgate_dn_oc", "ihgate_dn_off", "isrc_on", "isrc_shdn", "isrc_neg30", "dvsns_0c125c", "dvsns_lo", "isns_on", "isns_neg15", "itmr_up_ov_lo", "itmr_up_oc_lo", "itmr_dn_shdn", "vtmr_r", "vuv_hyst", "vuv_rst", "vov_hyst", "iin_uvov_neg", "vol_025ma", "vol_2ma", "ileak", "dvout_th", "vout_rst", "iout_on", "iout_neg15", "iout_shdn", "vshdn", "vshdn_flt", "ishdn_on", "ishdn_leak", "ishdn_neg30", "duty_ov_retry", "duty_short_retry", "t_off_uv", "t_off_ov", "t_off_oc", "dvdgate_4v", "dvdgate_8v", "idgate_up", "idgate_dn_on", "idgate_dn_off", "dvsd_12v", "dvsd_4v", "t_off_dgate"]
 reference_overrides = ["variant.LTC4364CMS-1.dvsns_0c125c", "variant.LTC4364CMS-2.dvsns_0c125c"]
+hash_version = 1
 datasheet_pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 rows_checked = 25
 rows_total = 51
 
 [verifier.input_sha256]
-"calc.py" = "5e9a87afe5e5b2b94857e0d260c3b966694dfe8e79124d63f49e7d784ba36afe"
+"calc.py" = "fcd3421db6bffa076d9afcf25e28821e523ec9f594d36122c2606676a415f517"
 "component.toml" = "06216566dcfd19c1c832c1b716bffa2990bf39beb67fe1242b03f5d65c81279e"
 "variants.toml" = "26937c3921acd86b9173f884ea20f1df97ccb78856071806b2b955e741726e7d"
 
@@ -34,15 +35,16 @@ logged = 3
 clean = false
 report_sha256 = "e64e78a8d7a4b43cc456620022fc0a75ca0c126ad42a128828c41c5ddd4188af"
 report_lines = 6
-inputs_sha256 = "6e25e15373dcec4a0dae6c9f4032bd4ee79ebbf02d8e682722b07d21942a416e"
-calc_ast_sha256 = "5e9a87afe5e5b2b94857e0d260c3b966694dfe8e79124d63f49e7d784ba36afe"
+inputs_sha256 = "1e107e6f5a67de0af9b2b0fead56be2bbab013cc47710252d193885fd98473b4"
+calc_ast_sha256 = "fcd3421db6bffa076d9afcf25e28821e523ec9f594d36122c2606676a415f517"
 matters = ["abs_dgate_hgate", "abs_enout_flt", "abs_fb_tmr", "abs_out_sense", "abs_out_vcc", "abs_sense_out", "abs_sense_source", "abs_source_ov_uv_shdn", "abs_vcc", "dvsns_full", "dvtmr", "icc", "ifb", "ihgate_up", "iin_uvov_pos", "itmr_dn_retry", "itmr_up_oc_hi", "itmr_up_ov_hi", "itmr_up_retry", "itmr_up_warn", "pinout", "t_lead", "ta_c", "ta_h", "ta_i", "tj_max", "tstg", "vcc_op", "vfb", "vov", "vtmr_f", "vtmr_g", "vuv"]
 functions = ["rsns", "vreg", "r7_for_vreg", "vin_uv", "vin_ov", "uv_ov_r2", "uv_r1", "c_tmr_for_warning", "t_warning", "itmr_up_ov_typ", "itmr_up_oc_typ", "t_flt", "t_ov", "t_oc", "t_cool", "c_hgate_for_inrush", "r4_max", "i_d1_peak", "p_m1_oc", "rdson_m2_max", "p2t_simple", "p2t_transient", "p2t_short", "tau_parallel_rc"]
 reference_rows = ["theta_ja_ms", "icc_shdn", "icc_rev", "dvhgate_4v", "dvhgate_8v", "ihgate_dn_ov", "ihgate_dn_oc", "ihgate_dn_off", "isrc_on", "isrc_shdn", "isrc_neg30", "dvsns_0c125c", "dvsns_lo", "isns_on", "isns_neg15", "itmr_up_ov_lo", "itmr_up_oc_lo", "itmr_dn_shdn", "vtmr_r", "vuv_hyst", "vuv_rst", "vov_hyst", "iin_uvov_neg", "vol_025ma", "vol_2ma", "ileak", "dvout_th", "vout_rst", "iout_on", "iout_neg15", "iout_shdn", "vshdn", "vshdn_flt", "ishdn_on", "ishdn_leak", "ishdn_neg30", "duty_ov_retry", "duty_short_retry", "t_off_uv", "t_off_ov", "t_off_oc", "dvdgate_4v", "dvdgate_8v", "idgate_up", "idgate_dn_on", "idgate_dn_off", "dvsd_12v", "dvsd_4v", "t_off_dgate"]
 reference_overrides = ["variant.LTC4364CMS-1.dvsns_0c125c", "variant.LTC4364CMS-2.dvsns_0c125c"]
+hash_version = 1
 datasheet_pdf_sha256 = "9cbd7e893c2363fb9796c3a2d78b4c030e66f3dc0b6babd2245d493b2de84940"
 
 [adversarial.input_sha256]
-"calc.py" = "5e9a87afe5e5b2b94857e0d260c3b966694dfe8e79124d63f49e7d784ba36afe"
+"calc.py" = "fcd3421db6bffa076d9afcf25e28821e523ec9f594d36122c2606676a415f517"
 "component.toml" = "06216566dcfd19c1c832c1b716bffa2990bf39beb67fe1242b03f5d65c81279e"
 "variants.toml" = "26937c3921acd86b9173f884ea20f1df97ccb78856071806b2b955e741726e7d"

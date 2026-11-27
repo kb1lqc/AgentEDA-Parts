@@ -580,7 +580,8 @@ def check_agent_review(folder):
     for role in agent_review.ROLES:
         if st["state"][role] == agent_review.STALE:
             out.append(("ERROR", f"review/{agent_review.FILE}: the {role} record is STALE (the part's inputs changed since "
-                                 f"the review): review again, then python3 tools/agent_review.py record {folder.name} --role {role} ..."))
+                                 f"the review{'; ' + st['reason'][role] if role in st['reason'] else ''}): review again, then "
+                                 f"python3 tools/agent_review.py record {folder.name} --role {role} ..."))
     missing = [r for r in agent_review.ROLES if st["state"][r] == agent_review.MISSING]
     if missing and (folder / "review" / "review.toml").is_file():  # only a part that is under review at all
         out.append(("WARN", f"{AGENT_PENDING}: {', '.join(missing)} (python3 tools/agent_review.py record {folder.name} ...)"))
