@@ -497,9 +497,9 @@ def stray_review_files(folder):
 def check_export_record(folder):
     """review/export_check.toml (docs/spec/capacitor.md "Export check"). Always: valid TOML; the catalog hash is the committed
     catalog.csv's and the tables hash is the current decode tables' (else STALE); a group's `verified` is a machine line
-    whose 12 digits are the group hash, or a legacy human stamp for that group. Evidence mode (the cited export is
-    in docs/datasheets/ or docs/vendor/): the export check is run again and the export hash and every group hash must
-    match the record."""
+    whose 12 digits are the group hash, or a legacy human stamp for that group. In every mode the export check is run
+    again on the cited export (docs/datasheets/, docs/vendor/, then the committed docs/exports/ subset; a missing export
+    is an error), and the export rows hash and every group hash must match the record."""
     folder = Path(folder)
     f = folder / "review" / catalog.EXPORT_RECORD
     if not f.exists():
@@ -554,19 +554,24 @@ def check_export_record(folder):
                                  f"export check (re-check them against the datasheet, then {rerun})"))
     name = rec.get("export", {}).get("file", "")
     root = folder.resolve().parents[2]
-    found = [p for p in (root / "docs" / "datasheets" / name, root / "docs" / "vendor" / name) if name and p.is_file()]
-    if found:  # evidence mode: run the check again
+    found = catalog.find_exports(root, name)
+    if not found:  # the comparison is re-run in every mode: the committed subset is the export CI has
+        return out + [("ERROR", f"review/export_check.toml: {name or 'the cited export'} is not in docs/datasheets/, "
+                                f"docs/vendor/ or docs/exports/ (commit the trimmed export: python3 -m lib.catalog "
+                                f"export-subset <export>, then {rerun})")]
+    for path in found:  # every copy must agree with the record (the full local export and the committed subset)
         try:
-            res = catalog.export_check(folder, found[0])
+            res = catalog.export_check(folder, path)
         except ValueError as e:
             return out + [("ERROR", f"review/export_check.toml: {e}")]
-        if res["export_sha256"] != rec.get("export", {}).get("sha256"):
-            out.append(("ERROR", f"review/export_check.toml: {name} changed since the export check ({rerun})"))
+        where = path.relative_to(root).as_posix() if path.is_relative_to(root) else path.name
+        if res["export_rows_sha256"] != rec.get("export", {}).get("rows_sha256"):
+            out.append(("ERROR", f"review/export_check.toml: the rows of {where} changed since the export check ({rerun})"))
         if res["result"] != "MATCH":
-            out.append(("ERROR", f"export check is MISMATCH now: {'; '.join((res['differences'] + res['errors'])[:3])}"))
+            out.append(("ERROR", f"export check is MISMATCH now ({where}): {'; '.join((res['differences'] + res['errors'])[:3])}"))
         for d, g in res["groups"].items():
             if groups.get(d, {}).get("group_sha256") != g["sha256"]:
-                out.append(("ERROR", f"group {d} changed since its export check ({rerun})"))
+                out.append(("ERROR", f"group {d} changed since its export check ({where}; {rerun})"))
     return out
 
 

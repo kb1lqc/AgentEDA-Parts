@@ -2,6 +2,7 @@
 
     python3 -m lib.catalog murata-gcm <vendor csv> <component dir> [--dielectrics X7R,C0G]
     python3 -m lib.catalog export-check <vendor csv> <component dir>   compare the committed catalog.csv with the export
+    python3 -m lib.catalog export-subset <vendor csv> [--out docs/exports/<name>.csv]   the trimmed export CI re-checks from
 
 The component directory name gives the size and thickness code (GCM155: size 15, thickness 5; GCM21A: size 21,
 thickness A). The allowed dielectrics default to the keys of `[part] tc_param` in the directory's component.toml, so a
@@ -56,7 +57,7 @@ TOLERANCE = {"W": "+/-0.05pF", "B": "+/-0.1pF", "C": "+/-0.25pF", "D": "+/-0.5pF
 # row printing another range (the export also lists -55 to 150 degC parts) is an error until it has its own row.
 OPERATING_TEMPERATURE = "-55\uff5e125\u2103"
 
-PRINTED_FIELDS = ("Operating Temperature", "Part Number", "Product Status", "Length", "Width", "Thickness", "Temperature characteristics",
+PRINTED_FIELDS = ("Part Number", "Operating Temperature", "Product Status", "Length", "Width", "Thickness", "Temperature characteristics",
                   "Capacitance", "Tolerance of capacitance", "Rated Voltage DC")
 
 
@@ -221,6 +222,30 @@ def write_catalog(path, rows):
         writer.writerows(rows)
 
 
+EXPORT_DIRS = ("docs/datasheets", "docs/vendor", "docs/exports")  # lookup order of the cited export (docs/exports is committed)
+
+
+def find_exports(root, name):
+    """Every file called `name` under the EXPORT_DIRS of the repo root, in lookup order (the full local export first, the
+    committed subset last)."""
+    return [p for p in (Path(root) / d / name for d in EXPORT_DIRS) if name and p.is_file()]
+
+
+def relevant_rows(export_rows, code, dielectrics):
+    """The export rows a directory's comparison reads (size+thickness `code`, an allowed dielectric, In Production),
+    reduced to PRINTED_FIELDS and sorted. The full export and the committed subset give the same list."""
+    rows = [{k: r.get(k, "") for k in PRINTED_FIELDS} for r in export_rows
+            if r.get("Part Number", "")[3:6] == code and r.get("Temperature characteristics") in dielectrics
+            and r.get("Product Status") == "In Production"]
+    return sorted(rows, key=lambda r: tuple(r[k] for k in PRINTED_FIELDS))
+
+
+def rows_hash(rows):
+    """SHA-256 of the canonical relevant rows (relevant_rows): JSON, sorted keys. It binds the record to the rows and
+    columns the comparison reads, not to the bytes of the file (docs/spec/capacitor.md "Export check")."""
+    return hashlib.sha256(json.dumps(rows, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")).hexdigest()
+
+
 def sha256_file(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
@@ -250,8 +275,8 @@ def export_check(folder, export):
 
     The expected rows are what the generator would write from the export (build_rows: the same decode, the same
     In Production and dielectric filters). The committed rows must equal them exactly: a row missing, an extra row, or
-    a row whose fields differ is a difference. Returns a dict: result ("MATCH" or "MISMATCH"), export_sha256,
-    catalog_sha256, export file name, rows (count), groups {dielectric: {rows, sha256}} (from the expected rows, so the
+    a row whose fields differ is a difference. Returns a dict: result ("MATCH" or "MISMATCH"),
+    export_rows_sha256 (hash of the rows and columns compared, relevant_rows), catalog_sha256, export file name, rows (count), groups {dielectric: {rows, sha256}} (from the expected rows, so the
     record names what was compared), differences (first 5), errors (export decode errors, the generator's wording)."""
     folder, export = Path(folder), Path(export)
     toml = tomllib.loads((folder / "component.toml").read_text(encoding="utf-8"))
@@ -267,7 +292,8 @@ def export_check(folder, export):
         missing = [c for c in PRINTED_FIELDS if c not in (reader.fieldnames or [])]
         if missing:
             raise ValueError(f"export lacks columns {missing}")
-        expected, errors, _skipped = build_rows(list(reader), code, set(dielectrics), export.name)
+        export_rows = list(reader)
+    expected, errors, _skipped = build_rows(export_rows, code, set(dielectrics), export.name)
     actual = committed_rows(catalog)
     exp_by, act_by = {r["value"]: r for r in expected}, {r["value"]: r for r in actual}
     differences = []
@@ -283,7 +309,7 @@ def export_check(folder, export):
                   "sha256": group_hash([r for r in expected if r["dielectric"] == d],
                                        [r for r in actual if r["dielectric"] == d])} for d in dielectrics}
     result = "MATCH" if not (differences or errors) else "MISMATCH"
-    return {"result": result, "export_file": export.name, "export_sha256": sha256_file(export),
+    return {"result": result, "export_file": export.name, "export_rows_sha256": rows_hash(relevant_rows(export_rows, code, set(dielectrics))),
             "catalog_sha256": sha256_file(catalog), "rows": len(expected), "groups": groups,
             "differences": differences[:5], "errors": errors}
 
@@ -307,7 +333,7 @@ def record_text(result, who=None, day=None, groups=None, keep=None):
     day = day or date.today().isoformat()
     lines = ["# Export check record (docs/spec/capacitor.md). Written by python3 -m lib.catalog export-check.", "",
              f'tables_sha256 = "{tables_sha256()}"', "",
-             "[export]", f'file = "{result["export_file"]}"', f'sha256 = "{result["export_sha256"]}"', "",
+             "[export]", f'file = "{result["export_file"]}"', f'rows_sha256 = "{result["export_rows_sha256"]}"', "",
              "[catalog]", f'sha256 = "{result["catalog_sha256"]}"']
     for d, g in result["groups"].items():
         lines += ["", f"[group.{d}]", f"rows = {g['rows']}", f'group_sha256 = "{g["sha256"]}"']
@@ -388,9 +414,56 @@ def export_check_command(args):
     return 0
 
 
+def export_subset(export, out):
+    """Write the trimmed export: only the PRINTED_FIELDS columns and only the rows some components/Murata/GCM directory
+    compares (relevant_rows), sorted, UTF-8, LF. Returns (rows, columns, bytes). The file keeps the export's name, so the
+    catalog `source` cite resolves to it."""
+    root = Path(__file__).resolve().parents[1]
+    with open(export, newline="", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        missing = [c for c in PRINTED_FIELDS if c not in (reader.fieldnames or [])]
+        if missing:
+            raise ValueError(f"export lacks columns {missing}")
+        export_rows = list(reader)
+    kept = []
+    for d in sorted((root / "components" / "Murata").glob("GCM*")):
+        if re.fullmatch(r"GCM[0-9]{2}[0-9A-Z]", d.name) and (d / "component.toml").is_file():
+            tc = tomllib.loads((d / "component.toml").read_text(encoding="utf-8")).get("part", {}).get("tc_param", {})
+            kept += relevant_rows(export_rows, d.name[3:], set(tc))
+    kept.sort(key=lambda r: tuple(r[k] for k in PRINTED_FIELDS))
+    out = Path(out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with open(out, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=PRINTED_FIELDS, lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(kept)
+    return len(kept), len(PRINTED_FIELDS), out.stat().st_size
+
+
+def export_subset_command(args):
+    """export-subset <vendor csv> [--out <file>]: the default out is docs/exports/<the export's file name>."""
+    out = None
+    if "--out" in args:
+        i = args.index("--out")
+        if i + 1 >= len(args):
+            print("ERROR: --out needs a value")
+            return 2
+        out, args = args[i + 1], args[:i] + args[i + 2:]
+    if len(args) != 1:
+        print(__doc__)
+        return 2
+    export = Path(args[0])
+    out = out or Path(__file__).resolve().parents[1] / "docs" / "exports" / export.name
+    rows, cols, size = export_subset(export, out)
+    print(f"wrote {out}: {rows} rows, {cols} columns, {size} bytes")
+    return 0
+
+
 def main(argv):
     if argv[:1] == ["export-check"]:
         return export_check_command(argv[1:])
+    if argv[:1] == ["export-subset"]:
+        return export_subset_command(argv[1:])
     if len(argv) < 3 or argv[0] != "murata-gcm":
         print(__doc__)
         return 2

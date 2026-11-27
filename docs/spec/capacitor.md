@@ -94,7 +94,8 @@ Status: the comparison, group hashes, the `export-check` command, the record `re
 rules are implemented (`lib/catalog.py`, `lib/check.py`, tests in `tests/test_catalog_export.py`). The legacy human group
 stamp (`export-check <export> <dir> --stamp <login>`, refused for agents) is still accepted. A capacitor series' catalog rows are reviewed through the export they cite, not
 through a datasheet table (there is none per part). Export: the manufacturer product-list CSV named in the `source`
-cite, which must be a file under `docs/datasheets/` or `docs/vendor/`; the cite's file name must match it exactly.
+cite, which must be a file under `docs/datasheets/`, `docs/vendor/` (both git-ignored, the full export) or `docs/exports/`
+(committed, the trimmed subset below), looked up in that order; the cite's file name must match it exactly.
 The export is used **in addition to** the datasheet PDFs, not instead of them: the PDFs (the reference sheet of each
 size and dielectric, cited `DS p.`) source the per-dielectric and per-size rows, and the export sources the per-part
 values (capacitance, tolerance, rated voltage, thickness) that the PDFs do not print per part. Both are local files in
@@ -110,8 +111,10 @@ values (capacitance, tolerance, rated voltage, thickness) that the PDFs do not p
   the catalog, or a catalog value not in the export, is a MISMATCH.
 - **Record.** `python3 -m lib.catalog export-check <export> <component dir>` prints the result (`MATCH` or `MISMATCH`),
   the export file name, the row count, each dielectric group's row count and hash, and the first differences. On MATCH
-  it writes `review/export_check.toml`: the export file name and SHA-256, the catalog SHA-256, and per group `rows` and
-  `group_sha256`. On MISMATCH it writes nothing. `lib.check` allows this file under `review/` (`docs/spec/review.md`).
+  it writes `review/export_check.toml`: the export file name and `rows_sha256`, the catalog SHA-256, and per group `rows`
+  and `group_sha256`. `rows_sha256` is not the hash of the file: it is the SHA-256 of the canonical rows and columns the
+  comparison reads (`relevant_rows`: this directory's size+thickness code, an allowed dielectric, In Production; the ten
+  columns the comparison reads, sorted, JSON), so the full export and the committed subset give the same hash. On MISMATCH it writes nothing. `lib.check` allows this file under `review/` (`docs/spec/review.md`).
 - **Machine record (derived rows).** A group is the catalog rows of one size directory with one dielectric (for example,
   GCM21B C0G, GCM21B X7R). Its per-part values need no human tick. `python3 -m lib.catalog export-check` writes
   `review/export_check.toml` on MATCH, with per group `verified = "machine export-check <YYYY-MM-DD> <group_sha256[:12]>"`
@@ -127,14 +130,23 @@ values (capacitance, tolerance, rated voltage, thickness) that the PDFs do not p
   datasheet-confirmed. A changed tables hash forces a re-check.
 - **Verdict.** A current machine or legacy human group record counts its catalog rows as checked. Derived rows are not
   in `lib.human_review_needed()`; `lib/review_status.py` shows them "derived, checked", never "needs check".
-- **Trust (level SHADOW, `tools/TRUST.md`).** The export (`docs/vendor`, git-ignored) is not available in CI. CI runs the
-  offline decode of each committed row, the catalog hash, the tables hash binding and the record form. The full
-  comparison (evidence mode) runs locally. Not closed in CI: a fabricated but self-consistent part number not on the
-  manufacturer list. A machine record is an agreement record, not proof; export vs factory is not proven; DC bias and
-  aging are unchanged.
+- **Committed subset.** `python3 -m lib.catalog export-subset <full export> [--out docs/exports/<name>.csv]` writes the
+  trimmed export: only the rows some `components/Murata/GCM*` directory compares (its size+thickness code, an allowed
+  dielectric, Product Status In Production) and only the ten columns the comparison reads (Part Number, Product Status,
+  Length, Width, Thickness, Temperature characteristics, Operating Temperature, Capacitance, Tolerance of capacitance,
+  Rated Voltage DC), sorted, UTF-8, LF, under the cited export's file name. Regenerate it, then the records, when the
+  export is refreshed. It is Murata's product-list data, factual part parameters only; Murata's terms of use for
+  committing it were not checked (open item).
+- **Trust (level SHADOW, `tools/TRUST.md`).** CI re-runs the full export comparison in every mode: from the full export
+  when it is local, otherwise from the committed subset. A hand-edited catalog row, `machine export-check` line, group
+  hash or subset row (for example a changed capacitance) fails `lib.check`. CI also runs the offline decode of each
+  committed row, the catalog hash, the tables hash binding and the record form. Not proven: that the committed subset
+  equals Murata's live list (it is the local export as exported on the cited date), and that the export agrees with the
+  factory; a fabricated but self-consistent part number in a regenerated subset is not caught. A machine record is an
+  agreement record, not proof; DC bias and aging are unchanged.
 - **Review page.** Derived rows are not review items. The page shows one muted line per group (for example "GCM21B C0G:
   42 catalog rows derived, checked against <export>. No tick needed."), no legend, table or tick box, and a warning
-  only on a MISMATCH. Without the export file locally the line says the committed record is the check. The legacy
+  only on a MISMATCH. The line names the export used (the full file, or the committed subset). The legacy
   group tick box and `--stamp` publish call are not offered; existing legacy human lines stay valid.
 - **Not covered.** The comparison proves the catalog agrees with the export, not that the export agrees with the
   factory. Values the export does not print (DC bias, aging) stay as they are.
