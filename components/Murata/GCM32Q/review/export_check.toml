@@ -4,7 +4,7 @@ tables_sha256 = "9caa9d9ec20a64da018fb96d1ea80fa71f1bab5ba46c72315fc7c435cc0f7d9
 
 [export]
 file = "series-product-list.csv"
-sha256 = "b2dc91f66c11511c748b32c5bae5f5544a5329ffbf9e6886537577886f8f1ef4"
+rows_sha256 = "a3a3604bfd9194f851f4c7c5aa93af1dc1bb5b2b7973ac7c466cccddad4076da"
 
 [catalog]
 sha256 = "3efb49e37916aad889d3f1c6d151ac1b0e90f82b43f7525ce705b50834025528"

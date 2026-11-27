@@ -169,13 +169,14 @@ class RecordTests(unittest.TestCase):
 
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())
-        self.folder = self.tmp / "GCM21B"
-        self.folder.mkdir()
+        self.folder = self.tmp / "components" / "Murata" / "GCM21B"  # repo layout: lib.check looks in <root>/docs/...
+        self.folder.mkdir(parents=True)
         (self.folder / "component.toml").write_text(TOML)
-        self.export = self.tmp / "export.csv"
+        (self.tmp / "docs" / "exports").mkdir(parents=True)
+        self.export = self.tmp / "docs" / "exports" / "export.csv"  # the committed subset: the only export CI has
         write_export(self.export, EXPORT_ROWS)
         write_catalog(self.folder / "catalog.csv", CATALOG)
-        self.record = self.folder / "review" / "export_check.toml"
+        self.record =self.folder / "review" / "export_check.toml"
         env = mock.patch.dict(os.environ)  # stamping is refused under CLAUDECODE: clear it for these tests only
         env.start()
         self.addCleanup(env.stop)
@@ -368,6 +369,71 @@ class RecordTests(unittest.TestCase):
         flagged = [m for _, m in K.stray_review_files(self.folder)]
         self.assertEqual(len(flagged), 1)
         self.assertIn("notes.txt", flagged[0])
+
+    def test_no_export_anywhere_is_an_error(self):
+        self.run_cmd()
+        self.export.unlink()
+        out = K.check_export_record(self.folder)
+        self.assertTrue(any("export.csv is not in docs/datasheets" in m for _, m in out), out)
+
+    def test_changed_catalog_row_with_retyped_hashes_fails_without_local_export(self):
+        self.run_cmd()
+        rows = list(CATALOG)
+        rows[0] = ("GCM21B5C1H183FA16", "C0G", "18,000pF", "±2%", "50Vdc", "1.25mm ±0.15mm")  # tolerance changed
+        write_catalog(self.folder / "catalog.csv", rows)
+        rec = self.record.read_text()  # a hand edit also re-types the catalog hash
+        old_cat = tomllib.loads(rec)["catalog"]["sha256"]
+        self.record.write_text(rec.replace(old_cat, C.sha256_file(self.folder / "catalog.csv")))
+        out = K.check_export_record(self.folder)
+        self.assertTrue(any("MISMATCH" in m for _, m in out), out)
+        self.assertTrue(any("group C0G changed since its export check" in m for _, m in out), out)
+
+    def test_hand_typed_machine_line_fails_without_local_export(self):
+        self.run_cmd()
+        old = tomllib.loads(self.record.read_text())["group"]["C0G"]["group_sha256"]
+        self.record.write_text(self.record.read_text().replace(old, "a" * 64).replace(old[:12], "a" * 12))
+        out = K.check_export_record(self.folder)  # the line and the group hash agree with each other, not with the rows
+        self.assertTrue(any("group C0G changed since its export check" in m for _, m in out), out)
+
+    def test_subset_with_a_changed_capacitance_fails(self):
+        self.run_cmd()
+        write_export(self.export, [r if r[0] != "GCM21B5C1H203JA16#" else
+                                   ("GCM21B5C1H203JA16#", "In Production", "C0G", "21,000pF", "±5%", "50Vdc")
+                                   for r in EXPORT_ROWS])
+        out = K.check_export_record(self.folder)
+        self.assertTrue(any("changed since the export check" in m or "MISMATCH" in m for _, m in out), out)
+
+    def test_full_export_and_subset_give_the_same_record_hashes(self):
+        full = self.tmp / "docs" / "datasheets"
+        full.mkdir()
+        write_export(full / "export.csv", EXPORT_ROWS + [("GCM155R71H104KE02#", "In Production", "X7R", "0.1μF", "±10%", "25Vdc")])
+        a = C.export_check(self.folder, full / "export.csv")
+        b = C.export_check(self.folder, self.export)
+        self.assertEqual(a["export_rows_sha256"], b["export_rows_sha256"])
+        self.assertEqual(a["groups"], b["groups"])
+        self.run_cmd()
+        self.assertEqual(K.check_export_record(self.folder), [])  # both files found, both agree with the record
+
+
+class SubsetTests(unittest.TestCase):
+    def test_subset_keeps_only_compared_rows_and_columns_sorted(self):
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp)
+        src = tmp / "series-product-list.csv"
+        write_export(src, [("GCM155R71H104KE02#", "In Production", "X7R", "0.1μF", "±10%", "25Vdc"),
+                           ("GCM155R71H104KE03#", "Discontinued", "X7R", "0.1μF", "±10%", "25Vdc"),
+                           ("GCM155R61H104KE02#", "In Production", "X5R", "0.1μF", "±10%", "25Vdc"),
+                           ("GCM225R71H104KE02#", "In Production", "X7R", "0.1μF", "±10%", "25Vdc"),
+                           ("GCM155R71H103KE02#", "In Production", "X7R", "0.01μF", "±10%", "25Vdc")])
+        out = tmp / "out" / "series-product-list.csv"
+        rows, cols, size = C.export_subset(src, out)
+        self.assertEqual((rows, cols), (2, 10))
+        got = list(csv.DictReader(open(out, encoding="utf-8")))
+        self.assertEqual([r["Part Number"] for r in got], ["GCM155R71H103KE02#", "GCM155R71H104KE02#"])
+        self.assertEqual(list(got[0]), list(C.PRINTED_FIELDS))
+        self.assertNotIn(b"\r", out.read_bytes())
+        again = C.export_subset(out, tmp / "again.csv")  # a subset of a subset is itself
+        self.assertEqual(again, (rows, cols, size))
 
 
 if __name__ == "__main__":
