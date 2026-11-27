@@ -16,7 +16,7 @@ and how the library uses the row, not only the digits.
 3. used: the key is a value in this part's `calc.py` INPUTS (a `.min`/`.typ`/`.max` suffix is dropped; the capacitor
    selection alias `tc` stands for every row `[part] tc_param` names, so `tc_x7r` and `tc_c0g` are used, see
    `docs/spec/capacitor.md`), a quoted
-   string in `examples/*.py` (risk_rank's text match; over-marking is the safe direction), or the row has
+   string in `examples/*.py` if a repo has them (risk_rank's text match; over-marking is the safe direction), or the row has
    `check_pins` or `check_ambient`;
 4. the pinout: one row named `pinout` for every part with `[[pin]]` entries (see "Pinout stamp").
 An override (`[variant."X".param.K]` in variants.toml) is a row that matters when its base row matters or its key is in calc INPUTS (rule 3); it is listed as `variant.<V>.<key>`.
@@ -33,8 +33,10 @@ that matter (each override that matters counts, no dedupe), M = all rows; releas
 **Part README** line 5: `Released: all <n> rows that matter checked (<M> rows in all).` or
 `Checked by a person: <k> of <n> rows that matter (<M> rows in all). Review: python3 tools/review.py <Value>`,
 plus `; <c> used values not covered (<files>)` when c > 0. `released` is unchanged (human rows only). The `Checked` column stays.
-**Top README:** a generated table between `<!-- review-status:start -->` and `<!-- review-status:end -->`: Part,
-Status (`released` or `k of n`), Review command; one line per component directory, sorted by path.
+**Top README:** between `<!-- review-status:start -->` and `<!-- review-status:end -->`, a generated count of parts and
+released parts with a link to `docs/PARTS.md`. `docs/PARTS.md` (generated, same markers rule: never hand-edited): one
+section per manufacturer, one line per component directory (Part, What, Status: `released` or `k of n`), sorted by path.
+`python3 tools/status.py <Value> [--json]` prints one part's status and the rows still needing a check.
 
 **Statement card** (one per row; built only from committed fields, no model text). Title: `<symbol> — <name>`.
 - **Value:** min, typ, max as the README prints them, with `min_ref` / `max_ref`. A `sym` row, or min = -max, prints `±<max>`. No `unit` prints `unitless`.

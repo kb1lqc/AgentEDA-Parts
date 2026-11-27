@@ -11,7 +11,7 @@ datasheet_rev = "00B"
 pdf_sha256 = "d1a871dac5c7bad631c82801e50cabdb4f8f1124b362823f31b3eca1eff4b2fc"
 pages = 34
 text_layer = true
-component_sha256 = "f10be6e901126adf5661dacdd36ee0dacc8b0b516889ee59f6a118ae4dfc2baf"
+component_sha256 = "96e3b87a218a0996fb4ac9df327b7819f0960e00a21baba4141b605e0205c60e"
 render = "complete"
 backfill = "git blame"
 sheets = { "GCM32ER71C226ME19-01A-EN.pdf" = "7276cd9d7e5409cb34fae381aa71b729ef43910e8a1fdfa8b0d8d8924c873744", "GCM32Q7U2J682JX01-00B-EN.pdf" = "d1a871dac5c7bad631c82801e50cabdb4f8f1124b362823f31b3eca1eff4b2fc" }

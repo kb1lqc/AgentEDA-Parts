@@ -371,7 +371,7 @@ def update_top(root):
 
 
 def main(argv=None):
-    """Write README.md in each component directory, then the review table in the top README.md (components of this
+    """Write README.md in each component directory, then the parts summary in the top README.md and docs/PARTS.md (components of this
     repo only)."""
     folders = find_components(sys.argv[1:] if argv is None else argv)
     for folder in folders:

@@ -77,7 +77,7 @@ Read `docs/spec/extract.md` for the defaults used for every judgement call. The 
    python3 -m lib.readme
    ```
 
-   `lib.readme` also refreshes the part list at the top of `README.md`.
+   `lib.readme` also refreshes `docs/PARTS.md` (the parts index) and the count at the top of `README.md`.
 8. **Run the gate.**
 
    ```sh

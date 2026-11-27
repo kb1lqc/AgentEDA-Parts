@@ -11,7 +11,7 @@ datasheet_rev = "01A"
 pdf_sha256 = "d5fc8cbbb68f642453ddcd5ed51b3f3c633bc8f4dceed8c486f3161fd09416c0"
 pages = 32
 text_layer = true
-component_sha256 = "ac3bfc8f067b78c3e1a0088566c97f00c0f3b79f1289df551c804c91a5fffa3c"
+component_sha256 = "98e9648771c7634351d44637a2d52bf92a8b800deaaffe15127cf06498e8597f"
 render = "complete"
 backfill = "git blame"
 sheets = { "GCM3195C1H273FA16-01A-EN.pdf" = "d5fc8cbbb68f642453ddcd5ed51b3f3c633bc8f4dceed8c486f3161fd09416c0", "GCM31CR71E475KA55-01A-EN.pdf" = "87ece5c944c1c8178de10ba9fd8104632693922446e6828f68a54aa5844e87aa" }

@@ -44,8 +44,7 @@ combinations of input min and max. A missing bound is an error, never a guess.
 
 Is a part safe to use? `python3 tools/status.py <Value>` (add `--json` for a script): released, or the rows still
 needing a check. Using a part needs no PDFs and no manufacturer export; those are for people who check numbers.
-Each part's README is its reference: every value with its cite, conditions and notes. A worked circuit analysis is in
-`examples/current_sense.py`. Use only values from `component.toml` (through `part.param(key)` or `part.inputs(fn)`);
+Each part's README is its reference: every value with its cite, conditions and notes. Worked designs live in a blocks repo ([docs/spec/blocks.md](docs/spec/blocks.md)). Use only values from `component.toml` (through `part.param(key)` or `part.inputs(fn)`);
 if a number you need is missing, say so rather than estimating it.
 
 ## Check a part (human)

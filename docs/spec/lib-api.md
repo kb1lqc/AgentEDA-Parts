@@ -24,7 +24,7 @@ Worst-case method (`wca`), stated so a human can check it by hand:
 3. Corners are exact for functions that are monotonic in each input over the range. For other functions, pass
    `samples=N` to also evaluate N evenly spaced interior points per input.
 
-## Analysis rules (examples/)
+## Analysis rules (any code that uses a part: a blocks repo, a script)
 - Load numbers through `part.param(key)` / `part.inputs(fn)`; never retype a datasheet number.
 - Every non-datasheet value is a named DESIGN CHOICE constant with a comment.
 - Worst case through `wca` (all min/max corners); nominal via typ. For a bound-only spec, state the nominal with
@@ -52,6 +52,6 @@ Worst-case method (`wca`), stated so a human can check it by hand:
   cover the whole grade. Follow the temperature recipe in `docs/spec/extract.md`.
 - `curve = true` values and `_typ` functions are estimates, never pass/fail bounds. `text` rows (for example
   "Continuous") have no number.
-- Mark every value you choose as a design choice in code, as `examples/current_sense.py` does. For nominal analysis of
+- Mark every value you choose as a design choice in code, as a named constant with a comment. For nominal analysis of
   a bound-only spec, state the assumption with `Param.with_typ(...)`.
 - Read each part's README notes and conditions before using a row.

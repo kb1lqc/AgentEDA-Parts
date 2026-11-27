@@ -1,7 +1,7 @@
 # Murata GCM32E series: 3225M (1210) thickness code E (T 2.5 mm) X7R (R7) and C0G (5C) MLCCs, a capacitor series
 # (docs/SPEC.md, "Capacitor series"). One directory per Murata size+thickness code (the symbol, footprint and STEP are per
 # directory). Every orderable value is a row of catalog.csv, generated from Murata's product-list export by
-#   python3 -m lib.catalog murata-gcm docs/vendor/Murata_GCM/gcm-series-product-list-2026-11-14.csv components/Murata/GCM32E --dielectrics X7R,C0G
+#   python3 -m lib.catalog murata-gcm docs/vendor/Murata_GCM/series-product-list.csv components/Murata/GCM32E --dielectrics X7R,C0G
 # and cited per row to that export (a manufacturer export, not a datasheet). X7R and C0G rows are listed; each
 # dielectric has its temperature-characteristic row (tc_x7r, tc_c0g) and its operating-temperature row (op_temp_*).
 # Row scopes: rows without a restriction apply to every part; rows with dielectric = "X7R" / "C0G" to every part of that
