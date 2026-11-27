@@ -185,10 +185,10 @@ def not_covered(path, mat=None):
 
 
 def located(row):
-    """True when a ledger row points at a datasheet table or figure: an evidence image (ds_review.py), the same
-    condition stamp.py needs before it stamps a row. A row without one (a value from a features bullet, design or
-    application text) cannot be compared with an image, so it is a reference row, not a check."""
-    return isinstance(row, dict) and bool(row.get("image"))
+    """True when a ledger row points at a datasheet page (the committed `pdf_page`: the cite resolved to a page, which
+    ds_review.py renders as the evidence image stamp.py needs). A row without one (a value from a features bullet, design
+    or application text) cannot be compared with an image, so it is a reference row, not a check."""
+    return isinstance(row, dict) and bool(row.get("pdf_page"))
 
 
 def review(path, root=None, local_pdf=True):

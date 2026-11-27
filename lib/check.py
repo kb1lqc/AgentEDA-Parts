@@ -10,7 +10,7 @@ from pathlib import Path
 
 from . import capacitor, catalog, kicad, rules, series
 from . import review_status
-from .component import (ROOT, _repo_root, ledger_state_of, load_calc, merge_variant, override_rows, pinout_hash, row_hash,
+from .component import (EVIDENCE, ROOT, _read_toml, _repo_root, ledger_state_of, load_calc, merge_variant, override_rows, pinout_hash, row_hash,
                         run_example, variants_of)
 from .units import to_si
 
@@ -497,9 +497,9 @@ def stray_review_files(folder):
 def check_export_record(folder):
     """review/export_check.toml (docs/spec/capacitor.md "Export check"). Always: valid TOML; the catalog hash is the committed
     catalog.csv's and the tables hash is the current decode tables' (else STALE); a group's `verified` is a machine line
-    whose 12 digits are the group hash, or a legacy human stamp for that group. Evidence mode (the cited export is
-    in docs/datasheets/ or docs/vendor/): the export check is run again and the export hash and every group hash must
-    match the record."""
+    whose 12 digits are the group hash, or a legacy human stamp for that group. In every mode the export check is run
+    again on the cited export (docs/datasheets/, docs/vendor/, then the committed docs/exports/ subset; a missing export
+    is an error), and the export rows hash and every group hash must match the record."""
     folder = Path(folder)
     f = folder / "review" / catalog.EXPORT_RECORD
     if not f.exists():
@@ -554,19 +554,24 @@ def check_export_record(folder):
                                  f"export check (re-check them against the datasheet, then {rerun})"))
     name = rec.get("export", {}).get("file", "")
     root = folder.resolve().parents[2]
-    found = [p for p in (root / "docs" / "datasheets" / name, root / "docs" / "vendor" / name) if name and p.is_file()]
-    if found:  # evidence mode: run the check again
+    found = catalog.find_exports(root, name)
+    if not found:  # the comparison is re-run in every mode: the committed subset is the export CI has
+        return out + [("ERROR", f"review/export_check.toml: {name or 'the cited export'} is not in docs/datasheets/, "
+                                f"docs/vendor/ or docs/exports/ (commit the trimmed export: python3 -m lib.catalog "
+                                f"export-subset <export>, then {rerun})")]
+    for path in found:  # every copy must agree with the record (the full local export and the committed subset)
         try:
-            res = catalog.export_check(folder, found[0])
+            res = catalog.export_check(folder, path)
         except ValueError as e:
             return out + [("ERROR", f"review/export_check.toml: {e}")]
-        if res["export_sha256"] != rec.get("export", {}).get("sha256"):
-            out.append(("ERROR", f"review/export_check.toml: {name} changed since the export check ({rerun})"))
+        where = path.relative_to(root).as_posix() if path.is_relative_to(root) else path.name
+        if res["export_rows_sha256"] != rec.get("export", {}).get("rows_sha256"):
+            out.append(("ERROR", f"review/export_check.toml: the rows of {where} changed since the export check ({rerun})"))
         if res["result"] != "MATCH":
-            out.append(("ERROR", f"export check is MISMATCH now: {'; '.join((res['differences'] + res['errors'])[:3])}"))
+            out.append(("ERROR", f"export check is MISMATCH now ({where}): {'; '.join((res['differences'] + res['errors'])[:3])}"))
         for d, g in res["groups"].items():
             if groups.get(d, {}).get("group_sha256") != g["sha256"]:
-                out.append(("ERROR", f"group {d} changed since its export check ({rerun})"))
+                out.append(("ERROR", f"group {d} changed since its export check ({where}; {rerun})"))
     return out
 
 
@@ -635,31 +640,41 @@ def check_ledger(folder):
             out.append(("ERROR", f"review/review.toml row {key}: not a Param, so its state must be 'NOT_COVERED': {rerun}"))
     root = _repo_root(folder) or ROOT
     cache = root / ".review-cache" / folder.resolve().relative_to(root / "components") if _repo_root(folder) else None
+    ev = (_read_toml(cache / EVIDENCE) or {}) if cache else {}  # the local evidence record: what the PDF and the render decided
 
     def pdf(sheet):  # the main datasheet at its datasheet_file path, other sheets in docs/datasheets/
         return root / inp["datasheet_file"] if sheet == main and inp.get("datasheet_file") else root / "docs" / "datasheets" / sheet
     present, absent, matched = set(), set(), set()
     pages = [pg for pg in pr.get("page", []) if isinstance(pg, dict)] if isinstance(pr, dict) else []  # every cited page
+    erow, epin = ev.get("row") or {}, ev.get("pinout") or {}
+    epage = {(g.get("sheet", ""), g.get("pdf_page")): g for g in epin.get("page") or [] if isinstance(g, dict)}
     for key, r in list(rows.items()) + [("pinout", pg) for pg in pages]:
-        if not isinstance(r, dict) or not r.get("image"):
+        # a ledger row (or pinout page) the cite placed on a PDF page has evidence images, once the PDF is local
+        if not isinstance(r, dict) or not r.get("pdf_page") or r.get("state") in ("REFERENCE", "NOT_COVERED"):
             continue
         sheet = r.get("sheet") or main
         if not pdf(sheet).is_file() or cache is None:
             absent.add(sheet)
             continue
         present.add(sheet)
+        pin = key == "pinout"
+        e = epage.get((r.get("sheet", ""), r.get("pdf_page")), {}) if pin else erow.get(key) or {}
+        if (epin.get("hash") != pr.get("hash")) if pin else (e.get("hash") != r.get("hash")):
+            out.append(("ERROR", f"{cache.relative_to(root)}/{EVIDENCE} has no evidence of {key} for its current hash (PDF present): "
+                                 f"{rerun}"))
+            continue
         for field, sha_field in (("image", "image_sha256"), ("header_image", "header_sha256"), ("foot_image", "foot_sha256")):
-            image = r.get(field, "")
+            image = e.get(field, "")
             if not image:
                 continue
             img = cache / image
             if not img.is_file():
                 out.append(("ERROR", f"{img.relative_to(root)} missing ({key}; PDF present): {rerun} to render it"))
-            elif hashlib.sha256(img.read_bytes()).hexdigest() != r.get(sha_field, ""):
-                out.append(("ERROR", f"{img.relative_to(root)} sha256 differs from review.toml ({key}): delete it and {rerun}"))
+            elif hashlib.sha256(img.read_bytes()).hexdigest() != e.get(sha_field, ""):
+                out.append(("ERROR", f"{img.relative_to(root)} sha256 differs from {EVIDENCE} ({key}): delete it and {rerun}"))
             else:
                 matched.add(image)
-    if not present and not absent:  # no row has an image: the main PDF decides
+    if not present and not absent:  # no row is placed on a page: the main PDF decides
         (present if main and pdf(main).is_file() else absent).add(main)
     REVIEW_MODES[str(folder)] = ("evidence" if present and not absent else "partial" if present else "ledger-only", len(matched))
     return out

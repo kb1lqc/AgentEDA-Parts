@@ -50,6 +50,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import stamp as S  # noqa: E402  (check_row: the exact rule stamp.py applies, so a tickable row is a stampable row)
 from lib import review_status as RS  # noqa: E402
+from lib.component import evidence_merge  # noqa: E402  (the committed ledger + the cache's evidence.toml)
 from lib import catalog as CAT  # noqa: E402  (export check of capacitor-series catalogs: docs/spec/capacitor.md)
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -215,7 +216,8 @@ def build_model(root, used_by_dir):
         rev = RS.review(d, root)
         status = rev["status"]
         line, released = RS.summary(d.name, rev)
-        ledger, comp = read_toml(d / "review" / "review.toml"), read_toml(d / "component.toml")
+        ledger = evidence_merge(read_toml(d / "review" / "review.toml"), cache_dir(root, d))
+        comp = read_toml(d / "component.toml")
         params, done = comp.get("param", {}), RS.checked_rows(d)
         items = []
         shown_keys = [k for k, s in status.items() if s == RS.NEEDS and (used is None or k in used)]
@@ -268,10 +270,8 @@ def cited_export(root, catalog_path):
     except OSError:
         return None
     m = re.search(r"export (\S+), row", (first or {}).get("source", ""))
-    for sub in ("docs/datasheets", "docs/vendor"):
-        if m and (Path(root) / sub / m[1]).is_file():
-            return Path(root) / sub / m[1]
-    return None
+    found = CAT.find_exports(root, m[1]) if m else []
+    return found[0] if found else None
 
 
 def build_groups(root, dirs):

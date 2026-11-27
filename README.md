@@ -70,7 +70,7 @@ it is [docs/PARTS.md](docs/PARTS.md), one section per manufacturer. "Status" cou
 has checked (see the [glossary](CONTRIBUTING.md#glossary)).
 
 <!-- review-status:start -->
-34 parts from 7 manufacturers, 6 released (every row that matters checked by a person). One line per part, by manufacturer: [docs/PARTS.md](docs/PARTS.md). Is a part safe to use: `python3 tools/status.py <Value>`.
+34 parts from 7 manufacturers, 7 released (every row that matters checked by a person). One line per part, by manufacturer: [docs/PARTS.md](docs/PARTS.md). Is a part safe to use: `python3 tools/status.py <Value>`.
 <!-- review-status:end -->
 
 ## Use in a Zener module

@@ -114,6 +114,16 @@ class Stamp(Base):
         shutil.rmtree(self.rdir)
         self.refused("X:iq", why="no readable review/review.toml")
 
+    def test_no_evidence_record_or_one_of_another_row_refused(self):
+        ev = self.cdir / "evidence.toml"
+        text = ev.read_text()
+        ev.write_text(text.replace(self.rows()["iq"]["hash"], "0" * 64))  # the record describes another version of the row
+        self.refused("X:iq", why="no local evidence of the current row")
+        ev.unlink()  # a clean clone: committed ledger, no cache
+        self.refused("X:iq", why="no local evidence of the current row")
+        ev.write_text(text)
+        self.assertEqual(self.stamp("X:iq")[0], 0)
+
     def test_from_file(self):
         f = self.root / "refs.txt"
         f.write_text("# checked\nX:iq\n\nX:vos  # comment\n")
