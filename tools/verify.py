@@ -69,7 +69,7 @@ def tree_hashes(root):
     """sha256 of every file under components/, README.md and docs/PARTS.md, keyed by relative path (no .pcb, no __pycache__)."""
     out = {}
     root = Path(root)
-    for name in ("README.md", "docs/PARTS.md"):
+    for name in ("README.md", "docs/PARTS.md"):  # = lib.readme.TOP_FILES (tests/test_review.py checks they agree)
         f = root / name
         if f.is_file():
             out[name] = hashlib.sha256(f.read_bytes()).hexdigest()

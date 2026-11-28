@@ -915,6 +915,28 @@ class Publish(unittest.TestCase):
         self.assertEqual(f.calls[9], ["git", "add", "--", "README.md", "components/Acme/X/README.md",
                                       "components/Acme/X/component.toml", "components/Acme/X/review/review.toml"])
 
+    def test_parts_index_is_committed(self):
+        f = Fake()
+        f.status = iter([(0, ""), (0, " M components/Acme/X/component.toml\n M components/Acme/X/review/review.toml\n"
+                                      " M components/Acme/X/README.md\n M docs/PARTS.md\n")])
+        rc, lines, _ = self.go(f)
+        self.assertEqual(rc, 0, lines)
+        self.assertEqual(f.calls[9], ["git", "add", "--", "components/Acme/X/README.md", "components/Acme/X/component.toml",
+                                      "components/Acme/X/review/review.toml", "docs/PARTS.md"])
+
+    def test_top_files_match_what_regen_writes_and_verify_hashes(self):
+        import tempfile
+        import verify as V  # tools/verify.py
+        from lib import readme as RM
+        with tempfile.TemporaryDirectory() as t:
+            root = Path(t)
+            (root / "components").mkdir()
+            (root / "README.md").write_text(f"x\n{RM.START}\n{RM.END}\n")
+            RM.update_top(root)
+            written = sorted(str(p.relative_to(root)) for p in root.rglob("*") if p.is_file())
+            self.assertEqual(written, sorted(RM.TOP_FILES))  # a new generated file must be added to TOP_FILES
+            self.assertEqual(sorted(V.tree_hashes(root)), sorted(RM.TOP_FILES))
+
     def test_other_root_files_still_unexpected(self):
         f = Fake()
         f.status = iter([(0, ""), (0, " M components/Acme/X/component.toml\n M CONTRIBUTING.md\n M docs/README.md\n")])

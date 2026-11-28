@@ -353,6 +353,9 @@ def parts_index(root):
     return text
 
 
+TOP_FILES = ("README.md", "docs/PARTS.md")  # every file outside components/ that update_top writes; tools check against this
+
+
 def update_top(root):
     """Rewrite the block between the review-status markers of root/README.md and write root/docs/PARTS.md; False
     when there is no README or marker."""
