@@ -20,7 +20,7 @@ stamp.py would refuse the row. Tick the rows whose statement matches the datashe
 "Stamp N rows and open PR". With the library tree clean (untracked files allowed) it runs, showing each command:
 git fetch origin; git switch -c review/<parts>-<login>-<YYYYMMDD>[-n] origin/main; tools/stamp.py --from <list>
 (a refusal switches back and deletes the new branch); tools/verify.py --regen <parts> (a FAIL leaves the branch,
-uncommitted, for you); git commit of those parts' component.toml, review/review.toml and README.md, plus the top-level README.md status table; git push -u origin
+uncommitted, for you); git commit of those parts' component.toml, review/review.toml and README.md, plus the top-level README.md summary and docs/PARTS.md; git push -u origin
 <branch>; gh pr create. Then the server exits. --dry-run is for a person trying the page; agents don't run review.py
 (.claude/settings.json denies it; the CLAUDECODE refusal lets only --dry-run through, so the tests can drive it).
 Exit 0 = PR opened (or Done pressed), 1 = refused or a step failed.
@@ -50,6 +50,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(1, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import stamp as S  # noqa: E402  (check_row: the exact rule stamp.py applies, so a tickable row is a stampable row)
 from lib import review_status as RS  # noqa: E402
+from lib.readme import TOP_FILES as README_TOP_FILES  # noqa: E402  (files outside components/ that verify --regen rewrites)
 from lib.component import evidence_merge  # noqa: E402  (the committed ledger + the cache's evidence.toml)
 from lib import catalog as CAT  # noqa: E402  (export check of capacitor-series catalogs: docs/spec/capacitor.md)
 
@@ -646,7 +647,7 @@ def publish(root, dirs, refs, run, emit, today=None, python=sys.executable, grou
                     f"or discard them with git restore . && git switch {prev}.", out)
     rc, out = sh("git", "status", "--porcelain")
     allowed = {f"{r}/{n}" for r in rel for n in ("component.toml", "review/review.toml", "review/export_check.toml", "README.md")}
-    allowed.add("README.md")  # the top-level status table, rewritten by verify.py --regen (lib.readme.update_top)
+    allowed |= set(README_TOP_FILES)  # the top-level summary and the parts index, rewritten by verify.py --regen (lib.readme.update_top)
     changed = [ln[3:] for ln in out.splitlines() if ln.strip() and not ln.startswith("??")]
     extra = [p for p in changed if p not in allowed]
     if rc or extra or not changed:
