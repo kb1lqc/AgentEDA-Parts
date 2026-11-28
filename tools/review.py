@@ -221,7 +221,8 @@ def build_model(root, used_by_dir):
         params, done = comp.get("param", {}), RS.checked_rows(d)
         items = []
         shown_keys = [k for k, s in status.items() if s == RS.NEEDS and (used is None or k in used)]
-        shown_keys += sorted(k for k in (used or ()) if k not in status)
+        derived = set(RS.DERIVED_KEYS) if RS.derived_rows(d) else set()  # catalog values a current export record covers
+        shown_keys += sorted(k for k in (used or ()) if k not in status and k not in derived)
         for key in shown_keys:
             tier, why, imgs = classify(root, d, key, ledger, params)
             pin_pages = [pg for pg in ledger.get("pinout", {}).get("page", []) if isinstance(pg, dict)] if key == "pinout" else []
