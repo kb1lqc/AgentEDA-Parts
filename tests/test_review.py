@@ -584,6 +584,14 @@ class Page(Stamped):
         self.assertEqual(vos["page"][1], "https://example.com/x.pdf#page=2")
         self.assertIn("status DISAGREE", next(i for i in part["items"] if i["key"] == "vos_bad")["why"])
 
+    def test_derived_catalog_keys_are_not_listed_when_an_export_record_covers_them(self):
+        from unittest import mock
+        with mock.patch.object(RV.RS, "derived_rows", return_value=5):
+            (part,) = self.model(used={"vos", "capacitance", "tolerance", "rated_v", "other"})
+        self.assertEqual(sorted(i["key"] for i in part["items"]), ["other", "vos"])  # not-derived unknown keys still show
+        (part,) = self.model(used={"capacitance", "rated_v"})  # no current record: still listed as not reviewable
+        self.assertEqual(sorted(i["key"] for i in part["items"]), ["capacitance", "rated_v"])
+
     def hot(self):
         """A needs-check row with two IQ lines (table fallback) whose numbers print on one line: 1.4 and 2.5."""
         p = self.d / "component.toml"

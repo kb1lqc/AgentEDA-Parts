@@ -145,6 +145,7 @@ def catalog_columns(path):
 
 
 DERIVED_COLUMNS = ("capacitance", "tolerance", "rated_voltage")  # catalog columns a current export-check group covers
+DERIVED_KEYS = DERIVED_COLUMNS + ("rated_v",)  # the same, plus the selection key `rated_v` a block reads
 
 
 def derived_rows(path):
